@@ -1,6 +1,8 @@
 {
     "name": "root",
     "private": true,
+	"license" : "MIT",
+	"author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
     "scripts": {
         "install": "lerna bootstrap",
         "build": "lerna run build",
