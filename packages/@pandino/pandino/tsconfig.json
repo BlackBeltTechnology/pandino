@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "newLine": "lf",
+    "declaration": true,
+    "declarationDir": "./dist/",
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "target": "ESNext",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "sourceMap": true
+  }
+}

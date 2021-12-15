@@ -1,0 +1,9 @@
+{
+  "Bundle-ManifestVersion": "1",
+  "Bundle-SymbolicName": "io.pandino.bundle-b",
+  "Bundle-Name": "Bundle B",
+  "Bundle-Version": "0.1.0",
+  "Bundle-Description": "Yayy, bundle-b!",
+  "Bundle-Activator": "./bundle-b.js",
+  "Require-Capability": "pet.grooming;filter:=\"(&(type=cat)(rate<=20))\""
+}

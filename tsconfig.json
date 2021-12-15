@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "outDir": "./public/",
+      "noImplicitAny": true,
+      "module": "ESNext",
+      "target": "ES2015",
+      "allowJs": true,
+      "moduleResolution": "node"
+    }
+}

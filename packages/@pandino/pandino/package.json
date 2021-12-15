@@ -1,0 +1,48 @@
+{
+  "name": "@pandino/pandino",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/pandino.js",
+  "private": true,
+  "types": "dist/src/pandino.d.ts",
+  "scripts": {
+    "clean": "rimraf dist",
+    "test": "jest",
+    "build": "npm run clean && webpack"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "semver": "^7.3.5"
+  },
+  "devDependencies": {
+    "@pandino/pandino-api": "^0.1.0",
+    "@types/jest": "^27.0.2",
+    "@types/semver": "^7.3.9",
+    "jest": "^27.3.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.7",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.4.4",
+    "webpack": "^5.58.1",
+    "webpack-cli": "^4.9.0"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsconfig": false
+      }
+    },
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
+  }
+}

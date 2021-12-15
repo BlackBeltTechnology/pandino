@@ -1,0 +1,9 @@
+{
+  "Bundle-ManifestVersion": "1",
+  "Bundle-SymbolicName": "io.pandino.bundle-a",
+  "Bundle-Name": "Bundle A",
+  "Bundle-Version": "0.1.0",
+  "Bundle-Description": "Bundle-a!",
+  "Bundle-Activator": "./bundle-a.js",
+  "Provide-Capability": "pet.grooming;type:Array=\"dog,cat\";length:number=800;soap=\"organic\";rate:number=\"10\""
+}

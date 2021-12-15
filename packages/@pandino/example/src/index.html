@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Static Template</title>
+  </head>
+  <body>
+    <h1 id="root">Hello!</h1>
+    <p>Please check the console for demo content!</p>
+    <script type="pandino-manifests">
+      [
+        "./bundle-b-manifest.json"
+      ]
+    </script>
+    <script type="module">
+      window.addEventListener("DOMContentLoaded", () => {
+        (async () => {
+          const Pandino = (await import('./pandino.js')).default;
+          const pandino = new Pandino((activator) => import(activator));
+
+          pandino.init();
+          pandino.registerDocumentDefinedManifests();
+          window.setTimeout(() => {
+            pandino.getBundleContext().installBundle("./bundle-a-manifest.json");
+          }, 1000);
+
+        })();
+      });
+    </script>
+  </body>
+</html>

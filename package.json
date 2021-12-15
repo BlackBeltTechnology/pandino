@@ -1,0 +1,15 @@
+{
+    "name": "root",
+    "private": true,
+    "scripts": {
+        "install": "lerna bootstrap",
+        "build": "lerna run build",
+        "start": "lerna run --scope @pandino/example start --stream",
+        "test": "lerna run --scope @pandino/pandino test --stream",
+        "format": "prettier --config .prettierrc packages/**/*.ts --write"
+    },
+    "devDependencies": {
+        "lerna": "^4.0.0",
+        "prettier": "^2.4.1"
+    }
+}
