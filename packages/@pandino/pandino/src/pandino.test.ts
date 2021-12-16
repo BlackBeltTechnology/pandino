@@ -92,8 +92,7 @@ describe('Pandino', () => {
   it('install bundle', async () => {
     await preparePandino();
     await installBundle(bundle1Headers);
-    const bundles = pandino.getBundleContext().getBundles();
-    const myBundle = bundles[0];
+    const [myBundle] = pandino.getBundleContext().getBundles();
 
     expect(mockStart).toHaveBeenCalledTimes(1);
     expect(myBundle.getBundleId()).toEqual(1);
@@ -108,8 +107,7 @@ describe('Pandino', () => {
       ...bundle1Headers,
       [REQUIRE_CAPABILITY]: 'com.one;filter:="(&(type=cat)(rate<=20))"',
     });
-    const bundles = pandino.getBundleContext().getBundles();
-    const myBundle = bundles[0];
+    const [myBundle] = pandino.getBundleContext().getBundles();
 
     expect(mockStart).toHaveBeenCalledTimes(0);
     expect(myBundle.getBundleId()).toEqual(1);
@@ -153,8 +151,7 @@ describe('Pandino', () => {
   it('stop bundle', async () => {
     await preparePandino();
     await installBundle(bundle1Headers);
-    const bundles = pandino.getBundleContext().getBundles();
-    const myBundle = bundles[0];
+    const [myBundle] = pandino.getBundleContext().getBundles();
 
     expect(myBundle.getState()).toEqual('ACTIVE');
 
@@ -175,13 +172,7 @@ describe('Pandino', () => {
     await installBundle(bundle2Headers);
     await installBundle(bundle3Headers);
 
-    const bundles = pandino.getBundleContext().getBundles();
-
-    expect(bundles.length).toEqual(3);
-
-    const requirerBundle = bundles[0];
-    const requiredBundle = bundles[1];
-    const independentBundle = bundles[2];
+    const [requirerBundle, requiredBundle, independentBundle] = pandino.getBundleContext().getBundles();
 
     await requiredBundle.stop();
 
@@ -197,8 +188,7 @@ describe('Pandino', () => {
   it('restart bundle', async () => {
     await preparePandino();
     await installBundle(bundle1Headers);
-    const bundles = pandino.getBundleContext().getBundles();
-    const myBundle = bundles[0];
+    const [myBundle] = pandino.getBundleContext().getBundles();
     const mockBundleChangedListener = jest.fn();
     const bundleListener: BundleListener = {
       bundleChanged: mockBundleChangedListener,
@@ -226,8 +216,7 @@ describe('Pandino', () => {
   it('update bundle', async () => {
     await preparePandino();
     await installBundle(bundle1Headers);
-    const bundles = pandino.getBundleContext().getBundles();
-    const myBundle = bundles[0];
+    const [myBundle] = pandino.getBundleContext().getBundles();
 
     expect(myBundle.getVersion().toString()).toEqual('1.2.3');
     expect(myBundle.getState()).toEqual('ACTIVE');
@@ -246,6 +235,28 @@ describe('Pandino', () => {
     });
 
     expect(myBundle.getState()).toEqual('ACTIVE');
+  });
+
+  it('uninstall bundle', async () => {
+    await preparePandino();
+    await installBundle({
+      ...bundle1Headers,
+      [REQUIRE_CAPABILITY]: bundle1RequiresBundle2ByCapability,
+    });
+    await installBundle(bundle2Headers);
+
+    const [requirerBundle, requiredBundle] = pandino.getBundleContext().getBundles();
+
+    expect(pandino.getBundleContext().getBundles().length).toEqual(2);
+    expect(requiredBundle.getState()).toEqual('ACTIVE');
+    expect(requirerBundle.getState()).toEqual('ACTIVE');
+
+    await requiredBundle.uninstall();
+
+    expect(pandino.getBundleContext().getBundles().length).toEqual(1);
+    expect(requiredBundle.getState()).toEqual('UNINSTALLED');
+    expect(requirerBundle.getState()).toEqual('RESOLVED');
+    expect(mockStop).toHaveBeenCalledTimes(2);
   });
 
   async function preparePandino() {

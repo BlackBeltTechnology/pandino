@@ -93,7 +93,7 @@ export class BundleImpl implements Bundle {
   }
 
   async uninstall(): Promise<void> {
-    return Promise.resolve(undefined);
+    return this.getFramework().uninstallBundle(this);
   }
 
   async update(headers: BundleManifestHeaders, bundle: Bundle): Promise<void> {

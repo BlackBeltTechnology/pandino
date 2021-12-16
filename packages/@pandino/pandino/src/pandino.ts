@@ -44,7 +44,6 @@ export default class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: Fetcher;
   private readonly importer: Importer;
   private readonly configMap: Map<string, any>;
-  private readonly bundleLocationMap: Map<string, Bundle> = new Map<string, Bundle>();
   private readonly installedBundles: Bundle[] = [];
   private readonly activatorsList: BundleActivator[] = [];
   // private readonly registry: ServiceRegistryImpl;
@@ -412,6 +411,50 @@ export default class Pandino extends BundleImpl implements Framework {
 
   getResolver(): StatefulResolver {
     return this.resolver;
+  }
+
+  async uninstallBundle(bundle: BundleImpl): Promise<void> {
+    const desiredStates: BundleState[] = ['INSTALLED', 'RESOLVED', 'STARTING', 'ACTIVE', 'STOPPING'];
+
+    if (!desiredStates.includes(bundle.getState())) {
+      if (bundle.getState() === 'UNINSTALLED') {
+        throw new Error('Cannot uninstall an uninstalled bundle.');
+      } else {
+        throw new Error(
+          `Bundle ${bundle.getUniqueIdentifier()} cannot be uninstalled because it is in an undesired state: ${bundle.getState()}`,
+        );
+      }
+    }
+
+    if (bundle.getState() === 'STARTING' || bundle.getState() === 'STOPPING') {
+      throw new Error(
+        'Bundle ' + bundle.getUniqueIdentifier() + ' cannot be uninstalled, since it is either STARTING or STOPPING.',
+      );
+    }
+
+    if (bundle.getState() === 'ACTIVE') {
+      try {
+        await this.stopBundle(bundle);
+      } catch (err) {
+        this.fireFrameworkEvent('ERROR', bundle, err);
+      }
+    }
+
+    const installedIdx = this.installedBundles.findIndex((bnd) => bnd.getBundleId() === bundle.getBundleId());
+
+    if (installedIdx === -1) {
+      this.logger.error(
+        `Cannot uninstall Bundle ${bundle.getUniqueIdentifier()}, because it was not found in the list of installed bundles!`,
+        bundle,
+      );
+    } else {
+      this.installedBundles.splice(installedIdx, 1);
+    }
+
+    this.fireBundleEvent('UNRESOLVED', bundle);
+    bundle.setState('UNINSTALLED');
+
+    return Promise.resolve();
   }
 
   private getNextId(): number {
