@@ -23,11 +23,6 @@ export interface Capability {
   equals(other: any): boolean;
 }
 
-export interface HostedCapability extends Capability {
-  getResource(): Resource;
-  getDeclaredCapability(): Capability;
-}
-
 export interface Resource {
   getCapabilities(namespace: string): Capability[];
   getRequirements(namespace: string): Requirement[];

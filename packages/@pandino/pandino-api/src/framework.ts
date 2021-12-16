@@ -1,12 +1,4 @@
-import {
-  Bundle,
-  BundleCapability,
-  BundleEventType,
-  BundleManifestHeaders,
-  BundleReference,
-  BundleState,
-} from './bundle';
-import { Requirement } from './resource';
+import { Bundle, BundleEventType, BundleManifestHeaders, BundleState } from './bundle';
 
 export type FrameworkEventType = BundleEventType | 'ERROR';
 
@@ -28,13 +20,4 @@ export interface FrameworkEvent {
   getBundle(): Bundle;
   getType(): FrameworkEventType;
   getError(): Error;
-}
-
-export interface FrameworkWiring extends BundleReference {
-  refreshBundles(bundles: Bundle[], ...listeners: FrameworkListener[]): void;
-  resolveBundles(bundles: Bundle[]): boolean;
-  getRemovalPendingBundles(): Bundle[];
-  findProviders(requirement: Requirement): BundleCapability[];
-  start(): Promise<void>;
-  stop(): Promise<void>;
 }
