@@ -53,7 +53,7 @@ export class StatefulResolver {
 
     const revsToReRun = unresolvedRevs.filter((r) => {
       const wires = this.getResolvableWires(r, this.getEligibleCapabilities());
-      return this.canBundleBeResolved(r, wires);
+      return StatefulResolver.canBundleBeResolved(r, wires);
     });
 
     if (revsToReRun.length) {
@@ -99,7 +99,7 @@ export class StatefulResolver {
   ): Promise<BundleWiring | undefined> {
     const wires = this.getResolvableWires(rev, allProvidedCapabilities);
 
-    if (this.canBundleBeResolved(rev, wires)) {
+    if (StatefulResolver.canBundleBeResolved(rev, wires)) {
       const bundleWiring = new BundleWiringImpl(rev.getHeaders(), this, rev, wires);
       rev.resolve(bundleWiring);
       return Promise.resolve(bundleWiring);
@@ -107,7 +107,7 @@ export class StatefulResolver {
     return Promise.resolve(undefined);
   }
 
-  private canBundleBeResolved(rev: BundleRevision, wires: Array<BundleWire>): boolean {
+  private static canBundleBeResolved(rev: BundleRevision, wires: Array<BundleWire>): boolean {
     const requirements = rev.getDeclaredRequirements(null);
 
     return requirements.length === 0 || wires.length === requirements.length;
