@@ -8,6 +8,7 @@ import {
   BundleState,
   Logger,
   BUNDLE_ACTIVATOR,
+  ServiceReference,
 } from '@pandino/pandino-api';
 import Pandino from '../../pandino';
 import { BundleRevisionImpl } from './bundle-revision-impl';
@@ -50,6 +51,14 @@ export class BundleImpl implements Bundle {
       const revision = this.createRevision();
       this.addRevision(revision);
     }
+  }
+
+  getRegisteredServices(): ServiceReference<any>[] {
+    throw new Error('Method not implemented.');
+  }
+
+  getServicesInUse(): ServiceReference<any>[] {
+    throw new Error('Method not implemented.');
   }
 
   getBundleId(): number {

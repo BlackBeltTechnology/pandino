@@ -1,3 +1,4 @@
+import { SemVer } from 'semver';
 import { FrameworkEventType, FrameworkListener } from './framework';
 import { FilterApi } from './filter';
 import {
@@ -11,7 +12,7 @@ import {
   BUNDLE_VERSION,
 } from './pandino-constants';
 import { Capability, Requirement, Resource } from './resource';
-import { SemVer } from 'semver';
+import { ServiceListener, ServiceProperties, ServiceReference, ServiceRegistration } from './service';
 
 export type BundleState =
   | 'INSTALLED'
@@ -55,8 +56,8 @@ export interface Bundle {
   update(headers: BundleManifestHeaders, bundle?: Bundle): Promise<void>;
   uninstall(): Promise<void>;
   getHeaders(): BundleManifestHeaders;
-  // getRegisteredServices(): ServiceReference<any>[];
-  // getServicesInUse(): ServiceReference<any>[];
+  getRegisteredServices(): ServiceReference<any>[];
+  getServicesInUse(): ServiceReference<any>[];
   getSymbolicName(): string;
   getBundleContext(): BundleContext;
   getVersion(): SemVer;
@@ -75,16 +76,29 @@ export interface BundleContext extends BundleReference {
   getBundle(id: number): Bundle;
   getBundles(): Bundle[];
   installBundle(locationOrHeaders: string | BundleManifestHeaders): Promise<Bundle>;
-  // addServiceListener(listener: ServiceListener, filter: string): void;
-  // removeServiceListener(listener: ServiceListener): void;
+  addServiceListener(listener: ServiceListener, filter?: string): void;
+  removeServiceListener(listener: ServiceListener): void;
   addBundleListener(listener: BundleListener): void;
   removeBundleListener(listener: BundleListener): void;
   addFrameworkListener(listener: FrameworkListener): void;
   removeFrameworkListener(listener: FrameworkListener): void;
-  // registerService<S>(clazz: string[] | string, service: S, properties: ServiceProperties): ServiceRegistration<S>;
-  // getServiceReference<S>(clazz: string, filter?: string): ServiceReference<S>;
-  // getService<S>(reference: ServiceReference<S>): S;
-  // ungetService<S>(reference: ServiceReference<S>): Promise<boolean>;
+  registerService<S>(identifiers: string[] | string, service: S, properties: ServiceProperties): ServiceRegistration<S>;
+  /**
+   * This method is the same as calling {@link #getServiceReferences(string, string)} with an {@code undefined} filter
+   * expression and then finding the reference with the highest priority. It is provided as a convenience for when the
+   * caller is interested in any service that implements the specified class.
+   * @param identifier
+   */
+  getServiceReference<S>(identifier: string): ServiceReference<S>;
+  /**
+   * Returns a collection of {@code ServiceReference} objects. The returned collection of {@code ServiceReference}
+   * objects contains services that were registered under the name of the specified class, match the specified filter
+   * expression, and the packages for the class names under which the services were registered match the context
+   * bundle's packages as defined in {@link ServiceReference#isAssignableTo(Bundle, string)}.
+   */
+  getServiceReferences<S>(identifier: string, filter?: string): ServiceReference<S>[];
+  getService<S>(reference: ServiceReference<S>): S;
+  ungetService<S>(reference: ServiceReference<S>): boolean;
   createFilter(filter: string): FilterApi;
   equals(other: any): boolean;
 }
@@ -157,20 +171,16 @@ export interface BundleWire {
 }
 
 /**
- * A wiring for a bundle. Each time a bundle is resolved, a new bundle wiring
- * for the bundle is created. A bundle wiring is associated with a bundle
- * revision and represents the dependencies with other bundle wirings.
+ * A wiring for a bundle. Each time a bundle is resolved, a new bundle wiring for the bundle is created. A bundle wiring
+ * is associated with a bundle revision and represents the dependencies with other bundle wirings.
  *
  * <p>
- * The bundle wiring for a bundle is the {@link #isCurrent() current} bundle
- * wiring if it is the most recent bundle wiring for the current bundle
- * revision. A bundle wiring is {@link #isInUse() in use} if it is the current
- * bundle wiring or if some other in use bundle wiring is dependent upon it. For
- * example, another bundle wiring is wired to a capability provided by the
- * bundle wiring. An in use bundle wiring for a non-fragment bundle has a class
- * loader. All bundles with non-current, in use bundle wirings are considered
- * removal pending. Once a bundle wiring is no longer in use, it is considered
- * stale and is discarded by the framework.
+ * The bundle wiring for a bundle is the {@link #isCurrent() current} bundle wiring if it is the most recent bundle
+ * wiring for the current bundle revision. A bundle wiring is {@link #isInUse() in use} if it is the current bundle
+ * wiring or if some other in use bundle wiring is dependent upon it. For example, another bundle wiring is wired to a
+ * capability provided by the bundle wiring. An in use bundle wiring for a non-fragment bundle has a class loader. All
+ * bundles with non-current, in use bundle wirings are considered removal pending. Once a bundle wiring is no longer in
+ * use, it is considered stale and is discarded by the framework.
  */
 export interface BundleWiring {
   isInUse(): boolean;

@@ -1,6 +1,5 @@
 import {
   Bundle,
-  BundleActivator,
   BundleContext,
   BundleListener,
   BundleManifestHeaders,
@@ -9,6 +8,10 @@ import {
   Logger,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
+  ServiceListener,
+  ServiceReference,
+  ServiceProperties,
+  ServiceRegistration,
 } from '@pandino/pandino-api';
 import Pandino from '../../pandino';
 import Filter from '../filter/filter';
@@ -89,6 +92,38 @@ export class BundleContextImpl implements BundleContext {
 
     const result = await this.pandino.installBundle(this.bundle, locationOrHeaders);
     return Promise.resolve(result);
+  }
+
+  addServiceListener(listener: ServiceListener, filter?: string): void {
+    throw new Error('Method not implemented.');
+  }
+
+  getService<S>(reference: ServiceReference<S>): S {
+    throw new Error('Method not implemented.');
+  }
+
+  getServiceReference<S>(identifier: string): ServiceReference<S> {
+    throw new Error('Method not implemented.');
+  }
+
+  getServiceReferences<S>(identifier: string, filter?: string): ServiceReference<S>[] {
+    throw new Error('Method not implemented.');
+  }
+
+  registerService<S>(
+    identifiers: string[] | string,
+    service: S,
+    properties: ServiceProperties,
+  ): ServiceRegistration<S> {
+    throw new Error('Method not implemented.');
+  }
+
+  removeServiceListener(listener: ServiceListener): void {
+    throw new Error('Method not implemented.');
+  }
+
+  ungetService<S>(reference: ServiceReference<S>): boolean {
+    throw new Error('Method not implemented.');
   }
 
   invalidate(): void {
