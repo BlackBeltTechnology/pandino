@@ -29,14 +29,10 @@ export class StatefulResolver {
 
   async resolveAll(): Promise<void> {
     this.logger.debug('Start Resolve...');
-    const allProvidedCapabilities: BundleCapability[] = [];
-    for (const rev of this.revisions) {
-      allProvidedCapabilities.push(...rev.getDeclaredCapabilities(null));
-    }
 
     const unresolvedRevs = this.revisions.filter((r) => isAnyMissing(r.getWiring()));
     for (const rev of unresolvedRevs) {
-      const bundleWiring = await this.resolve(rev as BundleRevisionImpl, allProvidedCapabilities);
+      const bundleWiring = await this.resolve(rev as BundleRevisionImpl, this.getEligibleCapabilities());
       if (bundleWiring) {
         this.logger.debug(
           `Bundle Wiring created for Revision: ${rev.getSymbolicName()}: ${rev.getVersion().toString()}`,
@@ -56,7 +52,7 @@ export class StatefulResolver {
     }
 
     const revsToReRun = unresolvedRevs.filter((r) => {
-      const wires = this.getResolvableWires(r, allProvidedCapabilities);
+      const wires = this.getResolvableWires(r, this.getEligibleCapabilities());
       return this.canBundleBeResolved(r, wires);
     });
 
@@ -78,6 +74,23 @@ export class StatefulResolver {
       }
     }
     return bundles;
+  }
+
+  /**
+   * Currently in the resolving process, we only take ACTIVE Bundles into consideration. Intentionally skipping RESOLVED
+   * ones, given we are expecting all Bundles to have at least a start() being called from A {@link BundleActivator}.
+   *
+   * TODO: investigate whether bundles should be returned instead, and resolution would only succeed if a single bundle provides all the necessary capabilities instead of the full list.
+   *
+   * @private
+   */
+  private getEligibleCapabilities(): BundleCapability[] {
+    const caps: BundleCapability[] = [];
+    const activeRevisions: BundleRevision[] = this.revisions.filter((rev) => rev.getBundle().getState() === 'ACTIVE');
+    for (const rev of activeRevisions) {
+      caps.push(...rev.getDeclaredCapabilities(null));
+    }
+    return caps;
   }
 
   private async resolve(
