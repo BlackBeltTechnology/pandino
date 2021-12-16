@@ -26,6 +26,10 @@ import {
   LOG_LOGGER_PROP,
   LOG_LEVEL_PROP,
   LogLevel,
+  ServiceListener,
+  FilterApi,
+  ServiceReference,
+  ServiceRegistration,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { EventDispatcher } from './lib/framework/event-dispatcher';
@@ -39,6 +43,8 @@ import { FrameworkEventImpl } from './lib/framework/framework-event-impl';
 import { SemVer } from 'semver';
 import { pandinoFetcher } from './lib/framework/util/fetcher';
 import { ConsoleLogger } from './lib/utils/console-logger';
+import Filter from './lib/filter/filter';
+import { ServiceEventImpl } from './lib/framework/service-event-impl';
 
 export default class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: Fetcher;
@@ -377,6 +383,12 @@ export default class Pandino extends BundleImpl implements Framework {
     this.dispatcher.addListener(bundle.getBundleContext(), 'BUNDLE', l, null);
   }
 
+  addServiceListener(bundle: BundleImpl, listener: ServiceListener, filter: string): void {
+    const newFilter: FilterApi = isAnyMissing(filter) ? null : Filter.parse(filter);
+
+    this.dispatcher.addListener(bundle.getBundleContext(), 'SERVICE', listener, newFilter);
+  }
+
   removeBundleListener(bundle: BundleImpl, l: BundleListener): void {
     this.dispatcher.removeListener(bundle.getBundleContext(), 'BUNDLE', l);
   }
@@ -500,15 +512,26 @@ export default class Pandino extends BundleImpl implements Framework {
     }
   }
 
-  // registerService<S>(context: BundleContextImpl, identifier: string, svcObj: S, dict: Record<any, any>): ServiceRegistration<S> {
-  //   let reg = this.registry.registerService(context.getBundle(), identifier, svcObj, dict);
-  //
-  //   this.fireServiceEvent(new ServiceEventImpl('REGISTERED', reg.getReference()), {});
-  //
-  //   return reg;
-  // }
+  getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects: boolean): S {
+    try {
+      return this.registry.getService(bundle, ref, isServiceObjects);
+    } catch (ex) {
+      this.fireFrameworkEvent('ERROR', bundle, ex);
+    }
 
-  // private fireServiceEvent(event: ServiceEvent, oldProps: Record<string, any>): void {
-  //   this.dispatcher.fireServiceEvent(event, oldProps, this);
-  // }
+    return null;
+  }
+
+  registerService<S>(
+    context: BundleContextImpl,
+    identifier: string,
+    svcObj: S,
+    dict: Record<any, any>,
+  ): ServiceRegistration<S> {
+    let reg = this.registry.registerService(context.getBundle(), identifier, svcObj, dict);
+
+    this.fireServiceEvent(new ServiceEventImpl('REGISTERED', reg.getReference()), {});
+
+    return reg;
+  }
 }

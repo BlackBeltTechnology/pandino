@@ -27,6 +27,18 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   getRegisteredServices(bundle: Bundle): ServiceReference<any>[] {
+    const regs: Array<ServiceRegistration<any>> = this.m_regsMap.get(bundle);
+    if (isAllPresent(regs)) {
+      const refs: Array<ServiceReference<any>> = [];
+      for (const reg of regs) {
+        try {
+          refs.push(reg.getReference());
+        } catch (ex) {
+          // Don't include the reference as it is not valid anymore
+        }
+      }
+      return refs;
+    }
     return [];
   }
 

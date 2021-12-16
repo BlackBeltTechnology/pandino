@@ -95,11 +95,17 @@ export class BundleContextImpl implements BundleContext {
   }
 
   addServiceListener(listener: ServiceListener, filter?: string): void {
-    throw new Error('Method not implemented.');
+    this.pandino.addServiceListener(this.bundle, listener, filter);
   }
 
   getService<S>(reference: ServiceReference<S>): S {
-    throw new Error('Method not implemented.');
+    this.checkValidity();
+
+    if (isAnyMissing(reference)) {
+      throw new Error('Specified service reference must be defined.');
+    }
+
+    return this.pandino.getService(this.bundle, reference, false);
   }
 
   getServiceReference<S>(identifier: string): ServiceReference<S> {
