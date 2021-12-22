@@ -56,9 +56,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
   }
 
   getService(ackBundle?: Bundle): any {
-    if (!ackBundle) {
-      return this.svcObj;
-    }
+    return this.svcObj;
     // TODO: handle factory use-case
   }
 

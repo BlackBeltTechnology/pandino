@@ -4,6 +4,7 @@ import {
   FilterApi,
   Logger,
   OBJECTCLASS,
+  UsageCount,
   SERVICE_ID,
   ServiceProperties,
   ServiceReference,
@@ -18,6 +19,7 @@ import { ServiceReferenceImpl } from './service-reference-impl';
 import Filter, { FilterComp } from '../filter/filter';
 import { CapabilitySet } from './capability-set/capability-set';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
+import { UsageCountImpl } from './usage-count-impl';
 
 export class ServiceRegistryImpl implements ServiceRegistry {
   private readonly logger: Logger;
@@ -28,6 +30,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   >();
   private readonly regCapSet: CapabilitySet = new CapabilitySet([OBJECTCLASS]);
   private readonly inUseMap: Map<Bundle, UsageCount[]> = new Map<Bundle, UsageCount[]>();
+  private currentServiceId = 0;
 
   constructor(logger: Logger, callbacks: ServiceRegistryCallbacks) {
     this.logger = logger;
@@ -50,7 +53,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     return [];
   }
 
-  getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects: boolean): S {
+  getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects = false): S {
     const isPrototype = false;
     let usage: UsageCount = null;
     let svcObj: any = null;
@@ -63,6 +66,11 @@ export class ServiceRegistryImpl implements ServiceRegistry {
 
         usage.incrementToPositiveValue();
         svcObj = usage.getService();
+
+        if (isAnyMissing(svcObj)) {
+          svcObj = reg.getService(bundle);
+          usage.setService(svcObj);
+        }
 
         if (isServiceObjects) {
           usage.incrementServiceObjectsCountToPositiveValue();
@@ -104,7 +112,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   getUsingBundles(ref: ServiceReference<any>): Bundle[] {
-    let bundles: Bundle[] = null;
+    let bundles: Bundle[] = [];
     for (const bundle of this.inUseMap.keys()) {
       const usages = this.inUseMap.get(bundle);
       for (const usage of usages) {
@@ -126,7 +134,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     svcObj: any,
     dict?: ServiceProperties,
   ): ServiceRegistration<any> {
-    const reg = new ServiceRegistrationImpl(this, bundle, classNames, svcObj, dict);
+    const reg = new ServiceRegistrationImpl(this, bundle, classNames, ++this.currentServiceId, svcObj, dict);
 
     if (!this.regsMap.has(bundle)) {
       this.regsMap.set(bundle, []);
@@ -213,15 +221,15 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   private flushUsageCount(bundle: Bundle, ref: ServiceReference<any>, uc: UsageCount): void {
-    throw new Error('Not implemented yet.');
+    // TODO: implement
   }
 
-  private obtainUsageCount(bundle: Bundle, ref: ServiceReference<any>, svcObj: any, isPrototype = false): UsageCount {
+  obtainUsageCount(bundle: Bundle, ref: ServiceReference<any>, svcObj: any, isPrototype = false): UsageCount {
     let usage: UsageCount = null;
 
     const usages: UsageCount[] = this.inUseMap.get(bundle);
 
-    if (!isPrototype) {
+    if (!isPrototype && isAllPresent(usages)) {
       for (const usage of usages) {
         if (usage.getReference().compareTo(ref) === 0) {
           return usage;
@@ -229,9 +237,9 @@ export class ServiceRegistryImpl implements ServiceRegistry {
       }
     }
 
-    usage = new UsageCount(ref);
+    usage = new UsageCountImpl(ref);
 
-    if (!usages) {
+    if (isAnyMissing(usages)) {
       const newUsages: UsageCount[] = [usage];
       this.inUseMap.set(bundle, newUsages);
     } else {
@@ -250,56 +258,5 @@ export class ServiceRegistryImpl implements ServiceRegistry {
         }
       }
     }
-  }
-}
-
-export class UsageCount {
-  private readonly ref: ServiceReference<any>;
-  private service?: any;
-  private count = 0;
-  private serviceObjectsCount = 0;
-
-  constructor(ref: ServiceReference<any>) {
-    this.ref = ref;
-  }
-
-  getReference(): ServiceReference<any> {
-    return this.ref;
-  }
-
-  getCount(): number {
-    return this.count;
-  }
-
-  incrementToPositiveValue(): number {
-    if (this.count + 1 < 1) {
-      this.count = 1;
-    }
-    this.count++;
-    return this.count;
-  }
-
-  incrementServiceObjectsCountToPositiveValue(): number {
-    if (this.serviceObjectsCount + 1 < 1) {
-      this.serviceObjectsCount = 1;
-    }
-    this.serviceObjectsCount++;
-    return this.serviceObjectsCount;
-  }
-
-  incrementAndGet(): number {
-    return ++this.count;
-  }
-
-  decrementAndGet(): number {
-    return --this.count;
-  }
-
-  getService(): any {
-    return this.service;
-  }
-
-  setService(service: any): void {
-    this.service = service;
   }
 }

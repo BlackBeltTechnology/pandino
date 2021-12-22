@@ -52,7 +52,20 @@ export interface ServiceRegistry {
   ): ServiceRegistration<any>;
   servicePropertiesModified(reg: ServiceRegistration<any>, oldProps: ServiceProperties): void;
   getServiceReferences(identifier: string, filter: FilterApi): Array<Capability>;
-  getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects: boolean): S;
+  getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects?: boolean): S;
   getUsingBundles(ref: ServiceReference<any>): Bundle[];
   unregisterService<S>(bundle: Bundle, reg: ServiceRegistration<S>): void;
+  ungetService<S>(bundle: Bundle, ref: ServiceReference<S>, svcObj: any): boolean;
+  obtainUsageCount<S>(bundle: Bundle, ref: ServiceReference<S>, svcObj: any, isPrototype?: boolean): UsageCount;
+}
+
+export interface UsageCount {
+  getReference(): ServiceReference<any>;
+  getCount(): number;
+  getService(): any;
+  setService(service: any): void;
+  incrementAndGet(): number;
+  decrementAndGet(): number;
+  incrementToPositiveValue(): number;
+  incrementServiceObjectsCountToPositiveValue(): number;
 }
