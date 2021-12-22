@@ -1,9 +1,11 @@
-import { Bundle } from './bundle';
+import { Bundle, BundleReference } from './bundle';
 import { SERVICE_ID, SERVICE_RANKING } from './pandino-constants';
 import { FilterApi } from './filter';
+import { Capability } from './resource';
 
-export interface ServiceReference<S> {
+export interface ServiceReference<S> extends BundleReference {
   getProperty(key: string): any;
+  getPropertyKeys(): Array<string>;
   getBundle(): Bundle;
   getUsingBundles(): Bundle[];
   getProperties(): ServiceProperties;
@@ -13,6 +15,7 @@ export interface ServiceReference<S> {
 export interface ServiceRegistration<S> {
   getReference(): ServiceReference<S>;
   getProperty(key: string): any;
+  getPropertyKeys(): Array<string>;
   getProperties(): ServiceProperties;
   setProperties(properties: ServiceProperties): void;
   unregister(): void;
@@ -48,7 +51,8 @@ export interface ServiceRegistry {
     dict?: ServiceProperties,
   ): ServiceRegistration<any>;
   servicePropertiesModified(reg: ServiceRegistration<any>, oldProps: ServiceProperties): void;
-  getServiceReferences(filter: FilterApi): ServiceReference<any>[];
+  getServiceReferences(identifier: string, filter: FilterApi): Array<Capability>;
   getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects: boolean): S;
   getUsingBundles(ref: ServiceReference<any>): Bundle[];
+  unregisterService<S>(bundle: Bundle, reg: ServiceRegistration<S>): void;
 }

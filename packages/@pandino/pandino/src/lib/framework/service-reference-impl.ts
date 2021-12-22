@@ -5,6 +5,7 @@ import {
   SERVICE_DEFAULT_RANK,
   SERVICE_ID,
   SERVICE_RANKING,
+  BundleRevision,
 } from '@pandino/pandino-api';
 import { ServiceRegistrationImpl } from './service-registration-impl';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
@@ -43,8 +44,30 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
     return id.localeCompare(otherId) < 0 ? 1 : -1;
   }
 
+  getRegistration(): ServiceRegistrationImpl {
+    return this.reg;
+  }
+
+  getRevision(): BundleRevision {
+    throw new Error('Not supported yet.');
+  }
+
+  getNamespace(): string {
+    return 'service-reference';
+  }
+
+  getDirectives(): Record<string, string> {
+    return {};
+  }
+
+  getUses(): string[] {
+    return [];
+  }
+
   getBundle(): Bundle {
-    return this.bundle;
+    if (this.reg.isValid()) {
+      return this.bundle;
+    }
   }
 
   getProperties(): ServiceProperties {
@@ -55,11 +78,11 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
     return this.reg.getProperty(key);
   }
 
-  getUsingBundles(): Bundle[] {
-    return [];
+  getPropertyKeys(): Array<string> {
+    return this.reg.getPropertyKeys();
   }
 
-  getRegistration(): ServiceRegistrationImpl {
-    return this.reg;
+  getUsingBundles(): Bundle[] {
+    return this.reg.getUsingBundles(this);
   }
 }

@@ -8,23 +8,23 @@ import {
   SERVICE_BUNDLEID,
   SERVICE_ID,
   SERVICE_SCOPE,
+  ServiceRegistry,
 } from '@pandino/pandino-api';
-import { ServiceRegistryImpl } from './service-registry-impl';
 import { ServiceReferenceImpl } from './service-reference-impl';
 import { isAllPresent } from '../utils/helpers';
 
 export class ServiceRegistrationImpl implements ServiceRegistration<any> {
-  private readonly ref: ServiceReferenceImpl;
-  private readonly registry: ServiceRegistryImpl;
+  private readonly registry: ServiceRegistry;
   private readonly bundle: Bundle;
   private readonly classes: string | string[];
   private readonly serviceId: number;
   private svcObj: any;
   private propMap?: ServiceProperties;
+  private readonly ref: ServiceReferenceImpl;
   private isUnregistering = false;
 
   constructor(
-    registry: ServiceRegistryImpl,
+    registry: ServiceRegistry,
     bundle: Bundle,
     classNames: string | string[],
     serviceId: number,
@@ -43,16 +43,34 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     this.ref = new ServiceReferenceImpl(this, bundle);
   }
 
+  isValid(): boolean {
+    return isAllPresent(this.svcObj);
+  }
+
+  invalidate(): void {
+    this.svcObj = null;
+  }
+
+  getUsingBundles(ref: ServiceReference<any>): Array<Bundle> {
+    return this.registry.getUsingBundles(ref);
+  }
+
+  getService(ackBundle?: Bundle): any {
+    if (!ackBundle) {
+      return this.svcObj;
+    }
+    // TODO: handle factory use-case
+  }
+
+  ungetService(relBundle: Bundle, svcObj: any) {
+    // TODO: re-introduce once we support factories
+  }
+
   getReference(): ServiceReference<any> {
+    if (!this.isValid()) {
+      throw new Error('The service registration is no longer valid.');
+    }
     return this.ref;
-  }
-
-  getProperty(key: string): any {
-    return this.propMap[key];
-  }
-
-  getProperties(): ServiceProperties {
-    return this.propMap;
   }
 
   setProperties(properties: ServiceProperties): void {
@@ -71,12 +89,20 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     }
     this.isUnregistering = true;
     // TODO: re-introduce
-    // this.registry.unregisterService(this.bundle, this);
+    this.registry.unregisterService(this.bundle, this);
     this.svcObj = null;
   }
 
-  protected isValid(): boolean {
-    return isAllPresent(this.svcObj);
+  getProperty(key: string): any {
+    return this.propMap[key];
+  }
+
+  getProperties(): ServiceProperties {
+    return this.propMap;
+  }
+
+  getPropertyKeys(): Array<string> {
+    return Object.keys(this.propMap || {});
   }
 
   private initializeProperties(dict: Record<string, any>): void {
@@ -89,6 +115,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     props[SERVICE_ID] = this.serviceId;
     props[SERVICE_BUNDLEID] = this.bundle.getBundleId();
     props[SERVICE_SCOPE] = SCOPE_SINGLETON;
+    // TODO: handle factory use-case
 
     this.propMap = props;
   }
