@@ -22,13 +22,13 @@ import { MuteLogger } from './__mocks__/mute-logger';
 describe('Pandino', () => {
   let params: Map<string, any>;
   let pandino: Pandino;
-  let mockStart = jest.fn().mockReturnValue(Promise.resolve());
-  let mockStop = jest.fn().mockReturnValue(Promise.resolve());
+  const mockStart = jest.fn().mockReturnValue(Promise.resolve());
+  const mockStop = jest.fn().mockReturnValue(Promise.resolve());
   const dummyActivator: BundleActivator = {
     start: mockStart,
     stop: mockStop,
   };
-  let importer = jest.fn().mockReturnValue(
+  const importer = jest.fn().mockReturnValue(
     Promise.resolve({
       default: dummyActivator,
     }),
