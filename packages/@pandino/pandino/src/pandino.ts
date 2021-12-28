@@ -141,10 +141,6 @@ export default class Pandino extends BundleImpl implements Framework {
       await this.stopBundle(this);
 
       this.setState('INSTALLED');
-    } finally {
-      for (const listener of listeners) {
-        this.removeFrameworkListener(this, listener);
-      }
     }
   }
 
@@ -383,14 +379,18 @@ export default class Pandino extends BundleImpl implements Framework {
     this.dispatcher.addListener(bundle.getBundleContext(), 'BUNDLE', l, null);
   }
 
-  addServiceListener(bundle: BundleImpl, listener: ServiceListener, filter: string): void {
+  removeBundleListener(bundle: BundleImpl, l: BundleListener): void {
+    this.dispatcher.removeListener(bundle.getBundleContext(), 'BUNDLE', l);
+  }
+
+  addServiceListener(bundle: BundleImpl, listener: ServiceListener, filter?: string): void {
     const newFilter: FilterApi = isAnyMissing(filter) ? null : Filter.parse(filter);
 
     this.dispatcher.addListener(bundle.getBundleContext(), 'SERVICE', listener, newFilter);
   }
 
-  removeBundleListener(bundle: BundleImpl, l: BundleListener): void {
-    this.dispatcher.removeListener(bundle.getBundleContext(), 'BUNDLE', l);
+  removeServiceListener(bundle: BundleImpl, l: ServiceListener): void {
+    this.dispatcher.removeListener(bundle.getBundleContext(), 'SERVICE', l);
   }
 
   addFrameworkListener(bundle: BundleImpl, l: FrameworkListener): void {
@@ -524,7 +524,7 @@ export default class Pandino extends BundleImpl implements Framework {
 
   registerService<S>(
     context: BundleContextImpl,
-    identifier: string,
+    identifier: string[] | string,
     svcObj: S,
     dict: Record<any, any>,
   ): ServiceRegistration<S> {

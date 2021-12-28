@@ -17,6 +17,7 @@ import { BundleImpl } from './bundle-impl';
 import { BundleEventImpl } from './bundle-event-impl';
 import { FrameworkEventImpl } from './framework-event-impl';
 import { ServiceEventImpl } from './service-event-impl';
+import { isAnyMissing } from '../utils/helpers';
 
 export type ListenerType = 'BUNDLE' | 'FRAMEWORK' | 'SERVICE';
 
@@ -91,12 +92,12 @@ export class EventDispatcher {
     oldProps?: Record<string, any>,
   ): void {
     const validBundleStateTypes: BundleState[] = ['STARTING', 'STOPPING', 'ACTIVE'];
-    if (validBundleStateTypes.includes(bundle.getState())) {
+    if (!validBundleStateTypes.includes(bundle.getState())) {
       return;
     }
     const ref: ServiceReference<any> = event.getServiceReference();
 
-    let matched = filter == null || filter.match(event.getServiceReference());
+    let matched = isAnyMissing(filter) || filter.match(event.getServiceReference());
 
     if (matched) {
       listener.serviceChanged(event);
@@ -150,6 +151,8 @@ export class EventDispatcher {
       listeners = this.fwkListeners;
     } else if (type === 'BUNDLE') {
       listeners = this.bndListeners;
+    } else if (type === 'SERVICE') {
+      listeners = this.svcListeners;
     } else {
       throw new Error('Unknown listener: ' + type);
     }
@@ -161,6 +164,8 @@ export class EventDispatcher {
       this.fwkListeners = listeners;
     } else if (type === 'BUNDLE') {
       this.bndListeners = listeners;
+    } else if (type === 'SERVICE') {
+      this.svcListeners = listeners;
     }
 
     return null;
@@ -177,6 +182,8 @@ export class EventDispatcher {
       listeners = this.fwkListeners;
     } else if (type === 'BUNDLE') {
       listeners = this.bndListeners;
+    } else if (type === 'SERVICE') {
+      listeners = this.svcListeners;
     } else {
       throw new Error('Unknown listener: ' + type);
     }
@@ -201,13 +208,15 @@ export class EventDispatcher {
       this.fwkListeners = listeners;
     } else if (type === 'BUNDLE') {
       this.bndListeners = listeners;
+    } else if (type === 'SERVICE') {
+      this.svcListeners = listeners;
     }
   }
 
   removeListeners(bc: BundleContext): void {
     this.fwkListeners = EventDispatcher.removeListenerInfos(this.fwkListeners, bc);
     this.bndListeners = EventDispatcher.removeListenerInfos(this.bndListeners, bc);
-    // this.svcListeners = EventDispatcher.removeListenerInfos(this.svcListeners, bc);
+    this.svcListeners = EventDispatcher.removeListenerInfos(this.svcListeners, bc);
   }
 
   private static removeListenerInfos(
@@ -253,23 +262,14 @@ export class EventDispatcher {
     listeners: Map<BundleContext, Array<ListenerInfo>>,
     info: ListenerInfo,
   ): Map<BundleContext, Array<ListenerInfo>> {
-    const copy: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(
-      listeners.entries(),
-    );
-    let infos: Array<ListenerInfo> = copy.get(info.getBundleContext());
-
-    copy.delete(info.getBundleContext());
-
-    if (!Array.isArray(infos)) {
-      infos = [];
-    } else {
-      infos = [...infos];
+    if (!listeners.has(info.getBundleContext())) {
+      listeners.set(info.getBundleContext(), []);
     }
+    const infos = listeners.get(info.getBundleContext());
 
     infos.push(info);
-    copy.set(info.getBundleContext(), infos);
 
-    return copy;
+    return listeners;
   }
 
   // private static updateListenerInfo(
