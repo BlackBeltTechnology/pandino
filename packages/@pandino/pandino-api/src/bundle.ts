@@ -72,8 +72,7 @@ export interface BundleActivator {
 
 export interface BundleContext extends BundleReference {
   getProperty(key: string): string;
-  getBundle(): Bundle;
-  getBundle(id: number): Bundle;
+  getBundle(id?: number): Bundle;
   getBundles(): Bundle[];
   installBundle(locationOrHeaders: string | BundleManifestHeaders): Promise<Bundle>;
   addServiceListener(listener: ServiceListener, filter?: string): void;

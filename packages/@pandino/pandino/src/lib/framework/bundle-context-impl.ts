@@ -57,7 +57,6 @@ export class BundleContextImpl implements BundleContext {
     return Filter.parse(filter);
   }
 
-  getBundle(): Bundle;
   getBundle(id?: number): Bundle {
     this.checkValidity();
 
@@ -95,6 +94,7 @@ export class BundleContextImpl implements BundleContext {
   }
 
   addServiceListener(listener: ServiceListener, filter?: string): void {
+    this.checkValidity();
     this.pandino.addServiceListener(this.bundle, listener, filter);
   }
 
@@ -121,15 +121,21 @@ export class BundleContextImpl implements BundleContext {
     service: S,
     properties: ServiceProperties,
   ): ServiceRegistration<S> {
-    throw new Error('Method not implemented.');
+    this.checkValidity();
+    return this.pandino.registerService(this, identifiers, service, properties);
   }
 
   removeServiceListener(listener: ServiceListener): void {
-    throw new Error('Method not implemented.');
+    this.checkValidity();
+    this.pandino.removeServiceListener(this.bundle, listener);
   }
 
   ungetService<S>(reference: ServiceReference<S>): boolean {
     throw new Error('Method not implemented.');
+  }
+
+  isValid(): boolean {
+    return this.valid;
   }
 
   invalidate(): void {
