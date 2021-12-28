@@ -16,8 +16,8 @@ import {
   LOG_LOGGER_PROP,
   LOG_LEVEL_PROP,
 } from '@pandino/pandino-api';
-import { ConsoleLogger } from './lib/utils/console-logger';
 import { BundleImpl } from './lib/framework/bundle-impl';
+import { MuteLogger } from './__mocks__/mute-logger';
 
 describe('Pandino', () => {
   let params: Map<string, any>;
@@ -60,7 +60,7 @@ describe('Pandino', () => {
     mockStart.mockClear();
     mockStop.mockClear();
     params = new Map<string, any>([
-      [LOG_LOGGER_PROP, new ConsoleLogger()],
+      [LOG_LOGGER_PROP, new MuteLogger()],
       [LOG_LEVEL_PROP, LogLevel.DEBUG],
     ]);
     pandino = new Pandino(importer, params);
