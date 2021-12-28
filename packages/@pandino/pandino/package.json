@@ -7,7 +7,7 @@
   "types": "dist/src/pandino.d.ts",
   "scripts": {
     "clean": "rimraf dist",
-    "test": "jest",
+    "test": "jest --coverage",
     "build": "npm run clean && webpack"
   },
   "keywords": [],
@@ -29,6 +29,16 @@
     "webpack-cli": "^4.9.0"
   },
   "jest": {
+    "collectCoverage": true,
+    "coverageReporters": ["text", "json", "html"],
+    "coverageThreshold": {
+      "global": {
+        "statements": 60,
+        "branches": 45,
+        "functions": 65,
+        "lines": 60
+      }
+    },
     "globals": {
       "ts-jest": {
         "tsconfig": false
@@ -43,6 +53,9 @@
       "js",
       "jsx",
       "json"
+    ],
+    "testPathIgnorePatterns": [
+      "src/lib/filter/parse.ts"
     ]
   }
 }

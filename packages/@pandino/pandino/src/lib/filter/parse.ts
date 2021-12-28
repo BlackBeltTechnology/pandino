@@ -1,5 +1,6 @@
 import Filter, { FilterComp } from './filter';
 
+/* istanbul ignore file */
 function peg$subclass(child: any, parent: any) {
   function ctor() {
     this.constructor = child;
