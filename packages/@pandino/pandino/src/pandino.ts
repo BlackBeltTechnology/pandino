@@ -414,7 +414,7 @@ export default class Pandino extends BundleImpl implements Framework {
   }
 
   fireServiceEvent(event: ServiceEvent, oldProps: Record<string, any>): void {
-    this.dispatcher.fireServiceEvent(event, this, oldProps);
+    this.dispatcher.fireServiceEvent(event, oldProps);
   }
 
   setBundleStateAndNotify(bundle: BundleImpl, state: BundleState): void {

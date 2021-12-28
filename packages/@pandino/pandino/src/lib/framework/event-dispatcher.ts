@@ -9,6 +9,8 @@ import {
   FilterApi,
   FrameworkEvent,
   FrameworkListener,
+  Bundle,
+  BundleState,
 } from '@pandino/pandino-api';
 import { ListenerInfo } from './util/listener-info';
 import { BundleImpl } from './bundle-impl';
@@ -28,12 +30,12 @@ export class EventDispatcher {
     this.logger = logger;
   }
 
-  fireServiceEvent(event: ServiceEvent, source: BundleImpl, oldProps: Record<string, any>): void {
+  fireServiceEvent(event: ServiceEvent, oldProps: Record<string, any>): void {
     const listeners: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(
       this.svcListeners.entries(),
     );
 
-    EventDispatcher.fireEventImmediately('SERVICE', listeners, event, source, oldProps);
+    EventDispatcher.fireEventImmediately('SERVICE', listeners, event, oldProps);
   }
 
   fireFrameworkEvent(event: FrameworkEvent, source: BundleImpl): void {
@@ -56,23 +58,23 @@ export class EventDispatcher {
     type: ListenerType,
     listeners: Map<BundleContext, Array<ListenerInfo>>,
     event: any,
-    source: BundleImpl,
     oldProps?: Record<string, any>,
   ): void {
     for (let [ctx, lstnrs] of listeners.entries()) {
       for (let info of lstnrs) {
+        const bundle = info.getBundle();
         const listener = info.getListener();
         const filter: FilterApi = info.getParsedFilter();
 
         switch (type) {
           case 'FRAMEWORK':
-            EventDispatcher.invokeFrameworkListenerCallback(listener as FrameworkListener, event, source);
+            EventDispatcher.invokeFrameworkListenerCallback(bundle, listener as FrameworkListener, event);
             break;
           case 'BUNDLE':
-            EventDispatcher.invokeBundleListenerCallback(listener as BundleListener, event, source);
+            EventDispatcher.invokeBundleListenerCallback(bundle, listener as BundleListener, event);
             break;
           case 'SERVICE':
-            EventDispatcher.invokeServiceListenerCallback(listener as ServiceListener, event, filter, oldProps);
+            EventDispatcher.invokeServiceListenerCallback(bundle, listener as ServiceListener, event, filter, oldProps);
             break;
           default:
             throw new Error(`Unhandled event type: ${type}!`);
@@ -82,11 +84,16 @@ export class EventDispatcher {
   }
 
   private static invokeServiceListenerCallback(
+    bundle: Bundle,
     listener: ServiceListener,
     event: ServiceEventImpl,
     filter?: FilterApi,
     oldProps?: Record<string, any>,
   ): void {
+    const validBundleStateTypes: BundleState[] = ['STARTING', 'STOPPING', 'ACTIVE'];
+    if (validBundleStateTypes.includes(bundle.getState())) {
+      return;
+    }
     const ref: ServiceReference<any> = event.getServiceReference();
 
     let matched = filter == null || filter.match(event.getServiceReference());
@@ -101,20 +108,22 @@ export class EventDispatcher {
     }
   }
 
-  private static invokeBundleListenerCallback(
-    listener: BundleListener,
-    event: BundleEventImpl,
-    source: BundleImpl,
-  ): void {
-    listener.bundleChanged(event);
+  private static invokeBundleListenerCallback(bundle: Bundle, listener: BundleListener, event: BundleEventImpl): void {
+    const validSyncEventBundleStateTypes: BundleState[] = ['STARTING', 'STOPPING', 'ACTIVE'];
+    if (validSyncEventBundleStateTypes.includes(bundle.getState())) {
+      listener.bundleChanged(event);
+    }
   }
 
   private static invokeFrameworkListenerCallback(
+    bundle: Bundle,
     listener: FrameworkListener,
     event: FrameworkEventImpl,
-    source: BundleImpl,
   ): void {
-    listener.frameworkEvent(event);
+    const validBundleStateTypes: BundleState[] = ['STARTING', 'ACTIVE'];
+    if (validBundleStateTypes.includes(bundle.getState())) {
+      listener.frameworkEvent(event);
+    }
   }
 
   addListener?(bc: BundleContext, type: ListenerType, listener: any, filter?: FilterApi): FilterApi {
