@@ -1,5 +1,6 @@
 import { Logger, LogLevel } from '@pandino/pandino-api';
 
+/* istanbul ignore file */
 export class ConsoleLogger implements Logger {
   constructor(private level: LogLevel = LogLevel.DEBUG) {}
 

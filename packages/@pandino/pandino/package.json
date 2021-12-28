@@ -55,7 +55,9 @@
       "json"
     ],
     "testPathIgnorePatterns": [
-      "src/lib/filter/parse.ts"
+      "src/lib/filter/parse.ts",
+      "src/lib/framework/util/fetcher.ts",
+      "src/lib/utils/console-logger.ts"
     ]
   }
 }
