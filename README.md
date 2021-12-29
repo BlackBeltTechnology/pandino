@@ -1,6 +1,6 @@
 # Pandino
 
-[![build-test](https://github.com/BlackBeltTechnology/pandino/actions/workflows/build-test.yml/badge.svg?branch=master&event=workflow_run)](https://github.com/BlackBeltTechnology/pandino/actions/workflows/build-test.yml)
+[![build-test](https://github.com/BlackBeltTechnology/pandino/actions/workflows/build-test.yml/badge.svg)](https://github.com/BlackBeltTechnology/pandino/actions/workflows/build-test.yml)
 
 An OSGi-lite JavaScript Framework.
 
