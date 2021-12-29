@@ -1,6 +1,6 @@
 # Pandino
 
-[![Node.js CI](https://github.com/BlackBeltTechnology/pandino/actions/workflows/node.js.yml/badge.svg)](https://github.com/BlackBeltTechnology/pandino/actions/workflows/node.js.yml)
+[![build-test](https://github.com/BlackBeltTechnology/pandino/actions/workflows/node.js.yml/badge.svg)](https://github.com/BlackBeltTechnology/pandino/actions/workflows/build-test.yml)
 
 An OSGi-lite JavaScript Framework.
 
