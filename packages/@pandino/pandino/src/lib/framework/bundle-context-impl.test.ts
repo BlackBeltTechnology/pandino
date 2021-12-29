@@ -205,7 +205,7 @@ describe('BundleContextImpl', () => {
 
   it('addServiceListener()', () => {
     bundleContext.addServiceListener(serviceChangedListener);
-    bundleContext.registerService<MockService>('some.service', mockService, {});
+    bundleContext.registerService<MockService>('some.service', mockService);
     const event0: ServiceEventImpl = serviceChanged.mock.calls[0][0];
 
     expect(serviceChanged).toHaveBeenCalledTimes(1);
@@ -218,7 +218,7 @@ describe('BundleContextImpl', () => {
   it('removeServiceListener()', () => {
     bundleContext.addServiceListener(serviceChangedListener);
     bundleContext.removeServiceListener(serviceChangedListener);
-    bundleContext.registerService<MockService>('some.service', mockService, {});
+    bundleContext.registerService<MockService>('some.service', mockService);
 
     expect(serviceChanged).toHaveBeenCalledTimes(0);
   });
@@ -255,7 +255,7 @@ describe('BundleContextImpl', () => {
   });
 
   it('getService()', () => {
-    bundleContext.registerService<MockService>('some.service', mockService, {});
+    bundleContext.registerService<MockService>('some.service', mockService);
     const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
     const service = bundleContext.getService<MockService>(reference);
 
@@ -263,7 +263,7 @@ describe('BundleContextImpl', () => {
   });
 
   it('unGetService()', () => {
-    bundleContext.registerService<MockService>('some.service', mockService, {});
+    bundleContext.registerService<MockService>('some.service', mockService);
     const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
     const service = bundleContext.getService<MockService>(reference);
 
@@ -279,5 +279,21 @@ describe('BundleContextImpl', () => {
 
     expect(reference.getUsingBundles().length).toEqual(0);
     expect(secondUnGet).toEqual(false);
+  });
+
+  it('Cross Bundle Service Access', async () => {
+    bundleContext.addBundleListener(bundleChangedListener);
+    const otherBundle = await bundleContext.installBundle(bundle2Headers);
+    const otherContext = otherBundle.getBundleContext();
+
+    bundleContext.registerService<MockService>('some.service', mockService);
+
+    const reference: ServiceReference<MockService> = otherContext.getServiceReference('some.service');
+    const service = otherContext.getService<MockService>(reference);
+
+    expect(reference.getBundle().getSymbolicName()).toEqual('my.bundle');
+    expect(reference.getUsingBundles()[0].getSymbolicName()).toEqual('my.other.bundle');
+    expect(reference.getUsingBundles().length).toEqual(1);
+    expect(service.execute()).toEqual(true);
   });
 });
