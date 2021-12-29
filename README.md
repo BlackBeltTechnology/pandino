@@ -2,7 +2,7 @@
 
 [![Node.js CI](https://github.com/BlackBeltTechnology/pandino/actions/workflows/node.js.yml/badge.svg)](https://github.com/BlackBeltTechnology/pandino/actions/workflows/node.js.yml)
 
-OSGi - lite web framework.
+An OSGi-lite JavaScript Framework.
 
 ## CMDs
 
