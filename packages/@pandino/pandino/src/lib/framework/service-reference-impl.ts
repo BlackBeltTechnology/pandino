@@ -6,9 +6,16 @@ import {
   SERVICE_ID,
   SERVICE_RANKING,
   BundleRevision,
+  BundleWire,
+  PACKAGE_NAMESPACE,
+  BundleCapability,
 } from '@pandino/pandino-api';
 import { ServiceRegistrationImpl } from './service-registration-impl';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
+import { BundleImpl } from './bundle-impl';
+import { isAllPresent, isAnyMissing } from '../utils/helpers';
+
+export const PACKAGE_SEPARATOR = '.';
 
 export class ServiceReferenceImpl extends BundleCapabilityImpl implements ServiceReference<any> {
   private readonly reg: ServiceRegistrationImpl;
@@ -60,6 +67,13 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
     return {};
   }
 
+  getAttributes(): Record<string, any> {
+    // TODO: this does not adhere to the reference implementation, should double check later
+    return {
+      ...this.getRegistration().getProperties(),
+    };
+  }
+
   getUses(): string[] {
     return [];
   }
@@ -84,5 +98,87 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
 
   getUsingBundles(): Bundle[] {
     return this.reg.getUsingBundles(this);
+  }
+
+  isAssignableTo(bundle: Bundle, className: string): boolean {
+    if (bundle === this.bundle) {
+      return true;
+    }
+
+    let allow: boolean;
+    const pkgName = ServiceReferenceImpl.getClassPackage(className);
+
+    const requesterRevision = (bundle as BundleImpl).getCurrentRevision();
+    const requesterWire = ServiceReferenceImpl.getWire(requesterRevision, pkgName);
+    const requesterCap = ServiceReferenceImpl.getPackageCapability(requesterRevision, pkgName);
+
+    const providerRevision = (this.bundle as BundleImpl).getCurrentRevision();
+    const providerWire = ServiceReferenceImpl.getWire(providerRevision, pkgName);
+    const providerCap = ServiceReferenceImpl.getPackageCapability(providerRevision, pkgName);
+
+    if (isAnyMissing(requesterWire) && isAnyMissing(providerWire)) {
+      allow = true;
+    } else if (isAnyMissing(requesterWire) && isAllPresent(providerWire)) {
+      if (isAllPresent(requesterCap)) {
+        allow = providerRevision.getWiring().getRevision().equals(requesterRevision);
+      } else {
+        allow = true;
+      }
+    } else if (requesterWire != null && providerWire == null) {
+      if (isAllPresent(providerCap)) {
+        allow = requesterWire.getProvider().equals(providerRevision);
+      } else {
+        allow = true;
+      }
+    } else {
+      allow = providerWire.getProvider().equals(requesterWire.getProvider());
+    }
+
+    return allow;
+  }
+
+  private static getClassName(className?: string): string {
+    if (isAnyMissing(className)) {
+      return '';
+    }
+    return className.substring(className.lastIndexOf(PACKAGE_SEPARATOR), className.length - 1);
+  }
+
+  private static getClassPackage(className?: string): string {
+    if (isAnyMissing(className)) {
+      return '';
+    }
+    return className.substring(0, className.lastIndexOf(PACKAGE_SEPARATOR));
+  }
+
+  private static getWire(br: BundleRevision, name: string): BundleWire {
+    if (isAllPresent(br.getWiring())) {
+      const wires = br.getWiring().getRequiredWires(null);
+      if (isAllPresent(wires)) {
+        for (const w of wires) {
+          if (
+            w.getCapability().getNamespace() === PACKAGE_NAMESPACE &&
+            w.getCapability().getAttributes()[PACKAGE_NAMESPACE] === name
+          ) {
+            return w;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  private static getPackageCapability(br: BundleRevision, name: string): BundleCapability {
+    if (isAllPresent(br.getWiring())) {
+      const capabilities = br.getWiring().getCapabilities(null);
+      if (isAllPresent(capabilities)) {
+        for (const c of capabilities) {
+          if (c.getNamespace() === PACKAGE_NAMESPACE && c.getAttributes()[PACKAGE_NAMESPACE] === name) {
+            return c;
+          }
+        }
+      }
+    }
+    return null;
   }
 }

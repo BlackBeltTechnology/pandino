@@ -30,6 +30,7 @@ import {
   FilterApi,
   ServiceReference,
   ServiceRegistration,
+  OBJECTCLASS,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { EventDispatcher } from './lib/framework/event-dispatcher';
@@ -88,6 +89,14 @@ export default class Pandino extends BundleImpl implements Framework {
     this.fetcher = configMap.get(FRAMEWORK_FETCHER) || pandinoFetcher;
     this.resolver = new StatefulResolver(this.logger, this, this.registry);
     this.dispatcher = new EventDispatcher(this.logger);
+    // TODO: add revision for System Bundle!
+    // const rev = new BundleRevisionImpl(this, '0', {
+    //   ...this.configMap,
+    //   [BUNDLE_SYMBOLICNAME]: 'io.pandino.framework',
+    //   [BUNDLE_VERSION]: '0.1.0',
+    //   [BUNDLE_NAME]: 'Pandino Framework',
+    // });
+    // this.addRevision(rev, this.resolver);
   }
 
   getBundleId(): number {
@@ -146,7 +155,7 @@ export default class Pandino extends BundleImpl implements Framework {
 
   async registerDocumentDefinedManifests(): Promise<void> {
     const documentDefinedManifest = document.querySelector('script[type="pandino-manifests"]');
-    let locations: string[] = [];
+    let locations: string[];
     if (documentDefinedManifest.hasAttribute('src')) {
       locations = await this.fetcher(documentDefinedManifest.getAttribute('src'));
     } else {
@@ -469,6 +478,46 @@ export default class Pandino extends BundleImpl implements Framework {
     return Promise.resolve();
   }
 
+  getAllowedServiceReferences(
+    bundle: BundleImpl,
+    className: string,
+    expr: string,
+    checkAssignable = false,
+  ): ServiceReference<any>[] {
+    const refs: ServiceReference<any>[] = this.getServiceReferences(bundle, className, expr, checkAssignable);
+
+    return isAnyMissing(refs) ? [] : [...refs];
+  }
+
+  private getServiceReferences(
+    bundle: BundleImpl,
+    className: string,
+    expr: string,
+    checkAssignable = false,
+  ): ServiceReference<any>[] {
+    let filter: FilterApi = null;
+    if (isAllPresent(expr)) {
+      filter = Filter.parse(expr);
+    }
+
+    const refList = this.registry.getServiceReferences(className, filter) as unknown as ServiceReference<any>[];
+    const effectiveRefList: ServiceReference<any>[] = [];
+
+    if (checkAssignable) {
+      for (const ref of refList) {
+        if (Pandino.isServiceAssignable(bundle, ref)) {
+          effectiveRefList.push(ref);
+        }
+      }
+    }
+
+    if (effectiveRefList.length > 0) {
+      return effectiveRefList;
+    }
+
+    return null;
+  }
+
   private getNextId(): number {
     const n = this.nextId;
     this.nextId++;
@@ -512,6 +561,25 @@ export default class Pandino extends BundleImpl implements Framework {
     }
   }
 
+  private static isServiceAssignable(requester: Bundle, ref: ServiceReference<any>): boolean {
+    let allow = true;
+    const objectClass: string[] | string = ref.getProperty(OBJECTCLASS);
+
+    if (Array.isArray(objectClass)) {
+      for (let classIdx = 0; allow && classIdx < objectClass.length; classIdx++) {
+        if (!ref.isAssignableTo(requester, objectClass[classIdx])) {
+          allow = false;
+        }
+      }
+    } else {
+      if (!ref.isAssignableTo(requester, objectClass)) {
+        allow = false;
+      }
+    }
+
+    return allow;
+  }
+
   getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects: boolean): S {
     try {
       return this.registry.getService(bundle, ref, isServiceObjects);
@@ -520,6 +588,10 @@ export default class Pandino extends BundleImpl implements Framework {
     }
 
     return null;
+  }
+
+  ungetService(bundle: Bundle, ref: ServiceReference<any>, srvObj: any): boolean {
+    return this.registry.ungetService(bundle, ref, srvObj);
   }
 
   registerService<S>(

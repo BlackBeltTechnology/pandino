@@ -81,7 +81,11 @@ export interface BundleContext extends BundleReference {
   removeBundleListener(listener: BundleListener): void;
   addFrameworkListener(listener: FrameworkListener): void;
   removeFrameworkListener(listener: FrameworkListener): void;
-  registerService<S>(identifiers: string[] | string, service: S, properties: ServiceProperties): ServiceRegistration<S>;
+  registerService<S>(
+    identifiers: string[] | string,
+    service: S,
+    properties?: ServiceProperties,
+  ): ServiceRegistration<S>;
   /**
    * This method is the same as calling {@link #getServiceReferences(string, string)} with an {@code undefined} filter
    * expression and then finding the reference with the highest priority. It is provided as a convenience for when the

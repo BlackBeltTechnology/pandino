@@ -14,6 +14,7 @@ import {
   Logger,
   OBJECTCLASS,
   ServiceListener,
+  ServiceReference,
 } from '@pandino/pandino-api';
 import { MuteLogger } from '../../__mocks__/mute-logger';
 import { BundleContextImpl } from './bundle-context-impl';
@@ -67,6 +68,7 @@ describe('BundleContextImpl', () => {
   let pandino: Pandino;
   let bundle: Bundle;
   let bundleContext: BundleContextImpl;
+  let mockService: MockService;
 
   beforeEach(async () => {
     frameworkEvent.mockClear();
@@ -85,6 +87,11 @@ describe('BundleContextImpl', () => {
 
     bundle = pandino.getBundleContext().getBundles()[0];
     bundleContext = new BundleContextImpl(logger, bundle as BundleImpl, pandino);
+    mockService = {
+      execute(): boolean {
+        return true;
+      },
+    };
   });
 
   it('initialization', () => {
@@ -152,7 +159,7 @@ describe('BundleContextImpl', () => {
 
   it('addBundleListener()', async () => {
     bundleContext.addBundleListener(bundleChangedListener);
-    await pandino.getBundleContext().installBundle(bundle2Headers);
+    await bundleContext.installBundle(bundle2Headers);
     const event0: BundleEventImpl = bundleChanged.mock.calls[0][0];
     const event1: BundleEventImpl = bundleChanged.mock.calls[1][0];
     const event2: BundleEventImpl = bundleChanged.mock.calls[2][0];
@@ -176,7 +183,7 @@ describe('BundleContextImpl', () => {
   it('removeBundleListener()', async () => {
     bundleContext.addBundleListener(bundleChangedListener);
     bundleContext.removeBundleListener(bundleChangedListener);
-    await pandino.getBundleContext().installBundle(bundle2Headers);
+    await bundleContext.installBundle(bundle2Headers);
 
     expect(bundleChanged).toHaveBeenCalledTimes(0);
   });
@@ -196,33 +203,81 @@ describe('BundleContextImpl', () => {
     }).toThrow();
   });
 
-  it('addServiceListener()', async () => {
-    const mockService: MockService = {
-      execute(): boolean {
-        return true;
-      },
-    };
+  it('addServiceListener()', () => {
     bundleContext.addServiceListener(serviceChangedListener);
-    await pandino.getBundleContext().registerService<MockService>('some.service', mockService, {});
+    bundleContext.registerService<MockService>('some.service', mockService, {});
     const event0: ServiceEventImpl = serviceChanged.mock.calls[0][0];
 
     expect(serviceChanged).toHaveBeenCalledTimes(1);
 
-    expect(event0.getServiceReference().getBundle().getSymbolicName()).toEqual('io.pandino.framework');
+    expect(event0.getServiceReference().getBundle().getSymbolicName()).toEqual('my.bundle');
     expect(event0.getServiceReference().getProperty(OBJECTCLASS)).toEqual('some.service');
     expect(event0.getType()).toEqual('REGISTERED');
   });
 
-  it('removeServiceListener()', async () => {
-    const mockService: MockService = {
-      execute(): boolean {
-        return true;
-      },
-    };
+  it('removeServiceListener()', () => {
     bundleContext.addServiceListener(serviceChangedListener);
     bundleContext.removeServiceListener(serviceChangedListener);
-    await pandino.getBundleContext().registerService<MockService>('some.service', mockService, {});
+    bundleContext.registerService<MockService>('some.service', mockService, {});
 
     expect(serviceChanged).toHaveBeenCalledTimes(0);
+  });
+
+  it('getServiceReference()', () => {
+    bundleContext.registerService<MockService>('some.service', mockService, {
+      'prop-one': 'val-one',
+      'prop-two': 2,
+    });
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+
+    expect(reference.getProperty('prop-one')).toEqual('val-one');
+    expect(reference.getProperty('prop-two')).toEqual(2);
+    expect(reference.getUsingBundles().length).toEqual(0);
+  });
+
+  it('getServiceReferences() with proper filter', () => {
+    const otherMockService: MockService = {
+      execute(): boolean {
+        return false;
+      },
+    };
+    bundleContext.registerService<MockService>('some.service', mockService, {
+      'prop-one': 'val-one',
+    });
+    bundleContext.registerService<MockService>('some.service', otherMockService, {
+      'prop-one': 'val-two',
+    });
+    const references = bundleContext.getServiceReferences('some.service', '(prop-one=val-two)');
+    const ref1 = references[0];
+
+    expect(references.length).toEqual(1);
+    expect(ref1.getProperty('prop-one')).toEqual('val-two');
+  });
+
+  it('getService()', () => {
+    bundleContext.registerService<MockService>('some.service', mockService, {});
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+    const service = bundleContext.getService<MockService>(reference);
+
+    expect(service.execute()).toEqual(true);
+  });
+
+  it('unGetService()', () => {
+    bundleContext.registerService<MockService>('some.service', mockService, {});
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+    const service = bundleContext.getService<MockService>(reference);
+
+    expect(reference.getUsingBundles().length).toEqual(1);
+    expect(service.execute()).toEqual(true);
+
+    const firstUnGet = bundleContext.ungetService(reference);
+
+    expect(reference.getUsingBundles().length).toEqual(0);
+    expect(firstUnGet).toEqual(true);
+
+    const secondUnGet = bundleContext.ungetService(reference);
+
+    expect(reference.getUsingBundles().length).toEqual(0);
+    expect(secondUnGet).toEqual(false);
   });
 });

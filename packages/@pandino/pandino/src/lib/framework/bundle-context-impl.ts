@@ -109,20 +109,29 @@ export class BundleContextImpl implements BundleContext {
   }
 
   getServiceReference<S>(identifier: string): ServiceReference<S> {
-    throw new Error('Method not implemented.');
+    this.checkValidity();
+    try {
+      const refs = this.getServiceReferences(identifier, null);
+      return BundleContextImpl.getBestServiceReference(refs);
+    } catch (ex) {
+      this.logger.error('BundleContextImpl: ' + ex);
+    }
+    return null;
   }
 
   getServiceReferences<S>(identifier: string, filter?: string): ServiceReference<S>[] {
-    throw new Error('Method not implemented.');
+    this.checkValidity();
+
+    return this.pandino.getAllowedServiceReferences(this.bundle, identifier, filter, true);
   }
 
   registerService<S>(
     identifiers: string[] | string,
     service: S,
-    properties: ServiceProperties,
+    properties?: ServiceProperties,
   ): ServiceRegistration<S> {
     this.checkValidity();
-    return this.pandino.registerService(this, identifiers, service, properties);
+    return this.pandino.registerService(this, identifiers, service, properties || {});
   }
 
   removeServiceListener(listener: ServiceListener): void {
@@ -131,7 +140,13 @@ export class BundleContextImpl implements BundleContext {
   }
 
   ungetService<S>(reference: ServiceReference<S>): boolean {
-    throw new Error('Method not implemented.');
+    this.checkValidity();
+
+    if (isAnyMissing(reference)) {
+      throw new Error('Specified service reference cannot be missing.');
+    }
+
+    return this.pandino.ungetService(this.bundle, reference, null);
   }
 
   isValid(): boolean {
@@ -167,5 +182,24 @@ export class BundleContextImpl implements BundleContext {
     }
     // TODO: this shouldn't be enough, should add more cases
     return false;
+  }
+
+  private static getBestServiceReference(refs: ServiceReference<any>[]): ServiceReference<any> {
+    if (isAnyMissing(refs)) {
+      return null;
+    }
+
+    if (refs.length === 1) {
+      return refs[0];
+    }
+
+    let bestRef: ServiceReference<any> = refs[0];
+    for (let i = 1; i < refs.length; i++) {
+      if (bestRef.compareTo(refs[i]) < 0) {
+        bestRef = refs[i];
+      }
+    }
+
+    return bestRef;
   }
 }

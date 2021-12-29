@@ -9,6 +9,7 @@ export interface ServiceReference<S> extends BundleReference {
   getBundle(): Bundle;
   getUsingBundles(): Bundle[];
   getProperties(): ServiceProperties;
+  isAssignableTo(bundle: Bundle, className: string): boolean;
   compareTo(other: ServiceReference<any>): number;
 }
 
