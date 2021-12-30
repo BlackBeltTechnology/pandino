@@ -11,6 +11,7 @@
     <p>Please check the console for demo content!</p>
     <script type="pandino-manifests">
       [
+        "./bundle-a-manifest.json",
         "./bundle-b-manifest.json"
       ]
     </script>
@@ -20,10 +21,10 @@
           const Pandino = (await import('./pandino.js')).default;
           const pandino = new Pandino((activator) => import(activator));
 
-          pandino.init();
-          pandino.registerDocumentDefinedManifests();
+          await pandino.init();
+          await pandino.start();
           window.setTimeout(() => {
-            pandino.getBundleContext().installBundle("./bundle-a-manifest.json");
+            pandino.getBundleContext().installBundle("./pandino-extra-document-manifests-manifest.json");
           }, 1000);
 
         })();

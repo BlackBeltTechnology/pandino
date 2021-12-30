@@ -12,6 +12,10 @@ cp src/extra-manifests.json dist
 cp ../pandino/dist/pandino.js dist/pandino.js
 cp ../pandino/dist/pandino.js.map dist/pandino.js.map
 
+cp ../pandino-extra-document-manifests/dist/pandino-extra-document-manifests-manifest.json dist/pandino-extra-document-manifests-manifest.json
+cp ../pandino-extra-document-manifests/dist/pandino-extra-document-manifests.js dist/pandino-extra-document-manifests.js
+cp ../pandino-extra-document-manifests/dist/pandino-extra-document-manifests.js.map dist/pandino-extra-document-manifests.js.map
+
 cp ../bundle-a/dist/bundle-a-manifest.json dist/bundle-a-manifest.json
 cp ../bundle-a/dist/bundle-a.js dist/bundle-a.js
 cp ../bundle-a/dist/bundle-a.js.map dist/bundle-a.js.map

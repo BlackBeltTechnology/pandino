@@ -63,7 +63,7 @@ describe('BundleContextImpl', () => {
   const serviceChangedListener: ServiceListener = {
     serviceChanged,
   };
-  let params: Map<string, any>;
+  let params: Record<string, any>;
   let logger: Logger;
   let pandino: Pandino;
   let bundle: Bundle;
@@ -75,10 +75,10 @@ describe('BundleContextImpl', () => {
     bundleChanged.mockClear();
     serviceChanged.mockClear();
     logger = new MuteLogger();
-    params = new Map<string, any>([
-      [LOG_LOGGER_PROP, new MuteLogger()],
-      ['custom-prop', 'custom-value'],
-    ]);
+    params = {
+      [LOG_LOGGER_PROP]: new MuteLogger(),
+      'custom-prop': 'custom-value',
+    };
     pandino = new Pandino(importer, params);
 
     await pandino.init(frameworkEventListener);

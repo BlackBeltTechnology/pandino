@@ -9,7 +9,6 @@ export interface Framework extends Bundle {
   uninstall(): Promise<void>;
   update(headers: BundleManifestHeaders, bundle?: Bundle): Promise<void>;
   getSymbolicName(): string;
-  registerDocumentDefinedManifests(): Promise<void>;
 }
 
 export interface FrameworkListener {

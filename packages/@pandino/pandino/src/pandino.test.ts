@@ -12,15 +12,13 @@ import {
   FRAMEWORK_UUID,
   PROVIDE_CAPABILITY,
   REQUIRE_CAPABILITY,
-  LogLevel,
   LOG_LOGGER_PROP,
-  LOG_LEVEL_PROP,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { MuteLogger } from './__mocks__/mute-logger';
 
 describe('Pandino', () => {
-  let params: Map<string, any>;
+  let params: Record<string, any>;
   let pandino: Pandino;
   const mockStart = jest.fn().mockReturnValue(Promise.resolve());
   const mockStop = jest.fn().mockReturnValue(Promise.resolve());
@@ -46,7 +44,6 @@ describe('Pandino', () => {
     [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
     [BUNDLE_NAME]: 'Cat Bundle',
     [BUNDLE_DESCRIPTION]: 'Test!',
-    [PROVIDE_CAPABILITY]: 'com.one;rate:number=10;version:SemVer=1.0.0;type=cat',
   };
   const bundle3Headers: BundleManifestHeaders = {
     [BUNDLE_SYMBOLICNAME]: 'my.independent.bundle',
@@ -54,15 +51,16 @@ describe('Pandino', () => {
     [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
     [BUNDLE_NAME]: 'My Independent Bundle',
   };
-  const bundle1RequiresBundle2ByCapability = 'com.one;filter:="(&(type=cat)(rate<=20))"';
+  const bundleRequiresCapability = 'pet.grooming;filter:="(&(type=cat)(rate<=20))"';
+  const bundleProvidesCapability =
+    'pet.grooming;type:Array="dog,cat";length:number=800;soap="organic";rate:number="10"';
 
   beforeEach(() => {
     mockStart.mockClear();
     mockStop.mockClear();
-    params = new Map<string, any>([
-      [LOG_LOGGER_PROP, new MuteLogger()],
-      [LOG_LEVEL_PROP, LogLevel.DEBUG],
-    ]);
+    params = {
+      [LOG_LOGGER_PROP]: new MuteLogger(),
+    };
     pandino = new Pandino(importer, params);
   });
 
@@ -105,7 +103,7 @@ describe('Pandino', () => {
     await preparePandino();
     await installBundle({
       ...bundle1Headers,
-      [REQUIRE_CAPABILITY]: 'com.one;filter:="(&(type=cat)(rate<=20))"',
+      [REQUIRE_CAPABILITY]: bundleRequiresCapability,
     });
     const [myBundle] = pandino.getBundleContext().getBundles();
 
@@ -120,7 +118,7 @@ describe('Pandino', () => {
     await preparePandino();
     await installBundle({
       ...bundle1Headers,
-      [REQUIRE_CAPABILITY]: bundle1RequiresBundle2ByCapability,
+      [REQUIRE_CAPABILITY]: bundleRequiresCapability,
     });
     let bundles = pandino.getBundleContext().getBundles();
 
@@ -130,6 +128,40 @@ describe('Pandino', () => {
 
     await installBundle({
       ...bundle2Headers,
+      [PROVIDE_CAPABILITY]: bundleProvidesCapability,
+    });
+
+    bundles = pandino.getBundleContext().getBundles();
+
+    expect(bundles.length).toEqual(2);
+
+    const myBundle = bundles[0];
+    const catsBundle = bundles[1];
+
+    expect(myBundle.getSymbolicName()).toEqual('my.bundle');
+    expect(myBundle.getVersion().toString()).toEqual('1.2.3');
+    expect(myBundle.getState()).toEqual('ACTIVE');
+    expect(catsBundle.getSymbolicName()).toEqual('hu.bundle.cats');
+    expect(catsBundle.getVersion().toString()).toEqual('1.0.0');
+    expect(catsBundle.getState()).toEqual('ACTIVE');
+    expect(mockStart).toHaveBeenCalledTimes(bundles.length); // we use the same mock for all bundles
+  });
+
+  it('all bundles go to ACTIVE state (in order)', async () => {
+    await preparePandino();
+    await installBundle({
+      ...bundle1Headers,
+      [PROVIDE_CAPABILITY]: bundleProvidesCapability,
+    });
+    let bundles = pandino.getBundleContext().getBundles();
+
+    expect(mockStart).toHaveBeenCalledTimes(1);
+    expect(bundles.length).toEqual(1);
+    expect(bundles[0].getState()).toEqual('ACTIVE');
+
+    await installBundle({
+      ...bundle2Headers,
+      [REQUIRE_CAPABILITY]: bundleRequiresCapability,
     });
 
     bundles = pandino.getBundleContext().getBundles();
@@ -167,9 +199,12 @@ describe('Pandino', () => {
     await preparePandino();
     await installBundle({
       ...bundle1Headers,
-      [REQUIRE_CAPABILITY]: bundle1RequiresBundle2ByCapability,
+      [REQUIRE_CAPABILITY]: bundleRequiresCapability,
     });
-    await installBundle(bundle2Headers);
+    await installBundle({
+      ...bundle2Headers,
+      [PROVIDE_CAPABILITY]: bundleProvidesCapability,
+    });
     await installBundle(bundle3Headers);
 
     const [requirerBundle, requiredBundle, independentBundle] = pandino.getBundleContext().getBundles();
@@ -224,7 +259,7 @@ describe('Pandino', () => {
     await installBundle({
       ...bundle1Headers,
       [BUNDLE_VERSION]: '1.4.0',
-      [REQUIRE_CAPABILITY]: bundle1RequiresBundle2ByCapability,
+      [REQUIRE_CAPABILITY]: bundleRequiresCapability,
     });
 
     expect(myBundle.getVersion().toString()).toEqual('1.4.0');
@@ -232,6 +267,7 @@ describe('Pandino', () => {
 
     await installBundle({
       ...bundle2Headers,
+      [PROVIDE_CAPABILITY]: bundleProvidesCapability,
     });
 
     expect(myBundle.getState()).toEqual('ACTIVE');
@@ -241,9 +277,12 @@ describe('Pandino', () => {
     await preparePandino();
     await installBundle({
       ...bundle1Headers,
-      [REQUIRE_CAPABILITY]: bundle1RequiresBundle2ByCapability,
+      [REQUIRE_CAPABILITY]: bundleRequiresCapability,
     });
-    await installBundle(bundle2Headers);
+    await installBundle({
+      ...bundle2Headers,
+      [PROVIDE_CAPABILITY]: bundleProvidesCapability,
+    });
 
     const [requirerBundle, requiredBundle] = pandino.getBundleContext().getBundles();
 

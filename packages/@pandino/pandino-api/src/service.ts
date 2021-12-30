@@ -52,7 +52,7 @@ export interface ServiceRegistry {
     dict?: ServiceProperties,
   ): ServiceRegistration<any>;
   servicePropertiesModified(reg: ServiceRegistration<any>, oldProps: ServiceProperties): void;
-  getServiceReferences(identifier: string, filter: FilterApi): Array<Capability>;
+  getServiceReferences(identifier: string, filter?: FilterApi): Array<Capability>;
   getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects?: boolean): S;
   getUsingBundles(ref: ServiceReference<any>): Bundle[];
   unregisterService<S>(bundle: Bundle, reg: ServiceRegistration<S>): void;
