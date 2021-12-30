@@ -30,8 +30,7 @@ npm start
 
 ## TODO
 
-- Extract `registerDocumentDefinedManifests()` into a separate package (Bundle?)
-- Add Revision for Pandino it self since currently it's missing (will cause bugs unless added)
+- refactor identifier/className(s) to resemble NPM standard scopes
 - Update current example project to showcase a working web-app
 - Add example project for NodeJS usage
   - Requires a "Deploy folder watcher" Bundle to be introduced to showcase real-time feature addition
