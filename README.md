@@ -30,7 +30,12 @@ npm start
 
 ## TODO
 
-- refactor identifier/className(s) to resemble NPM standard scopes
+- rework loading mechanism: remove json abstraction, and move info to "BundleEntry" JS file
+  - there is no need for 2 jumps to reach the Activators
+  - BundleEntry should have the same interface as the Manifest, minus the path-based activator reference
+    since after this change it can be a pure reference. Has to be default export!
+  - Bundling tool should be eventually created which can create these "BundleEntry" files from
+    e.g.: package.json files, or whatever (Webpack, Rollup)
 - Update current example project to showcase a working web-app
 - Add example project for NodeJS usage
   - Requires a "Deploy folder watcher" Bundle to be introduced to showcase real-time feature addition
