@@ -1,11 +1,11 @@
-import { BundleActivator, BundleContext, Fetcher, ServiceReference } from '@pandino/pandino-api';
+import { BundleActivator, BundleContext, Fetcher, ServiceReference, FRAMEWORK_FETCHER } from '@pandino/pandino-api';
 
 export default class PandinoExtraDocumentManifestsActivator implements BundleActivator {
   private fetcherReference: ServiceReference<Fetcher>;
   private fetcher: Fetcher;
 
   async start(context: BundleContext): Promise<void> {
-    this.fetcherReference = context.getServiceReference<Fetcher>('io.pandino.fetcher');
+    this.fetcherReference = context.getServiceReference<Fetcher>(FRAMEWORK_FETCHER);
     this.fetcher = context.getService<Fetcher>(this.fetcherReference);
     await this.registerDocumentDefinedManifests(context);
     return Promise.resolve();

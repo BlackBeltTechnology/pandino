@@ -53,7 +53,11 @@ describe('ServiceRegistryImpl', () => {
   });
 
   it('registerService() general use-cases', async () => {
-    const reg: ServiceRegistration<HelloService> = sr.registerService(bundle1, 'io.pandino.hello-impl', helloService);
+    const reg: ServiceRegistration<HelloService> = sr.registerService(
+      bundle1,
+      '@pandino/pandino/hello-impl',
+      helloService,
+    );
     const ref: ServiceReference<HelloService> = reg.getReference();
 
     expect(sr.getRegisteredServices(bundle1).length).toEqual(1);
@@ -61,7 +65,7 @@ describe('ServiceRegistryImpl', () => {
     expect(sr.getService(bundle2, ref, false)).toEqual(helloService);
 
     expect(reg.getPropertyKeys()).toEqual([...defaultPropKeys]);
-    expect(reg.getProperty(OBJECTCLASS)).toEqual('io.pandino.hello-impl');
+    expect(reg.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/hello-impl');
     expect(reg.getProperty(SERVICE_ID)).toEqual(1);
     expect(reg.getProperty(SERVICE_BUNDLEID)).toEqual(2);
     expect(reg.getProperty(SERVICE_SCOPE)).toEqual(SCOPE_SINGLETON);
@@ -71,11 +75,16 @@ describe('ServiceRegistryImpl', () => {
   });
 
   it('registerService() with custom props', async () => {
-    const reg: ServiceRegistration<HelloService> = sr.registerService(bundle1, 'io.pandino.hello-impl', helloService, {
-      propNum: 1,
-      propBool: true,
-      propStr: 'yayy',
-    });
+    const reg: ServiceRegistration<HelloService> = sr.registerService(
+      bundle1,
+      '@pandino/pandino/hello-impl',
+      helloService,
+      {
+        propNum: 1,
+        propBool: true,
+        propStr: 'yayy',
+      },
+    );
     const ref: ServiceReference<HelloService> = reg.getReference();
 
     expect(ref.getPropertyKeys()).toEqual(['propNum', 'propBool', 'propStr', ...defaultPropKeys]);
@@ -87,23 +96,27 @@ describe('ServiceRegistryImpl', () => {
   it('multiple service registrations', async () => {
     const regHello: ServiceRegistration<HelloService> = sr.registerService(
       bundle1,
-      'io.pandino.hello-impl',
+      '@pandino/pandino/hello-impl',
       helloService,
     );
     const regWelcome: ServiceRegistration<WelcomeService> = sr.registerService(
       bundle1,
-      'io.pandino.welcome-impl',
+      '@pandino/pandino/welcome-impl',
       welcomeService,
     );
 
     expect(sr.getRegisteredServices(bundle1).length).toEqual(2);
 
-    expect(regHello.getProperty(OBJECTCLASS)).toEqual('io.pandino.hello-impl');
-    expect(regWelcome.getProperty(OBJECTCLASS)).toEqual('io.pandino.welcome-impl');
+    expect(regHello.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/hello-impl');
+    expect(regWelcome.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/welcome-impl');
   });
 
   it('unregisterService()', async () => {
-    const reg: ServiceRegistration<HelloService> = sr.registerService(bundle1, 'io.pandino.hello-impl', helloService);
+    const reg: ServiceRegistration<HelloService> = sr.registerService(
+      bundle1,
+      '@pandino/pandino/hello-impl',
+      helloService,
+    );
     const ref: ServiceReference<HelloService> = reg.getReference();
 
     sr.getService(bundle1, ref, false);
@@ -119,7 +132,11 @@ describe('ServiceRegistryImpl', () => {
   });
 
   it('usageCount calculation', async () => {
-    const reg: ServiceRegistration<HelloService> = sr.registerService(bundle1, 'io.pandino.hello-impl', helloService);
+    const reg: ServiceRegistration<HelloService> = sr.registerService(
+      bundle1,
+      '@pandino/pandino/hello-impl',
+      helloService,
+    );
     const ref: ServiceReference<HelloService> = reg.getReference();
     const uc1 = sr.obtainUsageCount(bundle1, ref, helloService);
     const uc2 = sr.obtainUsageCount(bundle2, ref, helloService);
@@ -138,7 +155,11 @@ describe('ServiceRegistryImpl', () => {
   });
 
   it('getService() returns working service', async () => {
-    const reg: ServiceRegistration<HelloService> = sr.registerService(bundle1, 'io.pandino.hello-impl', helloService);
+    const reg: ServiceRegistration<HelloService> = sr.registerService(
+      bundle1,
+      '@pandino/pandino/hello-impl',
+      helloService,
+    );
     const ref: ServiceReference<HelloService> = reg.getReference();
 
     const service = sr.getService(bundle1, ref, false);
@@ -147,7 +168,11 @@ describe('ServiceRegistryImpl', () => {
   });
 
   it('unregister() removes Reference from ServiceRegistration', async () => {
-    const reg: ServiceRegistration<HelloService> = sr.registerService(bundle1, 'io.pandino.hello-impl', helloService);
+    const reg: ServiceRegistration<HelloService> = sr.registerService(
+      bundle1,
+      '@pandino/pandino/hello-impl',
+      helloService,
+    );
     const ref: ServiceReference<HelloService> = reg.getReference();
 
     reg.unregister();
@@ -168,10 +193,14 @@ describe('ServiceRegistryImpl', () => {
       serviceChanged: mockServiceChanged,
     };
     sr = new ServiceRegistryImpl(null, callbacks);
-    const reg: ServiceRegistration<HelloService> = sr.registerService(bundle1, 'io.pandino.hello-impl', helloService);
+    const reg: ServiceRegistration<HelloService> = sr.registerService(
+      bundle1,
+      '@pandino/pandino/hello-impl',
+      helloService,
+    );
     const ref: ServiceReference<HelloService> = reg.getReference();
     const oldProps = {
-      objectClass: 'io.pandino.hello-impl',
+      objectClass: '@pandino/pandino/hello-impl',
       'service.bundleid': 2,
       'service.id': 1,
       'service.scope': 'singleton',

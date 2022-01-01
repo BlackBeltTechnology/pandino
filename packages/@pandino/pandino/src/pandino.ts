@@ -31,6 +31,7 @@ import {
   ServiceReference,
   ServiceRegistration,
   OBJECTCLASS,
+  SYSTEM_BUNDLE_SYMBOLICNAME,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { EventDispatcher } from './lib/framework/event-dispatcher';
@@ -69,7 +70,7 @@ export default class Pandino extends BundleImpl implements Framework {
       // Ignore and just use the default logging level.
     }
     super(logger, 0, {
-      [BUNDLE_SYMBOLICNAME]: 'io.pandino.framework',
+      [BUNDLE_SYMBOLICNAME]: SYSTEM_BUNDLE_SYMBOLICNAME,
       [BUNDLE_VERSION]: '0.1.0',
       [BUNDLE_NAME]: 'Pandino Framework',
     });
@@ -95,7 +96,7 @@ export default class Pandino extends BundleImpl implements Framework {
     // TODO: add revision for System Bundle!
     const rev = new BundleRevisionImpl(this, '0', {
       ...this.configMap,
-      [BUNDLE_SYMBOLICNAME]: 'io.pandino.framework',
+      [BUNDLE_SYMBOLICNAME]: SYSTEM_BUNDLE_SYMBOLICNAME,
       [BUNDLE_VERSION]: '0.1.0',
       [BUNDLE_NAME]: 'Pandino Framework',
     });
@@ -125,7 +126,7 @@ export default class Pandino extends BundleImpl implements Framework {
       }
       if (this.getState() === 'STARTING') {
         // TODO: implement missing parts!
-        this.getBundleContext().registerService('io.pandino.fetcher', this.fetcher, {
+        this.getBundleContext().registerService(FRAMEWORK_FETCHER, this.fetcher, {
           version: '0.1.0',
         });
         this.setBundleStateAndNotify(this, 'ACTIVE');

@@ -15,6 +15,7 @@ import {
   OBJECTCLASS,
   ServiceListener,
   ServiceReference,
+  SYSTEM_BUNDLE_SYMBOLICNAME,
 } from '@pandino/pandino-api';
 import { MuteLogger } from '../../__mocks__/mute-logger';
 import { BundleContextImpl } from './bundle-context-impl';
@@ -134,7 +135,7 @@ describe('BundleContextImpl', () => {
 
     expect(frameworkEvent).toHaveBeenCalledTimes(1);
 
-    expect(event0.getBundle().getSymbolicName()).toEqual('io.pandino.framework');
+    expect(event0.getBundle().getSymbolicName()).toEqual(SYSTEM_BUNDLE_SYMBOLICNAME);
     expect(event0.getType()).toEqual('STARTED');
   });
 

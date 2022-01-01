@@ -13,6 +13,7 @@ import {
   PROVIDE_CAPABILITY,
   REQUIRE_CAPABILITY,
   LOG_LOGGER_PROP,
+  SYSTEM_BUNDLE_SYMBOLICNAME,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { MuteLogger } from './__mocks__/mute-logger';
@@ -82,7 +83,7 @@ describe('Pandino', () => {
 
     const ctx = pandino.getBundleContext();
 
-    expect(ctx.getBundle().getSymbolicName()).toEqual('io.pandino.framework');
+    expect(ctx.getBundle().getSymbolicName()).toEqual(SYSTEM_BUNDLE_SYMBOLICNAME);
     expect(ctx.getBundle().getVersion().toString()).toEqual('0.1.0');
     expect(ctx.getProperty(FRAMEWORK_UUID)).toEqual('pandino-uuid-todo');
   });
