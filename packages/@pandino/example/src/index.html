@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Static Template</title>
+    <title>Pandino Example</title>
   </head>
   <body>
     <h1 id="root">Hello!</h1>
@@ -16,18 +16,22 @@
       ]
     </script>
     <script type="module">
-      window.addEventListener("DOMContentLoaded", () => {
-        (async () => {
-          const Pandino = (await import('./pandino.js')).default;
-          const pandino = new Pandino((activator) => import(activator));
+      window.addEventListener('DOMContentLoaded', async () => {
+        const Pandino = (await import('./pandino.js')).default;
+        const pandino = new Pandino({
+          'pandino.importer': {
+            import: (activator) => import(activator),
+          },
+          'pandino.fetcher': {
+            fetch: async (uri) => (await fetch(uri)).json(),
+          },
+        });
 
-          await pandino.init();
-          await pandino.start();
-          window.setTimeout(() => {
-            pandino.getBundleContext().installBundle("./pandino-extra-document-manifests-manifest.json");
-          }, 1000);
-
-        })();
+        await pandino.init();
+        await pandino.start();
+        window.setTimeout(() => {
+          pandino.getBundleContext().installBundle('./pandino-extra-document-manifests-manifest.json');
+        }, 1000);
       });
     </script>
   </body>

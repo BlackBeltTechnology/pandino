@@ -1,30 +1,25 @@
-import { BundleActivator, BundleContext } from '@pandino/pandino-api';
-
-import { LogLevel } from './log-level';
-import { LoggerService } from './logger-service';
+import { BundleActivator, BundleContext, Logger, ServiceReference } from '@pandino/pandino-api';
+import { StringInverter } from './string-inverter';
+import { stringInverterImpl } from './string-inverter-impl';
 
 export class BundleBActivator implements BundleActivator {
+  private loggerReference: ServiceReference<Logger>;
+  private logger: Logger;
+
   async start(context: BundleContext): Promise<void> {
-    console.log('Bundle B - Activator');
-    // context.registerService<LoggerService>('io.pandino.bundle-b.logger', (message: string, level?: LogLevel) => {
-    //   const stamp = new Date().toISOString();
-    //   switch (level) {
-    //     case 'error':
-    //       console.error(`[${stamp}] ${message}`);
-    //       break;
-    //     case 'warn':
-    //       console.warn(`[${stamp}] ${message}`);
-    //       break;
-    //     case 'info':
-    //       console.info(`[${stamp}] ${message}`);
-    //       break;
-    //     default:
-    //       console.log(`[${stamp}] ${message}`);
-    //   }
-    // });
+    this.loggerReference = context.getServiceReference<Logger>('@pandino/pandino/Logger');
+    this.logger = context.getService(this.loggerReference);
+
+    this.logger.log('Bundle B - Activator');
+
+    context.registerService<StringInverter>('@pandino/bundle-b/StringInverter', stringInverterImpl);
+
+    return Promise.resolve();
   }
 
   async stop(context: BundleContext): Promise<void> {
+    context.ungetService(this.loggerReference);
+
     return Promise.resolve();
   }
 }
