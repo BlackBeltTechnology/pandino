@@ -28,18 +28,18 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
   }
 
   compareTo(other: ServiceReference<any>): number {
-    const id: string = this.getProperty(SERVICE_ID);
-    const otherId: string = other.getProperty(SERVICE_ID);
+    const id: number = Number(this.getProperty(SERVICE_ID));
+    const otherId: number = Number(other.getProperty(SERVICE_ID));
 
     if (id === otherId) {
       return 0;
     }
 
-    const rankObj = this.getProperty(SERVICE_RANKING);
-    const otherRankObj = other.getProperty(SERVICE_RANKING);
+    const rankObj: number = Number(this.getProperty(SERVICE_RANKING));
+    const otherRankObj: number = Number(other.getProperty(SERVICE_RANKING));
 
-    const rank = !rankObj ? SERVICE_DEFAULT_RANK : Number(rankObj);
-    const otherRank = !otherRankObj ? SERVICE_DEFAULT_RANK : Number(otherRankObj);
+    const rank = !rankObj ? SERVICE_DEFAULT_RANK : rankObj;
+    const otherRank = !otherRankObj ? SERVICE_DEFAULT_RANK : otherRankObj;
 
     if (rank - otherRank < 0) {
       return -1;
@@ -48,7 +48,7 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
     }
 
     // If ranks are equal, then sort by service id in descending order.
-    return id.localeCompare(otherId) < 0 ? 1 : -1;
+    return otherId - id;
   }
 
   getRegistration(): ServiceRegistrationImpl {
