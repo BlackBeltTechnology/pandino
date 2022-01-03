@@ -1,1 +1,3 @@
-export type Fetcher = (uri: string) => Promise<any>;
+export interface Fetcher {
+  fetch(uri: string): Promise<any>;
+}

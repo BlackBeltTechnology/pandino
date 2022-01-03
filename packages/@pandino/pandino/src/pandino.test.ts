@@ -12,11 +12,13 @@ import {
   FRAMEWORK_UUID,
   PROVIDE_CAPABILITY,
   REQUIRE_CAPABILITY,
-  LOG_LOGGER_PROP,
+  PANDINO_IMPORTER_PROP,
   SYSTEM_BUNDLE_SYMBOLICNAME,
+  Importer,
+  LOG_LEVEL_PROP,
+  LogLevel,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
-import { MuteLogger } from './__mocks__/mute-logger';
 
 describe('Pandino', () => {
   let params: Record<string, any>;
@@ -27,11 +29,12 @@ describe('Pandino', () => {
     start: mockStart,
     stop: mockStop,
   };
-  const importer = jest.fn().mockReturnValue(
-    Promise.resolve({
-      default: dummyActivator,
-    }),
-  );
+  const importer: Importer = {
+    import: (activator: string) =>
+      Promise.resolve({
+        default: dummyActivator,
+      }),
+  };
   const bundle1Headers: BundleManifestHeaders = {
     [BUNDLE_SYMBOLICNAME]: 'my.bundle',
     [BUNDLE_VERSION]: '1.2.3',
@@ -60,9 +63,10 @@ describe('Pandino', () => {
     mockStart.mockClear();
     mockStop.mockClear();
     params = {
-      [LOG_LOGGER_PROP]: new MuteLogger(),
+      [LOG_LEVEL_PROP]: LogLevel.WARN,
+      [PANDINO_IMPORTER_PROP]: importer,
     };
-    pandino = new Pandino(importer, params);
+    pandino = new Pandino(params);
   });
 
   afterEach(() => {

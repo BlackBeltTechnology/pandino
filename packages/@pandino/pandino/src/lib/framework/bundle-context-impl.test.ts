@@ -10,9 +10,12 @@ import {
   BundleListener,
   BundleManifestHeaders,
   FrameworkListener,
-  LOG_LOGGER_PROP,
+  Importer,
+  LOG_LEVEL_PROP,
   Logger,
+  LogLevel,
   OBJECTCLASS,
+  PANDINO_IMPORTER_PROP,
   ServiceListener,
   ServiceReference,
   SYSTEM_BUNDLE_SYMBOLICNAME,
@@ -34,11 +37,12 @@ describe('BundleContextImpl', () => {
     start: jest.fn(),
     stop: jest.fn(),
   };
-  const importer = jest.fn().mockReturnValue(
-    Promise.resolve({
-      default: dummyActivator,
-    }),
-  );
+  const importer: Importer = {
+    import: (activator: string) =>
+      Promise.resolve({
+        default: dummyActivator,
+      }),
+  };
   const bundle1Headers: BundleManifestHeaders = {
     [BUNDLE_SYMBOLICNAME]: 'my.bundle',
     [BUNDLE_VERSION]: '1.2.3',
@@ -77,10 +81,11 @@ describe('BundleContextImpl', () => {
     serviceChanged.mockClear();
     logger = new MuteLogger();
     params = {
-      [LOG_LOGGER_PROP]: new MuteLogger(),
+      [LOG_LEVEL_PROP]: LogLevel.WARN,
+      [PANDINO_IMPORTER_PROP]: importer,
       'custom-prop': 'custom-value',
     };
-    pandino = new Pandino(importer, params);
+    pandino = new Pandino(params);
 
     await pandino.init(frameworkEventListener);
     await pandino.start();
@@ -141,7 +146,7 @@ describe('BundleContextImpl', () => {
 
   it('removeFrameworkListener()', async () => {
     frameworkEvent.mockClear();
-    pandino = new Pandino(importer, params);
+    pandino = new Pandino(params);
 
     await pandino.init(frameworkEventListener);
     pandino.getBundleContext().removeFrameworkListener(frameworkEventListener);

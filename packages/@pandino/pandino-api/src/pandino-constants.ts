@@ -3,6 +3,8 @@
  */
 export const LOG_LEVEL_PROP = 'pandino.log.level';
 export const LOG_LOGGER_PROP = 'pandino.log.logger';
+export const PANDINO_IMPORTER_PROP = 'pandino.importer';
+export const PANDINO_FETCHER_PROP = 'pandino.fetcher';
 export const BUNDLE_NAMESPACE = 'pandino.wiring.bundle';
 export const IDENTITY_NAMESPACE = 'pandino.identity';
 export const TYPE_BUNDLE = 'pandino.bundle';
@@ -32,7 +34,9 @@ export const SYSTEM_BUNDLE_SYMBOLICNAME = '@pandino/pandino';
 export const ACTIVATION_LAZY = 'lazy';
 export const FRAGMENT_HOST = 'Fragment-Host';
 export const FRAMEWORK_INACTIVE_STARTLEVEL = 0;
-export const FRAMEWORK_FETCHER = '@pandino/pandino/fetcher';
+export const FRAMEWORK_LOGGER = '@pandino/pandino/Logger';
+export const FRAMEWORK_FETCHER = '@pandino/pandino/Fetcher';
+export const FRAMEWORK_IMPORTER = '@pandino/pandino/Importer';
 export const FRAMEWORK_UUID = '@pandino/pandino/uuid';
 export const FRAMEWORK_VERSION = '@pandino/pandino/version';
 export const FRAMEWORK_VENDOR = '@pandino/pandino/vendor';

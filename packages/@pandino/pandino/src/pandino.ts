@@ -32,6 +32,10 @@ import {
   ServiceRegistration,
   OBJECTCLASS,
   SYSTEM_BUNDLE_SYMBOLICNAME,
+  PANDINO_IMPORTER_PROP,
+  PANDINO_FETCHER_PROP,
+  FRAMEWORK_IMPORTER,
+  FRAMEWORK_LOGGER,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { EventDispatcher } from './lib/framework/event-dispatcher';
@@ -43,11 +47,12 @@ import { StatefulResolver } from './lib/framework/stateful-resolver';
 import { ServiceRegistryImpl } from './lib/framework/service-registry-impl';
 import { FrameworkEventImpl } from './lib/framework/framework-event-impl';
 import { SemVer } from 'semver';
-import { pandinoFetcher } from './lib/framework/util/fetcher';
 import { ConsoleLogger } from './lib/utils/console-logger';
 import Filter from './lib/filter/filter';
 import { ServiceEventImpl } from './lib/framework/service-event-impl';
 import { BundleRevisionImpl } from './lib/framework/bundle-revision-impl';
+import { VoidFetcher } from './lib/utils/void-fetcher';
+import { VoidImporter } from './lib/utils/void-importer';
 
 export default class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: Fetcher;
@@ -55,31 +60,33 @@ export default class Pandino extends BundleImpl implements Framework {
   private readonly configMap: Map<string, any> = new Map<string, any>();
   private readonly installedBundles: Bundle[] = [];
   private readonly activatorsList: BundleActivator[] = [];
-  // private readonly registry: ServiceRegistryImpl;
   private readonly dispatcher: EventDispatcher;
   private readonly dependencies = new BundleRevisionDependencies();
   private readonly resolver: StatefulResolver;
   private readonly registry: ServiceRegistry;
   private nextId = 1;
 
-  constructor(importer: Importer, configMap: Record<string, any> = {}) {
+  constructor(configMap: Record<string, any> = {}) {
     const logger: Logger = isAllPresent(configMap[LOG_LOGGER_PROP]) ? configMap[LOG_LOGGER_PROP] : new ConsoleLogger();
-    try {
-      logger.setLogLevel(configMap[LOG_LEVEL_PROP] || LogLevel.INFO);
-    } catch (ex) {
-      // Ignore and just use the default logging level.
-    }
+    const fetcher: Fetcher = isAllPresent(configMap[PANDINO_FETCHER_PROP])
+      ? configMap[PANDINO_FETCHER_PROP]
+      : new VoidFetcher();
+    const importer: Importer = isAllPresent(configMap[PANDINO_IMPORTER_PROP])
+      ? configMap[PANDINO_IMPORTER_PROP]
+      : new VoidImporter();
+    logger.setLogLevel(configMap[LOG_LEVEL_PROP] || LogLevel.LOG);
+
     super(logger, 0, {
       [BUNDLE_SYMBOLICNAME]: SYSTEM_BUNDLE_SYMBOLICNAME,
       [BUNDLE_VERSION]: '0.1.0',
       [BUNDLE_NAME]: 'Pandino Framework',
     });
 
+    this.fetcher = fetcher;
     this.importer = importer;
     Object.keys(configMap).forEach((configKey) => {
       this.configMap.set(configKey, configMap[configKey]);
     });
-    this.installedBundles = [];
     this.activatorsList = this.configMap.get(SYSTEMBUNDLE_ACTIVATORS_PROP) || [];
     this.registry = new ServiceRegistryImpl(
       this.logger,
@@ -90,12 +97,9 @@ export default class Pandino extends BundleImpl implements Framework {
           }
         })())(this),
     );
-    this.fetcher = this.configMap.get(FRAMEWORK_FETCHER) || pandinoFetcher;
     this.resolver = new StatefulResolver(this.logger, this, this.registry);
     this.dispatcher = new EventDispatcher(this.logger);
-    // TODO: add revision for System Bundle!
     const rev = new BundleRevisionImpl(this, '0', {
-      ...this.configMap,
       [BUNDLE_SYMBOLICNAME]: SYSTEM_BUNDLE_SYMBOLICNAME,
       [BUNDLE_VERSION]: '0.1.0',
       [BUNDLE_NAME]: 'Pandino Framework',
@@ -126,12 +130,13 @@ export default class Pandino extends BundleImpl implements Framework {
       }
       if (this.getState() === 'STARTING') {
         // TODO: implement missing parts!
-        this.getBundleContext().registerService(FRAMEWORK_FETCHER, this.fetcher, {
-          version: '0.1.0',
-        });
+        this.getBundleContext().registerService(FRAMEWORK_LOGGER, this.logger);
+        this.getBundleContext().registerService(FRAMEWORK_FETCHER, this.fetcher);
+        this.getBundleContext().registerService(FRAMEWORK_IMPORTER, this.importer);
         this.setBundleStateAndNotify(this, 'ACTIVE');
       }
-    } finally {
+    } catch (err) {
+      this.logger.error(err);
     }
 
     this.fireBundleEvent('STARTED', this);
@@ -166,7 +171,7 @@ export default class Pandino extends BundleImpl implements Framework {
     }
 
     const resolvedHeaders: BundleManifestHeaders =
-      typeof locationOrHeaders === 'string' ? await this.fetcher(locationOrHeaders) : locationOrHeaders;
+      typeof locationOrHeaders === 'string' ? await this.fetcher.fetch(locationOrHeaders) : locationOrHeaders;
     let bundle: BundleImpl;
     let existing: Bundle = this.isBundleInstalled(resolvedHeaders);
 
@@ -530,7 +535,7 @@ export default class Pandino extends BundleImpl implements Framework {
       activatorDefinition = activatorDefinition.trim();
       let activatorInstance: any;
       try {
-        activatorInstance = (await this.importer(activatorDefinition)).default;
+        activatorInstance = (await this.importer.import(activatorDefinition)).default;
       } catch (ex) {
         return Promise.reject('Not found: ' + activatorDefinition + ': ' + ex);
       }

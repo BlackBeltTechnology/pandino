@@ -3,4 +3,6 @@ export interface ImporterReturns {
   [key: string | symbol | number]: any;
 }
 
-export type Importer = (activator: string) => Promise<ImporterReturns>;
+export interface Importer {
+  import(activator: string): Promise<ImporterReturns>;
+}
