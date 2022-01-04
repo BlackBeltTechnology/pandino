@@ -1,19 +1,16 @@
 import { SemVer } from 'semver';
-import {
-  ActivationPolicy,
-  Bundle,
-  BundleCapability,
-  BundleRequirement,
-  BundleRevision,
-  BundleWiring,
-  Capability,
-  Requirement,
-  Resource,
-  ManifestParser,
-} from '@pandino/pandino-api';
+import { ActivationPolicy, Bundle } from '@pandino/pandino-api';
 import { BundleImpl } from './bundle-impl';
 import { ManifestParserImpl } from './util/manifest-parser/manifest-parser-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
+import { Requirement } from './resource/requirement';
+import { ManifestParser } from './util/manifest-parser/manifest-parser';
+import { Capability } from './resource/capability';
+import { BundleWiring } from './bundle-wiring';
+import { BundleRevision } from './bundle-revision';
+import { Resource } from './resource/resource';
+import { BundleCapability } from './wiring/bundle-capability';
+import { BundleRequirement } from './wiring/bundle-requirement';
 
 export class BundleRevisionImpl implements BundleRevision, Resource {
   private readonly id: string;

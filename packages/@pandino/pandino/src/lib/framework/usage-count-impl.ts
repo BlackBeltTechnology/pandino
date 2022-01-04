@@ -1,4 +1,5 @@
-import { ServiceReference, UsageCount } from '@pandino/pandino-api';
+import { ServiceReference } from '@pandino/pandino-api';
+import { UsageCount } from './usage-count';
 
 export class UsageCountImpl implements UsageCount {
   private readonly ref: ServiceReference<any>;

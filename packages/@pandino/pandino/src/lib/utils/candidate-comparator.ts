@@ -1,7 +1,8 @@
-import { Capability, BUNDLE_NAMESPACE, BUNDLE_VERSION_ATTRIBUTE } from '@pandino/pandino-api';
+import { BUNDLE_NAMESPACE, BUNDLE_VERSION_ATTRIBUTE } from '@pandino/pandino-api';
 import { BundleCapabilityImpl } from '../framework/wiring/bundle-capability-impl';
 import { isAnyMissing, isAllPresent } from './helpers';
 import { SemVer } from 'semver';
+import { Capability } from '../framework/resource/capability';
 
 export function candidateComparator(cap1: Capability, cap2: Capability): number {
   let c = 0;

@@ -1,11 +1,4 @@
-export enum LogLevel {
-  TRACE = 5,
-  DEBUG = 4,
-  LOG = 3,
-  INFO = 2,
-  WARN = 1,
-  ERROR = 0,
-}
+import { LogLevel } from './log-level';
 
 export interface Logger {
   trace(...data: any[]): void;

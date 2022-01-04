@@ -1,12 +1,9 @@
-import {
-  BundleCapability,
-  BundleRequirement,
-  BundleRevision,
-  RESOLUTION_DIRECTIVE,
-  RESOLUTION_OPTIONAL,
-} from '@pandino/pandino-api';
+import { RESOLUTION_DIRECTIVE, RESOLUTION_OPTIONAL } from '@pandino/pandino-api';
 import { CapabilitySet } from '../capability-set/capability-set';
 import Filter from '../../filter/filter';
+import { BundleRevision } from '../bundle-revision';
+import { BundleCapability } from './bundle-capability';
+import { BundleRequirement } from './bundle-requirement';
 
 export class BundleRequirementImpl implements BundleRequirement {
   private readonly revision: BundleRevision;

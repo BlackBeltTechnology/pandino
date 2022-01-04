@@ -1,11 +1,7 @@
 import { SemVer } from 'semver';
 import {
-  ManifestParser,
   ActivationPolicy,
-  BundleCapability,
   BundleConfigMap,
-  BundleRequirement,
-  BundleRevision,
   ACTIVATION_LAZY,
   BUNDLE_ACTIVATIONPOLICY,
   BUNDLE_COPYRIGHT,
@@ -37,6 +33,10 @@ import { ParsedHeaderClause } from './parsed-header-clause';
 import { BundleRequirementImpl } from '../../wiring/bundle-requirement-impl';
 import Filter, { FilterComp } from '../../../filter/filter';
 import { isAnyMissing } from '../../../utils/helpers';
+import { ManifestParser } from './manifest-parser';
+import { BundleRequirement } from '../../wiring/bundle-requirement';
+import { BundleCapability } from '../../wiring/bundle-capability';
+import { BundleRevision } from '../../bundle-revision';
 
 export class ManifestParserImpl implements ManifestParser {
   private readonly configMap: BundleConfigMap;

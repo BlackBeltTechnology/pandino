@@ -5,15 +5,15 @@ import {
   SERVICE_DEFAULT_RANK,
   SERVICE_ID,
   SERVICE_RANKING,
-  BundleRevision,
-  BundleWire,
   PACKAGE_NAMESPACE,
-  BundleCapability,
 } from '@pandino/pandino-api';
 import { ServiceRegistrationImpl } from './service-registration-impl';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
 import { BundleImpl } from './bundle-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
+import { BundleRevision } from './bundle-revision';
+import { BundleCapability } from './wiring/bundle-capability';
+import { BundleWire } from './wiring/bundle-wire';
 
 export const PACKAGE_SEPARATOR = '.';
 

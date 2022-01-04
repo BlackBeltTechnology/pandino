@@ -9,10 +9,10 @@ import {
   ServiceProperties,
   ServiceReference,
   ServiceRegistration,
-  ServiceRegistry,
-  ServiceRegistryCallbacks,
 } from '@pandino/pandino-api';
 import { ServiceRegistryImpl } from './service-registry-impl';
+import { ServiceRegistry } from './service-registry';
+import { ServiceRegistryCallbacks } from './service-registry-callbacks';
 
 interface HelloService {
   sayHello(): string;

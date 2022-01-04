@@ -18,8 +18,6 @@ cp ../pandino-extra-document-manifests/dist/pandino-extra-document-manifests.js.
 
 cp ../bundle-a/dist/bundle-a-manifest.json dist/bundle-a-manifest.json
 cp ../bundle-a/dist/bundle-a.js dist/bundle-a.js
-cp ../bundle-a/dist/bundle-a.js.map dist/bundle-a.js.map
 
 cp ../bundle-b/dist/bundle-b-manifest.json dist/bundle-b-manifest.json
 cp ../bundle-b/dist/bundle-b.js dist/bundle-b.js
-cp ../bundle-b/dist/bundle-b.js.map dist/bundle-b.js.map

@@ -8,10 +8,10 @@ import {
   SERVICE_BUNDLEID,
   SERVICE_ID,
   SERVICE_SCOPE,
-  ServiceRegistry,
 } from '@pandino/pandino-api';
 import { ServiceReferenceImpl } from './service-reference-impl';
 import { isAllPresent } from '../utils/helpers';
+import { ServiceRegistry } from './service-registry';
 
 export class ServiceRegistrationImpl implements ServiceRegistration<any> {
   private readonly registry: ServiceRegistry;

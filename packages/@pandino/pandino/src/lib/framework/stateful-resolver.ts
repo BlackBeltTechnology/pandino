@@ -1,12 +1,4 @@
-import {
-  BundleCapability,
-  BundleRevision,
-  BundleWire,
-  BundleWiring,
-  ServiceRegistry,
-  Logger,
-  SYSTEM_BUNDLE_SYMBOLICNAME,
-} from '@pandino/pandino-api';
+import { Logger, SYSTEM_BUNDLE_SYMBOLICNAME } from '@pandino/pandino-api';
 import Pandino from '../../pandino';
 import { CapabilitySet } from './capability-set/capability-set';
 import { BundleRevisionImpl } from './bundle-revision-impl';
@@ -15,6 +7,11 @@ import { isAnyMissing } from '../utils/helpers';
 import { BundleWireImpl } from './wiring/bundle-wire-impl';
 import { BundleWiringImpl } from './bundle-wiring-impl';
 import { BundleImpl } from './bundle-impl';
+import { BundleWiring } from './bundle-wiring';
+import { BundleRevision } from './bundle-revision';
+import { ServiceRegistry } from './service-registry';
+import { BundleCapability } from './wiring/bundle-capability';
+import { BundleWire } from './wiring/bundle-wire';
 
 export class StatefulResolver {
   private readonly pandino: Pandino;

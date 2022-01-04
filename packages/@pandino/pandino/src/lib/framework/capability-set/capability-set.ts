@@ -1,8 +1,9 @@
 import { SemVer, eq as semverEq, lte as semverLte, gte as semverGte, neq as semverNeq } from 'semver';
-import { BundleCapability, Capability } from '@pandino/pandino-api';
 import { BundleCapabilityImpl } from '../wiring/bundle-capability-impl';
 import Filter, { FilterComp } from '../../filter/filter';
 import { isAllPresent, isAnyMissing } from '../../utils/helpers';
+import { BundleCapability } from '../wiring/bundle-capability';
+import { Capability } from '../resource/capability';
 
 export type CapabilityIndex = Record<any, Set<BundleCapability>>;
 

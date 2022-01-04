@@ -4,7 +4,6 @@ import {
   BundleActivator,
   BundleContext,
   BundleManifestHeaders,
-  BundleRevision,
   BundleState,
   Logger,
   BUNDLE_ACTIVATOR,
@@ -13,6 +12,7 @@ import {
 import Pandino from '../../pandino';
 import { BundleRevisionImpl } from './bundle-revision-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
+import { BundleRevision } from './bundle-revision';
 
 export class BundleImpl implements Bundle {
   private readonly id: number;

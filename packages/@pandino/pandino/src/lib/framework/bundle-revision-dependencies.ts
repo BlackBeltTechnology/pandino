@@ -1,14 +1,10 @@
-import {
-  Bundle,
-  BundleCapability,
-  BundleRevision,
-  BundleWire,
-  BundleWiring,
-  BUNDLE_NAMESPACE,
-  PACKAGE_NAMESPACE,
-} from '@pandino/pandino-api';
+import { Bundle, BUNDLE_NAMESPACE, PACKAGE_NAMESPACE } from '@pandino/pandino-api';
 import { isAnyMissing, isAllPresent } from '../utils/helpers';
 import { BundleImpl } from './bundle-impl';
+import { BundleWiring } from './bundle-wiring';
+import { BundleRevision } from './bundle-revision';
+import { BundleCapability } from './wiring/bundle-capability';
+import { BundleWire } from './wiring/bundle-wire';
 
 export class BundleRevisionDependencies {
   private readonly dependentsMap: Map<BundleRevision, Map<BundleCapability, Set<BundleWire>>> = new Map<

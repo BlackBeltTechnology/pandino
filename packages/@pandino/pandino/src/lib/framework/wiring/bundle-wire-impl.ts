@@ -1,4 +1,7 @@
-import { BundleCapability, BundleRequirement, BundleRevision, BundleWire } from '@pandino/pandino-api';
+import { BundleRevision } from '../bundle-revision';
+import { BundleCapability } from './bundle-capability';
+import { BundleWire } from './bundle-wire';
+import { BundleRequirement } from './bundle-requirement';
 
 export class BundleWireImpl implements BundleWire {
   private readonly requirer: BundleRevision;

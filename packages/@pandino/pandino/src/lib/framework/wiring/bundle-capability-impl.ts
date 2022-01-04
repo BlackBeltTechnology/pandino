@@ -1,6 +1,8 @@
-import { BundleCapability, BundleRevision, MANDATORY_DIRECTIVE, USES_DIRECTIVE } from '@pandino/pandino-api';
+import { MANDATORY_DIRECTIVE, USES_DIRECTIVE } from '@pandino/pandino-api';
 import { ManifestParserImpl } from '../util/manifest-parser/manifest-parser-impl';
 import { isAnyMissing } from '../../utils/helpers';
+import { BundleCapability } from './bundle-capability';
+import { BundleRevision } from '../bundle-revision';
 
 export class BundleCapabilityImpl implements BundleCapability {
   private readonly revision: BundleRevision;

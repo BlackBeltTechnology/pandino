@@ -1,8 +1,6 @@
 import { SemVer } from 'semver';
 import {
-  BundleCapability,
   BundleManifestHeaders,
-  BundleRequirement,
   BUNDLE_COPYRIGHT,
   BUNDLE_DESCRIPTION,
   BUNDLE_MANIFESTVERSION,
@@ -22,6 +20,8 @@ import {
 import { ManifestParserImpl } from './manifest-parser-impl';
 import { BundleRevisionImpl } from '../../bundle-revision-impl';
 import Filter from '../../../filter/filter';
+import { BundleCapability } from '../../wiring/bundle-capability';
+import { BundleRequirement } from '../../wiring/bundle-requirement';
 
 describe('ManifestParderImp', () => {
   it('testIdentityCapabilityMinimal', () => {

@@ -9,7 +9,7 @@ module.exports = {
     'bundle-b': './src/index.ts',
   },
   mode: 'production',
-  devtool: 'source-map',
+  devtool: false,
   module: {
     rules: [
       {

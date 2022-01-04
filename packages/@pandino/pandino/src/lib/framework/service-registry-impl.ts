@@ -1,16 +1,12 @@
 import {
   Bundle,
-  Capability,
   FilterApi,
   Logger,
   OBJECTCLASS,
-  UsageCount,
   SERVICE_ID,
   ServiceProperties,
   ServiceReference,
   ServiceRegistration,
-  ServiceRegistry,
-  ServiceRegistryCallbacks,
 } from '@pandino/pandino-api';
 import { ServiceRegistrationImpl } from './service-registration-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
@@ -20,6 +16,10 @@ import Filter, { FilterComp } from '../filter/filter';
 import { CapabilitySet } from './capability-set/capability-set';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
 import { UsageCountImpl } from './usage-count-impl';
+import { ServiceRegistryCallbacks } from './service-registry-callbacks';
+import { Capability } from './resource/capability';
+import { ServiceRegistry } from './service-registry';
+import { UsageCount } from './usage-count';
 
 export class ServiceRegistryImpl implements ServiceRegistry {
   private readonly logger: Logger;

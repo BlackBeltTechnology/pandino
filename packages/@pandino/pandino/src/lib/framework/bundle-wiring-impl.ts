@@ -1,12 +1,5 @@
 import {
   Bundle,
-  BundleCapability,
-  BundleRequirement,
-  BundleRevision,
-  BundleWire,
-  BundleWiring,
-  Capability,
-  Requirement,
   EFFECTIVE_DIRECTIVE,
   EFFECTIVE_RESOLVE,
   HOST_NAMESPACE,
@@ -17,6 +10,13 @@ import { BundleRevisionImpl } from './bundle-revision-impl';
 import { StatefulResolver } from './stateful-resolver';
 import { isAnyMissing, isAllPresent } from '../utils/helpers';
 import { BundleImpl } from './bundle-impl';
+import { Requirement } from './resource/requirement';
+import { Capability } from './resource/capability';
+import { BundleWiring } from './bundle-wiring';
+import { BundleRevision } from './bundle-revision';
+import { BundleCapability } from './wiring/bundle-capability';
+import { BundleWire } from './wiring/bundle-wire';
+import { BundleRequirement } from './wiring/bundle-requirement';
 
 export class BundleWiringImpl implements BundleWiring {
   private readonly configMap: Record<string, any> = {};

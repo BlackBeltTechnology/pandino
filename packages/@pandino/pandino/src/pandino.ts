@@ -1,7 +1,6 @@
 import {
   Bundle,
   Importer,
-  Framework,
   FrameworkEventType,
   FrameworkListener,
   BundleActivator,
@@ -11,8 +10,6 @@ import {
   BundleManifestHeaders,
   ServiceEvent,
   ServiceProperties,
-  ServiceRegistry,
-  ServiceRegistryCallbacks,
   BundleState,
   Logger,
   Fetcher,
@@ -53,6 +50,9 @@ import { ServiceEventImpl } from './lib/framework/service-event-impl';
 import { BundleRevisionImpl } from './lib/framework/bundle-revision-impl';
 import { VoidFetcher } from './lib/utils/void-fetcher';
 import { VoidImporter } from './lib/utils/void-importer';
+import { Framework } from './lib/framework/framework';
+import { ServiceRegistry } from './lib/framework/service-registry';
+import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
 
 export default class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: Fetcher;
