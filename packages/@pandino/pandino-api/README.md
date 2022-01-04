@@ -1,6 +1,6 @@
 # Pandino-API
 
-Public APIs for `Bundle` developers.
+Public APIs for `Bundle` developers and Pandino users.
 
 > Please check resources under the `src` folder for detailed descriptions.
 
