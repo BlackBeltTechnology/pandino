@@ -8,6 +8,7 @@ Public APIs for `Bundle` developers and Pandino users.
 
 - [Bundle](./src/bundle/bundle.ts)
 - [BundleActivator](./src/bundle/bundle-activator.ts)
+- [BundleContext](./src/bundle/bundle-context.ts)
 - [BundleListener](./src/bundle/bundle-listener.ts)
 - [FrameworkListener](./src/framework/framework-listener.ts)
 - [ServiceListener](./src/service/service-listener.ts)
