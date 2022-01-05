@@ -1,0 +1,17 @@
+{
+  "name": "basic-browser-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install": "lerna bootstrap",
+    "build": "lerna run build",
+    "start": "lerna run --scope app start --stream"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  }
+}

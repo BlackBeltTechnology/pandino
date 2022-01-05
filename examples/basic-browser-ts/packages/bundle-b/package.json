@@ -1,8 +1,8 @@
 {
-  "name": "@pandino/bundle-a",
+  "name": "bundle-b",
   "version": "0.1.0",
   "description": "",
-  "main": "dist/bundle-a.js",
+  "main": "dist/bundle-b.js",
   "private": true,
   "types": "dist/src/index.d.ts",
   "scripts": {
@@ -11,10 +11,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "@pandino/bundle-b": "^0.1.0",
-    "@pandino/pandino-api": "^0.1.0"
+    "@pandino/pandino-api": "file:../../../../packages/@pandino/pandino-api"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^10.1.0",

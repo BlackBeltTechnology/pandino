@@ -1,8 +1,8 @@
 {
-    "packages": [
-      "packages/@pandino/*"
-    ],
-    "hoist": true,
-    "npmClient": "npm",
-    "version": "0.1.0"
+  "packages": [
+    "packages/@pandino/*"
+  ],
+  "hoist": true,
+  "npmClient": "npm",
+  "version": "0.1.0"
 }

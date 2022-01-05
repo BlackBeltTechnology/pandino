@@ -1,6 +1,6 @@
 {
   "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/bundle-a",
+  "Bundle-SymbolicName": "@pandino/examples/basic-browser-ts/bundle-a",
   "Bundle-Name": "Bundle A",
   "Bundle-Version": "0.1.0",
   "Bundle-Description": "Bundle-a!",

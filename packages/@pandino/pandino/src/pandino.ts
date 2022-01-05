@@ -80,7 +80,7 @@ export default class Pandino extends BundleImpl implements Framework {
       [BUNDLE_SYMBOLICNAME]: SYSTEM_BUNDLE_SYMBOLICNAME,
       [BUNDLE_VERSION]: '0.1.0',
       [BUNDLE_NAME]: 'Pandino Framework',
-    });
+    }, '');
 
     this.fetcher = fetcher;
     this.importer = importer;
@@ -177,7 +177,9 @@ export default class Pandino extends BundleImpl implements Framework {
 
     if (!existing) {
       const id = this.getNextId();
-      bundle = new BundleImpl(this.logger, id, resolvedHeaders, this, origin);
+      // FIXME: this could cause issues for loading JS via explicit Header spec!
+      const manifestLocation = typeof locationOrHeaders === 'string' ? locationOrHeaders : '';
+      bundle = new BundleImpl(this.logger, id, resolvedHeaders, manifestLocation, this, origin);
       this.installedBundles.push(bundle);
       this.fireBundleEvent('INSTALLED', bundle, origin);
       this.logger.info(`Installed Bundle: ${resolvedHeaders[BUNDLE_SYMBOLICNAME]}: ${resolvedHeaders[BUNDLE_VERSION]}`);
@@ -532,12 +534,13 @@ export default class Pandino extends BundleImpl implements Framework {
     if (isAnyMissing(activatorDefinition)) {
       return Promise.reject('Missing mandatory Bundle Activator!');
     } else if (typeof activatorDefinition === 'string') {
-      activatorDefinition = activatorDefinition.trim();
+      const activatorPath = Pandino.calculateEffectiveActivatorPath(activatorDefinition, impl.getManifestLocation());
+      this.logger.info(`Attempting to load Activator from: ${activatorPath}`);
       let activatorInstance: any;
       try {
-        activatorInstance = (await this.importer.import(activatorDefinition)).default;
+        activatorInstance = (await this.importer.import(activatorPath)).default;
       } catch (ex) {
-        return Promise.reject('Not found: ' + activatorDefinition + ': ' + ex);
+        return Promise.reject('Not found: ' + activatorPath + ': ' + ex);
       }
       activator =
         typeof activatorInstance === 'function' ? (new activatorInstance() as BundleActivator) : activatorInstance;
@@ -546,6 +549,14 @@ export default class Pandino extends BundleImpl implements Framework {
     }
 
     return Promise.resolve(activator);
+  }
+
+  private static calculateEffectiveActivatorPath(activatorDefinition: string, manifestLocation: string): string {
+    // FIXME: this won't work on Windows with NodeJS, consider providing pre-built importer packages!
+    const safeActivatorDefinition = activatorDefinition.trim().split('/').pop().trim();
+    const lastSlashIndex = manifestLocation.lastIndexOf('/');
+    const pathStart = lastSlashIndex > -1 ? manifestLocation.substring(0, lastSlashIndex).trim() : manifestLocation.trim();
+    return pathStart.length ? pathStart + '/' + safeActivatorDefinition : safeActivatorDefinition;
   }
 
   private async refreshBundle(bundle: BundleImpl): Promise<void> {

@@ -1,5 +1,5 @@
 import { BundleActivator, BundleContext, Fetcher, Logger, ServiceReference } from '@pandino/pandino-api';
-import { StringInverter } from '@pandino/bundle-b';
+import { StringInverter } from 'bundle-b';
 
 export default class BundleAActivator implements BundleActivator {
   private loggerReference: ServiceReference<Logger>;

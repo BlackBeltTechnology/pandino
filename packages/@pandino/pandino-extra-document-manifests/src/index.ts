@@ -20,6 +20,9 @@ export default class PandinoExtraDocumentManifestsActivator implements BundleAct
   async registerDocumentDefinedManifests(context: BundleContext): Promise<void> {
     const documentDefinedManifest = document.querySelector('script[type="pandino-manifests"]');
     let locations: string[];
+    if (!documentDefinedManifest) {
+      throw new Error(`Cannot find manifests definition for selector: 'script[type="pandino-manifests"]'!`);
+    }
     if (documentDefinedManifest.hasAttribute('src')) {
       locations = await this.fetcher.fetch(documentDefinedManifest.getAttribute('src'));
     } else {
