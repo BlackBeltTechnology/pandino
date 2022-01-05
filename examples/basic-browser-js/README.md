@@ -8,6 +8,6 @@ in pure JavaScript.
 - Run `./cp-extra-manifests.sh` in this folder to obtain dependencies
 
 ## Running the example
-Run `npx serve dist -p 5001` to start a web server
+Run `npx serve dist -p 5001` in this folder to start a web server
 
 > Server will start at: http://localhost:5001

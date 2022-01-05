@@ -6,10 +6,15 @@ In this case not only the App it self, but our runtime Bundles are also written 
 
 ## Setup
 - Run `npm run build` in the Git Repository root
-- Run `npm install` in `examples/basic-browser-ts` folder in order to update NPM links to the Pandino built sources
-- Run `./cp-built-dependencies.sh` in the `examples/basic-browser-ts/app` folder to obtain dependencies
+- Run `npm install` in this folder in order to update NPM links to the Pandino built sources
+- Run `./cp-built-dependencies.sh` in the `packages/app` folder to obtain dependencies
 
 ## Running the actual app
-Run `start` to start a web server
+Run `npm start` in the `packages/app` folder to start a Webpack Dev Server
 
-> Server will start at: http://localhost:5001
+> Server will start at: http://localhost:8080
+
+## Bonus
+
+As an added bonus this project customizes the Framework's logging behaviour by printing messages in the DOM tree
+instead of logging into the standard Browser Console ([packages/app/src/dom-logger.ts](./packages/app/src/dom-logger.ts)).
