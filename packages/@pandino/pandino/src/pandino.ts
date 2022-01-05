@@ -76,11 +76,16 @@ export default class Pandino extends BundleImpl implements Framework {
       : new VoidImporter();
     logger.setLogLevel(configMap[LOG_LEVEL_PROP] || LogLevel.LOG);
 
-    super(logger, 0, {
-      [BUNDLE_SYMBOLICNAME]: SYSTEM_BUNDLE_SYMBOLICNAME,
-      [BUNDLE_VERSION]: '0.1.0',
-      [BUNDLE_NAME]: 'Pandino Framework',
-    }, '');
+    super(
+      logger,
+      0,
+      {
+        [BUNDLE_SYMBOLICNAME]: SYSTEM_BUNDLE_SYMBOLICNAME,
+        [BUNDLE_VERSION]: '0.1.0',
+        [BUNDLE_NAME]: 'Pandino Framework',
+      },
+      '',
+    );
 
     this.fetcher = fetcher;
     this.importer = importer;
@@ -555,7 +560,8 @@ export default class Pandino extends BundleImpl implements Framework {
     // FIXME: this won't work on Windows with NodeJS, consider providing pre-built importer packages!
     const safeActivatorDefinition = activatorDefinition.trim().split('/').pop().trim();
     const lastSlashIndex = manifestLocation.lastIndexOf('/');
-    const pathStart = lastSlashIndex > -1 ? manifestLocation.substring(0, lastSlashIndex).trim() : manifestLocation.trim();
+    const pathStart =
+      lastSlashIndex > -1 ? manifestLocation.substring(0, lastSlashIndex).trim() : manifestLocation.trim();
     return pathStart.length ? pathStart + '/' + safeActivatorDefinition : safeActivatorDefinition;
   }
 
