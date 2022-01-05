@@ -14,7 +14,7 @@ export class DomLogger implements Logger {
   }
 
   debug(...data: any[]): void {
-    this.justPrint('#666', '[DEBUG]', ...data);
+    this.justPrint('#999', '[DEBUG]', ...data);
   }
 
   error(...data: any[]): void {
@@ -26,7 +26,7 @@ export class DomLogger implements Logger {
   }
 
   log(...data: any[]): void {
-    this.justPrint('#666', '[LOG]', ...data);
+    this.justPrint('#333', '[LOG]', ...data);
   }
 
   trace(...data: any[]): void {
