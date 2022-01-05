@@ -7,6 +7,7 @@ In this case not only the App it self, but our runtime Bundles are also written 
 ## Setup
 - Run `npm run build` in the Git Repository root
 - Run `npm install` in this folder in order to update NPM links to the Pandino built sources
+- Run `npm run build` in this folder to build dynamically imported Bundles for the `packages/app` project
 - Run `./cp-built-dependencies.sh` in the `packages/app` folder to obtain dependencies
 
 ## Running the actual app

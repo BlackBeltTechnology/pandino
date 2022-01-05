@@ -1,0 +1,8 @@
+{
+  "Bundle-ManifestVersion": "1",
+  "Bundle-SymbolicName": "@pandino/pandino-bundle-installer-dom",
+  "Bundle-Name": "Pandino Bundle Installer DOM",
+  "Bundle-Version": "0.1.0",
+  "Bundle-Description": "Install Bundles defined in a browser's DOM",
+  "Bundle-Activator": "./pandino-bundle-installer-dom.js"
+}

@@ -1,8 +1,8 @@
 {
-  "name": "@pandino/pandino-extra-document-manifests",
+  "name": "@pandino/pandino-bundle-installer-api",
   "version": "0.1.0",
   "description": "",
-  "main": "dist/pandino-extra-document-manifests.js",
+  "main": "dist/pandino-bundle-installer-api.js",
   "private": true,
   "types": "dist/src/index.d.ts",
   "scripts": {
@@ -10,13 +10,9 @@
     "build": "npm run clean && webpack"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@pandino/pandino-api": "^0.1.0"
-  },
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "MIT",
   "devDependencies": {
-    "copy-webpack-plugin": "^10.1.0",
     "rimraf": "^3.0.2",
     "ts-loader": "^9.2.6",
     "typescript": "^4.4.4",

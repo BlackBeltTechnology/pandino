@@ -1,7 +1,7 @@
 {
   "name": "@pandino/pandino",
   "version": "0.1.0",
-  "description": "",
+  "description": "The reference implementation of the Pandino API specification",
   "main": "dist/pandino.js",
   "private": true,
   "types": "dist/src/pandino.d.ts",
@@ -11,7 +11,7 @@
     "build": "npm run clean && webpack"
   },
   "keywords": [],
-  "author": "",
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "ISC",
   "dependencies": {
     "semver": "^7.3.5"

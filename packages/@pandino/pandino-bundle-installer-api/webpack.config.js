@@ -1,15 +1,10 @@
 const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  experiments: {
-    outputModule: true,
-  },
   entry: {
-    'pandino-extra-document-manifests': './src/index.ts',
+    'pandino-bundle-installer-api': './src/index.ts',
   },
   mode: 'production',
-  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -24,17 +19,13 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
+    libraryTarget: 'umd',
     library: {
-      type: 'module',
+      name: 'PandinoBundleInstallerAPI',
+      type: 'commonjs',
     },
     umdNamedDefine: true,
+    globalObject: 'this',
     path: path.resolve(__dirname, 'dist'),
   },
-  plugins: [
-    new CopyPlugin({
-      patterns: [
-        { from: "assets", to: "" },
-      ],
-    }),
-  ],
 };

@@ -26,8 +26,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   await pandino.getBundleContext().installBundle('./assets/external-bundles/bundle-a-manifest.json');
 
   window.setTimeout(() => {
-    pandino
-      .getBundleContext()
-      .installBundle('./assets/external-bundles/pandino-extra-document-manifests-manifest.json');
+    pandino.getBundleContext().installBundle('./assets/external-bundles/pandino-bundle-installer-dom-manifest.json');
   }, 2000);
 });

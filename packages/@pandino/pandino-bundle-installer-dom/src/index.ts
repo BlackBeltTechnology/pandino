@@ -1,14 +1,16 @@
 import { BundleActivator, BundleContext, Fetcher, ServiceReference } from '@pandino/pandino-api';
+import { BundleInstaller } from '@pandino/pandino-bundle-installer-api';
 
-export default class PandinoExtraDocumentManifestsActivator implements BundleActivator {
+export default class PandinoBundleInstallerDomActivator implements BundleActivator, BundleInstaller {
+  private context: BundleContext;
   private fetcherReference: ServiceReference<Fetcher>;
   private fetcher: Fetcher;
 
   async start(context: BundleContext): Promise<void> {
+    this.context = context;
     this.fetcherReference = context.getServiceReference<Fetcher>('@pandino/pandino/Fetcher');
     this.fetcher = context.getService<Fetcher>(this.fetcherReference);
-    await this.registerDocumentDefinedManifests(context);
-    return Promise.resolve();
+    await this.registerDocumentDefinedManifests(); // Not awaiting intentionally
   }
 
   stop(context: BundleContext): Promise<void> {
@@ -17,7 +19,7 @@ export default class PandinoExtraDocumentManifestsActivator implements BundleAct
     return Promise.resolve();
   }
 
-  async registerDocumentDefinedManifests(context: BundleContext): Promise<void> {
+  async registerDocumentDefinedManifests(): Promise<void> {
     const documentDefinedManifest = document.querySelector('script[type="pandino-manifests"]');
     let locations: string[];
     if (!documentDefinedManifest) {
@@ -28,8 +30,18 @@ export default class PandinoExtraDocumentManifestsActivator implements BundleAct
     } else {
       locations = documentDefinedManifest ? JSON.parse(documentDefinedManifest.textContent) : [];
     }
-    await Promise.all(locations.map((manifestLocation) => context.installBundle(manifestLocation)));
+    await Promise.all(locations.map((manifestLocation) => this.install(manifestLocation)));
+  }
 
-    return Promise.resolve();
+  async install(path: string): Promise<void> {
+    await this.context.installBundle(path);
+  }
+
+  async uninstall(path: string): Promise<void> {
+    // Changing tracking on DOM for manifests is not supported yet
+  }
+
+  async update(path: string): Promise<void> {
+    // Changing tracking on DOM for manifests is not supported yet
   }
 }

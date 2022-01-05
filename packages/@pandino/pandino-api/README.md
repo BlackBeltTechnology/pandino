@@ -1,4 +1,4 @@
-# Pandino-API
+# Pandino API
 
 Public APIs for `Bundle` developers and Pandino users.
 

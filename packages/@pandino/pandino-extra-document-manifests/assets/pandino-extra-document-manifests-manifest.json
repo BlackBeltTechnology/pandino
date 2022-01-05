@@ -1,8 +1,0 @@
-{
-  "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/pandino-extra-document-manifests",
-  "Bundle-Name": "Extra Document Manifests",
-  "Bundle-Version": "0.1.0",
-  "Bundle-Description": "Load additional Bundles through pre-defined html scripts",
-  "Bundle-Activator": "./pandino-extra-document-manifests.js"
-}
