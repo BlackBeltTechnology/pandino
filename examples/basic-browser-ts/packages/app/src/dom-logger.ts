@@ -1,13 +1,12 @@
 import { Logger, LogLevel } from '@pandino/pandino-api';
 
 export class DomLogger implements Logger {
-  private readonly logUl: HTMLElement;
+  private readonly logContainer: HTMLElement;
   private level: LogLevel = LogLevel.LOG;
 
   constructor(domContainer: HTMLElement) {
-    this.logUl = document.createElement('ul');
-    this.logUl.setAttribute('style', 'list-style="none"');
-    domContainer.appendChild(this.logUl);
+    this.logContainer = document.createElement('table');
+    domContainer.appendChild(this.logContainer);
   }
 
   setLogLevel(level: LogLevel): void {
@@ -15,33 +14,48 @@ export class DomLogger implements Logger {
   }
 
   debug(...data: any[]): void {
-    this.justPrint('#666', ...data);
+    this.justPrint('#666', '[DEBUG]', ...data);
   }
 
   error(...data: any[]): void {
-    this.justPrint('#a82222', ...data);
+    this.justPrint('#a82222', '[ERROR]', ...data);
   }
 
   info(...data: any[]): void {
-    this.justPrint('#2d96ad', ...data);
+    this.justPrint('#2d96ad', '[INFO]', ...data);
   }
 
   log(...data: any[]): void {
-    this.justPrint('#666', ...data);
+    this.justPrint('#666', '[LOG]', ...data);
   }
 
   trace(...data: any[]): void {
-    this.justPrint('#999', ...data);
+    this.justPrint('#999', '[TRACE]', ...data);
   }
 
   warn(...data: any[]): void {
-    this.justPrint('#e0660a', ...data);
+    this.justPrint('#e0660a', '[WARN]', ...data);
   }
 
-  private justPrint(color: string, ...data: any[]) {
-    const liItem = document.createElement('li');
-    liItem.textContent = data.map((e) => e.toString()).join('\n');
-    liItem.setAttribute('style', `color:${color}`);
-    this.logUl.appendChild(liItem);
+  private justPrint(color: string, level: string, ...data: any[]) {
+    const cellPadding = 'padding:.25rem';
+    const logEntryElement = document.createElement('tr');
+    const dateCell = document.createElement('td');
+    const levelCell = document.createElement('td');
+    const messageCell = document.createElement('td');
+
+    dateCell.textContent = new Date().toISOString();
+    dateCell.setAttribute('style', cellPadding);
+    levelCell.textContent = level;
+    levelCell.setAttribute('style', cellPadding);
+    messageCell.textContent = data.map((e) => e.toString()).join('');
+    messageCell.setAttribute('style', cellPadding);
+
+    logEntryElement.setAttribute('style', `color:${color}`);
+    logEntryElement.appendChild(dateCell);
+    logEntryElement.appendChild(levelCell);
+    logEntryElement.appendChild(messageCell);
+
+    this.logContainer.appendChild(logEntryElement);
   }
 }
