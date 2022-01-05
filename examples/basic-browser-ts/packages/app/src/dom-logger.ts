@@ -1,4 +1,4 @@
-import {Logger, LogLevel} from "@pandino/pandino-api";
+import { Logger, LogLevel } from '@pandino/pandino-api';
 
 export class DomLogger implements Logger {
   private readonly logUl: HTMLElement;
@@ -40,7 +40,7 @@ export class DomLogger implements Logger {
 
   private justPrint(color: string, ...data: any[]) {
     const liItem = document.createElement('li');
-    liItem.textContent = data.map(e => e.toString()).join('\n');
+    liItem.textContent = data.map((e) => e.toString()).join('\n');
     liItem.setAttribute('style', `color:${color}`);
     this.logUl.appendChild(liItem);
   }

@@ -1,10 +1,12 @@
-import Pandino from "@pandino/pandino";
+import Pandino from '@pandino/pandino';
 import {
   LOG_LEVEL_PROP,
   LOG_LOGGER_PROP,
-  LogLevel, PANDINO_FETCHER_PROP, PANDINO_IMPORTER_PROP
-} from "@pandino/pandino-api";
-import {DomLogger} from "./dom-logger";
+  LogLevel,
+  PANDINO_FETCHER_PROP,
+  PANDINO_IMPORTER_PROP,
+} from '@pandino/pandino-api';
+import { DomLogger } from './dom-logger';
 
 window.addEventListener('DOMContentLoaded', async () => {
   const pandino = new Pandino({
@@ -24,6 +26,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   await pandino.getBundleContext().installBundle('./assets/external-bundles/bundle-a-manifest.json');
 
   window.setTimeout(() => {
-    pandino.getBundleContext().installBundle('./assets/external-bundles/pandino-extra-document-manifests-manifest.json');
+    pandino
+      .getBundleContext()
+      .installBundle('./assets/external-bundles/pandino-extra-document-manifests-manifest.json');
   }, 2000);
 });

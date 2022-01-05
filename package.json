@@ -8,7 +8,8 @@
     "build": "lerna run build",
     "start": "lerna run --scope @pandino/example start --stream",
     "test": "lerna run --scope @pandino/pandino test --stream",
-    "format": "prettier --config .prettierrc packages/@pandino/*/src/**/*.ts --write"
+    "format": "prettier --config .prettierrc packages/@pandino/*/src/**/*.ts --write",
+    "format-examples": "prettier --config .prettierrc examples/*/packages/*/src/**/*.ts --write"
   },
   "devDependencies": {
     "lerna": "^4.0.0",
