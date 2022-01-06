@@ -10,13 +10,13 @@
     "build": "npm run clean && webpack"
   },
   "keywords": [],
-  "author": "",
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "MIT",
   "dependencies": {
-    "@pandino/pandino-api": "file:../../../../packages/@pandino/pandino-api",
     "bundle-b": "^0.1.0"
   },
   "devDependencies": {
+    "@pandino/pandino-api": "file:../../../../packages/@pandino/pandino-api",
     "copy-webpack-plugin": "^10.1.0",
     "rimraf": "^3.0.2",
     "ts-loader": "^9.2.6",

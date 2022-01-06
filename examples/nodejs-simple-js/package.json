@@ -1,0 +1,17 @@
+{
+  "name": "nodejs-simple-js",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "MIT",
+  "dependencies": {
+    "@pandino/pandino": "file:../../packages/@pandino/pandino",
+    "express": "^4.17.2"
+  }
+}

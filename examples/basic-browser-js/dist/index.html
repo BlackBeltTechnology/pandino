@@ -19,11 +19,12 @@
       window.addEventListener('DOMContentLoaded', async () => {
         const Pandino = (await import('./pandino.js')).default;
         const pandino = new Pandino({
-          'pandino.importer': {
-            import: (activator) => import(activator),
+          'pandino.deployment.root': location.href,
+          'pandino.bundle.importer': {
+            import: (deploymentRoot, activatorLocation) => import(activatorLocation),
           },
-          'pandino.fetcher': {
-            fetch: async (uri) => (await fetch(uri)).json(),
+          'pandino.manifest.fetcher': {
+            fetch: async (deploymentRoot, uri) => (await fetch(uri)).json(),
           },
         });
 
