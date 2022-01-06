@@ -4,3 +4,4 @@ Please read every example project's `README.md` carefully, since almost _- if no
 
 - [basic-browser-js](./basic-browser-js)
 - [basic-browser-ts](./basic-browser-ts)
+- [nodejs-simple-js](./nodejs-simple-js)
