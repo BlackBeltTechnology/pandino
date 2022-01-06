@@ -1,15 +1,21 @@
-import { BundleActivator, BundleContext, Fetcher, ServiceReference } from '@pandino/pandino-api';
+import {
+  BundleActivator,
+  BundleContext,
+  DEPLOYMENT_ROOT_PROP,
+  ManifestFetcher,
+  ServiceReference,
+} from '@pandino/pandino-api';
 import { BundleInstaller } from '@pandino/pandino-bundle-installer-api';
 
 export default class PandinoBundleInstallerDomActivator implements BundleActivator, BundleInstaller {
   private context: BundleContext;
-  private fetcherReference: ServiceReference<Fetcher>;
-  private fetcher: Fetcher;
+  private fetcherReference: ServiceReference<ManifestFetcher>;
+  private fetcher: ManifestFetcher;
 
   async start(context: BundleContext): Promise<void> {
     this.context = context;
-    this.fetcherReference = context.getServiceReference<Fetcher>('@pandino/pandino/Fetcher');
-    this.fetcher = context.getService<Fetcher>(this.fetcherReference);
+    this.fetcherReference = context.getServiceReference<ManifestFetcher>('@pandino/pandino/ManifestFetcher');
+    this.fetcher = context.getService<ManifestFetcher>(this.fetcherReference);
     await this.registerDocumentDefinedManifests(); // Not awaiting intentionally
   }
 
@@ -26,7 +32,10 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
       throw new Error(`Cannot find manifests definition for selector: 'script[type="pandino-manifests"]'!`);
     }
     if (documentDefinedManifest.hasAttribute('src')) {
-      locations = await this.fetcher.fetch(documentDefinedManifest.getAttribute('src'));
+      locations = await this.fetcher.fetch(
+        this.context.getProperty(DEPLOYMENT_ROOT_PROP),
+        documentDefinedManifest.getAttribute('src'),
+      );
     } else {
       locations = documentDefinedManifest ? JSON.parse(documentDefinedManifest.textContent) : [];
     }

@@ -10,15 +10,18 @@ import {
   BundleListener,
   BundleManifestHeaders,
   FrameworkListener,
-  Importer,
+  BundleImporter,
   LOG_LEVEL_PROP,
   Logger,
   LogLevel,
   OBJECTCLASS,
-  PANDINO_IMPORTER_PROP,
+  PANDINO_BUNDLE_IMPORTER_PROP,
   ServiceListener,
   ServiceReference,
   SYSTEM_BUNDLE_SYMBOLICNAME,
+  FrameworkConfigMap,
+  DEPLOYMENT_ROOT_PROP,
+  PANDINO_MANIFEST_FETCHER_PROP,
 } from '@pandino/pandino-api';
 import { MuteLogger } from '../../__mocks__/mute-logger';
 import { BundleContextImpl } from './bundle-context-impl';
@@ -37,8 +40,8 @@ describe('BundleContextImpl', () => {
     start: jest.fn(),
     stop: jest.fn(),
   };
-  const importer: Importer = {
-    import: (activator: string) =>
+  const importer: BundleImporter = {
+    import: (root: string, activator: string, manifest: string) =>
       Promise.resolve({
         default: dummyActivator,
       }),
@@ -68,7 +71,7 @@ describe('BundleContextImpl', () => {
   const serviceChangedListener: ServiceListener = {
     serviceChanged,
   };
-  let params: Record<string, any>;
+  let params: FrameworkConfigMap;
   let logger: Logger;
   let pandino: Pandino;
   let bundle: Bundle;
@@ -81,8 +84,10 @@ describe('BundleContextImpl', () => {
     serviceChanged.mockClear();
     logger = new MuteLogger();
     params = {
+      [DEPLOYMENT_ROOT_PROP]: '',
+      [PANDINO_MANIFEST_FETCHER_PROP]: jest.fn() as any,
+      [PANDINO_BUNDLE_IMPORTER_PROP]: importer,
       [LOG_LEVEL_PROP]: LogLevel.WARN,
-      [PANDINO_IMPORTER_PROP]: importer,
       'custom-prop': 'custom-value',
     };
     pandino = new Pandino(params);

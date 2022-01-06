@@ -50,6 +50,10 @@ export class StatefulResolver {
       } catch (err) {
         this.logger.error(err);
       }
+    } else {
+      this.logger.debug(
+        `No Wiring found for Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`,
+      );
     }
   }
 

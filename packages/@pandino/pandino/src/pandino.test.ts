@@ -12,16 +12,19 @@ import {
   FRAMEWORK_UUID,
   PROVIDE_CAPABILITY,
   REQUIRE_CAPABILITY,
-  PANDINO_IMPORTER_PROP,
+  PANDINO_BUNDLE_IMPORTER_PROP,
   SYSTEM_BUNDLE_SYMBOLICNAME,
-  Importer,
+  BundleImporter,
   LOG_LEVEL_PROP,
   LogLevel,
+  FrameworkConfigMap,
+  DEPLOYMENT_ROOT_PROP,
+  PANDINO_MANIFEST_FETCHER_PROP,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 
 describe('Pandino', () => {
-  let params: Record<string, any>;
+  let params: FrameworkConfigMap;
   let pandino: Pandino;
   const mockStart = jest.fn().mockReturnValue(Promise.resolve());
   const mockStop = jest.fn().mockReturnValue(Promise.resolve());
@@ -29,8 +32,8 @@ describe('Pandino', () => {
     start: mockStart,
     stop: mockStop,
   };
-  const importer: Importer = {
-    import: (activator: string) =>
+  const importer: BundleImporter = {
+    import: (root: string, activator: string, manifest: string) =>
       Promise.resolve({
         default: dummyActivator,
       }),
@@ -63,8 +66,10 @@ describe('Pandino', () => {
     mockStart.mockClear();
     mockStop.mockClear();
     params = {
+      [DEPLOYMENT_ROOT_PROP]: '',
+      [PANDINO_MANIFEST_FETCHER_PROP]: jest.fn() as any,
+      [PANDINO_BUNDLE_IMPORTER_PROP]: importer,
       [LOG_LEVEL_PROP]: LogLevel.WARN,
-      [PANDINO_IMPORTER_PROP]: importer,
     };
     pandino = new Pandino(params);
   });

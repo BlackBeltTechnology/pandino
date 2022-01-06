@@ -1,6 +1,6 @@
 import {
   Bundle,
-  Importer,
+  BundleImporter,
   FrameworkEventType,
   FrameworkListener,
   BundleActivator,
@@ -12,12 +12,11 @@ import {
   ServiceProperties,
   BundleState,
   Logger,
-  Fetcher,
+  ManifestFetcher,
   BUNDLE_ACTIVATOR,
   BUNDLE_NAME,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
-  FRAMEWORK_FETCHER,
   FRAMEWORK_UUID,
   SYSTEMBUNDLE_ACTIVATORS_PROP,
   LOG_LOGGER_PROP,
@@ -29,10 +28,12 @@ import {
   ServiceRegistration,
   OBJECTCLASS,
   SYSTEM_BUNDLE_SYMBOLICNAME,
-  PANDINO_IMPORTER_PROP,
-  PANDINO_FETCHER_PROP,
-  FRAMEWORK_IMPORTER,
+  PANDINO_BUNDLE_IMPORTER_PROP,
+  PANDINO_MANIFEST_FETCHER_PROP,
   FRAMEWORK_LOGGER,
+  DEPLOYMENT_ROOT_PROP,
+  FRAMEWORK_MANIFEST_FETCHER,
+  FRAMEWORK_BUNDLE_IMPORTER,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { EventDispatcher } from './lib/framework/event-dispatcher';
@@ -53,10 +54,11 @@ import { VoidImporter } from './lib/utils/void-importer';
 import { Framework } from './lib/framework/framework';
 import { ServiceRegistry } from './lib/framework/service-registry';
 import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
+import { FrameworkConfigMap } from '@pandino/pandino-api/src';
 
 export default class Pandino extends BundleImpl implements Framework {
-  private readonly fetcher: Fetcher;
-  private readonly importer: Importer;
+  private readonly fetcher: ManifestFetcher;
+  private readonly importer: BundleImporter;
   private readonly configMap: Map<string, any> = new Map<string, any>();
   private readonly installedBundles: Bundle[] = [];
   private readonly activatorsList: BundleActivator[] = [];
@@ -66,13 +68,14 @@ export default class Pandino extends BundleImpl implements Framework {
   private readonly registry: ServiceRegistry;
   private nextId = 1;
 
-  constructor(configMap: Record<string, any> = {}) {
+  constructor(configMap: FrameworkConfigMap) {
+    const deploymentRoot: string = isAllPresent(configMap[DEPLOYMENT_ROOT_PROP]) ? configMap[DEPLOYMENT_ROOT_PROP] : '';
     const logger: Logger = isAllPresent(configMap[LOG_LOGGER_PROP]) ? configMap[LOG_LOGGER_PROP] : new ConsoleLogger();
-    const fetcher: Fetcher = isAllPresent(configMap[PANDINO_FETCHER_PROP])
-      ? configMap[PANDINO_FETCHER_PROP]
+    const fetcher: ManifestFetcher = isAllPresent(configMap[PANDINO_MANIFEST_FETCHER_PROP])
+      ? configMap[PANDINO_MANIFEST_FETCHER_PROP]
       : new VoidFetcher();
-    const importer: Importer = isAllPresent(configMap[PANDINO_IMPORTER_PROP])
-      ? configMap[PANDINO_IMPORTER_PROP]
+    const importer: BundleImporter = isAllPresent(configMap[PANDINO_BUNDLE_IMPORTER_PROP])
+      ? configMap[PANDINO_BUNDLE_IMPORTER_PROP]
       : new VoidImporter();
     logger.setLogLevel(configMap[LOG_LEVEL_PROP] || LogLevel.LOG);
 
@@ -84,6 +87,7 @@ export default class Pandino extends BundleImpl implements Framework {
         [BUNDLE_VERSION]: '0.1.0',
         [BUNDLE_NAME]: 'Pandino Framework',
       },
+      deploymentRoot,
       '',
     );
 
@@ -92,6 +96,7 @@ export default class Pandino extends BundleImpl implements Framework {
     Object.keys(configMap).forEach((configKey) => {
       this.configMap.set(configKey, configMap[configKey]);
     });
+    this.configMap.set(DEPLOYMENT_ROOT_PROP, deploymentRoot);
     this.activatorsList = this.configMap.get(SYSTEMBUNDLE_ACTIVATORS_PROP) || [];
     this.registry = new ServiceRegistryImpl(
       this.logger,
@@ -136,8 +141,8 @@ export default class Pandino extends BundleImpl implements Framework {
       if (this.getState() === 'STARTING') {
         // TODO: implement missing parts!
         this.getBundleContext().registerService(FRAMEWORK_LOGGER, this.logger);
-        this.getBundleContext().registerService(FRAMEWORK_FETCHER, this.fetcher);
-        this.getBundleContext().registerService(FRAMEWORK_IMPORTER, this.importer);
+        this.getBundleContext().registerService(FRAMEWORK_MANIFEST_FETCHER, this.fetcher);
+        this.getBundleContext().registerService(FRAMEWORK_BUNDLE_IMPORTER, this.importer);
         this.setBundleStateAndNotify(this, 'ACTIVE');
       }
     } catch (err) {
@@ -176,7 +181,9 @@ export default class Pandino extends BundleImpl implements Framework {
     }
 
     const resolvedHeaders: BundleManifestHeaders =
-      typeof locationOrHeaders === 'string' ? await this.fetcher.fetch(locationOrHeaders) : locationOrHeaders;
+      typeof locationOrHeaders === 'string'
+        ? await this.fetcher.fetch(this.getDeploymentRoot(), locationOrHeaders)
+        : locationOrHeaders;
     let bundle: BundleImpl;
     let existing: Bundle = this.isBundleInstalled(resolvedHeaders);
 
@@ -184,7 +191,15 @@ export default class Pandino extends BundleImpl implements Framework {
       const id = this.getNextId();
       // FIXME: this could cause issues for loading JS via explicit Header spec!
       const manifestLocation = typeof locationOrHeaders === 'string' ? locationOrHeaders : '';
-      bundle = new BundleImpl(this.logger, id, resolvedHeaders, manifestLocation, this, origin);
+      bundle = new BundleImpl(
+        this.logger,
+        id,
+        resolvedHeaders,
+        this.getDeploymentRoot(),
+        manifestLocation,
+        this,
+        origin,
+      );
       this.installedBundles.push(bundle);
       this.fireBundleEvent('INSTALLED', bundle, origin);
       this.logger.info(`Installed Bundle: ${resolvedHeaders[BUNDLE_SYMBOLICNAME]}: ${resolvedHeaders[BUNDLE_VERSION]}`);
@@ -372,7 +387,7 @@ export default class Pandino extends BundleImpl implements Framework {
   }
 
   isBundleInstalled(headers: BundleManifestHeaders): Bundle | undefined {
-    return this.installedBundles.find((b) => b.getSymbolicName() === headers['Bundle-SymbolicName']);
+    return this.installedBundles.find((b) => b.getSymbolicName() === headers[BUNDLE_SYMBOLICNAME]);
   }
 
   fireBundleEvent(type: BundleEventType, bundle: Bundle, origin?: Bundle): void {
@@ -539,13 +554,14 @@ export default class Pandino extends BundleImpl implements Framework {
     if (isAnyMissing(activatorDefinition)) {
       return Promise.reject('Missing mandatory Bundle Activator!');
     } else if (typeof activatorDefinition === 'string') {
-      const activatorPath = Pandino.calculateEffectiveActivatorPath(activatorDefinition, impl.getManifestLocation());
-      this.logger.info(`Attempting to load Activator from: ${activatorPath}`);
+      this.logger.info(`Attempting to load Activator from: ${activatorDefinition}`);
       let activatorInstance: any;
       try {
-        activatorInstance = (await this.importer.import(activatorPath)).default;
+        activatorInstance = (
+          await this.importer.import(this.getDeploymentRoot(), activatorDefinition, this.getManifestLocation())
+        ).default;
       } catch (ex) {
-        return Promise.reject('Not found: ' + activatorPath + ': ' + ex);
+        return Promise.reject('Not found: ' + activatorDefinition + ': ' + ex);
       }
       activator =
         typeof activatorInstance === 'function' ? (new activatorInstance() as BundleActivator) : activatorInstance;
@@ -554,15 +570,6 @@ export default class Pandino extends BundleImpl implements Framework {
     }
 
     return Promise.resolve(activator);
-  }
-
-  private static calculateEffectiveActivatorPath(activatorDefinition: string, manifestLocation: string): string {
-    // FIXME: this won't work on Windows with NodeJS, consider providing pre-built importer packages!
-    const safeActivatorDefinition = activatorDefinition.trim().split('/').pop().trim();
-    const lastSlashIndex = manifestLocation.lastIndexOf('/');
-    const pathStart =
-      lastSlashIndex > -1 ? manifestLocation.substring(0, lastSlashIndex).trim() : manifestLocation.trim();
-    return pathStart.length ? pathStart + '/' + safeActivatorDefinition : safeActivatorDefinition;
   }
 
   private async refreshBundle(bundle: BundleImpl): Promise<void> {

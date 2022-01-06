@@ -1,6 +1,7 @@
 {
   "name": "@pandino/pandino",
   "version": "0.1.0",
+  "type": "module",
   "description": "The reference implementation of the Pandino API specification",
   "main": "dist/pandino.js",
   "private": true,

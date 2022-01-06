@@ -17,6 +17,7 @@ import { BundleRevision } from './bundle-revision';
 export class BundleImpl implements Bundle {
   private readonly id: number;
   private readonly manifestLocation: string;
+  private readonly deploymentRoot: string;
   private readonly headers: BundleManifestHeaders;
   private readonly pandino?: Pandino;
   private readonly installingBundle?: Bundle;
@@ -32,12 +33,14 @@ export class BundleImpl implements Bundle {
     logger: Logger,
     id: number,
     headers: BundleManifestHeaders,
+    deploymentRoot: string,
     manifestLocation: string,
     pandino?: Pandino,
     installingBundle?: Bundle,
   ) {
     this.logger = logger;
     this.id = id;
+    this.deploymentRoot = deploymentRoot;
     this.manifestLocation = manifestLocation;
     this.useDeclaredActivationPolicy = false;
     this.state = 'INSTALLED';
@@ -122,6 +125,10 @@ export class BundleImpl implements Bundle {
 
   setActivator(activator: BundleActivator): void {
     this.activator = activator;
+  }
+
+  getDeploymentRoot(): string {
+    return this.deploymentRoot;
   }
 
   getManifestLocation(): string {
