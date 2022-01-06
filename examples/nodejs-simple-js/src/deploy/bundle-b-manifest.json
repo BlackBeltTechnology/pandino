@@ -1,9 +1,9 @@
 {
   "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/examples-nodejs-simple-js/echo-resource",
+  "Bundle-SymbolicName": "@pandino/examples-basic-browser-js-bundle-b",
   "Bundle-Name": "Bundle B",
   "Bundle-Version": "0.1.0",
   "Bundle-Description": "Yayy, bundle-b!",
-  "Bundle-Activator": "./echo-resource.js",
+  "Bundle-Activator": "./bundle-b.js",
   "Provide-Capability": "pet.grooming;type:Array=\"dog,cat\";length:number=800;soap=\"organic\";rate:number=\"10\""
 }

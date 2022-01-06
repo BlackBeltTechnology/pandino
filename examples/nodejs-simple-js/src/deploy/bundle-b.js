@@ -3,9 +3,9 @@ export default class BundleActivator {
     this.loggerReference = context.getServiceReference('@pandino/pandino/Logger');
     this.logger = context.getService(this.loggerReference);
 
-    this.logger.log('Echo Resource - Activator');
+    this.logger.log('Bundle B - Activator');
 
-    context.registerService('@pandino/echo-resource/StringInverter', stringInverterImpl);
+    context.registerService('@pandino/bundle-b/StringInverter', stringInverterImpl);
 
     return Promise.resolve();
   }

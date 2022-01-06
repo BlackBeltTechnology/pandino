@@ -20,7 +20,7 @@ const __dirname = path.dirname(__filename);
     },
     'pandino.manifest.fetcher': {
       fetch: async (deploymentRoot, uri) => {
-        const data = fs.readFileSync(path.normalize(uri), { encoding: 'utf8' });
+        const data = fs.readFileSync(path.normalize(path.join(deploymentRoot, uri)), { encoding: 'utf8' });
         return JSON.parse(data);
       },
     },
@@ -29,7 +29,8 @@ const __dirname = path.dirname(__filename);
   await pandino.init();
   await pandino.start();
 
-  await pandino.getBundleContext().installBundle(path.normalize(path.join(__dirname, 'deploy/echo-resource-manifest.json')));
+  await pandino.getBundleContext().installBundle('./bundle-a-manifest.json');
+  await pandino.getBundleContext().installBundle('./bundle-b-manifest.json');
 
   app.get('/', (req, res) => {
     res.send('Hello World!');
