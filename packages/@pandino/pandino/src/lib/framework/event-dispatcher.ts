@@ -4,7 +4,6 @@ import {
   BundleListener,
   ServiceEvent,
   ServiceListener,
-  ServiceReference,
   Logger,
   FilterApi,
   FrameworkEvent,
@@ -17,7 +16,10 @@ import { BundleImpl } from './bundle-impl';
 import { BundleEventImpl } from './bundle-event-impl';
 import { FrameworkEventImpl } from './framework-event-impl';
 import { ServiceEventImpl } from './service-event-impl';
-import { isAnyMissing } from '../utils/helpers';
+import { isAllPresent, isAnyMissing } from '../utils/helpers';
+import { CapabilitySet } from './capability-set/capability-set';
+import { Capability } from './resource/capability';
+import Filter from '../filter/filter';
 
 export type ListenerType = 'BUNDLE' | 'FRAMEWORK' | 'SERVICE';
 
@@ -95,9 +97,10 @@ export class EventDispatcher {
     if (!validBundleStateTypes.includes(bundle.getState())) {
       return;
     }
-    const ref: ServiceReference<any> = event.getServiceReference();
 
-    let matched = isAnyMissing(filter) || filter.match(event.getServiceReference());
+    let matched =
+      isAnyMissing(filter) ||
+      CapabilitySet.matches(event.getServiceReference() as unknown as Capability, filter as Filter);
 
     if (matched) {
       listener.serviceChanged(event);
@@ -252,10 +255,44 @@ export class EventDispatcher {
 
   updateListener(bc: BundleContext, type: ListenerType, listener: any, filter?: FilterApi): FilterApi {
     if (type === 'SERVICE') {
-      // TODO: later...
+      // Verify that the bundle context is still valid.
+      try {
+        bc.getBundle();
+      } catch (err) {
+        return null;
+      }
+
+      const infos: Array<ListenerInfo> = this.svcListeners.get(bc);
+      for (let i = 0; isAllPresent(infos) && i < infos.length; i++) {
+        const info: ListenerInfo = infos[i];
+        if (info.getBundleContext().equals(bc) && info.getListener() === listener) {
+          // The spec says to update the filter in this case.
+          const oldFilter = info.getParsedFilter();
+          const newInfo = new ListenerInfo(null, info.getBundle(), info.getBundleContext(), info.getListener(), filter);
+          this.svcListeners = EventDispatcher.updateListenerInfo(this.svcListeners, i, newInfo);
+          return oldFilter;
+        }
+      }
     }
 
     return null;
+  }
+
+  private static updateListenerInfo(
+    listeners: Map<BundleContext, Array<ListenerInfo>>,
+    idx: number,
+    info: ListenerInfo,
+  ): Map<BundleContext, Array<ListenerInfo>> {
+    let copy: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(listeners);
+    let infos: Array<ListenerInfo> = copy.get(info.getBundleContext());
+    copy.delete(info.getBundleContext());
+    if (isAllPresent(infos)) {
+      infos = [...infos];
+      infos[idx] = info;
+      copy.set(info.getBundleContext(), infos);
+      return copy;
+    }
+    return listeners;
   }
 
   private static addListenerInfo(

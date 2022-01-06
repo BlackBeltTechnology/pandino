@@ -9,7 +9,7 @@ module.exports = {
     'pandino-bundle-installer-dom': './src/index.ts',
   },
   mode: 'production',
-  devtool: 'source-map',
+  devtool: false,
   module: {
     rules: [
       {

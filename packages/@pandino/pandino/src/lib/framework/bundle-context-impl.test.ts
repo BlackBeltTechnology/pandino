@@ -226,6 +226,18 @@ describe('BundleContextImpl', () => {
     expect(event0.getType()).toEqual('REGISTERED');
   });
 
+  it('addServiceListener() with filter', () => {
+    bundleContext.addServiceListener(serviceChangedListener, '(objectClass=@scope/some/filtered/service)');
+    bundleContext.registerService<MockService>('@scope/some/filtered/service', mockService);
+    const event0: ServiceEventImpl = serviceChanged.mock.calls[0][0];
+
+    expect(serviceChanged).toHaveBeenCalledTimes(1);
+
+    expect(event0.getServiceReference().getBundle().getSymbolicName()).toEqual('my.bundle');
+    expect(event0.getServiceReference().getProperty(OBJECTCLASS)).toEqual('@scope/some/filtered/service');
+    expect(event0.getType()).toEqual('REGISTERED');
+  });
+
   it('removeServiceListener()', () => {
     bundleContext.addServiceListener(serviceChangedListener);
     bundleContext.removeServiceListener(serviceChangedListener);

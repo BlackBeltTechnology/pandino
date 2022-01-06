@@ -1,4 +1,4 @@
-# pandino-extra-document-manifests
+# pandino-bundle-installer-dom
 
 A Pandino Bundle which can load external Bundles defined in a dedicated DOM node.
 
