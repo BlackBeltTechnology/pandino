@@ -1,0 +1,28 @@
+{
+  "name": "@pandino/pandino-bundle-installer-nodejs",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/pandino-bundle-installer-nodejs.js",
+  "private": true,
+  "types": "dist/src/index.d.ts",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npm run clean && webpack"
+  },
+  "keywords": [],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "MIT",
+  "peerDependencies": {
+    "chokidar": "^3.5.2"
+  },
+  "devDependencies": {
+    "@pandino/pandino-api": "^0.1.0",
+    "@pandino/pandino-bundle-installer-api": "^0.1.0",
+    "copy-webpack-plugin": "^10.1.0",
+    "rimraf": "^3.0.2",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.4.4",
+    "webpack": "^5.58.1",
+    "webpack-cli": "^4.9.0"
+  }
+}
