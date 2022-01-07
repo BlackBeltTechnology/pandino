@@ -1,0 +1,8 @@
+{
+  "Bundle-ManifestVersion": "1",
+  "Bundle-SymbolicName": "@pandino/examples-basic-browser-js-express-list",
+  "Bundle-Name": "Express List Resource",
+  "Bundle-Version": "0.1.0",
+  "Bundle-Description": "Yayy, express-list!",
+  "Bundle-Activator": "./express-list.js"
+}

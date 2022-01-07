@@ -1,42 +1,32 @@
-import Pandino from '@pandino/pandino';
 import express from 'express';
-import fs from 'fs';
-import path from 'path';
-import {fileURLToPath} from 'url';
+import {setupPandino} from './setup-pandino.js';
+import {setupWatch} from "./setup-chokidar.js";
+import {fileURLToPath} from "url";
+import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));
 
 (async () => {
   const app = express();
   const port = 3000;
-
-  const pandino = new Pandino({
-    'pandino.deployment.root': path.normalize(path.join(__dirname, 'deploy')),
-    'pandino.bundle.importer': {
-      import: (deploymentRoot, activatorLocation) => {
-        return import(path.normalize(`file://${path.join(deploymentRoot, activatorLocation)}`));
-      },
-    },
-    'pandino.manifest.fetcher': {
-      fetch: async (deploymentRoot, uri) => {
-        const data = fs.readFileSync(path.normalize(path.join(deploymentRoot, uri)), { encoding: 'utf8' });
-        return JSON.parse(data);
-      },
-    },
-  });
+  const pandino = setupPandino(deploymentRoot);
 
   await pandino.init();
   await pandino.start();
 
-  await pandino.getBundleContext().installBundle('./bundle-a-manifest.json');
-  await pandino.getBundleContext().installBundle('./bundle-b-manifest.json');
+  const pandinoContext = pandino.getBundleContext();
+  const loggerReference = pandinoContext.getServiceReference('@pandino/pandino/Logger');
+  const logger = pandinoContext.getService(loggerReference);
+
+  setupWatch(app, pandino, logger, deploymentRoot);
 
   app.get('/', (req, res) => {
     res.send('Hello World!');
   });
 
   app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+    logger.info(`Example app listening at http://localhost:${port}`);
   });
 })();
