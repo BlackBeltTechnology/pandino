@@ -206,14 +206,20 @@ export default class Pandino extends BundleImpl implements Framework {
       await this.resolver.resolveOne(bundle.getCurrentRevision());
       return bundle;
     } else {
-      await this.updateBundle(existing as BundleImpl, resolvedHeaders, origin);
-      return existing;
+      try {
+        await this.updateBundle(existing as BundleImpl, resolvedHeaders, origin);
+        return existing;
+      } catch (err) {
+        this.logger.error(err);
+      }
     }
   }
 
   private async updateBundle(bundle: BundleImpl, headers: BundleManifestHeaders, origin: Bundle): Promise<Bundle> {
     if (bundle.getState() === 'STARTING' || bundle.getState() === 'STOPPING') {
-      throw new Error('Bundle ' + bundle.toString() + ' cannot be updated, since it is either STARTING or STOPPING.');
+      throw new Error(
+        'Bundle ' + bundle.getUniqueIdentifier() + ' cannot be updated, since it is either STARTING or STOPPING.',
+      );
     }
     let rethrow: Error;
     const oldState: BundleState = bundle.getState();
@@ -458,6 +464,7 @@ export default class Pandino extends BundleImpl implements Framework {
   }
 
   async uninstallBundle(bundle: BundleImpl): Promise<void> {
+    this.logger.info(`Uninstalling Bundle: ${bundle.getUniqueIdentifier()}...`);
     const desiredStates: BundleState[] = ['INSTALLED', 'RESOLVED', 'STARTING', 'ACTIVE', 'STOPPING'];
 
     if (!desiredStates.includes(bundle.getState())) {
@@ -497,6 +504,7 @@ export default class Pandino extends BundleImpl implements Framework {
 
     this.fireBundleEvent('UNRESOLVED', bundle);
     bundle.setState('UNINSTALLED');
+    this.logger.info(`Uninstalled bundle: ${bundle.getUniqueIdentifier()}`);
 
     return Promise.resolve();
   }
@@ -554,7 +562,7 @@ export default class Pandino extends BundleImpl implements Framework {
     if (isAnyMissing(activatorDefinition)) {
       return Promise.reject('Missing mandatory Bundle Activator!');
     } else if (typeof activatorDefinition === 'string') {
-      this.logger.info(`Attempting to load Activator from: ${activatorDefinition}`);
+      this.logger.debug(`Attempting to load Activator from: ${activatorDefinition}`);
       let activatorInstance: any;
       try {
         activatorInstance = (
