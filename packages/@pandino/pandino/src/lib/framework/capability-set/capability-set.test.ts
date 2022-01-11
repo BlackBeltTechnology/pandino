@@ -49,7 +49,7 @@ describe('capability-set', () => {
     expect(CapabilitySet.matches(cap1, Filter.parse('(!(attr1=val2))'))).toEqual(true);
   });
 
-  it('instance matches without filter', () => {
+  it('instance matches without filter (add and remove)', () => {
     const capSet = new CapabilitySet();
     const rev1 = createRevision('test/bundle', '1.0.0', 1, '1.0');
     const cap1 = new BundleCapabilityImpl(
@@ -78,6 +78,10 @@ describe('capability-set', () => {
     expect(capSet.match(Filter.parse('(&(attr1=val1)(attr2<=3))'), true)).toEqual(new Set([cap1]));
     expect(capSet.match(Filter.parse('(&(attr2<=3)(!(attr1=val1)))'), true)).toEqual(new Set([cap2]));
     expect(capSet.match(Filter.parse('attr2<=3'), true)).toEqual(new Set([cap1, cap2]));
+
+    capSet.removeCapability(cap1);
+
+    expect(capSet.match(Filter.parse('attr2<=3'), true)).toEqual(new Set([cap2]));
   });
 
   function createRevision(bsn: string, bv: string, bid: number, revId: string) {
