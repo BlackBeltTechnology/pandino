@@ -23,7 +23,38 @@ import Filter from '../../../filter/filter';
 import { BundleCapability } from '../../wiring/bundle-capability';
 import { BundleRequirement } from '../../wiring/bundle-requirement';
 
-describe('ManifestParderImp', () => {
+describe('ManifestParserImp', () => {
+  it('single attribute', () => {
+    const headers: BundleManifestHeaders = {
+      [BUNDLE_MANIFESTVERSION]: '2',
+      [BUNDLE_SYMBOLICNAME]: 'com.example.attribute',
+      [REQUIRE_CAPABILITY]: `com.one;test=value`,
+    };
+    const mockBundleRevision = {
+      getSymbolicName: jest.fn().mockReturnValue('com.example.attribute'),
+    } as unknown as BundleRevisionImpl;
+    const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
+    const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
+
+    expect(rc1.getAttributes()['test']).toEqual('value');
+  });
+
+  it('semver attribute', () => {
+    const headers: BundleManifestHeaders = {
+      [BUNDLE_MANIFESTVERSION]: '2',
+      [BUNDLE_SYMBOLICNAME]: 'com.example.semver',
+      [REQUIRE_CAPABILITY]: `com.one;ver:SemVer=1.2.3`,
+    };
+    const mockBundleRevision = {
+      getSymbolicName: jest.fn().mockReturnValue('com.example.semver'),
+    } as unknown as BundleRevisionImpl;
+    const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
+    const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
+
+    expect(rc1.getAttributes()['ver']).toEqual(new SemVer('1.2.3'));
+    expect(rc1.getAttributes()['ver'].toString()).toEqual(new SemVer('1.2.3').toString());
+  });
+
   it('testIdentityCapabilityMinimal', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
@@ -101,6 +132,52 @@ describe('ManifestParderImp', () => {
     const expected = Filter.AND([Filter.attribute('type').equalTo('cat'), Filter.attribute('rate').lte(20)]);
 
     expect(Filter.parse(rc1.getDirectives()['filter']).toString()).toEqual(expected.toString());
+  });
+
+  it('only namespace, no attributes', () => {
+    const headers: BundleManifestHeaders = {
+      [BUNDLE_MANIFESTVERSION]: '2',
+      [BUNDLE_SYMBOLICNAME]: 'com.example',
+      [REQUIRE_CAPABILITY]: 'com.one',
+      [PROVIDE_CAPABILITY]: 'com.two',
+    };
+    const mockBundleRevision = {
+      getSymbolicName: jest.fn().mockReturnValue('com.example.yet.another'),
+    } as unknown as BundleRevisionImpl;
+    const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
+    const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
+    const pc1: BundleCapability = findCapability(mp.getCapabilities(), 'com.two');
+
+    expect(rc1.getNamespace()).toEqual('com.one');
+    expect(Object.keys(rc1.getAttributes()).length).toEqual(0);
+    expect(pc1.getNamespace()).toEqual('com.two');
+    expect(Object.keys(pc1.getAttributes()).length).toEqual(0);
+  });
+
+  it('multiple requirements and capabilities', () => {
+    const headers: BundleManifestHeaders = {
+      [BUNDLE_MANIFESTVERSION]: '2',
+      [BUNDLE_SYMBOLICNAME]: 'com.example',
+      [REQUIRE_CAPABILITY]: `com.one;filter:="(&(type=cat)(rate<=20))"
+                             com.two;test=value`,
+      [PROVIDE_CAPABILITY]: `some.cap.with.filter;filter:="(&(attr1=1)(attr2<=500))"
+                             some.other.cap;fine:number=1`,
+    };
+    const mockBundleRevision = {
+      getSymbolicName: jest.fn().mockReturnValue('com.example'),
+    } as unknown as BundleRevisionImpl;
+    const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
+    const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
+    const rc2: BundleRequirement = findRequirement(mp.getRequirements(), 'com.two');
+    const expected1 = Filter.AND([Filter.attribute('type').equalTo('cat'), Filter.attribute('rate').lte(20)]);
+    const pc1: BundleCapability = findCapability(mp.getCapabilities(), 'some.cap.with.filter');
+    const pc2: BundleCapability = findCapability(mp.getCapabilities(), 'some.other.cap');
+    const expected2 = Filter.AND([Filter.attribute('attr1').equalTo(1), Filter.attribute('attr2').lte(500)]);
+
+    expect(Filter.parse(rc1.getDirectives()['filter']).toString()).toEqual(expected1.toString());
+    expect(rc2.getAttributes()['test']).toEqual('value');
+    expect(Filter.parse(pc1.getDirectives()['filter']).toString()).toEqual(expected2.toString());
+    expect(pc2.getAttributes()['fine']).toEqual(1);
   });
 });
 

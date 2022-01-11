@@ -32,7 +32,7 @@ import { BundleCapabilityImpl } from '../../wiring/bundle-capability-impl';
 import { ParsedHeaderClause } from './parsed-header-clause';
 import { BundleRequirementImpl } from '../../wiring/bundle-requirement-impl';
 import Filter, { FilterComp } from '../../../filter/filter';
-import { isAnyMissing } from '../../../utils/helpers';
+import { isAllPresent, isAnyMissing } from '../../../utils/helpers';
 import { ManifestParser } from './manifest-parser';
 import { BundleRequirement } from '../../wiring/bundle-requirement';
 import { BundleCapability } from '../../wiring/bundle-capability';
@@ -95,23 +95,31 @@ export class ManifestParserImpl implements ManifestParser {
     // TODO support multiple Requires and Provides?!
 
     // Parse Require-Capability.
-    const requireClauses: Array<ParsedHeaderClause> = ManifestParserImpl.parseStandardHeader(
-      headerMap[REQUIRE_CAPABILITY],
-    );
-    const importClauses: Array<ParsedHeaderClause> = ManifestParserImpl.normalizeCapabilityClauses(requireClauses);
-    const requireReqs: Array<BundleRequirement> = ManifestParserImpl.convertRequireCapabilities(importClauses, owner);
+    const requireCaps: Array<BundleRequirement> = [];
+    if (isAllPresent(headerMap[REQUIRE_CAPABILITY]) && headerMap[REQUIRE_CAPABILITY].includes('\n')) {
+      const split = headerMap[REQUIRE_CAPABILITY].split('\n').map((str: string) => str.trim());
+      for (const part of split) {
+        requireCaps.push(...ManifestParserImpl.getRequiredClauses(part, owner));
+      }
+    } else {
+      requireCaps.push(...ManifestParserImpl.getRequiredClauses(headerMap[REQUIRE_CAPABILITY], owner));
+    }
 
     // Parse Provide-Capability.
-    let provideClauses: Array<ParsedHeaderClause> = ManifestParserImpl.parseStandardHeader(
-      headerMap[PROVIDE_CAPABILITY],
-    );
-    provideClauses = ManifestParserImpl.normalizeCapabilityClauses(provideClauses);
-    const provideCaps: Array<BundleCapability> = ManifestParserImpl.convertProvideCapabilities(provideClauses, owner);
+    const provideCaps: Array<BundleCapability> = [];
+    if (isAllPresent(headerMap[PROVIDE_CAPABILITY]) && headerMap[PROVIDE_CAPABILITY].includes('\n')) {
+      const split = headerMap[PROVIDE_CAPABILITY].split('\n').map((str: string) => str.trim());
+      for (const part of split) {
+        provideCaps.push(...ManifestParserImpl.getProviderClauses(part, owner));
+      }
+    } else {
+      provideCaps.push(...ManifestParserImpl.getProviderClauses(headerMap[PROVIDE_CAPABILITY], owner));
+    }
 
     // Combine all requirements.
     this.requirements = [];
     this.requirements.push(...rbReqs);
-    this.requirements.push(...requireReqs);
+    this.requirements.push(...requireCaps);
 
     // Combine all capabilities.
     this.capabilities = [];
@@ -120,6 +128,18 @@ export class ManifestParserImpl implements ManifestParser {
 
     // Parse activation policy.
     this.parseActivationPolicy(headerMap);
+  }
+
+  private static getProviderClauses(part: string, owner: BundleRevision): Array<BundleCapability> {
+    let provideClauses: Array<ParsedHeaderClause> = ManifestParserImpl.parseStandardHeader(part);
+    provideClauses = ManifestParserImpl.normalizeCapabilityClauses(provideClauses);
+    return ManifestParserImpl.convertProvideCapabilities(provideClauses, owner);
+  }
+
+  private static getRequiredClauses(part: string, owner: BundleRevision): Array<BundleRequirement> {
+    let provideClauses: Array<ParsedHeaderClause> = ManifestParserImpl.parseStandardHeader(part);
+    provideClauses = ManifestParserImpl.normalizeCapabilityClauses(provideClauses);
+    return ManifestParserImpl.convertRequireCapabilities(provideClauses, owner);
   }
 
   getActivationIncludeDirective(): string {
@@ -314,7 +334,7 @@ export class ManifestParserImpl implements ManifestParser {
             attrs[attrKeyTyped] = Number(valueEscaped);
           } else if (attrType === 'boolean') {
             attrs[attrKeyTyped] = valueEscaped === 'true';
-          } else if (attrType === 'SemVar') {
+          } else if (attrType === 'SemVer') {
             attrs[attrKeyTyped] = new SemVer(valueEscaped);
           } else if (attrType.startsWith('Array')) {
             attrs[attrKeyTyped] = valueEscaped;

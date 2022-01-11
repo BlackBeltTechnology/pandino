@@ -157,6 +157,50 @@ describe('Pandino', () => {
     expect(mockStart).toHaveBeenCalledTimes(bundles.length); // we use the same mock for all bundles
   });
 
+  it('multiple requirements case', async () => {
+    await preparePandino();
+    await installBundle({
+      ...bundle1Headers,
+      [REQUIRE_CAPABILITY]: `cap.test;filter:="(type=one)"
+                             cap.other;filter:="(num<=50)"`,
+    });
+    let bundles = pandino.getBundleContext().getBundles();
+
+    expect(mockStart).toHaveBeenCalledTimes(0);
+    expect(bundles.length).toEqual(1);
+    expect(bundles[0].getState()).toEqual('INSTALLED');
+
+    await installBundle({
+      [BUNDLE_SYMBOLICNAME]: 'hu.bundle.one',
+      [BUNDLE_VERSION]: '0.0.1',
+      [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist-2.js',
+      [PROVIDE_CAPABILITY]: 'cap.test;type=one',
+    });
+    await installBundle({
+      [BUNDLE_SYMBOLICNAME]: 'hu.bundle.two',
+      [BUNDLE_VERSION]: '0.1.0',
+      [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist-3.js',
+      [PROVIDE_CAPABILITY]: 'cap.other;num:number=22',
+    });
+
+    bundles = pandino.getBundleContext().getBundles();
+
+    expect(bundles.length).toEqual(3);
+
+    const myBundle = bundles[0];
+    const oneBundle = bundles[1];
+    const twoBundle = bundles[2];
+
+    expect(myBundle.getSymbolicName()).toEqual('my.bundle');
+    expect(myBundle.getVersion().toString()).toEqual('1.2.3');
+    expect(myBundle.getState()).toEqual('ACTIVE');
+    expect(oneBundle.getSymbolicName()).toEqual('hu.bundle.one');
+    expect(oneBundle.getState()).toEqual('ACTIVE');
+    expect(twoBundle.getSymbolicName()).toEqual('hu.bundle.two');
+    expect(twoBundle.getState()).toEqual('ACTIVE');
+    expect(mockStart).toHaveBeenCalledTimes(bundles.length); // we use the same mock for all bundles
+  });
+
   it('all bundles go to ACTIVE state (in order)', async () => {
     await preparePandino();
     await installBundle({
@@ -314,6 +358,10 @@ describe('Pandino', () => {
   }
 
   async function installBundle(headers: BundleManifestHeaders): Promise<Bundle> {
-    return pandino.getBundleContext().installBundle(headers);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(pandino.getBundleContext().installBundle(headers));
+      }, 200);
+    });
   }
 });

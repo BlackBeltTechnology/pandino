@@ -19,7 +19,7 @@ export class CapabilitySet {
 
   match(sf: Filter, obeyMandatory: boolean): Set<Capability> {
     const matches: Set<Capability> = this.matchCapSet(this.capSet, sf);
-    return obeyMandatory ? this.matchMandatoryCapSet(matches, sf) : matches;
+    return obeyMandatory ? CapabilitySet.matchMandatoryCapSet(matches, sf) : matches;
   }
 
   addCapability(cap: BundleCapability): void {
@@ -64,6 +64,10 @@ export class CapabilitySet {
     }
   }
 
+  static matches(cap: Capability, sf?: Filter): boolean {
+    return CapabilitySet.matchesInternal(cap, sf) && CapabilitySet.matchMandatory(cap, sf);
+  }
+
   private static indexCapability(index: CapabilityIndex, cap: BundleCapability, capValue: any): void {
     let caps: Set<BundleCapability> = new Set<BundleCapability>();
     const prevVal: Set<BundleCapability> = index[capValue];
@@ -87,7 +91,7 @@ export class CapabilitySet {
     }
   }
 
-  private matchMandatoryCapSet(caps: Set<Capability>, sf: Filter): Set<Capability> {
+  private static matchMandatoryCapSet(caps: Set<Capability>, sf: Filter): Set<Capability> {
     for (const cap of caps) {
       if (!CapabilitySet.matchMandatory(cap, sf)) {
         caps.delete(cap);
@@ -102,19 +106,19 @@ export class CapabilitySet {
     if (sf.comp === FilterComp.MATCH_ALL) {
       caps.forEach((c) => matches.add(c));
     } else if (sf.comp === FilterComp.AND) {
-      const sfs: Array<Filter> = sf.value;
+      const sfs: Array<Filter> = sf.filters;
       for (let i = 0; caps.size > 0 && i < sfs.length; i++) {
         matches = this.matchCapSet(caps, sfs[i]);
         caps = matches;
       }
     } else if (sf.comp === FilterComp.OR) {
-      const sfs: Array<Filter> = sf.value;
+      const sfs: Array<Filter> = sf.filters;
       for (let i = 0; i < sfs.length; i++) {
         this.matchCapSet(caps, sfs[i]).forEach((c) => matches.add(c));
       }
     } else if (sf.comp === FilterComp.NOT) {
       caps.forEach((c) => matches.add(c));
-      const sfs: Array<Filter> = sf.value;
+      const sfs: Array<Filter> = sf.filters;
       for (let i = 0; i < sfs.length; i++) {
         const ms = this.matchCapSet(caps, sfs[i]);
         ms.forEach((c) => matches.delete(c));
@@ -148,14 +152,12 @@ export class CapabilitySet {
     return matches;
   }
 
-  static matches(cap: Capability, sf?: Filter): boolean {
-    return CapabilitySet.matchesInternal(cap, sf) && CapabilitySet.matchMandatory(cap, sf);
-  }
-
   private static matchesInternal(cap: Capability, sf?: Filter): boolean {
     let matched = true;
 
-    if (sf.comp === FilterComp.MATCH_ALL) {
+    if (isAnyMissing(sf)) {
+      matched = false;
+    } else if (sf.comp === FilterComp.MATCH_ALL) {
       matched = true;
     } else if (sf.comp === FilterComp.AND) {
       const sfs = sf.filters as Filter[];
@@ -185,6 +187,9 @@ export class CapabilitySet {
   }
 
   private static matchMandatory(cap: Capability, sf?: Filter): boolean {
+    if (isAnyMissing(sf)) {
+      return false;
+    }
     const attrs = cap.getAttributes();
     for (const key of Object.keys(attrs)) {
       if ((cap as BundleCapabilityImpl).isAttributeMandatory(key) && !CapabilitySet.matchMandatoryAttribute(key, sf)) {

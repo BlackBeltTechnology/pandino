@@ -105,7 +105,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
       const filters: Array<Filter> = [];
       filters.push(new Filter(OBJECTCLASS, FilterComp.EQ, identifier));
       filters.push(filter as Filter);
-      filterEffective = new Filter(null, FilterComp.AND, filters);
+      filterEffective = new Filter(null, FilterComp.AND, null, filters);
     }
 
     return Array.from(this.regCapSet.match(filterEffective, false));
