@@ -18,3 +18,20 @@ package. Please refer to it in order to learn how to use Pandino.
 
 Multiple examples are available under the [examples](./examples) folder. Each example is a stand-alone, dedicated
 project, which means that specific instructions are detailed in all of the folders.
+
+## Extras
+
+This repository contains extra packages, e.g.: specifications, corresponding reference-implementations solving 
+common software development problems. Usage is opt-in of course.
+
+### Bundle Installer
+
+- [API](./packages/@pandino/pandino-bundle-installer-api)
+- [DOM](./packages/@pandino/pandino-bundle-installer-dom)
+- [NodeJS](./packages/@pandino/pandino-bundle-installer-nodejs)
+
+### Configuration Management
+- [API](./packages/@pandino/pandino-configuration-management-api)
+
+### Event Admin
+- [API](./packages/@pandino/pandino-event-api)
