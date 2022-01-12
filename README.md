@@ -32,6 +32,7 @@ common software development problems. Usage is opt-in of course.
 
 ### Configuration Management
 - [API](./packages/@pandino/pandino-configuration-management-api)
+- [Persistence Manager API](./packages/@pandino/pandino-persistence-manager-api)
 
 ### Event Admin
 - [API](./packages/@pandino/pandino-event-api)
