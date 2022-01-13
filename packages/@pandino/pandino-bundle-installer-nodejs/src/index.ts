@@ -1,5 +1,6 @@
 import { BundleActivator, BundleContext, Logger, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
-import { INSTALLER_SERVICE_PROP, InstallerServiceApi } from './installer-service-api';
+import { INTERFACE_KEY, SERVICE_DISCRIMINATOR_PROPERTY } from '@pandino/pandino-bundle-installer-api';
+import { InstallerServiceApi } from './installer-service-api';
 import { InstallerService } from './installer-service';
 
 export default class PandinoBundleInstallerNodeJSActivator implements BundleActivator {
@@ -18,10 +19,10 @@ export default class PandinoBundleInstallerNodeJSActivator implements BundleActi
     // this.fetcher = context.getService<ManifestFetcher>(this.fetcherReference);
 
     this.installerRegistration = context.registerService(
-      INSTALLER_SERVICE_PROP,
+      INTERFACE_KEY,
       new InstallerService(this.context.getProperty('pandino.deployment.root'), this.context, this.logger),
       {
-        'installer-platform': 'nodejs',
+        [SERVICE_DISCRIMINATOR_PROPERTY]: 'nodejs',
       },
     );
   }

@@ -25,5 +25,5 @@ let pandino: Bundle;
 
 // ...
 
-pandino.getBundleContext().installBundle('./pandino-extra-document-manifests-manifest.json');
+pandino.getBundleContext().installBundle('./pandino-bundle-installer-dom-manifest.json');
 ```
