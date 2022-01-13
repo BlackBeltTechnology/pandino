@@ -1,0 +1,8 @@
+{
+  "Bundle-ManifestVersion": "1",
+  "Bundle-SymbolicName": "@pandino/pandino-event",
+  "Bundle-Name": "Pandino Event Admin",
+  "Bundle-Version": "0.1.0",
+  "Bundle-Description": "Pandino Event Admin Reference Implementation",
+  "Bundle-Activator": "./pandino-event-admin.js"
+}
