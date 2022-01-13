@@ -1,0 +1,45 @@
+{
+  "name": "@pandino/pandino-persistence-manager-memory",
+  "version": "0.1.0",
+  "description": "In Memory implementation of the Pandino Persistence Manager API",
+  "main": "dist/pandino-persistence-manager-memory.js",
+  "private": true,
+  "types": "dist/src/index.d.ts",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npm run clean && webpack"
+  },
+  "keywords": [],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "MIT",
+  "devDependencies": {
+    "@pandino/pandino-api": "^0.1.0",
+    "@pandino/pandino-persistence-manager-api": "^0.1.0",
+    "@types/jest": "^27.4.0",
+    "copy-webpack-plugin": "^10.2.0",
+    "jest": "^27.4.7",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.1.2",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.4",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsconfig": false
+      }
+    },
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
+  }
+}
