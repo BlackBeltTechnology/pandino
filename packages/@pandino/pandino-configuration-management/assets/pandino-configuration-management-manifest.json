@@ -1,0 +1,8 @@
+{
+  "Bundle-ManifestVersion": "1",
+  "Bundle-SymbolicName": "@pandino/pandino-configuration-management",
+  "Bundle-Name": "Pandino Configuration Management",
+  "Bundle-Version": "0.1.0",
+  "Bundle-Description": "Pandino reference implementation for Configuration Management",
+  "Bundle-Activator": "./pandino-configuration-management.js"
+}
