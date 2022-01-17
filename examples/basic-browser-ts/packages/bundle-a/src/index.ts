@@ -10,12 +10,15 @@ export default class BundleAActivator implements BundleActivator {
   async start(context: BundleContext): Promise<void> {
     this.loggerReference = context.getServiceReference<Logger>('@pandino/pandino/Logger');
     this.logger = context.getService(this.loggerReference);
-    this.inverterReference = context.getServiceReference<Logger>('@pandino/bundle-b/StringInverter');
-    this.inverter = context.getService(this.inverterReference);
+    this.inverterReference = context.getServiceReference<StringInverter>('@pandino/bundle-b/StringInverter');
 
-    this.logger.log('Bundle A - Activator');
+    if (this.inverterReference) {
+      this.inverter = context.getService(this.inverterReference);
 
-    this.logger.log(`Testing inverter: ${this.inverter('Please invert this!')}`);
+      this.logger.log('Bundle A - Activator');
+
+      this.logger.log(`Testing inverter: ${this.inverter('Please invert this!')}`);
+    }
 
     return Promise.resolve();
   }
