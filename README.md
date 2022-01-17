@@ -59,3 +59,4 @@ common software development problems. Usage is opt-in of course.
   - provide ESM modules
 - Document use-cases
 - Go through `TODO` and `FIXME` blocks in code and finish / close such sections
+- Bring back NodeJS 14 support ( ? )
