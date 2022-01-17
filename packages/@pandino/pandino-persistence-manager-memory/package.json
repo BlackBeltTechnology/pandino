@@ -28,7 +28,7 @@
   "jest": {
     "globals": {
       "ts-jest": {
-        "tsconfig": false
+        "tsconfig": "tsconfig.test.json"
       }
     },
     "transform": {
