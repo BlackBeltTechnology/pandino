@@ -1,5 +1,6 @@
-import peg$parse from './parse';
 import { FilterApi } from '@pandino/pandino-api';
+import peg$parse from './parse';
+import { inverseMap, replaceMap } from './workarounds';
 
 export enum FilterComp {
   NOT = '!',
@@ -23,7 +24,27 @@ export default class Filter implements FilterApi {
   }
 
   static parse(input: string): Filter {
-    return peg$parse(input);
+    let newInput = input;
+    for (const [original, replaceVal] of replaceMap.entries()) {
+      newInput = newInput.replaceAll(original, replaceVal);
+    }
+
+    const originalFilter = peg$parse(newInput);
+    return Filter.recursiveReplace(originalFilter, inverseMap);
+  }
+
+  private static recursiveReplace(filter: Filter, inverseMap: Map<string, string>): Filter {
+    for (const [original, replaceVal] of inverseMap.entries()) {
+      if (filter.attrib) {
+        filter.attrib = filter.attrib.replaceAll(original, replaceVal);
+      }
+    }
+
+    for (const f of filter.filters) {
+      Filter.recursiveReplace(f, inverseMap);
+    }
+
+    return filter;
   }
 
   static convert(attrs: Record<string, any>): Filter {

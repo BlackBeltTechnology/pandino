@@ -356,5 +356,27 @@ describe('Filter', () => {
     it('fails if indent string not a string', () => {
       expect(() => parsed.toString(2, null, 1)).toThrow();
     });
+
+    it('values that require escaping', () => {
+      const parsed = Filter.parse('(service.id=4)');
+      expect(parsed.type).toEqual('filter');
+      expect(parsed.attrib).toEqual('service.id');
+      expect(parsed.comp).toEqual('=');
+      expect(parsed.value).toEqual('4');
+    });
+
+    it('values that require escaping (recursive)', () => {
+      const parsed = Filter.parse('(|(service.id=4)(test=test)(service.description=test description))');
+      expect(parsed.type).toEqual('group');
+      expect(parsed.filters[0].attrib).toEqual('service.id');
+      expect(parsed.filters[0].comp).toEqual('=');
+      expect(parsed.filters[0].value).toEqual('4');
+      expect(parsed.filters[1].attrib).toEqual('test');
+      expect(parsed.filters[1].comp).toEqual('=');
+      expect(parsed.filters[1].value).toEqual('test');
+      expect(parsed.filters[2].attrib).toEqual('service.description');
+      expect(parsed.filters[2].comp).toEqual('=');
+      expect(parsed.filters[2].value).toEqual('test description');
+    });
   });
 });

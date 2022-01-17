@@ -4,7 +4,7 @@ import { BundleRevisionImpl } from '../bundle-revision-impl';
 import { BundleImpl } from '../bundle-impl';
 import { MuteLogger } from '../../../__mocks__/mute-logger';
 import { BUNDLE_SYMBOLICNAME, BUNDLE_VERSION, BundleManifestHeaders } from '@pandino/pandino-api';
-import Pandino from '../../../pandino';
+import { Pandino } from '../../../pandino';
 import Filter from '../../filter/filter';
 
 describe('capability-set', () => {

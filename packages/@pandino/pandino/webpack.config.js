@@ -9,7 +9,7 @@ export default {
     outputModule: true,
   },
   entry: {
-    'pandino': './src/pandino.ts',
+    'pandino': './src/index.ts',
   },
   mode: 'production',
   devtool: false,

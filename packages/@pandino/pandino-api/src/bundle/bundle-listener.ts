@@ -18,4 +18,9 @@ export interface BundleListener {
    * @param {BundleEvent} event
    */
   bundleChanged(event: BundleEvent): void;
+
+  /**
+   * Utility property to help the Framework distinguish async and sync listeners.
+   */
+  isSync?: boolean;
 }

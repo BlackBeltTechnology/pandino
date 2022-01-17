@@ -9,7 +9,7 @@ import {
   BUNDLE_ACTIVATOR,
   ServiceReference,
 } from '@pandino/pandino-api';
-import Pandino from '../../pandino';
+import { Pandino } from '../../pandino';
 import { BundleRevisionImpl } from './bundle-revision-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { BundleRevision } from './bundle-revision';
@@ -111,8 +111,8 @@ export class BundleImpl implements Bundle {
     return this.getFramework().uninstallBundle(this);
   }
 
-  async update(headers: BundleManifestHeaders, bundle: Bundle): Promise<void> {
-    return Promise.resolve(undefined);
+  async update(headers: BundleManifestHeaders, bundle?: Bundle): Promise<void> {
+    await this.getFramework().updateBundle(this, headers, bundle);
   }
 
   getUniqueIdentifier(): string {

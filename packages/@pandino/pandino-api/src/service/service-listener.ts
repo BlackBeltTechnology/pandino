@@ -24,4 +24,9 @@ export interface ServiceListener {
    * @param {ServiceEvent} event The {@code ServiceEvent} object.
    */
   serviceChanged(event: ServiceEvent): void;
+
+  /**
+   * Utility property to help the Framework distinguish async and sync listeners.
+   */
+  isSync?: boolean;
 }

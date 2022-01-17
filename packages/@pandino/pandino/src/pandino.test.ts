@@ -1,4 +1,4 @@
-import Pandino from './pandino';
+import { Pandino } from './pandino';
 import {
   Bundle,
   BundleActivator,
@@ -292,6 +292,9 @@ describe('Pandino', () => {
     expect(myBundle.getBundleContext()).toEqual(null);
     expect((myBundle as BundleImpl).getActivator()).toEqual(null);
     expect(mockStop).toHaveBeenCalledTimes(1);
+
+    await new Promise((r) => setTimeout(r, 100));
+
     expect(mockBundleChangedListener).toHaveBeenCalledTimes(1); // only 1, since listeners are removed after stop
 
     await myBundle.start();

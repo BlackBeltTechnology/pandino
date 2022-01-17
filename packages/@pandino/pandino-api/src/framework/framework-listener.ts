@@ -18,4 +18,9 @@ export interface FrameworkListener {
    * @param {FrameworkEvent} event The {@code FrameworkEvent} object.
    */
   frameworkEvent(event: FrameworkEvent): void;
+
+  /**
+   * Utility property to help the Framework distinguish async and sync listeners.
+   */
+  isSync?: boolean;
 }

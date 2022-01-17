@@ -1,5 +1,5 @@
 import { Logger, SYSTEM_BUNDLE_SYMBOLICNAME } from '@pandino/pandino-api';
-import Pandino from '../../pandino';
+import { Pandino } from '../../pandino';
 import { CapabilitySet } from './capability-set/capability-set';
 import { BundleRevisionImpl } from './bundle-revision-impl';
 import { BundleRequirementImpl } from './wiring/bundle-requirement-impl';

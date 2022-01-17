@@ -1,4 +1,4 @@
-import Pandino from '../../pandino';
+import { Pandino } from '../../pandino';
 import {
   Bundle,
   BUNDLE_ACTIVATOR,
@@ -18,7 +18,6 @@ import {
   PANDINO_BUNDLE_IMPORTER_PROP,
   ServiceListener,
   ServiceReference,
-  SYSTEM_BUNDLE_SYMBOLICNAME,
   FrameworkConfigMap,
   DEPLOYMENT_ROOT_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
@@ -27,7 +26,6 @@ import { MuteLogger } from '../../__mocks__/mute-logger';
 import { BundleContextImpl } from './bundle-context-impl';
 import { BundleImpl } from './bundle-impl';
 import { BundleEventImpl } from './bundle-event-impl';
-import { FrameworkEventImpl } from './framework-event-impl';
 import Filter from '../filter/filter';
 import { ServiceEventImpl } from './service-event-impl';
 
@@ -105,10 +103,14 @@ describe('BundleContextImpl', () => {
     };
   });
 
-  it('initialization', () => {
+  it('initialization', async () => {
     expect(bundle.getSymbolicName()).toEqual('my.bundle');
     expect(bundle.getVersion().toString()).toEqual('1.2.3');
     expect(bundleContext).toBeDefined();
+
+    await new Promise((r) => setTimeout(r, 100));
+
+    expect(frameworkEvent).toHaveBeenCalledTimes(1);
   });
 
   it('getBundles()', () => {
@@ -140,15 +142,6 @@ describe('BundleContextImpl', () => {
     }).toThrow();
   });
 
-  it('addFrameworkListener()', () => {
-    const event0: FrameworkEventImpl = frameworkEvent.mock.calls[0][0];
-
-    expect(frameworkEvent).toHaveBeenCalledTimes(1);
-
-    expect(event0.getBundle().getSymbolicName()).toEqual(SYSTEM_BUNDLE_SYMBOLICNAME);
-    expect(event0.getType()).toEqual('STARTED');
-  });
-
   it('removeFrameworkListener()', async () => {
     frameworkEvent.mockClear();
     pandino = new Pandino(params);
@@ -171,6 +164,7 @@ describe('BundleContextImpl', () => {
   it('addBundleListener()', async () => {
     bundleContext.addBundleListener(bundleChangedListener);
     await bundleContext.installBundle(bundle2Headers);
+    await new Promise((r) => setTimeout(r, 100));
     const event0: BundleEventImpl = bundleChanged.mock.calls[0][0];
     const event1: BundleEventImpl = bundleChanged.mock.calls[1][0];
     const event2: BundleEventImpl = bundleChanged.mock.calls[2][0];

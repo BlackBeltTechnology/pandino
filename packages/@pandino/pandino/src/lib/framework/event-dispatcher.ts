@@ -107,7 +107,11 @@ export class EventDispatcher {
     } else if (event.getType() == 'MODIFIED') {
       if (!!filter && filter.match(oldProps)) {
         let se = new ServiceEventImpl('MODIFIED_ENDMATCH', event.getServiceReference());
-        listener.serviceChanged(se);
+        if (listener.isSync) {
+          listener.serviceChanged(se);
+        } else {
+          setTimeout(() => listener.serviceChanged(se), 0);
+        }
       }
     }
   }
@@ -115,7 +119,11 @@ export class EventDispatcher {
   private static invokeBundleListenerCallback(bundle: Bundle, listener: BundleListener, event: BundleEventImpl): void {
     const validSyncEventBundleStateTypes: BundleState[] = ['STARTING', 'STOPPING', 'ACTIVE'];
     if (validSyncEventBundleStateTypes.includes(bundle.getState())) {
-      listener.bundleChanged(event);
+      if (listener.isSync) {
+        listener.bundleChanged(event);
+      } else {
+        setTimeout(() => listener.bundleChanged(event), 0);
+      }
     }
   }
 
@@ -126,7 +134,11 @@ export class EventDispatcher {
   ): void {
     const validBundleStateTypes: BundleState[] = ['STARTING', 'ACTIVE'];
     if (validBundleStateTypes.includes(bundle.getState())) {
-      listener.frameworkEvent(event);
+      if (listener.isSync) {
+        listener.frameworkEvent(event);
+      } else {
+        setTimeout(() => listener.frameworkEvent(event), 0);
+      }
     }
   }
 

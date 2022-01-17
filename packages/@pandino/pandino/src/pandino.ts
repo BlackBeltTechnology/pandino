@@ -56,7 +56,7 @@ import { ServiceRegistry } from './lib/framework/service-registry';
 import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
 import { FrameworkConfigMap } from '@pandino/pandino-api/src';
 
-export default class Pandino extends BundleImpl implements Framework {
+export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;
   private readonly importer: BundleImporter;
   private readonly configMap: Map<string, any> = new Map<string, any>();
@@ -215,7 +215,7 @@ export default class Pandino extends BundleImpl implements Framework {
     }
   }
 
-  private async updateBundle(bundle: BundleImpl, headers: BundleManifestHeaders, origin: Bundle): Promise<Bundle> {
+  async updateBundle(bundle: BundleImpl, headers: BundleManifestHeaders, origin: Bundle): Promise<Bundle> {
     if (bundle.getState() === 'STARTING' || bundle.getState() === 'STOPPING') {
       throw new Error(
         'Bundle ' + bundle.getUniqueIdentifier() + ' cannot be updated, since it is either STARTING or STOPPING.',

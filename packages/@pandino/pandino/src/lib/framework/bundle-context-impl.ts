@@ -13,7 +13,7 @@ import {
   ServiceProperties,
   ServiceRegistration,
 } from '@pandino/pandino-api';
-import Pandino from '../../pandino';
+import { Pandino } from '../../pandino';
 import Filter from '../filter/filter';
 import { BundleImpl } from './bundle-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
