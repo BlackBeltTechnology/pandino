@@ -5,7 +5,7 @@
   "description": "The reference implementation of the Pandino API specification",
   "main": "dist/pandino.js",
   "private": true,
-  "types": "dist/src/pandino.d.ts",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
     "test": "jest",
