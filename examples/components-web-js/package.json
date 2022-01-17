@@ -1,0 +1,12 @@
+{
+  "name": "components-web-js",
+  "version": "1.0.0",
+  "description": "An actual poor man's SPA implementation with routing and pages, etc...",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx serve dist -p 5001"
+  },
+  "keywords": [],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "MIT"
+}
