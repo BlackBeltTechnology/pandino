@@ -24,7 +24,7 @@ actually used as a side-car library for partial functionality.
 
 Pandino is inspired by the [OSGi](https://www.osgi.org/resources/what-is-osgi/) framework originally created for Java.
 
-Given the was differences between the Java platform and JavaScript, Pandino only utilizes a limited set of the
+Given the wast differences between the Java platform and JavaScript, Pandino only utilizes a limited set of the
 [original specification](https://docs.osgi.org/specification/osgi.core/8.0.0/). In certain cases the "porting" of
 features even altered the original standard. Such differences can be observed in the source code via comments, or in the
 documentation it self.
