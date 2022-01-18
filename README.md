@@ -11,7 +11,7 @@ Currently we are living in a world of ever-growing dependencies in our projects.
 from left to right achieve functionality necessary to deliver projects.
 
 Some of our dependencies are meant to solve build pipeline-related tasks, some to solve bundling and splitting up
-projects based on feature islands, a.k.a.: micro-frontends.
+projects based on feature islands, a.k.a.: micro-frontends, etc...
 
 The goal of Pandino is to provide a dynamic runtime for the JavaScript platform, while eliminating or at least reducing
 the need of bundlers or other tools to manage dependencies, or decoupling of functionality.
