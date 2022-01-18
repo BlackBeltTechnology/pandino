@@ -45,6 +45,21 @@ functionality on a higher level, e.g.: Bundle loaders, eventing systems, configu
 
 Such extras are physically separated into external packages so that you can pull them in on-demand.
 
+## What Pandino is not / caveats
+
+> Pandino won't solve business problems. Pandino is intended to solve technical problems.
+
+It is important to note that when we start to incorporate more and more dynamism in our projects, the complexity can
+easily sky-rocket!
+
+Given resources are managed in/via Bundles, the quality of each third-party Bundle can cause serious issues if a Bundle
+in question is poorly implemented, e.g.: not handling lifecycle properly or not freeing up resources properly.
+
+Every Bundle which we want to introduce **SHOULD** be inspected in detail to make sure it has minimal or no negative
+side effects in our scope!
+
+In our case, the quote "With Great Power Comes Great Responsibility" truly applies.
+
 ## Key Architectural Decisions
 
 - Pandino is built on top of TypeScript, and TS support will always be a given for all first party packages
