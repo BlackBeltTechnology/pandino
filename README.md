@@ -88,6 +88,10 @@ In our case, the quote "With Great Power Comes Great Responsibility" truly appli
 | Caching in general        | Self-defined                                                             | Nothing is cached in a traditional sense, all core-information is stored in memory                                          |
 | BundleArchive             | `.jar` file(s) containing manifests and Java classes                     | `json` file containing manifest headers, plus a mandatory reference to an activator file (`.js`)                            |
 | `StartLevel` concept      | Self-defined, full                                                       | Completely omitted                                                                                                          |
+| `Bundle-ActivationPolicy` header | `EAGER`, `LAZY`                                                   | Only `EAGER`                                                                                                                |
+| `Require-Bundle` header   | Supported                                                                | Not supported yet                                                                                                           |
+| `Import-Package`, `Export-Package` headers | Self-defined, full                                      | No support planned                                                                                                          |
+| Requirement `Resolution` directive    | Self-defined, full                                           | Not implemented, every Requirement is considered `mandatory`                                                                |
 
 ## Key Building blocks
 
