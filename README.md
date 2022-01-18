@@ -43,7 +43,7 @@ be able to introduce a limited set of it's functionality!
 Pandino also comes with a growing list of first-party "extra" Bundles which build on top of it's core and provide
 functionality on a higher level, e.g.: Bundle loaders, eventing systems, configuration management, etc...
 
-Such extras a physically separated into external packages so that you can pull them in on-demand.
+Such extras are physically separated into external packages so that you can pull them in on-demand.
 
 ## Key Architectural Decisions
 
@@ -76,13 +76,13 @@ Such extras a physically separated into external packages so that you can pull t
 
 ## Key Building blocks
 
-### Bundle
+### 1. Bundle
 
 In Pandino a Bundle is a unit of modularization. A bundle is comprised of:
 - Headers describing details of a Bundle and
 - A JavaScript file containing the actual code (Activator).
 
-#### Bundle Manifest Headers
+#### 1.1. Bundle Manifest Headers
 
 Manifest Headers can be used by bundle developers to supply descriptive information about a Bundle.
 
@@ -98,27 +98,27 @@ export interface BundleManifestHeaders {
 ```
 > Missing out any of the above will result in a bundle being stuck in a `RESOLVED` state indefinitely.
 
-#### Bundle Version
+#### 1.2. Bundle Version
 
-Every Bundle must provide [semver-compliant](https://www.npmjs.com/package/semver) version numbers in all part of a
-Manifest!
+Every Bundle must provide a [semver-compliant](https://www.npmjs.com/package/semver) version number in all relevant
+parts of a Manifest!
 
-### Service
+### 2. Service
 
-Bundles are built around a set of cooperating services available from a shared Service Registry. Such a Pandino service
+Bundles are built around a set of cooperating Services available from a shared Service Registry. Such a Pandino service
 is defined semantically by its Service Interface and implemented as a Service Object.
 
 The Service Interface should be specified with as few implementation details as possible. In Pandino we have specified
 many Service Interfaces for common needs and will specify more in the future.
 
 The Service Object is owned by, and runs within, a Bundle. This Bundle must register the Service Object with the
-Pandino Service Registry so that the service's functionality is available to other Bundles under control of Pandino.
+Pandino Service Registry so that the service's functionality is available to other Bundles under the control of Pandino.
 
 Dependencies between the Bundle owning the Service and the Bundles using it are managed by the Framework. For example,
 when a Bundle is stopped, all the Services registered with Pandino by that Bundle must be automatically unregistered.
 
 Pandino maps Services to their underlying Service Objects, and provides a simple but powerful query mechanism that
-enables a bundle to request the services it needs. Pandino also provides an event mechanism so that bundles can receive
+enables a bundle to request the Services it needs. Pandino also provides an event mechanism so that bundles can receive
 events of Services that are registered, modified, or unregistered.
 
 ## Usage
@@ -167,7 +167,7 @@ export interface FrameworkConfigMap extends Record<string, any> {
 
 Install Pandino via `npm install --save @pandino/pandino @pandino/pandino-api`.
 
-Initialize it somewher eclose in you applications own init logic, e.g.:
+Initialize it somewhere close in you applications own init logic, e.g.:
 
 ```typescript
 import Pandino from '@pandino/pandino';
@@ -195,12 +195,6 @@ await pandino.getBundleContext().installBundle('some-bundle-manifest.json');
 ```
 
 ### Creating a Bundle which exposes a Service (TypeScript)
-
-- Create a project which
-- provides a manifest file
-- provides a an activator JS file
-
-> Details on how to create a complete Bundle will be showcased later.
 
 #### index.ts
 
@@ -271,7 +265,7 @@ Service becomes available!
 ```typescript
 import { BundleActivator, BundleContext, Logger, ServiceReference } from '@pandino/pandino-api';
 
-export default class BundleAActivator implements BundleActivator {
+export default class Activator implements BundleActivator {
   private loggerReference: ServiceReference<Logger>;
   private logger: Logger;
 
@@ -279,7 +273,7 @@ export default class BundleAActivator implements BundleActivator {
     this.loggerReference = context.getServiceReference<Logger>('@pandino/pandino/Logger');
     this.logger = context.getService(this.loggerReference);
 
-    this.logger.info('Yayy'); // 
+    this.logger.info('Yayy');
 
     return Promise.resolve();
   }
