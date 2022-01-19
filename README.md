@@ -242,7 +242,7 @@ export default class Activator implements BundleActivator {
   }
 
   async stop(context: BundleContext): Promise<void> {
-    inverterRegistration.unregister();
+    this.inverterRegistration.unregister();
 
     return Promise.resolve();
   }
