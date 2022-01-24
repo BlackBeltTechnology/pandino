@@ -131,10 +131,6 @@ export class BundleImpl implements Bundle {
     return this.deploymentRoot;
   }
 
-  getManifestLocation(): string {
-    return this.manifestLocation;
-  }
-
   revise(headers: BundleManifestHeaders): void {
     const updatedRevision = this.createRevision(headers);
     this.addRevision(updatedRevision);
@@ -210,5 +206,9 @@ export class BundleImpl implements Bundle {
 
   getRevisions(): BundleRevision[] {
     return this.revisions;
+  }
+
+  getLocation(): string {
+    return this.manifestLocation;
   }
 }
