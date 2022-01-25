@@ -181,4 +181,6 @@ export interface Bundle {
    * @returns {string}
    */
   getUniqueIdentifier(): string;
+
+  getLocation(): string;
 }

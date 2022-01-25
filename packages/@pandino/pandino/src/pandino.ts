@@ -566,7 +566,7 @@ export class Pandino extends BundleImpl implements Framework {
       let activatorInstance: any;
       try {
         activatorInstance = (
-          await this.importer.import(this.getDeploymentRoot(), activatorDefinition, this.getManifestLocation())
+          await this.importer.import(this.getDeploymentRoot(), activatorDefinition, this.getLocation())
         ).default;
       } catch (ex) {
         return Promise.reject('Not found: ' + activatorDefinition + ': ' + ex);
@@ -638,5 +638,9 @@ export class Pandino extends BundleImpl implements Framework {
     this.fireServiceEvent(new ServiceEventImpl('REGISTERED', reg.getReference()), {});
 
     return reg;
+  }
+
+  getLocation(): string {
+    return 'System Bundle';
   }
 }
