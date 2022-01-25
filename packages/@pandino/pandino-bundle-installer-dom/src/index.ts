@@ -37,7 +37,7 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
     const config = {
       attributes: true,
       childList: true,
-      characterData: true
+      characterData: true,
     };
 
     let locations: string[];
@@ -52,8 +52,10 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
         locations = documentDefinedManifest ? JSON.parse(documentDefinedManifest.textContent) : [];
       }
 
-      let installList = locations.filter(manifestLocation => !this.installedManifestList.includes(manifestLocation));
-      let uninstallList = this.installedManifestList.filter(manifestLocation => !locations.includes(manifestLocation));
+      const installList = locations.filter((manifestLocation) => !this.installedManifestList.includes(manifestLocation));
+      const uninstallList = this.installedManifestList.filter(
+        (manifestLocation) => !locations.includes(manifestLocation),
+      );
 
       await Promise.all(uninstallList.map((manifestLocation) => this.uninstall(manifestLocation)));
       await Promise.all(installList.map((manifestLocation) => this.install(manifestLocation)));
@@ -63,8 +65,8 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
 
     await callback();
 
-    const observer = new MutationObserver(callback);
-    observer.observe(documentDefinedManifest.childNodes[0], config);
+    this.observer = new MutationObserver(callback);
+    this.observer.observe(documentDefinedManifest.childNodes[0], config);
   }
 
   async install(path: string): Promise<void> {
@@ -72,7 +74,7 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
   }
 
   async uninstall(path: string): Promise<void> {
-    const bundle = this.context.getBundles().find(bundle => path === bundle.getLocation());
+    const bundle = this.context.getBundles().find((bundle) => path === bundle.getLocation());
     if (bundle) {
       await bundle.uninstall();
     }
