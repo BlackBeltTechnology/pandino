@@ -3,9 +3,9 @@ import { Bundle, Logger } from '@pandino/pandino-api';
 import { ConfigurationManager } from './configuration-manager';
 
 export class ConfigurationAdminImpl implements ConfigurationAdmin {
-  private configurationManager: ConfigurationManager;
-  private bundle: Bundle;
-  private logger: Logger;
+  private readonly bundle: Bundle;
+  private readonly logger: Logger;
+  private readonly configurationManager: ConfigurationManager;
 
   constructor(configurationManager: ConfigurationManager, bundle: Bundle, logger: Logger) {
     this.configurationManager = configurationManager;
@@ -14,27 +14,14 @@ export class ConfigurationAdminImpl implements ConfigurationAdmin {
   }
 
   getConfiguration(pid: string, location?: string): Configuration {
-    throw new Error('Not implemented yet');
+    let config: Configuration = this.configurationManager.getConfiguration(pid);
+    if (!config) {
+      config = this.configurationManager.createConfiguration(pid, location);
+    }
+    return config;
   }
 
   listConfigurations(filter?: string): Configuration[] {
-    return [];
-  }
-
-  dispose(): void {
-    this.bundle = undefined;
-    this.configurationManager = undefined;
-  }
-
-  getBundle(): Bundle {
-    return this.bundle;
-  }
-
-  private getConfigurationManager(): ConfigurationManager {
-    if (!this.configurationManager) {
-      throw new Error('Configuration Admin service has been unregistered');
-    }
-
-    return this.configurationManager;
+    return this.configurationManager.listConfigurations(filter);
   }
 }

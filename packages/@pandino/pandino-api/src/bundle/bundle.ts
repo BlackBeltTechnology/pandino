@@ -182,5 +182,14 @@ export interface Bundle {
    */
   getUniqueIdentifier(): string;
 
+  /**
+   * Returns this bundle's location identifier.
+   *
+   * The location identifier is the location passed to BundleContext.installBundle when a bundle is installed. The
+   * location identifier does not change while this bundle remains installed, even if this bundle is updated.
+   *
+   * This method must continue to return this bundle's location identifier while this bundle is in the UNINSTALLED
+   * state.
+   */
   getLocation(): string;
 }

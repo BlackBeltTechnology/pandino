@@ -16,6 +16,11 @@ export const PACKAGE_NAMESPACE = 'pandino.wiring.package';
 export const HOST_NAMESPACE = 'pandino.wiring.host';
 
 /**
+ * Location identifier of the Pandino <i>system bundle </i>, which is defined to be &quot;System Bundle&quot;.
+ */
+export const SYSTEM_BUNDLE_LOCATION = 'System Bundle';
+
+/**
  * Manifest header identifying the bundle's name.
  */
 export const BUNDLE_NAME = 'Bundle-Name';
@@ -127,6 +132,8 @@ export const FRAMEWORK_MANIFEST_FETCHER = '@pandino/pandino/ManifestFetcher';
 
 export const FRAMEWORK_BUNDLE_IMPORTER = '@pandino/pandino/BundleImporter';
 
+export const FRAMEWORK_FILTER_PARSER = '@pandino/pandino/FilterParser';
+
 export const FRAMEWORK_UUID = '@pandino/pandino/uuid';
 
 export const FRAMEWORK_VERSION = '@pandino/pandino/version';
@@ -191,6 +198,8 @@ export const SERVICE_DESCRIPTION = 'service.description';
  * {@link #SCOPE_BUNDLE}. Otherwise, the value of this service property will be {@link #SCOPE_SINGLETON}.
  */
 export const SERVICE_SCOPE = 'service.scope';
+
+export const SERVICE_PID = 'service.pid';
 
 /**
  * Service scope is singleton. All bundles using the service receive the same service object.

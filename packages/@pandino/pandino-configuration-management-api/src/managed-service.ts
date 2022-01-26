@@ -19,5 +19,5 @@ import { ServiceProperties } from '@pandino/pandino-api';
  * callbacks must be done asynchronously.
  */
 export interface ManagedService {
-  updated(properties: ServiceProperties): void;
+  updated(properties?: ServiceProperties): void;
 }

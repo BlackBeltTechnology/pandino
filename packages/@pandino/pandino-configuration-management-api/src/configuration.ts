@@ -72,9 +72,31 @@ export interface Configuration {
    */
   delete(): void;
 
-  // setBundleLocation(var1: string): void;
+  /**
+   * Bind this Configuration object to the specified location.
+   *
+   * If the location parameter is undefined then the Configuration object will not be bound to a location/region. It
+   * will be set to the bundle's location before the first time a Managed Service/Managed Service Factory receives this
+   * Configuration object via the updated method and before any plugins are called.
+   *
+   * The bundle location or region will be set persistently.
+   *
+   * If the location starts with ? then all targets registered with the given PID must be updated.
+   *
+   * If the location is changed then existing targets must be informed. If they can no longer see this configuration,
+   * the configuration must be deleted or updated with null. If this configuration becomes visible then they must be
+   * updated with this configuration.
+   */
+  setBundleLocation(location?: string): void;
 
-  // getBundleLocation(): string;
+  /**
+   * Get the bundle location.
+   *
+   * Returns the bundle location or region to which this configuration is bound, or null if it is not yet bound to a
+   * bundle location or region. If the location starts with ? then the configuration is delivered to all targets and not
+   * restricted to a single bundle.
+   */
+  getBundleLocation(): string;
 
   /**
    * Equality is defined to have equal PIDs Two Configuration objects are equal when their PIDs are equal.
