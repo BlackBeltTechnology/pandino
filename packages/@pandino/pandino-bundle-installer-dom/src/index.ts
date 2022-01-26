@@ -52,7 +52,9 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
         locations = documentDefinedManifest ? JSON.parse(documentDefinedManifest.textContent) : [];
       }
 
-      const installList = locations.filter((manifestLocation) => !this.installedManifestList.includes(manifestLocation));
+      const installList = locations.filter(
+        (manifestLocation) => !this.installedManifestList.includes(manifestLocation),
+      );
       const uninstallList = this.installedManifestList.filter(
         (manifestLocation) => !locations.includes(manifestLocation),
       );

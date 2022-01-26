@@ -26,7 +26,7 @@ export class ConfigurationManager implements ServiceListener {
     string,
     ServiceReference<ManagedService>
   >();
-  private readonly eventListeners: Map<string, ConfigurationListener> = new Map<string, ConfigurationListener>();
+  private readonly eventListeners: Map<string, ConfigurationListener[]> = new Map<string, ConfigurationListener[]>();
 
   constructor(context: BundleContext, logger: Logger, filterParser: FilterParser) {
     this.context = context;
@@ -58,22 +58,18 @@ export class ConfigurationManager implements ServiceListener {
     managedService: ManagedService,
     config?: ConfigurationImpl,
   ): void {
-    switch (eventType) {
-      case 'REGISTERED':
-        if (!this.managedReferences.has(pid)) {
-          this.managedReferences.set(pid, reference);
-        }
-      case 'MODIFIED':
-      case 'MODIFIED_ENDMATCH':
-        managedService.updated(config?.getProperties());
-        this.fireConfigurationChangeEvent('UPDATED', pid, reference);
-        break;
-      default:
-        if (this.managedReferences.has(pid)) {
-          this.managedReferences.delete(pid);
-        }
-        managedService.updated(undefined);
-        this.fireConfigurationChangeEvent('DELETED', pid, reference);
+    if (eventType === 'REGISTERED') {
+      if (!this.managedReferences.has(pid)) {
+        this.managedReferences.set(pid, reference);
+      }
+      managedService.updated(config?.getProperties());
+      this.fireConfigurationChangeEvent('UPDATED', pid, reference);
+    } else if (eventType === 'UNREGISTERING') {
+      if (this.managedReferences.has(pid)) {
+        this.managedReferences.delete(pid);
+      }
+      managedService.updated(undefined);
+      this.fireConfigurationChangeEvent('DELETED', pid, reference);
     }
   }
 
@@ -82,10 +78,22 @@ export class ConfigurationManager implements ServiceListener {
     refPid: string,
     configurationListener: ConfigurationListener,
   ): void {
-    if (!this.eventListeners.has(refPid) && eventType === 'REGISTERED') {
-      this.eventListeners.set(refPid, configurationListener);
-    } else if (this.eventListeners.has(refPid) && eventType === 'UNREGISTERING') {
-      this.eventListeners.delete(refPid);
+    if (eventType === 'REGISTERED') {
+      if (!this.eventListeners.has(refPid)) {
+        this.eventListeners.set(refPid, []);
+      }
+      const listeners = this.eventListeners.get(refPid);
+      if (!listeners.includes(configurationListener)) {
+        listeners.push(configurationListener);
+      }
+    } else if (eventType === 'UNREGISTERING') {
+      if (this.eventListeners.has(refPid)) {
+        const listeners = this.eventListeners.get(refPid);
+        const listenerIdx = listeners.findIndex((l) => l === configurationListener);
+        if (listenerIdx > -1) {
+          listeners.splice(listenerIdx, 1);
+        }
+      }
     }
   }
 
@@ -113,6 +121,7 @@ export class ConfigurationManager implements ServiceListener {
         const service = this.context.getService(ref);
         service.updated(config.getProperties());
         this.fireConfigurationChangeEvent('UPDATED', pid, ref);
+        break;
       }
     }
 
@@ -147,6 +156,7 @@ export class ConfigurationManager implements ServiceListener {
         service.updated({
           ...config?.getProperties(),
         });
+        this.fireConfigurationChangeEvent('UPDATED', config.getPid(), ref);
       }
     }
   }
@@ -179,10 +189,9 @@ export class ConfigurationManager implements ServiceListener {
         return type;
       },
     };
-    for (const key of this.eventListeners.keys()) {
-      if (key === pid) {
-        this.eventListeners.get(key).configurationEvent(event);
-      }
+    const listeners = this.eventListeners.get(pid) || [];
+    for (const listener of listeners) {
+      listener.configurationEvent(event);
     }
   }
 }
