@@ -27,8 +27,6 @@ export class ConfigurationImpl implements Configuration {
     }
     if (other instanceof ConfigurationImpl) {
       return this.pid === other.getPid();
-    } else if (other && other?.pid && this.getPid() === other.pid) {
-      return true;
     }
     return false;
   }
