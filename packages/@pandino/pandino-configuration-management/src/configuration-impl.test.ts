@@ -34,13 +34,13 @@ describe('ConfigurationImpl', () => {
   it('basic creation of configuration', () => {
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
 
-    testConfiguration(configuration, true, 'test.pid', undefined, undefined);
+    testConfiguration(configuration, 'test.pid', undefined, undefined);
   });
 
   it('location with initial value', () => {
     const configuration: Configuration = configAdmin.getConfiguration('test.pid', bundle.getLocation());
 
-    testConfiguration(configuration, true, 'test.pid', bundle.getLocation(), undefined);
+    testConfiguration(configuration, 'test.pid', bundle.getLocation(), undefined);
   });
 
   it('location updates at first registration after initially missing', () => {
@@ -51,21 +51,21 @@ describe('ConfigurationImpl', () => {
     };
 
     // configuration didn't register a location
-    testConfiguration(configuration, true, 'test.pid', undefined, undefined);
+    testConfiguration(configuration, 'test.pid', undefined, undefined);
 
     context.registerService('@pandino/pandino-configuration-management-api/ManagedService', service, {
       [SERVICE_PID]: 'test.pid',
     });
 
     // CM uses first registering service's location if location was missing
-    testConfiguration(configuration, true, 'test.pid', bundle.getLocation(), undefined);
+    testConfiguration(configuration, 'test.pid', bundle.getLocation(), undefined);
 
     configuration.update({
       prop1: true,
     });
 
     // location stays the same
-    testConfiguration(configuration, true, 'test.pid', bundle.getLocation(), {
+    testConfiguration(configuration, 'test.pid', bundle.getLocation(), {
       prop1: true,
     });
   });
@@ -94,11 +94,11 @@ describe('ConfigurationImpl', () => {
 
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
 
-    testUpdateCalls(mockUpdated, 2, [undefined, undefined]);
+    testUpdateCalls(mockUpdated, [undefined, undefined]);
 
     // If a ManagedService is registered first, and configuration comes after, the created Configuration object gets
     // the Bundle's location which hosts the Service.
-    testConfiguration(configuration, true, 'test.pid', bundle.getLocation(), undefined);
+    testConfiguration(configuration, 'test.pid', bundle.getLocation(), undefined);
   });
 
   it('configuration and registration after', () => {
@@ -111,8 +111,8 @@ describe('ConfigurationImpl', () => {
       [SERVICE_PID]: 'test.pid',
     });
 
-    testUpdateCalls(mockUpdated, 1, [undefined]);
-    testConfiguration(configuration, true, 'test.pid', bundle.getLocation(), undefined);
+    testUpdateCalls(mockUpdated, [undefined]);
+    testConfiguration(configuration, 'test.pid', bundle.getLocation(), undefined);
   });
 
   it('configuration and registration after and update after that', () => {
@@ -134,7 +134,7 @@ describe('ConfigurationImpl', () => {
       prop2: 'test',
     });
 
-    testUpdateCalls(mockUpdated, 2, [
+    testUpdateCalls(mockUpdated, [
       undefined,
       {
         prop1: true,
@@ -142,7 +142,7 @@ describe('ConfigurationImpl', () => {
       },
     ]);
 
-    testConfiguration(configuration, true, 'test.pid', bundle.getLocation(), {
+    testConfiguration(configuration, 'test.pid', bundle.getLocation(), {
       prop1: true,
       prop2: 'test',
     });
@@ -184,21 +184,21 @@ describe('ConfigurationImpl', () => {
       prop2: 'test',
     });
 
-    testUpdateCalls(mockUpdated1, 2, [
+    testUpdateCalls(mockUpdated1, [
       undefined,
       {
         prop1: true,
         prop2: 'test',
       },
     ]);
-    testUpdateCalls(mockUpdated2, 2, [
+    testUpdateCalls(mockUpdated2, [
       undefined,
       {
         prop1: true,
         prop2: 'test',
       },
     ]);
-    testConfiguration(configuration, true, 'test.pid', bundle.getLocation(), {
+    testConfiguration(configuration, 'test.pid', bundle.getLocation(), {
       prop1: true,
       prop2: 'test',
     });
@@ -230,7 +230,7 @@ describe('ConfigurationImpl', () => {
 
     configuration.delete();
 
-    testUpdateCalls(mockUpdated, 3, [
+    testUpdateCalls(mockUpdated, [
       undefined,
       {
         prop1: true,
@@ -243,9 +243,9 @@ describe('ConfigurationImpl', () => {
     expect(() => configuration.setBundleLocation()).toThrow();
   });
 
-  function testUpdateCalls(mockUpdated: any, callTimes: number, callbackParams: any[]): void {
-    expect(mockUpdated).toHaveBeenCalledTimes(callTimes);
-    expect(callbackParams.length).toEqual(callTimes);
+  function testUpdateCalls(mockUpdated: any, callbackParams: any[]): void {
+    expect(mockUpdated).toHaveBeenCalledTimes(callbackParams.length);
+    expect(mockUpdated.mock.calls.length).toEqual(callbackParams.length);
 
     for (let idxParam = 0; idxParam < callbackParams.length; idxParam++) {
       expect(mockUpdated.mock.calls[idxParam][0]).toEqual(callbackParams[idxParam]);
@@ -254,18 +254,13 @@ describe('ConfigurationImpl', () => {
 
   function testConfiguration(
     configuration: Configuration,
-    defined: boolean,
-    pid?: string,
+    pid: string,
     location?: string,
     properties?: ServiceProperties,
   ): void {
-    if (defined) {
-      expect(configuration).toBeDefined();
-      expect(configuration.getPid()).toEqual(pid);
-      expect(configuration.getBundleLocation()).toEqual(location);
-      expect(configuration.getProperties()).toEqual(properties);
-    } else {
-      expect(configuration).not.toBeDefined();
-    }
+    expect(configuration).toBeDefined();
+    expect(configuration.getPid()).toEqual(pid);
+    expect(configuration.getBundleLocation()).toEqual(location);
+    expect(configuration.getProperties()).toEqual(properties);
   }
 });
