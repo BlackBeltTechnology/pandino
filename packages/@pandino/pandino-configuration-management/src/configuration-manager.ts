@@ -22,9 +22,9 @@ export class ConfigurationManager implements ServiceListener {
   private readonly logger: Logger;
   private readonly filterParser: FilterParser;
   private readonly configurations: Map<string, ConfigurationImpl> = new Map<string, ConfigurationImpl>();
-  private readonly managedReferences: Map<string, ServiceReference<ManagedService>> = new Map<
+  private readonly managedReferences: Map<string, Array<ServiceReference<ManagedService>>> = new Map<
     string,
-    ServiceReference<ManagedService>
+    Array<ServiceReference<ManagedService>>
   >();
   private readonly eventListeners: Map<string, ConfigurationListener[]> = new Map<string, ConfigurationListener[]>();
 
@@ -60,13 +60,26 @@ export class ConfigurationManager implements ServiceListener {
   ): void {
     if (eventType === 'REGISTERED') {
       if (!this.managedReferences.has(pid)) {
-        this.managedReferences.set(pid, reference);
+        this.managedReferences.set(pid, []);
       }
+      if (!this.managedReferences.get(pid).includes(reference)) {
+        this.managedReferences.get(pid).push(reference);
+      }
+
+      // As per specification if config is missing, we need to assign the first registered Service's Bundle location.
+      if (!config.getBundleLocation()) {
+        config.setBundleLocation(reference.getBundle().getLocation());
+      }
+
       managedService.updated(config?.getProperties());
       this.fireConfigurationChangeEvent('UPDATED', pid, reference);
     } else if (eventType === 'UNREGISTERING') {
-      if (this.managedReferences.has(pid)) {
-        this.managedReferences.delete(pid);
+      if (!this.managedReferences.has(pid)) {
+        this.managedReferences.set(pid, []);
+      }
+      const idx = this.managedReferences.get(pid).findIndex((ref) => ref === reference);
+      if (idx > -1) {
+        this.managedReferences.get(pid).splice(idx, 1);
       }
       managedService.updated(undefined);
       this.fireConfigurationChangeEvent('DELETED', pid, reference);
@@ -107,20 +120,30 @@ export class ConfigurationManager implements ServiceListener {
   }
 
   createConfiguration(pid: string, location?: string): ConfigurationImpl {
+    let effectiveLocation = location;
     let config = this.getConfiguration(pid);
     if (config) {
       return config;
     }
 
-    config = this.internalCreateConfiguration(pid, location);
+    const refs = this.managedReferences.get(pid);
+
+    if (refs && refs.length) {
+      effectiveLocation = refs[0].getBundle().getLocation();
+    }
+
+    config = this.internalCreateConfiguration(pid, effectiveLocation);
     this.storeConfiguration(config);
 
     for (const key of this.managedReferences.keys()) {
       if (key === pid) {
-        const ref = this.managedReferences.get(key);
-        const service = this.context.getService(ref);
-        service.updated(config.getProperties());
-        this.fireConfigurationChangeEvent('UPDATED', pid, ref);
+        const refs = this.managedReferences.get(pid);
+        for (const ref of refs) {
+          const service = this.context.getService(ref);
+          service.updated(config.getProperties());
+          this.fireConfigurationChangeEvent('UPDATED', pid, ref);
+        }
+
         break;
       }
     }
@@ -129,34 +152,42 @@ export class ConfigurationManager implements ServiceListener {
   }
 
   listConfigurations(filterString?: string): ConfigurationImpl[] {
-    const filter = this.filterParser(filterString);
-    this.logger.debug(`Listing configurations matching ${filterString}`);
+    if (filterString) {
+      const filter = this.filterParser(filterString);
+      this.logger.debug(`Listing configurations matching ${filterString}`);
 
-    return Array.from(this.configurations.values()).filter((config) => filter.match(config.getProperties()));
+      return Array.from(this.configurations.values()).filter((config) => filter.match(config.getProperties()));
+    }
+
+    return [...this.configurations.values()];
   }
 
   deleteConfiguration(pid: string): void {
     if (this.configurations.has(pid) && this.managedReferences.has(pid)) {
-      const ref = this.managedReferences.get(pid);
-      const service = this.context.getService(ref);
-      if (service) {
-        service.updated(undefined);
+      const refs = this.managedReferences.get(pid);
+      for (const ref of refs) {
+        const service = this.context.getService(ref);
+        if (service) {
+          service.updated(undefined);
+        }
+        this.fireConfigurationChangeEvent('DELETED', pid, ref);
       }
       this.configurations.delete(pid);
-      this.fireConfigurationChangeEvent('DELETED', pid, ref);
     }
     this.logger.debug(`Attempted to delete already removed configuration for pid: ${pid}, ignoring.`);
   }
 
   updateConfiguration(config: ConfigurationImpl): void {
     if (this.managedReferences.has(config.getPid())) {
-      const ref = this.managedReferences.get(config.getPid());
-      const service = this.context.getService(ref);
-      if (service) {
-        service.updated({
-          ...config?.getProperties(),
-        });
-        this.fireConfigurationChangeEvent('UPDATED', config.getPid(), ref);
+      const refs = this.managedReferences.get(config.getPid());
+      for (const ref of refs) {
+        const service = this.context.getService(ref);
+        if (service) {
+          service.updated({
+            ...config?.getProperties(),
+          });
+          this.fireConfigurationChangeEvent('UPDATED', config.getPid(), ref);
+        }
       }
     }
   }

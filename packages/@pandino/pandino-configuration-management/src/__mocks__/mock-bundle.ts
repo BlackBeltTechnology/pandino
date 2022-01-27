@@ -1,5 +1,6 @@
 import { Bundle, BundleContext, BundleManifestHeaders, BundleState, ServiceReference } from '@pandino/pandino-api';
 import { SemVer } from 'semver';
+import { MockBundleContext } from './mock-bundle-context';
 
 export class MockBundle implements Bundle {
   private readonly context: BundleContext;
@@ -7,11 +8,12 @@ export class MockBundle implements Bundle {
   private readonly symbolicName: string;
   private readonly version: SemVer;
 
-  constructor(context: BundleContext, location: string, symbolicName: string, version: SemVer) {
+  constructor(context: MockBundleContext, location: string, symbolicName: string, version: SemVer) {
     this.context = context;
     this.location = location;
     this.symbolicName = symbolicName;
     this.version = version;
+    context.setBundle(this);
   }
 
   getBundleContext(): BundleContext {
