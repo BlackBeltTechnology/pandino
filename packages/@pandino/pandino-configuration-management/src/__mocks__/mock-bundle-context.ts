@@ -84,7 +84,7 @@ export class MockBundleContext implements BundleContext {
   registerService<S>(
     identifiers: string[] | string,
     service: S,
-    properties?: ServiceProperties,
+    properties: ServiceProperties = {},
   ): ServiceRegistration<S> {
     const ref: ServiceReference<any> = {
       getBundle: () => this.getBundle(),

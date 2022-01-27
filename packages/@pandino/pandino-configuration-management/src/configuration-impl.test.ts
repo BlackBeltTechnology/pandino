@@ -1,6 +1,12 @@
 import { SemVer } from 'semver';
-import { Bundle, BundleContext, Logger, SERVICE_PID, ServiceProperties } from '@pandino/pandino-api';
-import { Configuration, ManagedService } from '@pandino/pandino-configuration-management-api';
+import { Bundle, BundleContext, Logger, SERVICE_PID, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import {
+  Configuration,
+  ConfigurationEvent,
+  ConfigurationEventType,
+  ConfigurationListener,
+  ManagedService,
+} from '@pandino/pandino-configuration-management-api';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
 import { ConfigurationAdminImpl } from './configuration-admin-impl';
@@ -243,6 +249,49 @@ describe('ConfigurationImpl', () => {
     expect(() => configuration.setBundleLocation()).toThrow();
   });
 
+  it('events', () => {
+    const mockConfigurationEvent = jest.fn();
+    const listener: ConfigurationListener = {
+      configurationEvent: mockConfigurationEvent,
+    };
+    context.registerService<ConfigurationListener>(
+      '@pandino/pandino-configuration-management-api/ConfigurationListener',
+      listener,
+      {
+        [SERVICE_PID]: 'test.pid',
+      },
+    );
+
+    const configuration: Configuration = configAdmin.getConfiguration('test.pid');
+
+    testConfigurationEvent(mockConfigurationEvent, 0);
+
+    const service: ManagedService = {
+      updated: jest.fn(),
+    };
+    const registration = context.registerService(
+      '@pandino/pandino-configuration-management-api/ManagedService',
+      service,
+      {
+        [SERVICE_PID]: 'test.pid',
+      },
+    );
+    const reference = registration.getReference();
+
+    testConfigurationEvent(mockConfigurationEvent, 1, 'UPDATED', reference);
+
+    configuration.update({
+      prop1: true,
+      prop2: 'test',
+    });
+
+    testConfigurationEvent(mockConfigurationEvent, 2, 'UPDATED', reference);
+
+    configuration.delete();
+
+    testConfigurationEvent(mockConfigurationEvent, 3, 'DELETED', reference);
+  });
+
   function testUpdateCalls(mockUpdated: any, callbackParams: any[]): void {
     expect(mockUpdated).toHaveBeenCalledTimes(callbackParams.length);
     expect(mockUpdated.mock.calls.length).toEqual(callbackParams.length);
@@ -262,5 +311,20 @@ describe('ConfigurationImpl', () => {
     expect(configuration.getPid()).toEqual(pid);
     expect(configuration.getBundleLocation()).toEqual(location);
     expect(configuration.getProperties()).toEqual(properties);
+  }
+
+  function testConfigurationEvent(
+    mockConfigurationEvent: any,
+    totalCalls: number,
+    eventType?: ConfigurationEventType,
+    reference?: ServiceReference<any>,
+  ): void {
+    expect(mockConfigurationEvent).toHaveBeenCalledTimes(totalCalls);
+
+    if (totalCalls > 0) {
+      const event: ConfigurationEvent = mockConfigurationEvent.mock.calls[totalCalls - 1][0];
+      expect(event.getType()).toEqual(eventType);
+      expect(event.getReference()).toEqual(reference);
+    }
   }
 });

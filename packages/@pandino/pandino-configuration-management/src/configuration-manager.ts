@@ -39,7 +39,7 @@ export class ConfigurationManager implements ServiceListener {
     const refPid = reference.getProperty(SERVICE_PID);
     const service = this.context.getService(reference);
     if (service) {
-      if (refPid) {
+      if (refPid && typeof (service as ManagedService).updated === 'function') {
         const config = this.configurations.has(refPid)
           ? this.configurations.get(refPid)
           : this.internalCreateConfiguration(refPid, reference.getBundle().getLocation());
