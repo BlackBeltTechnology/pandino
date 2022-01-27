@@ -8,7 +8,7 @@ import {
   ServiceReference,
   ServiceRegistration,
 } from '@pandino/pandino-api';
-import { ConfigurationAdmin } from '@pandino/pandino-configuration-management-api';
+import { ConfigurationAdmin, CONFIG_ADMIN_INTERFACE_KEY } from '@pandino/pandino-configuration-management-api';
 import { ConfigurationAdminImpl } from './configuration-admin-impl';
 import { ConfigurationManager } from './configuration-manager';
 
@@ -32,7 +32,7 @@ export class Activator implements BundleActivator {
     this.configAdmin = new ConfigurationAdminImpl(this.configManager, context.getBundle(), this.logger);
     context.addServiceListener(this.configManager);
     this.configAdminRegistration = context.registerService<ConfigurationAdmin>(
-      '@pandino/pandino-configuration-management-api/ConfigurationAdmin',
+      CONFIG_ADMIN_INTERFACE_KEY,
       this.configAdmin,
     );
 

@@ -6,6 +6,8 @@ import {
   ConfigurationEventType,
   ConfigurationListener,
   ManagedService,
+  CONFIGURATION_LISTENER_INTERFACE_KEY,
+  MANAGED_SERVICE_INTERFACE_KEY,
 } from '@pandino/pandino-configuration-management-api';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
@@ -59,7 +61,7 @@ describe('ConfigurationImpl', () => {
     // configuration didn't register a location
     testConfiguration(configuration, 'test.pid', undefined, undefined);
 
-    context.registerService('@pandino/pandino-configuration-management-api/ManagedService', service, {
+    context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -94,7 +96,7 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: mockUpdated,
     };
-    context.registerService('@pandino/pandino-configuration-management-api/ManagedService', service, {
+    context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -113,7 +115,7 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: mockUpdated,
     };
-    context.registerService('@pandino/pandino-configuration-management-api/ManagedService', service, {
+    context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -127,13 +129,9 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: mockUpdated,
     };
-    const registration = context.registerService(
-      '@pandino/pandino-configuration-management-api/ManagedService',
-      service,
-      {
-        [SERVICE_PID]: 'test.pid',
-      },
-    );
+    const registration = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
+      [SERVICE_PID]: 'test.pid',
+    });
 
     configuration.update({
       prop1: true,
@@ -168,22 +166,14 @@ describe('ConfigurationImpl', () => {
     const service2: ManagedService = {
       updated: mockUpdated2,
     };
-    const registration1 = context.registerService(
-      '@pandino/pandino-configuration-management-api/ManagedService',
-      service1,
-      {
-        [SERVICE_PID]: 'test.pid',
-        name: 'service1',
-      },
-    );
-    const registration2 = context.registerService(
-      '@pandino/pandino-configuration-management-api/ManagedService',
-      service2,
-      {
-        [SERVICE_PID]: 'test.pid',
-        name: 'service2',
-      },
-    );
+    const registration1 = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service1, {
+      [SERVICE_PID]: 'test.pid',
+      name: 'service1',
+    });
+    const registration2 = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service2, {
+      [SERVICE_PID]: 'test.pid',
+      name: 'service2',
+    });
 
     configuration.update({
       prop1: true,
@@ -225,7 +215,7 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: mockUpdated,
     };
-    context.registerService('@pandino/pandino-configuration-management-api/ManagedService', service, {
+    context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -254,13 +244,9 @@ describe('ConfigurationImpl', () => {
     const listener: ConfigurationListener = {
       configurationEvent: mockConfigurationEvent,
     };
-    context.registerService<ConfigurationListener>(
-      '@pandino/pandino-configuration-management-api/ConfigurationListener',
-      listener,
-      {
-        [SERVICE_PID]: 'test.pid',
-      },
-    );
+    context.registerService<ConfigurationListener>(CONFIGURATION_LISTENER_INTERFACE_KEY, listener, {
+      [SERVICE_PID]: 'test.pid',
+    });
 
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
 
@@ -269,13 +255,9 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: jest.fn(),
     };
-    const registration = context.registerService(
-      '@pandino/pandino-configuration-management-api/ManagedService',
-      service,
-      {
-        [SERVICE_PID]: 'test.pid',
-      },
-    );
+    const registration = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
+      [SERVICE_PID]: 'test.pid',
+    });
     const reference = registration.getReference();
 
     testConfigurationEvent(mockConfigurationEvent, 1, 'UPDATED', reference);
