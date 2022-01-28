@@ -8,13 +8,14 @@ import {
   ServiceListener,
   ServiceReference,
 } from '@pandino/pandino-api';
-import { ConfigurationImpl } from './configuration-impl';
 import {
   ConfigurationEvent,
   ConfigurationEventType,
   ConfigurationListener,
   ManagedService,
 } from '@pandino/pandino-configuration-management-api';
+import { ConfigurationImpl } from './configuration-impl';
+import { TargetedPID } from './helper/targeted-pid';
 
 export class ConfigurationManager implements ServiceListener {
   isSync: boolean = true;
@@ -56,11 +57,12 @@ export class ConfigurationManager implements ServiceListener {
     pid: string,
     reference: ServiceReference<any>,
     managedService: ManagedService,
-    config?: ConfigurationImpl,
+    config: ConfigurationImpl,
   ): void {
+    const targetedPid = new TargetedPID(pid);
     if (eventType === 'REGISTERED') {
-      if (!this.managedReferences.has(pid)) {
-        this.managedReferences.set(pid, []);
+      if (!this.managedReferences.has(pid.toString())) {
+        this.managedReferences.set(pid.toString(), []);
       }
       if (!this.managedReferences.get(pid).includes(reference)) {
         this.managedReferences.get(pid).push(reference);
@@ -71,8 +73,10 @@ export class ConfigurationManager implements ServiceListener {
         config.setBundleLocation(reference.getBundle().getLocation());
       }
 
-      managedService.updated(config?.getProperties());
-      this.fireConfigurationChangeEvent('UPDATED', pid, reference);
+      if (targetedPid.matchesTarget(reference)) {
+        managedService.updated(config?.getProperties());
+        this.fireConfigurationChangeEvent('UPDATED', pid, reference);
+      }
     } else if (eventType === 'UNREGISTERING') {
       if (!this.managedReferences.has(pid)) {
         this.managedReferences.set(pid, []);
@@ -81,8 +85,10 @@ export class ConfigurationManager implements ServiceListener {
       if (idx > -1) {
         this.managedReferences.get(pid).splice(idx, 1);
       }
-      managedService.updated(undefined);
-      this.fireConfigurationChangeEvent('DELETED', pid, reference);
+      if (targetedPid.matchesTarget(reference)) {
+        managedService.updated(undefined);
+        this.fireConfigurationChangeEvent('DELETED', pid, reference);
+      }
     }
   }
 
@@ -178,15 +184,17 @@ export class ConfigurationManager implements ServiceListener {
   }
 
   updateConfiguration(config: ConfigurationImpl): void {
-    if (this.managedReferences.has(config.getPid())) {
-      const refs = this.managedReferences.get(config.getPid());
+    if (this.managedReferences.has(config.getServicePid())) {
+      const refs = this.managedReferences.get(config.getServicePid());
       for (const ref of refs) {
-        const service = this.context.getService(ref);
-        if (service) {
-          service.updated({
-            ...config?.getProperties(),
-          });
-          this.fireConfigurationChangeEvent('UPDATED', config.getPid(), ref);
+        if (config.getTargetedPid().matchesTarget(ref)) {
+          const service = this.context.getService(ref);
+          if (service) {
+            service.updated({
+              ...config.getProperties(),
+            });
+            this.fireConfigurationChangeEvent('UPDATED', config.getPid(), ref);
+          }
         }
       }
     }

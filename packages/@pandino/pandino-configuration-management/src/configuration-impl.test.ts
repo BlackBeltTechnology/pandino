@@ -74,6 +74,7 @@ describe('ConfigurationImpl', () => {
 
     // location stays the same
     testConfiguration(configuration, 'test.pid', bundle.getLocation(), {
+      [SERVICE_PID]: 'test.pid',
       prop1: true,
     });
   });
@@ -141,12 +142,14 @@ describe('ConfigurationImpl', () => {
     testUpdateCalls(mockUpdated, [
       undefined,
       {
+        [SERVICE_PID]: 'test.pid',
         prop1: true,
         prop2: 'test',
       },
     ]);
 
     testConfiguration(configuration, 'test.pid', bundle.getLocation(), {
+      [SERVICE_PID]: 'test.pid',
       prop1: true,
       prop2: 'test',
     });
@@ -183,6 +186,7 @@ describe('ConfigurationImpl', () => {
     testUpdateCalls(mockUpdated1, [
       undefined,
       {
+        [SERVICE_PID]: 'test.pid',
         prop1: true,
         prop2: 'test',
       },
@@ -190,11 +194,13 @@ describe('ConfigurationImpl', () => {
     testUpdateCalls(mockUpdated2, [
       undefined,
       {
+        [SERVICE_PID]: 'test.pid',
         prop1: true,
         prop2: 'test',
       },
     ]);
     testConfiguration(configuration, 'test.pid', bundle.getLocation(), {
+      [SERVICE_PID]: 'test.pid',
       prop1: true,
       prop2: 'test',
     });
@@ -229,6 +235,7 @@ describe('ConfigurationImpl', () => {
     testUpdateCalls(mockUpdated, [
       undefined,
       {
+        [SERVICE_PID]: 'test.pid',
         prop1: true,
         prop2: 'test',
       },
@@ -272,6 +279,73 @@ describe('ConfigurationImpl', () => {
     configuration.delete();
 
     testConfigurationEvent(mockConfigurationEvent, 3, 'DELETED', reference);
+  });
+
+  it('targetpid matching use-case based on bundle symbolic name', () => {
+    const configuration: Configuration = configAdmin.getConfiguration(`test.pid|${bundle.getSymbolicName()}`);
+    const mockUpdated = jest.fn();
+    const service: ManagedService = {
+      updated: mockUpdated,
+    };
+    const registration = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
+      [SERVICE_PID]: 'test.pid',
+    });
+
+    configuration.update({
+      prop1: true,
+      prop2: 'test',
+    });
+
+    // even though the service's pid was "test.pid", the updated callback PID param has the value of the actual
+    // configured PID value
+    testUpdateCalls(mockUpdated, [
+      undefined,
+      {
+        [SERVICE_PID]: `test.pid|${bundle.getSymbolicName()}`,
+        prop1: true,
+        prop2: 'test',
+      },
+    ]);
+
+    testConfiguration(configuration, `test.pid|${bundle.getSymbolicName()}`, undefined, {
+      [SERVICE_PID]: `test.pid|${bundle.getSymbolicName()}`,
+      prop1: true,
+      prop2: 'test',
+    });
+
+    expect(registration.getProperties()).toEqual({
+      [SERVICE_PID]: 'test.pid',
+    });
+  });
+
+  it('targetpid not matching use-case based on bundle symbolic name', () => {
+    const configuration: Configuration = configAdmin.getConfiguration('test.pid|@scope/some-other-package');
+    const mockUpdated = jest.fn();
+    const service: ManagedService = {
+      updated: mockUpdated,
+    };
+    const registration = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
+      [SERVICE_PID]: 'test.pid',
+    });
+
+    configuration.update({
+      prop1: true,
+      prop2: 'test',
+    });
+
+    // +1 update is not called since registered config PID's bundle symbolic name doesn't match the mocked BSN
+    testUpdateCalls(mockUpdated, [undefined]);
+
+    // even though the update() event is not triggered, the config it self gets updated
+    testConfiguration(configuration, 'test.pid|@scope/some-other-package', undefined, {
+      [SERVICE_PID]: 'test.pid|@scope/some-other-package',
+      prop1: true,
+      prop2: 'test',
+    });
+
+    expect(registration.getProperties()).toEqual({
+      [SERVICE_PID]: 'test.pid',
+    });
   });
 
   function testUpdateCalls(mockUpdated: any, callbackParams: any[]): void {

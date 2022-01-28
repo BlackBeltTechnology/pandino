@@ -1,23 +1,24 @@
 import { Configuration } from '@pandino/pandino-configuration-management-api';
-import { ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import { SERVICE_PID, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 import { ConfigurationManager } from './configuration-manager';
+import { TargetedPID } from './helper/targeted-pid';
 
 export class ConfigurationImpl implements Configuration {
   private readonly configurationManager: ConfigurationManager;
-  private readonly pid: string;
+  private readonly pid: TargetedPID;
   private isDeleted = false;
   private location?: string;
   private properties?: ServiceProperties;
 
   constructor(configurationManager: ConfigurationManager, pid: string, location?: string) {
     this.configurationManager = configurationManager;
-    this.pid = pid;
+    this.pid = new TargetedPID(pid);
     this.location = location;
   }
 
   delete(): void {
     this.checkDeleted();
-    this.configurationManager.deleteConfiguration(this.pid);
+    this.configurationManager.deleteConfiguration(this.pid.toString());
     this.isDeleted = true;
   }
 
@@ -26,7 +27,7 @@ export class ConfigurationImpl implements Configuration {
       return false;
     }
     if (other instanceof ConfigurationImpl) {
-      return this.pid === other.getPid();
+      return this.pid.toString() === other.getPid();
     }
     return false;
   }
@@ -38,7 +39,7 @@ export class ConfigurationImpl implements Configuration {
 
   getPid(): string {
     this.checkDeleted();
-    return this.pid;
+    return this.pid.toString();
   }
 
   getProcessedProperties(serviceReference: ServiceReference<any>): ServiceProperties | undefined {
@@ -47,7 +48,12 @@ export class ConfigurationImpl implements Configuration {
 
   getProperties(): ServiceProperties | undefined {
     this.checkDeleted();
-    return this.properties;
+    return this.properties
+      ? {
+          ...this.properties,
+          [SERVICE_PID]: this.pid.toString(),
+        }
+      : undefined;
   }
 
   setBundleLocation(location?: string): void {
@@ -59,6 +65,14 @@ export class ConfigurationImpl implements Configuration {
     this.checkDeleted();
     this.properties = properties;
     this.configurationManager.updateConfiguration(this);
+  }
+
+  getServicePid(): string {
+    return this.pid.getServicePid();
+  }
+
+  getTargetedPid(): TargetedPID {
+    return this.pid;
   }
 
   private checkDeleted(): void {
