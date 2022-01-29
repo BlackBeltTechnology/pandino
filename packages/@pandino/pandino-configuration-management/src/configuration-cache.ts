@@ -55,8 +55,8 @@ export class ConfigurationCache {
   }
 
   delete(pid: string): void {
+    this.persistenceManager.delete(pid);
     if (this.has(pid)) {
-      this.persistenceManager.delete(pid);
       this.cache.delete(pid);
     }
   }
