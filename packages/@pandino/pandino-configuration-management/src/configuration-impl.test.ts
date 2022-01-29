@@ -11,6 +11,7 @@ import {
 } from '@pandino/pandino-configuration-management-api';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
+import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
 import { ConfigurationAdminImpl } from './configuration-admin-impl';
 import { ConfigurationManager } from './configuration-manager';
 
@@ -34,7 +35,7 @@ describe('ConfigurationImpl', () => {
       '@test/my-bundle',
       new SemVer('0.0.0'),
     );
-    cm = new ConfigurationManager(context, logger, mockFilterParser);
+    cm = new ConfigurationManager(context, logger, mockFilterParser, new MockPersistenceManager('{}'));
     context.addServiceListener(cm);
     configAdmin = new ConfigurationAdminImpl(cm, bundle, logger);
   });

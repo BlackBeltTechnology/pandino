@@ -10,10 +10,20 @@ export class ConfigurationImpl implements Configuration {
   private location?: string;
   private properties?: ServiceProperties;
 
-  constructor(configurationManager: ConfigurationManager, pid: string, location?: string) {
+  constructor(
+    configurationManager: ConfigurationManager,
+    pid: string,
+    location?: string,
+    properties?: ServiceProperties,
+  ) {
     this.configurationManager = configurationManager;
     this.pid = new TargetedPID(pid);
     this.location = location;
+    if (properties) {
+      this.properties = {
+        ...properties,
+      };
+    }
   }
 
   delete(): void {
