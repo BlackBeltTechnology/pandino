@@ -657,4 +657,8 @@ export class Pandino extends BundleImpl implements Framework {
   getLocation(): string {
     return SYSTEM_BUNDLE_LOCATION;
   }
+
+  getRegisteredServicesForBundle(context: BundleContext): ServiceReference<any>[] {
+    return this.registry.getRegisteredServices(context.getBundle());
+  }
 }

@@ -71,7 +71,6 @@ describe('Pandino', () => {
   const bundleRequiresCapability = 'pet.grooming;filter:="(&(type=cat)(rate<=20))"';
   const bundleProvidesCapability =
     'pet.grooming;type:Array="dog,cat";length:number=800;soap="organic";rate:number="10"';
-  let sr: ServiceRegistry;
   let helloService: HelloService;
   let welcomeService: WelcomeService;
 
@@ -85,7 +84,6 @@ describe('Pandino', () => {
       [LOG_LEVEL_PROP]: LogLevel.WARN,
     };
     pandino = new Pandino(params);
-    sr = new ServiceRegistryImpl(null, null);
     helloService = {
       sayHello: () => 'hello',
     };
@@ -380,25 +378,24 @@ describe('Pandino', () => {
     await installBundle(bundle1Headers);
 
     const bundle = pandino.getBundleContext().getBundles()[0];
+    const context = bundle.getBundleContext();
 
-    const regHello: ServiceRegistration<HelloService> = sr.registerService(
-      bundle,
+    const regHello: ServiceRegistration<HelloService> = context.registerService(
       '@pandino/pandino/hello-impl',
       helloService,
     );
-    const regWelcome: ServiceRegistration<WelcomeService> = sr.registerService(
-      bundle,
+    const regWelcome: ServiceRegistration<WelcomeService> = context.registerService(
       '@pandino/pandino/welcome-impl',
       welcomeService,
     );
 
-    expect(sr.getRegisteredServices(bundle).length).toEqual(2);
+    expect(bundle.getRegisteredServices().length).toEqual(2);
     expect(regHello.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/hello-impl');
     expect(regWelcome.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/welcome-impl');
 
     await bundle.stop();
 
-    expect(sr.getRegisteredServices(bundle).length).toEqual(0);
+    expect(bundle.getRegisteredServices().length).toEqual(0);
   });
 
   it('uninstalling bundle de-register all services', async () => {
@@ -406,25 +403,24 @@ describe('Pandino', () => {
     await installBundle(bundle1Headers);
 
     const bundle = pandino.getBundleContext().getBundles()[0];
+    const context = bundle.getBundleContext();
 
-    const regHello: ServiceRegistration<HelloService> = sr.registerService(
-      bundle,
+    const regHello: ServiceRegistration<HelloService> = context.registerService(
       '@pandino/pandino/hello-impl',
       helloService,
     );
-    const regWelcome: ServiceRegistration<WelcomeService> = sr.registerService(
-      bundle,
+    const regWelcome: ServiceRegistration<WelcomeService> = context.registerService(
       '@pandino/pandino/welcome-impl',
       welcomeService,
     );
 
-    expect(sr.getRegisteredServices(bundle).length).toEqual(2);
+    expect(bundle.getRegisteredServices().length).toEqual(2);
     expect(regHello.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/hello-impl');
     expect(regWelcome.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/welcome-impl');
 
     await bundle.uninstall();
 
-    expect(sr.getRegisteredServices(bundle).length).toEqual(0);
+    expect(bundle.getRegisteredServices().length).toEqual(0);
   });
 
   async function preparePandino() {
