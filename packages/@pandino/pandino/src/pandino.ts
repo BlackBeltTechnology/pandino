@@ -58,6 +58,7 @@ import { Framework } from './lib/framework/framework';
 import { ServiceRegistry } from './lib/framework/service-registry';
 import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
 import { filterParser } from './lib/filter/filter-parser';
+import {ServiceRegistrationImpl} from "./lib/framework/service-registration-impl";
 
 export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;
@@ -375,6 +376,15 @@ export class Pandino extends BundleImpl implements Framework {
         const bci: BundleContextImpl = bundle.getBundleContext() as BundleContextImpl;
         bci.invalidate();
         bundle.setBundleContext(null);
+
+        // Unregister any services offered by this bundle.
+        this.registry.unregisterServices(bundle);
+
+        // Release any services being used by this bundle.
+        this.registry.ungetServices(bundle);
+
+        // The spec says that we must remove all event
+        // listeners for a bundle when it is stopped.
         this.dispatcher.removeListeners(bci);
         bundle.setState('RESOLVED');
       }
