@@ -398,7 +398,7 @@ describe('Pandino', () => {
     expect(bundle.getRegisteredServices().length).toEqual(0);
   });
 
-  it('uninstalling bundle de-register all services', async () => {
+  it('uninstalling bundle unregister all services', async () => {
     await preparePandino();
     await installBundle(bundle1Headers);
 
@@ -420,7 +420,8 @@ describe('Pandino', () => {
 
     await bundle.uninstall();
 
-    expect(bundle.getRegisteredServices().length).toEqual(0);
+    expect(() => bundle.getRegisteredServices()).toThrow(Error);
+    expect(() => bundle.getRegisteredServices()).toThrow('The bundle is uninstalled.');
   });
 
   async function preparePandino() {

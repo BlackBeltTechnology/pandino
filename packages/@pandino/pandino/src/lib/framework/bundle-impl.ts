@@ -60,7 +60,7 @@ export class BundleImpl implements Bundle {
   }
 
   getRegisteredServices(): ServiceReference<any>[] {
-    return this.getFramework().getRegisteredServicesForBundle(this.context);
+    return this.getFramework().getBundleRegisteredServices(this);
   }
 
   getServicesInUse(): ServiceReference<any>[] {

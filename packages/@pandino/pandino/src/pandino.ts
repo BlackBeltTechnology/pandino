@@ -658,7 +658,11 @@ export class Pandino extends BundleImpl implements Framework {
     return SYSTEM_BUNDLE_LOCATION;
   }
 
-  getRegisteredServicesForBundle(context: BundleContext): ServiceReference<any>[] {
-    return this.registry.getRegisteredServices(context.getBundle());
+  getBundleRegisteredServices(bundle: BundleImpl): ServiceReference<any>[] {
+    if (bundle.getState() === 'UNINSTALLED') {
+      throw new Error('The bundle is uninstalled.');
+    }
+
+    return this.registry.getRegisteredServices(bundle);
   }
 }
