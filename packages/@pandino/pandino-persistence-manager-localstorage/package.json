@@ -1,8 +1,8 @@
 {
-  "name": "@pandino/pandino-configuration-management",
+  "name": "@pandino/pandino-persistence-manager-localstorage",
   "version": "0.1.0",
-  "description": "",
-  "main": "dist/pandino-configuration-management.js",
+  "description": "Localstorage implementation of the Pandino Persistence Manager API",
+  "main": "dist/pandino-persistence-manager-memory.js",
   "private": true,
   "types": "dist/src/index.d.ts",
   "scripts": {
@@ -14,12 +14,9 @@
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "MIT",
   "devDependencies": {
-    "@pandino/pandino": "^0.1.0",
     "@pandino/pandino-api": "^0.1.0",
-    "@pandino/pandino-configuration-management-api": "^0.1.0",
     "@pandino/pandino-persistence-manager-api": "^0.1.0",
     "@types/jest": "^27.4.0",
-    "@types/semver": "^7.3.9",
     "copy-webpack-plugin": "^10.2.0",
     "jest": "^27.4.7",
     "rimraf": "^3.0.2",

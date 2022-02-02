@@ -92,6 +92,7 @@ export class Activator implements BundleActivator {
         CONFIG_ADMIN_INTERFACE_KEY,
         this.configAdmin,
       );
+      this.configManager.initReferencesAddedBeforeManagerActivation();
       this.context.addServiceListener(this.configManager);
     } else {
       this.logger.warn(`Tried to re-start Configuration Admin while is already in use. Ignoring`);

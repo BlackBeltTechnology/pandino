@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Pandino - Basic Browser JS</title>
+  </head>
+  <body>
+    <h1 id="root">Hello!</h1>
+    <p>Please check the console for demo content!</p>
+    <script type="pandino-manifests">
+      [
+        "./pandino-configuration-management-manifest.json",
+        "./pandino-persistence-manager-localstorage-manifest.json",
+        "./configuration-consumer-manifest.json"
+      ]
+    </script>
+    <script type="module">
+      window.addEventListener('DOMContentLoaded', async () => {
+        const Pandino = (await import('./pandino.js')).default;
+        const pandino = new Pandino({
+          'pandino.deployment.root': location.href,
+          'pandino.bundle.importer': {
+            import: (deploymentRoot, activatorLocation) => import(activatorLocation),
+          },
+          'pandino.manifest.fetcher': {
+            fetch: async (deploymentRoot, uri) => (await fetch(uri)).json(),
+          },
+        });
+
+        await pandino.init();
+        await pandino.start();
+
+        await pandino.getBundleContext().installBundle('./pandino-bundle-installer-dom-manifest.json');
+
+        window.setTimeout(() => {
+          pandino.getBundleContext().installBundle('./config-admin-manager-manifest.json');
+        }, 3000);
+      });
+    </script>
+  </body>
+</html>

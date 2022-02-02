@@ -1,0 +1,8 @@
+{
+  "Bundle-ManifestVersion": "1",
+  "Bundle-SymbolicName": "@pandino/examples-configuration-manager-browser-js-config-admin-manager",
+  "Bundle-Name": "ConfigAdmin Manager",
+  "Bundle-Version": "0.1.0",
+  "Bundle-Activator": "./config-admin-manager.js",
+  "Require-Capability": "@pandino/pandino-configuration-management;filter:=(objectClass=\"@pandino/pandino-configuration-management/ConfigurationAdmin\")"
+}

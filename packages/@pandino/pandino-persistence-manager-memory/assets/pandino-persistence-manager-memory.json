@@ -4,5 +4,6 @@
   "Bundle-Name": "Pandino In Memory Persistence Manager",
   "Bundle-Version": "0.1.0",
   "Bundle-Description": "In Memory implementation of the Pandino Persistence Manager API",
-  "Bundle-Activator": "./pandino-persistence-manager-memory.js"
+  "Bundle-Activator": "./pandino-persistence-manager-memory.js",
+  "Provide-Capability": "@pandino/persistence-manager;type=\"in-memory\";objectClass=\"@pandino/persistence-manager/PersistenceManager\""
 }
