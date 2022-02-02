@@ -58,7 +58,7 @@ import { Framework } from './lib/framework/framework';
 import { ServiceRegistry } from './lib/framework/service-registry';
 import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
 import { filterParser } from './lib/filter/filter-parser';
-import {ServiceRegistrationImpl} from "./lib/framework/service-registration-impl";
+import { ServiceRegistrationImpl } from './lib/framework/service-registration-impl';
 
 export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;

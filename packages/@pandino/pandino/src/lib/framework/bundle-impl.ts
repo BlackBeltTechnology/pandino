@@ -7,7 +7,8 @@ import {
   BundleState,
   Logger,
   BUNDLE_ACTIVATOR,
-  ServiceReference, ServiceRegistration,
+  ServiceReference,
+  ServiceRegistration,
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { BundleRevisionImpl } from './bundle-revision-impl';

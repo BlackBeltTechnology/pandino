@@ -257,8 +257,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
         if ((reg as ServiceRegistrationImpl).isValid()) {
           try {
             reg.unregister();
-          }
-          catch (ex) {
+          } catch (ex) {
             // Ignore exception if the service has already been unregistered
           }
         }
@@ -266,7 +265,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     }
   }
 
-  ungetServices(bundle: Bundle) : void {
+  ungetServices(bundle: Bundle): void {
     const usages: UsageCount[] = this.inUseMap.get(bundle);
     if (usages === undefined) {
       return;

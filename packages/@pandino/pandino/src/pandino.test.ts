@@ -19,11 +19,13 @@ import {
   LogLevel,
   FrameworkConfigMap,
   DEPLOYMENT_ROOT_PROP,
-  PANDINO_MANIFEST_FETCHER_PROP, ServiceRegistration, OBJECTCLASS,
+  PANDINO_MANIFEST_FETCHER_PROP,
+  ServiceRegistration,
+  OBJECTCLASS,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
-import {ServiceRegistryImpl} from "./lib/framework/service-registry-impl";
-import {ServiceRegistry} from "./lib/framework/service-registry";
+import { ServiceRegistryImpl } from './lib/framework/service-registry-impl';
+import { ServiceRegistry } from './lib/framework/service-registry';
 
 interface HelloService {
   sayHello(): string;
