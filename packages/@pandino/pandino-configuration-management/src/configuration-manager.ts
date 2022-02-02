@@ -215,6 +215,7 @@ export class ConfigurationManager implements ServiceListener {
   }
 
   updateConfiguration(config: ConfigurationImpl): void {
+    this.configurationCache.set(config.getPid(), config);
     if (this.managedReferences.has(config.getServicePid())) {
       const refs = this.managedReferences.get(config.getServicePid());
       for (const ref of refs) {
