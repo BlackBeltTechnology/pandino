@@ -12,6 +12,7 @@ import {
   ConfigurationEvent,
   ConfigurationEventType,
   ConfigurationListener,
+  MANAGED_SERVICE_INTERFACE_KEY,
   ManagedService,
 } from '@pandino/pandino-configuration-management-api';
 import { PersistenceManager } from '@pandino/pandino-persistence-manager-api';
@@ -36,6 +37,21 @@ export class ConfigurationManager implements ServiceListener {
     this.logger = logger;
     this.filterParser = filterParser;
     this.configurationCache = new ConfigurationCache(context, pm, this);
+  }
+
+  initReferencesAddedBeforeManagerActivation(): void {
+    const references = this.context.getServiceReferences(MANAGED_SERVICE_INTERFACE_KEY);
+    for (const config of this.configurationCache.values()) {
+      const reference = references.find((ref) => ref.getProperty(SERVICE_PID) === config.getPid());
+      if (reference) {
+        const refPid = reference.getProperty(SERVICE_PID);
+        if (refPid && !this.managedReferences.has(refPid)) {
+          const targetedPid = new TargetedPID(refPid);
+          const service: ManagedService = this.context.getService<ManagedService>(reference);
+          this.initManagedService(refPid, reference, config, targetedPid, service);
+        }
+      }
+    }
   }
 
   serviceChanged(event: ServiceEvent): void {
@@ -64,22 +80,7 @@ export class ConfigurationManager implements ServiceListener {
   ): void {
     const targetedPid = new TargetedPID(pid);
     if (eventType === 'REGISTERED') {
-      if (!this.managedReferences.has(pid)) {
-        this.managedReferences.set(pid, []);
-      }
-      if (!this.managedReferences.get(pid).includes(reference)) {
-        this.managedReferences.get(pid).push(reference);
-      }
-
-      // As per specification if config is missing, we need to assign the first registered Service's Bundle location.
-      if (!config.getBundleLocation()) {
-        config.setBundleLocation(reference.getBundle().getLocation());
-      }
-
-      if (targetedPid.matchesTarget(reference)) {
-        managedService.updated(config?.getProperties());
-        this.fireConfigurationChangeEvent('UPDATED', pid, reference);
-      }
+      this.initManagedService(pid, reference, config, targetedPid, managedService);
     } else if (eventType === 'UNREGISTERING') {
       if (!this.managedReferences.has(pid)) {
         this.managedReferences.set(pid, []);
@@ -92,6 +93,31 @@ export class ConfigurationManager implements ServiceListener {
         managedService.updated(undefined);
         this.fireConfigurationChangeEvent('DELETED', pid, reference);
       }
+    }
+  }
+
+  private initManagedService(
+    pid: string,
+    reference: ServiceReference<any>,
+    config: ConfigurationImpl,
+    targetedPid: TargetedPID,
+    managedService: ManagedService,
+  ) {
+    if (!this.managedReferences.has(pid)) {
+      this.managedReferences.set(pid, []);
+    }
+    if (!this.managedReferences.get(pid).includes(reference)) {
+      this.managedReferences.get(pid).push(reference);
+    }
+
+    // As per specification if config is missing, we need to assign the first registered Service's Bundle location.
+    if (!config.getBundleLocation()) {
+      config.setBundleLocation(reference.getBundle().getLocation());
+    }
+
+    if (targetedPid.matchesTarget(reference)) {
+      managedService.updated(config?.getProperties());
+      this.fireConfigurationChangeEvent('UPDATED', pid, reference);
     }
   }
 
@@ -189,7 +215,6 @@ export class ConfigurationManager implements ServiceListener {
   }
 
   updateConfiguration(config: ConfigurationImpl): void {
-    this.configurationCache.set(config.getPid(), config);
     if (this.managedReferences.has(config.getServicePid())) {
       const refs = this.managedReferences.get(config.getServicePid());
       for (const ref of refs) {
