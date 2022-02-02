@@ -7,7 +7,7 @@
     "install": "lerna bootstrap",
     "build": "lerna run build",
     "test": "lerna run test --stream",
-    "format": "prettier --config .prettierrc packages/@pandino/*/src/**/*.ts --write",
+    "format": "prettier --config .prettierrc 'packages/@pandino/*/src/**/*.ts' --write",
     "format-examples": "prettier --config .prettierrc examples/*/packages/*/src/**/*.ts --write"
   },
   "devDependencies": {
