@@ -58,6 +58,7 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: mockUpdated,
     };
+    configuration.update();
 
     // configuration didn't register a location
     testConfiguration(configuration, 'test.pid', undefined, undefined);
@@ -84,6 +85,9 @@ describe('ConfigurationImpl', () => {
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
     const configuration2: Configuration = configAdmin.getConfiguration('test.pid.two');
     const configuration3: Configuration = configAdmin.getConfiguration('test.pid');
+    configuration.update({});
+    configuration2.update({});
+    configuration3.update({});
     const configs = configAdmin.listConfigurations();
 
     expect(configs.length).toEqual(2);
@@ -103,12 +107,20 @@ describe('ConfigurationImpl', () => {
     });
 
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
+    configuration.update({});
 
-    testUpdateCalls(mockUpdated, [undefined, undefined]);
+    testUpdateCalls(mockUpdated, [
+      undefined,
+      {
+        [SERVICE_PID]: 'test.pid',
+      },
+    ]);
 
     // If a ManagedService is registered first, and configuration comes after, the created Configuration object gets
     // the Bundle's location which hosts the Service.
-    testConfiguration(configuration, 'test.pid', bundle.getLocation(), undefined);
+    testConfiguration(configuration, 'test.pid', bundle.getLocation(), {
+      [SERVICE_PID]: 'test.pid',
+    });
   });
 
   it('configuration and registration after', () => {
@@ -117,6 +129,7 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: mockUpdated,
     };
+    configuration.update();
     context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
@@ -127,6 +140,7 @@ describe('ConfigurationImpl', () => {
 
   it('configuration and registration after and update after that', () => {
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
+    configuration.update();
     const mockUpdated = jest.fn();
     const service: ManagedService = {
       updated: mockUpdated,
@@ -162,6 +176,7 @@ describe('ConfigurationImpl', () => {
 
   it('multiple services register for the same PID', () => {
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
+    configuration.update();
     const mockUpdated1 = jest.fn();
     const mockUpdated2 = jest.fn();
     const service1: ManagedService = {

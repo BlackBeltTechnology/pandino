@@ -5,6 +5,7 @@ import {
   FilterParser,
   FRAMEWORK_FILTER_PARSER,
   Logger,
+  OBJECTCLASS,
   ServiceEvent,
   ServiceListener,
   ServiceReference,
@@ -39,6 +40,11 @@ export class Activator implements BundleActivator {
     this.persistenceManagerReference = context.getServiceReference<PersistenceManager>(INTERFACE_KEY);
 
     if (this.persistenceManagerReference) {
+      this.logger.info(
+        `Activating Configuration Management with immediate Persistence Manager Reference: ${this.persistenceManagerReference.getProperty(
+          OBJECTCLASS,
+        )}`,
+      );
       this.persistenceManager = context.getService(this.persistenceManagerReference);
       this.init(this.persistenceManager);
       this.pmUsed = true;
@@ -61,6 +67,7 @@ export class Activator implements BundleActivator {
           }
         },
       };
+      this.logger.info(`Configuration Management activation delayed, waiting for a Persistence Manager Reference...`);
       this.context.addServiceListener(this.pmListener, `(objectClass=${INTERFACE_KEY})`);
     }
 
@@ -85,6 +92,7 @@ export class Activator implements BundleActivator {
   }
 
   private init(pm: PersistenceManager): void {
+    this.logger.info(`Initializing Configuration Management...`);
     if (!this.pmUsed) {
       this.configManager = new ConfigurationManager(this.context, this.logger, this.filterParser, pm);
       this.configAdmin = new ConfigurationAdminImpl(this.configManager, this.context.getBundle(), this.logger);

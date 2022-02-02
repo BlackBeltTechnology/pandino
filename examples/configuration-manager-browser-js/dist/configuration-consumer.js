@@ -33,7 +33,6 @@ class ManagedServiceTest {
         ...this.properties,
         ...properties,
       };
-
     }
     this.logger.info(`Updated properties for ManagedServiceTest: ${JSON.stringify(this.properties)}`);
   }
