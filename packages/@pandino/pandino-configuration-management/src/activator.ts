@@ -18,6 +18,7 @@ import { INTERFACE_KEY, PersistenceManager } from '@pandino/pandino-persistence-
 import { ConfigurationAdminImpl } from './configuration-admin-impl';
 import { ConfigurationManager } from './configuration-manager';
 
+/* istanbul ignore file */
 export class Activator implements BundleActivator {
   private context: BundleContext;
   private loggerReference: ServiceReference<Logger>;
