@@ -37,6 +37,7 @@ import {
   SYSTEM_BUNDLE_LOCATION,
   FRAMEWORK_FILTER_PARSER,
   FrameworkConfigMap,
+  FRAMEWORK_SEMVER_FACTORY,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { EventDispatcher } from './lib/framework/event-dispatcher';
@@ -59,6 +60,7 @@ import { ServiceRegistry } from './lib/framework/service-registry';
 import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
 import { filterParser } from './lib/filter/filter-parser';
 import { ServiceRegistrationImpl } from './lib/framework/service-registration-impl';
+import { semverFactory } from './lib/utils/semver-factory';
 
 export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;
@@ -148,6 +150,7 @@ export class Pandino extends BundleImpl implements Framework {
         this.getBundleContext().registerService(FRAMEWORK_MANIFEST_FETCHER, this.fetcher);
         this.getBundleContext().registerService(FRAMEWORK_BUNDLE_IMPORTER, this.importer);
         this.getBundleContext().registerService(FRAMEWORK_FILTER_PARSER, filterParser);
+        this.getBundleContext().registerService(FRAMEWORK_SEMVER_FACTORY, semverFactory);
         this.setBundleStateAndNotify(this, 'ACTIVE');
       }
     } catch (err) {

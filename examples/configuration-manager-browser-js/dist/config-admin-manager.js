@@ -8,10 +8,19 @@ export default class Activator {
     this.logger.log('ConfigAdmin Manager - Activator');
 
     const mstConfig = this.configAdmin.getConfiguration('test.pid');
-    mstConfig.update({
-      prop1: 'yayy, updated3333!',
-      prop2: true,
-    });
+    if (!mstConfig.getProperties()) {
+      mstConfig.update({
+        prop1: 'yayy, updated3333!',
+        prop2: true,
+      });
+    }
+
+    window.setTimeout(() => {
+      mstConfig.update({
+        prop1: 'delayed YAYY!',
+        prop2: true,
+      });
+    }, 5000);
 
     return Promise.resolve();
   }

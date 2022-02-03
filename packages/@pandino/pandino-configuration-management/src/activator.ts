@@ -4,7 +4,10 @@ import {
   BundleContext,
   FilterParser,
   FRAMEWORK_FILTER_PARSER,
+  FRAMEWORK_SEMVER_FACTORY,
   Logger,
+  OBJECTCLASS,
+  SemverFactory,
   ServiceEvent,
   ServiceListener,
   ServiceReference,
@@ -15,6 +18,7 @@ import { INTERFACE_KEY, PersistenceManager } from '@pandino/pandino-persistence-
 import { ConfigurationAdminImpl } from './configuration-admin-impl';
 import { ConfigurationManager } from './configuration-manager';
 
+/* istanbul ignore file */
 export class Activator implements BundleActivator {
   private context: BundleContext;
   private loggerReference: ServiceReference<Logger>;
@@ -26,6 +30,8 @@ export class Activator implements BundleActivator {
   private filterParserReference: ServiceReference<FilterParser>;
   private persistenceManagerReference?: ServiceReference<PersistenceManager>;
   private persistenceManager: PersistenceManager;
+  private semVerFactoryReference?: ServiceReference<SemverFactory>;
+  private semVerFactory: SemverFactory;
   private pmUsed = false;
   private pmListener: ServiceListener;
 
@@ -35,10 +41,17 @@ export class Activator implements BundleActivator {
     this.logger = context.getService<Logger>(this.loggerReference);
     this.filterParserReference = context.getServiceReference<FilterParser>(FRAMEWORK_FILTER_PARSER);
     this.filterParser = context.getService(this.filterParserReference);
+    this.semVerFactoryReference = context.getServiceReference<SemverFactory>(FRAMEWORK_SEMVER_FACTORY);
+    this.semVerFactory = context.getService(this.semVerFactoryReference);
 
     this.persistenceManagerReference = context.getServiceReference<PersistenceManager>(INTERFACE_KEY);
 
     if (this.persistenceManagerReference) {
+      this.logger.info(
+        `Activating Configuration Management with immediate Persistence Manager Reference: ${this.persistenceManagerReference.getProperty(
+          OBJECTCLASS,
+        )}`,
+      );
       this.persistenceManager = context.getService(this.persistenceManagerReference);
       this.init(this.persistenceManager);
       this.pmUsed = true;
@@ -61,6 +74,7 @@ export class Activator implements BundleActivator {
           }
         },
       };
+      this.logger.info(`Configuration Management activation delayed, waiting for a Persistence Manager Reference...`);
       this.context.addServiceListener(this.pmListener, `(objectClass=${INTERFACE_KEY})`);
     }
 
@@ -71,6 +85,7 @@ export class Activator implements BundleActivator {
     context.ungetService(this.loggerReference);
     context.ungetService(this.filterParserReference);
     context.ungetService(this.persistenceManagerReference);
+    context.ungetService(this.semVerFactoryReference);
     context.removeServiceListener(this.configManager);
 
     if (this.configAdminRegistration) {
@@ -85,8 +100,15 @@ export class Activator implements BundleActivator {
   }
 
   private init(pm: PersistenceManager): void {
+    this.logger.info(`Initializing Configuration Management...`);
     if (!this.pmUsed) {
-      this.configManager = new ConfigurationManager(this.context, this.logger, this.filterParser, pm);
+      this.configManager = new ConfigurationManager(
+        this.context,
+        this.logger,
+        this.filterParser,
+        pm,
+        this.semVerFactory,
+      );
       this.configAdmin = new ConfigurationAdminImpl(this.configManager, this.context.getBundle(), this.logger);
       this.configAdminRegistration = this.context.registerService<ConfigurationAdmin>(
         CONFIG_ADMIN_INTERFACE_KEY,

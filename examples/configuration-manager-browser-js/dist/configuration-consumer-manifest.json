@@ -3,6 +3,5 @@
   "Bundle-SymbolicName": "@pandino/examples-configuration-manager-browser-js-configuration-consumer",
   "Bundle-Name": "Configuration Consumer",
   "Bundle-Version": "0.1.0",
-  "Bundle-Activator": "./configuration-consumer.js",
-  "Require-Capability": "@pandino/pandino-configuration-management;filter:=(objectClass=\"@pandino/pandino-configuration-management/ManagedService\")"
+  "Bundle-Activator": "./configuration-consumer.js"
 }

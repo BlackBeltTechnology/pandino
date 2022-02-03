@@ -1,4 +1,4 @@
-import { ServiceReference } from '@pandino/pandino-api';
+import { SemverFactory, ServiceReference } from '@pandino/pandino-api';
 import { SemVer } from 'semver';
 
 import { Activator } from '../activator';
@@ -11,7 +11,7 @@ export class TargetedPID {
   private readonly location?: string;
   private readonly bindingLevel: number;
 
-  constructor(rawPid: string) {
+  constructor(rawPid: string, semVerFactory: SemverFactory) {
     this.rawPid = rawPid;
 
     if (rawPid.indexOf('|') < 0) {
@@ -29,11 +29,11 @@ export class TargetedPID {
         start = end + 1;
         end = rawPid.indexOf('|', start);
         if (end >= 0) {
-          this.version = new SemVer(rawPid.substring(start, end));
+          this.version = semVerFactory(rawPid.substring(start, end));
           this.location = rawPid.substring(end + 1);
           this.bindingLevel = 3;
         } else {
-          this.version = new SemVer(rawPid.substring(start));
+          this.version = semVerFactory(rawPid.substring(start));
           this.bindingLevel = 2;
         }
       } else {

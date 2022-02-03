@@ -1,11 +1,12 @@
 import { SemVer } from 'semver';
-import { Bundle, BundleContext, Logger } from '@pandino/pandino-api';
+import { Bundle, BundleContext, Logger, SemverFactory } from '@pandino/pandino-api';
 import { ConfigurationManager } from './configuration-manager';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
 import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
 
 describe('ConfigurationManager', function () {
+  const semverFactory: SemverFactory = (version) => new SemVer(version);
   let persistenceManager: MockPersistenceManager;
   let context: BundleContext;
   let bundle: Bundle;
@@ -31,7 +32,7 @@ describe('ConfigurationManager', function () {
         "port" : 300
       }
     }`);
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager);
+    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
   });
 
   it('listConfigurations()', () => {
@@ -50,7 +51,7 @@ describe('ConfigurationManager', function () {
         "key": "value"
       }
     }`);
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager);
+    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
 
     expect(cm.listConfigurations().length).toEqual(2);
 
@@ -69,7 +70,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('getConfiguration()', () => {
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager);
+    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
 
     const config = cm.getConfiguration('my.component.pid');
 
@@ -79,7 +80,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('configuration update()', () => {
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager);
+    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
 
     const config = cm.getConfiguration('my.component.pid');
 
@@ -94,7 +95,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('configuration delete()', () => {
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager);
+    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
 
     const config = cm.getConfiguration('my.component.pid');
 

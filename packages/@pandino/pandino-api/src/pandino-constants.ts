@@ -134,6 +134,8 @@ export const FRAMEWORK_BUNDLE_IMPORTER = '@pandino/pandino/BundleImporter';
 
 export const FRAMEWORK_FILTER_PARSER = '@pandino/pandino/FilterParser';
 
+export const FRAMEWORK_SEMVER_FACTORY = '@pandino/pandino/SemVerFactory';
+
 export const FRAMEWORK_UUID = '@pandino/pandino/uuid';
 
 export const FRAMEWORK_VERSION = '@pandino/pandino/version';

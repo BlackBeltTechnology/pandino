@@ -2,6 +2,7 @@ import {
   BundleContext,
   FilterParser,
   Logger,
+  SemverFactory,
   SERVICE_PID,
   ServiceEvent,
   ServiceEventType,
@@ -31,24 +32,60 @@ export class ConfigurationManager implements ServiceListener {
   >();
   private readonly eventListeners: Map<string, ConfigurationListener[]> = new Map<string, ConfigurationListener[]>();
   private readonly configurationCache: ConfigurationCache;
+  private readonly semVerFactory: SemverFactory;
 
-  constructor(context: BundleContext, logger: Logger, filterParser: FilterParser, pm: PersistenceManager) {
+  constructor(
+    context: BundleContext,
+    logger: Logger,
+    filterParser: FilterParser,
+    pm: PersistenceManager,
+    semVerFactory: SemverFactory,
+  ) {
     this.context = context;
     this.logger = logger;
     this.filterParser = filterParser;
-    this.configurationCache = new ConfigurationCache(context, pm, this);
+    this.configurationCache = new ConfigurationCache(context, pm, this, this.semVerFactory);
+    this.semVerFactory = semVerFactory;
   }
 
   initReferencesAddedBeforeManagerActivation(): void {
-    const references = this.context.getServiceReferences(MANAGED_SERVICE_INTERFACE_KEY);
+    const nonConfiguredReferences: ServiceReference<any>[] = [];
+    const freshReferences: ServiceReference<any>[] = [];
+    const references = this.context
+      .getServiceReferences(MANAGED_SERVICE_INTERFACE_KEY)
+      .filter((ref) => ref.getProperty(SERVICE_PID));
     for (const config of this.configurationCache.values()) {
-      const reference = references.find((ref) => ref.getProperty(SERVICE_PID) === config.getPid());
-      if (reference) {
+      // multiple references can have the same pid
+      const configuredReferences = references.filter((ref) => ref.getProperty(SERVICE_PID) === config.getPid());
+      for (const reference of configuredReferences) {
         const refPid = reference.getProperty(SERVICE_PID);
         if (refPid && !this.managedReferences.has(refPid)) {
-          const targetedPid = new TargetedPID(refPid);
+          const targetedPid = new TargetedPID(refPid, this.semVerFactory);
           const service: ManagedService = this.context.getService<ManagedService>(reference);
           this.initManagedService(refPid, reference, config, targetedPid, service);
+        }
+        freshReferences.push(reference);
+      }
+    }
+
+    for (const origRef of references) {
+      if (!freshReferences.includes(origRef)) {
+        nonConfiguredReferences.push(origRef);
+      }
+    }
+
+    for (const ref of nonConfiguredReferences) {
+      const service = this.context.getService(ref);
+      if (service) {
+        const pid = ref.getProperty(SERVICE_PID);
+        this.logger.debug(`Updating non-configured Service for PID: ${pid}`);
+        service.updated(undefined);
+        if (!this.managedReferences.has(pid)) {
+          this.managedReferences.set(pid, []);
+        }
+        const refs = this.managedReferences.get(pid);
+        if (!refs.includes(ref)) {
+          refs.push(ref);
         }
       }
     }
@@ -78,7 +115,7 @@ export class ConfigurationManager implements ServiceListener {
     managedService: ManagedService,
     config: ConfigurationImpl,
   ): void {
-    const targetedPid = new TargetedPID(pid);
+    const targetedPid = new TargetedPID(pid, this.semVerFactory);
     if (eventType === 'REGISTERED') {
       this.initManagedService(pid, reference, config, targetedPid, managedService);
     } else if (eventType === 'UNREGISTERING') {
@@ -167,23 +204,7 @@ export class ConfigurationManager implements ServiceListener {
       effectiveLocation = refs[0].getBundle().getLocation();
     }
 
-    config = this.internalCreateConfiguration(pid, effectiveLocation);
-    this.storeConfiguration(config);
-
-    for (const key of this.managedReferences.keys()) {
-      if (key === pid) {
-        const refs = this.managedReferences.get(pid);
-        for (const ref of refs) {
-          const service = this.context.getService(ref);
-          service.updated(config.getProperties());
-          this.fireConfigurationChangeEvent('UPDATED', pid, ref);
-        }
-
-        break;
-      }
-    }
-
-    return config;
+    return this.internalCreateConfiguration(pid, effectiveLocation);
   }
 
   listConfigurations(filterString?: string): ConfigurationImpl[] {
@@ -234,7 +255,7 @@ export class ConfigurationManager implements ServiceListener {
 
   private internalCreateConfiguration(pid: string, bundleLocation?: string): ConfigurationImpl {
     this.logger.debug(`createConfiguration(${pid}, ${bundleLocation})`);
-    return new ConfigurationImpl(this, pid, bundleLocation);
+    return new ConfigurationImpl(this, pid, this.semVerFactory, bundleLocation);
   }
 
   private storeConfiguration(configuration: ConfigurationImpl): ConfigurationImpl {
