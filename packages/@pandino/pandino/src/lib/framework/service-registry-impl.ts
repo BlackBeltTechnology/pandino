@@ -267,11 +267,12 @@ export class ServiceRegistryImpl implements ServiceRegistry {
 
   ungetServices(bundle: Bundle): void {
     const usages: UsageCount[] = this.inUseMap.get(bundle);
-    if (usages === undefined) {
+    if (isAnyMissing(usages)) {
       return;
     }
 
     for (let i = 0; i < usages.length; i++) {
+      // Keep ungetting until all usage count is zero.
       while (this.ungetService(bundle, usages[i].getReference(), null)) {
         // Empty loop body.
       }

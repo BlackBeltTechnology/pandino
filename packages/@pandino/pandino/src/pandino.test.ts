@@ -22,6 +22,7 @@ import {
   PANDINO_MANIFEST_FETCHER_PROP,
   ServiceRegistration,
   OBJECTCLASS,
+  ServiceReference,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { ServiceRegistryImpl } from './lib/framework/service-registry-impl';
@@ -375,7 +376,7 @@ describe('Pandino', () => {
     expect(mockStop).toHaveBeenCalledTimes(2);
   });
 
-  it('stopping bundle unregister all services', async () => {
+  it('stopping bundle unregisters all services', async () => {
     await preparePandino();
     await installBundle(bundle1Headers);
 
@@ -391,16 +392,23 @@ describe('Pandino', () => {
       welcomeService,
     );
 
+    const refHello: ServiceReference<HelloService> = regHello.getReference();
+    const refWelcome: ServiceReference<WelcomeService> = regWelcome.getReference();
+
     expect(bundle.getRegisteredServices().length).toEqual(2);
     expect(regHello.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/hello-impl');
     expect(regWelcome.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/welcome-impl');
+    expect(refHello.getBundle()).toEqual(bundle);
+    expect(refWelcome.getBundle()).toEqual(bundle);
 
     await bundle.stop();
 
     expect(bundle.getRegisteredServices().length).toEqual(0);
+    expect(refHello.getBundle()).toBeUndefined();
+    expect(refWelcome.getBundle()).toBeUndefined();
   });
 
-  it('uninstalling bundle unregister all services', async () => {
+  it('uninstalling bundle unregisters all services', async () => {
     await preparePandino();
     await installBundle(bundle1Headers);
 
@@ -416,14 +424,21 @@ describe('Pandino', () => {
       welcomeService,
     );
 
+    const refHello: ServiceReference<HelloService> = regHello.getReference();
+    const refWelcome: ServiceReference<WelcomeService> = regWelcome.getReference();
+
     expect(bundle.getRegisteredServices().length).toEqual(2);
     expect(regHello.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/hello-impl');
     expect(regWelcome.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/welcome-impl');
+    expect(refHello.getBundle()).toEqual(bundle);
+    expect(refWelcome.getBundle()).toEqual(bundle);
 
     await bundle.uninstall();
 
     expect(() => bundle.getRegisteredServices()).toThrow(Error);
     expect(() => bundle.getRegisteredServices()).toThrow('The bundle is uninstalled.');
+    expect(refHello.getBundle()).toBeUndefined();
+    expect(refWelcome.getBundle()).toBeUndefined();
   });
 
   async function preparePandino() {
