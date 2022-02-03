@@ -1,3 +1,4 @@
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import path from 'path';
 import {fileURLToPath} from 'url';
 
@@ -34,4 +35,10 @@ export default {
     umdNamedDefine: true,
     path: path.resolve(__dirname, 'dist'),
   },
+  plugins: [
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      openAnalyzer: false,
+    }),
+  ],
 };
