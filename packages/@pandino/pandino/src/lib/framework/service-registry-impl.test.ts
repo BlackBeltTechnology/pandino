@@ -131,6 +131,34 @@ describe('ServiceRegistryImpl', () => {
     expect(ref.getUsingBundles()).toEqual([]);
   });
 
+  it('unregisterServices()', async () => {
+    const regHello: ServiceRegistration<HelloService> = sr.registerService(
+      bundle1,
+      '@pandino/pandino/hello-impl',
+      helloService,
+    );
+    const regWelcome: ServiceRegistration<WelcomeService> = sr.registerService(
+      bundle1,
+      '@pandino/pandino/welcome-impl',
+      welcomeService,
+    );
+    const refHello: ServiceReference<HelloService> = regHello.getReference();
+    const refWelcome: ServiceReference<WelcomeService> = regWelcome.getReference();
+
+    sr.getService(bundle1, refHello, false);
+    sr.getService(bundle1, refWelcome, false);
+
+    expect(sr.getRegisteredServices(bundle1).length).toEqual(2);
+    expect(refHello.getUsingBundles()).toEqual([bundle1]);
+    expect(refWelcome.getUsingBundles()).toEqual([bundle1]);
+
+    sr.unregisterServices(bundle1);
+
+    expect(sr.getRegisteredServices(bundle1).length).toEqual(0);
+    expect(refHello.getUsingBundles()).toEqual([]);
+    expect(refWelcome.getUsingBundles()).toEqual([]);
+  });
+
   it('usageCount calculation', async () => {
     const reg: ServiceRegistration<HelloService> = sr.registerService(
       bundle1,

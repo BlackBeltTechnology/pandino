@@ -17,4 +17,6 @@ export interface ServiceRegistry {
   unregisterService<S>(bundle: Bundle, reg: ServiceRegistration<S>): void;
   ungetService<S>(bundle: Bundle, ref: ServiceReference<S>, svcObj: any): boolean;
   obtainUsageCount<S>(bundle: Bundle, ref: ServiceReference<S>, svcObj: any, isPrototype?: boolean): UsageCount;
+  unregisterServices(bundle: Bundle): void;
+  ungetServices(bundle: Bundle): void;
 }

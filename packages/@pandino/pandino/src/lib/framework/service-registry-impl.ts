@@ -169,11 +169,11 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     }
 
     const ref = reg.getReference();
-    this.ungetServices(ref);
+    this.ungetServicesByRef(ref);
 
     (reg as ServiceRegistrationImpl).invalidate();
 
-    this.ungetServices(ref);
+    this.ungetServicesByRef(ref);
   }
 
   ungetService(bundle: Bundle, ref: ServiceReference<any>, svcObj: any): boolean {
@@ -248,7 +248,38 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     return usage;
   }
 
-  private ungetServices(ref: ServiceReference<any>): void {
+  unregisterServices(bundle: Bundle): void {
+    const regs: Array<ServiceRegistration<any>> = this.regsMap.get(bundle);
+    this.regsMap.delete(bundle);
+
+    if (isAllPresent(regs)) {
+      for (const reg of regs) {
+        if ((reg as ServiceRegistrationImpl).isValid()) {
+          try {
+            reg.unregister();
+          } catch (ex) {
+            // Ignore exception if the service has already been unregistered
+          }
+        }
+      }
+    }
+  }
+
+  ungetServices(bundle: Bundle): void {
+    const usages: UsageCount[] = this.inUseMap.get(bundle);
+    if (isAnyMissing(usages)) {
+      return;
+    }
+
+    for (let i = 0; i < usages.length; i++) {
+      // Keep ungetting until all usage count is zero.
+      while (this.ungetService(bundle, usages[i].getReference(), null)) {
+        // Empty loop body.
+      }
+    }
+  }
+
+  private ungetServicesByRef(ref: ServiceReference<any>): void {
     const clients: Bundle[] = this.getUsingBundles(ref);
     for (const client of clients) {
       const usages: UsageCount[] = this.inUseMap.get(client);
