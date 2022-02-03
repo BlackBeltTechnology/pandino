@@ -4,8 +4,10 @@ import {
   BundleContext,
   FilterParser,
   FRAMEWORK_FILTER_PARSER,
+  FRAMEWORK_SEMVER_FACTORY,
   Logger,
   OBJECTCLASS,
+  SemverFactory,
   ServiceEvent,
   ServiceListener,
   ServiceReference,
@@ -27,6 +29,8 @@ export class Activator implements BundleActivator {
   private filterParserReference: ServiceReference<FilterParser>;
   private persistenceManagerReference?: ServiceReference<PersistenceManager>;
   private persistenceManager: PersistenceManager;
+  private semVerFactoryReference?: ServiceReference<SemverFactory>;
+  private semVerFactory: SemverFactory;
   private pmUsed = false;
   private pmListener: ServiceListener;
 
@@ -36,6 +40,8 @@ export class Activator implements BundleActivator {
     this.logger = context.getService<Logger>(this.loggerReference);
     this.filterParserReference = context.getServiceReference<FilterParser>(FRAMEWORK_FILTER_PARSER);
     this.filterParser = context.getService(this.filterParserReference);
+    this.semVerFactoryReference = context.getServiceReference<SemverFactory>(FRAMEWORK_SEMVER_FACTORY);
+    this.semVerFactory = context.getService(this.semVerFactoryReference);
 
     this.persistenceManagerReference = context.getServiceReference<PersistenceManager>(INTERFACE_KEY);
 
@@ -78,6 +84,7 @@ export class Activator implements BundleActivator {
     context.ungetService(this.loggerReference);
     context.ungetService(this.filterParserReference);
     context.ungetService(this.persistenceManagerReference);
+    context.ungetService(this.semVerFactoryReference);
     context.removeServiceListener(this.configManager);
 
     if (this.configAdminRegistration) {
@@ -94,7 +101,13 @@ export class Activator implements BundleActivator {
   private init(pm: PersistenceManager): void {
     this.logger.info(`Initializing Configuration Management...`);
     if (!this.pmUsed) {
-      this.configManager = new ConfigurationManager(this.context, this.logger, this.filterParser, pm);
+      this.configManager = new ConfigurationManager(
+        this.context,
+        this.logger,
+        this.filterParser,
+        pm,
+        this.semVerFactory,
+      );
       this.configAdmin = new ConfigurationAdminImpl(this.configManager, this.context.getBundle(), this.logger);
       this.configAdminRegistration = this.context.registerService<ConfigurationAdmin>(
         CONFIG_ADMIN_INTERFACE_KEY,

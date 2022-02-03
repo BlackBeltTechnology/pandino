@@ -2,6 +2,7 @@ import {
   BundleContext,
   FilterParser,
   Logger,
+  SemverFactory,
   SERVICE_PID,
   ServiceEvent,
   ServiceEventType,
@@ -31,12 +32,20 @@ export class ConfigurationManager implements ServiceListener {
   >();
   private readonly eventListeners: Map<string, ConfigurationListener[]> = new Map<string, ConfigurationListener[]>();
   private readonly configurationCache: ConfigurationCache;
+  private readonly semVerFactory: SemverFactory;
 
-  constructor(context: BundleContext, logger: Logger, filterParser: FilterParser, pm: PersistenceManager) {
+  constructor(
+    context: BundleContext,
+    logger: Logger,
+    filterParser: FilterParser,
+    pm: PersistenceManager,
+    semVerFactory: SemverFactory,
+  ) {
     this.context = context;
     this.logger = logger;
     this.filterParser = filterParser;
-    this.configurationCache = new ConfigurationCache(context, pm, this);
+    this.configurationCache = new ConfigurationCache(context, pm, this, this.semVerFactory);
+    this.semVerFactory = semVerFactory;
   }
 
   initReferencesAddedBeforeManagerActivation(): void {
@@ -51,7 +60,7 @@ export class ConfigurationManager implements ServiceListener {
       for (const reference of configuredReferences) {
         const refPid = reference.getProperty(SERVICE_PID);
         if (refPid && !this.managedReferences.has(refPid)) {
-          const targetedPid = new TargetedPID(refPid);
+          const targetedPid = new TargetedPID(refPid, this.semVerFactory);
           const service: ManagedService = this.context.getService<ManagedService>(reference);
           this.initManagedService(refPid, reference, config, targetedPid, service);
         }
@@ -106,7 +115,7 @@ export class ConfigurationManager implements ServiceListener {
     managedService: ManagedService,
     config: ConfigurationImpl,
   ): void {
-    const targetedPid = new TargetedPID(pid);
+    const targetedPid = new TargetedPID(pid, this.semVerFactory);
     if (eventType === 'REGISTERED') {
       this.initManagedService(pid, reference, config, targetedPid, managedService);
     } else if (eventType === 'UNREGISTERING') {
@@ -246,7 +255,7 @@ export class ConfigurationManager implements ServiceListener {
 
   private internalCreateConfiguration(pid: string, bundleLocation?: string): ConfigurationImpl {
     this.logger.debug(`createConfiguration(${pid}, ${bundleLocation})`);
-    return new ConfigurationImpl(this, pid, bundleLocation);
+    return new ConfigurationImpl(this, pid, this.semVerFactory, bundleLocation);
   }
 
   private storeConfiguration(configuration: ConfigurationImpl): ConfigurationImpl {
