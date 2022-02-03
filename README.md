@@ -342,8 +342,6 @@ common software development problems. Usage is opt-in of course.
 - Add EventAdmin implementation
 - Remove json manifest concept, and use js-only bundles to improve DX
 - Improve Logger API, and built in Logger implementation
-- Add more tests for Bundle Activator lifecycle
-  - e.g.: auto de-registration of services on `stop()`
 - Add more tests for bundle dependency chains
   - e.g.: 50+ pre-generated bundle configurations as a tree
 - Change bundling system (separate target environments instead of 1 mixed module) 
