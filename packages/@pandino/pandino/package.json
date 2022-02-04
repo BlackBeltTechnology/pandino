@@ -4,6 +4,7 @@
   "description": "The reference implementation of the Pandino API specification",
   "main": "./dist/cjs/pandino.js",
   "module": "./dist/esm/pandino.mjs",
+  "types": "dist/src/index.d.ts",
   "exports": {
     ".": {
       "require": "./dist/cjs/pandino.js",
@@ -11,7 +12,6 @@
     }
   },
   "private": true,
-  "types": "dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
     "test": "jest",

@@ -1,10 +1,3 @@
-// import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-// import path from 'path';
-// import {fileURLToPath} from 'url';
-//
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const path = require('path');
 
