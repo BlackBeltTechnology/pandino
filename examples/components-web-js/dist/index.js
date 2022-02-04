@@ -1,4 +1,4 @@
-import Pandino from './pandino.js';
+import Pandino from './pandino.mjs';
 import AppWire from './app-wire.js';
 
 const pandino = new Pandino({

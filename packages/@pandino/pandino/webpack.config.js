@@ -1,14 +1,14 @@
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import path from 'path';
-import {fileURLToPath} from 'url';
+// import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+// import path from 'path';
+// import {fileURLToPath} from 'url';
+//
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const path = require('path');
 
-export default {
-  experiments: {
-    outputModule: true,
-  },
+const baseConfig = {
   entry: {
     'pandino': './src/index.ts',
   },
@@ -26,15 +26,6 @@ export default {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
-  output: {
-    filename: '[name].js',
-    library: {
-      // name: 'Platform',
-      type: 'module',
-    },
-    umdNamedDefine: true,
-    path: path.resolve(__dirname, 'dist'),
-  },
   plugins: [
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',
@@ -42,3 +33,29 @@ export default {
     }),
   ],
 };
+
+const esm = {
+  ...baseConfig,
+  experiments: {
+    outputModule: true,
+  },
+  output: {
+    filename: '[name].mjs',
+    libraryTarget: 'module',
+    path: path.resolve(__dirname, 'dist/esm'),
+  }
+};
+
+const cjs = {
+  ...baseConfig,
+  experiments: {
+    outputModule: false,
+  },
+  output: {
+    filename: '[name].js',
+    libraryTarget: 'commonjs',
+    path: path.resolve(__dirname, 'dist/cjs'),
+  }
+};
+
+module.exports = [cjs, esm];

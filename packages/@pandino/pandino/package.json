@@ -1,9 +1,15 @@
 {
   "name": "@pandino/pandino",
   "version": "0.1.0",
-  "type": "module",
   "description": "The reference implementation of the Pandino API specification",
-  "main": "dist/pandino.js",
+  "main": "./dist/cjs/pandino.js",
+  "module": "./dist/esm/pandino.mjs",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/pandino.js",
+      "default": "./dist/esm/pandino.mjs"
+    }
+  },
   "private": true,
   "types": "dist/src/index.d.ts",
   "scripts": {
