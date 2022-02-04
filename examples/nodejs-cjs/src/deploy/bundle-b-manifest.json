@@ -1,0 +1,9 @@
+{
+  "Bundle-ManifestVersion": "1",
+  "Bundle-SymbolicName": "@pandino/examples-nodejs-cjs-bundle-b",
+  "Bundle-Name": "Bundle B",
+  "Bundle-Version": "0.1.0",
+  "Bundle-Description": "Yayy, bundle-b!",
+  "Bundle-Activator": "./bundle-b.js",
+  "Provide-Capability": "pet.grooming;type:Array=\"dog,cat\";length:number=800;soap=\"organic\";rate:number=\"10\""
+}
