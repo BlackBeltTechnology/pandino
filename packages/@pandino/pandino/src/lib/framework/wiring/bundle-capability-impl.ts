@@ -47,7 +47,16 @@ export class BundleCapabilityImpl implements BundleCapability {
   }
 
   equals(other: any): boolean {
-    throw new Error('Not implemented!');
+    if (isAnyMissing(other) || !(other instanceof BundleCapabilityImpl)) {
+      return false;
+    }
+    if (
+      this.revision.getVersion().compare(other.revision.getVersion()) === 0 &&
+      this.getNamespace() === other.getNamespace()
+    ) {
+      return true;
+    }
+    return false;
   }
 
   getAttributes(): Record<string, any> {
@@ -80,8 +89,13 @@ export class BundleCapabilityImpl implements BundleCapability {
 
   toString(): string {
     if (isAnyMissing(this.revision)) {
-      return this.attrs.toString();
+      return this.stringifyAttributes();
     }
-    return '[' + this.revision + '] ' + this.namespace + '; ' + this.attrs;
+    return '[' + this.revision + '] ' + this.namespace + '; ' + this.stringifyAttributes();
+  }
+
+  private stringifyAttributes(): string {
+    const list: string[] = Object.keys(this.attrs).map((key) => `${key}=${this.attrs[key]}`);
+    return `${list.join('; ')}`;
   }
 }

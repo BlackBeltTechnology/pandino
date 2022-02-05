@@ -21,6 +21,7 @@ import {
   FrameworkConfigMap,
   DEPLOYMENT_ROOT_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
+  SERVICE_RANKING,
 } from '@pandino/pandino-api';
 import { MuteLogger } from '../../__mocks__/mute-logger';
 import { BundleContextImpl } from './bundle-context-impl';
@@ -311,6 +312,48 @@ describe('BundleContextImpl', () => {
     expect(reference.getBundle().getSymbolicName()).toEqual('my.bundle');
     expect(reference.getUsingBundles()[0].getSymbolicName()).toEqual('my.other.bundle');
     expect(reference.getUsingBundles().length).toEqual(1);
+    expect(service.execute()).toEqual(true);
+  });
+
+  it('Service with a higher ranking overrides Service with a lower ranking', async () => {
+    const mock1: MockService = {
+      execute: () => true,
+    };
+    const mock2: MockService = {
+      execute: () => false,
+    };
+    const serviceRegistration1 = bundleContext.registerService<MockService>('some.service', mock1);
+    const serviceRegistration2 = bundleContext.registerService<MockService>('some.service', mock2, {
+      [SERVICE_RANKING]: '150',
+    });
+
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+    const service = bundleContext.getService<MockService>(reference);
+
+    expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual(undefined);
+    expect(serviceRegistration2.getProperty(SERVICE_RANKING)).toEqual('150');
+    expect(reference.getProperty(SERVICE_RANKING)).toEqual('150');
+    expect(service.execute()).toEqual(false);
+  });
+
+  it('Service with a lower ranking does not override Service with a higher ranking', async () => {
+    const mock1: MockService = {
+      execute: () => true,
+    };
+    const mock2: MockService = {
+      execute: () => false,
+    };
+    const serviceRegistration1 = bundleContext.registerService<MockService>('some.service', mock1, {
+      [SERVICE_RANKING]: '150',
+    });
+    const serviceRegistration2 = bundleContext.registerService<MockService>('some.service', mock2);
+
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+    const service = bundleContext.getService<MockService>(reference);
+
+    expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual('150');
+    expect(serviceRegistration2.getProperty(SERVICE_RANKING)).toEqual(undefined);
+    expect(reference.getProperty(SERVICE_RANKING)).toEqual('150');
     expect(service.execute()).toEqual(true);
   });
 });

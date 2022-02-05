@@ -212,4 +212,8 @@ export class BundleImpl implements Bundle {
   getLocation(): string {
     return this.manifestLocation;
   }
+
+  toString(): string {
+    return `${this.getSymbolicName()}: ${this.getVersion().toString()}`;
+  }
 }

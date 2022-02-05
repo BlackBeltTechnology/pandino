@@ -118,6 +118,6 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
   }
 
   toString(): string {
-    return this.bundle.toString() + '(R ' + this.id + ')';
+    return this.bundle + ' (R ' + this.id + ')';
   }
 }

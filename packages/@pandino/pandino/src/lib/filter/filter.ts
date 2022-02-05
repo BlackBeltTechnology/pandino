@@ -59,7 +59,7 @@ export default class Filter implements FilterApi {
 
     if (filters.length === 1) {
       filter = filters[0];
-    } else if (attrs.size() > 1) {
+    } else if (Object.keys(attrs).length > 1) {
       filter = new Filter(null, FilterComp.AND, filters);
     } else if (filters.length === 0) {
       filter = new Filter(null, FilterComp.MATCH_ALL, null);

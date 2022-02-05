@@ -450,7 +450,7 @@ describe('Pandino', () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(pandino.getBundleContext().installBundle(headers));
-      }, 200);
+      }, 100);
     });
   }
 });
