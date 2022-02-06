@@ -13,6 +13,9 @@
   "keywords": [],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  },
   "devDependencies": {
     "@pandino/pandino": "^0.1.0",
     "@pandino/pandino-api": "^0.1.0",

@@ -12,6 +12,9 @@
   "keywords": [],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  },
   "devDependencies": {
     "rimraf": "^3.0.2",
     "ts-loader": "^9.2.6",

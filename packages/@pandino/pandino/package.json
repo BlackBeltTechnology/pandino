@@ -19,7 +19,10 @@
   },
   "keywords": [],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
-  "license": "ISC",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  },
   "dependencies": {
     "semver": "^7.3.5"
   },
