@@ -35,10 +35,10 @@
     "coverageReporters": ["text", "json", "html"],
     "coverageThreshold": {
       "global": {
-        "statements": 70,
-        "branches": 65,
-        "functions": 75,
-        "lines": 70
+        "statements": 75,
+        "branches": 70,
+        "functions": 80,
+        "lines": 75
       }
     },
     "globals": {
