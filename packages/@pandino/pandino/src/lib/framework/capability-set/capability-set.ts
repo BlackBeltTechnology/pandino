@@ -68,6 +68,113 @@ export class CapabilitySet {
     return CapabilitySet.matchesInternal(cap, sf) && CapabilitySet.matchMandatory(cap, sf);
   }
 
+  static matchMandatory(cap: Capability, sf?: Filter): boolean {
+    if (isAnyMissing(sf)) {
+      return false;
+    }
+    const attrs = cap.getAttributes();
+    for (const key of Object.keys(attrs)) {
+      if ((cap as BundleCapabilityImpl).isAttributeMandatory(key) && !CapabilitySet.matchMandatoryAttribute(key, sf)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  static matchMandatoryAttribute(attrName: string, sf?: Filter): boolean {
+    if (!sf) {
+      return false;
+    }
+
+    if (sf.attrib !== null && sf.attrib !== undefined && sf.attrib === attrName) {
+      return true;
+    } else if (sf.comp === FilterComp.AND) {
+      let list: any[] = sf.filters;
+      for (let i = 0; i < list.length; i++) {
+        let sf2 = list[i] as Filter;
+        if (sf2.attrib !== null && sf.attrib !== undefined && sf2.attrib === attrName) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  static compare(lhs: any, rhsUnknown: any, cmp: FilterComp): boolean {
+    if (isAnyMissing(lhs)) {
+      return false;
+    }
+
+    if (cmp === FilterComp.PRESENT) {
+      return true;
+    }
+
+    const rhs = typeof rhsUnknown === 'string' ? rhsUnknown.trim() : rhsUnknown;
+
+    if (typeof lhs === 'boolean') {
+      switch (cmp) {
+        case FilterComp.EQ:
+        case FilterComp.GTE:
+        case FilterComp.LTE:
+          return lhs === (rhs === 'true');
+        default:
+          throw new Error('Unsupported comparison operator: ' + cmp);
+      }
+    }
+
+    if (typeof lhs === 'number') {
+      switch (cmp) {
+        case FilterComp.EQ:
+          return lhs === Number(rhs);
+        case FilterComp.GTE:
+          return lhs >= Number(rhs);
+        case FilterComp.LTE:
+          return lhs <= Number(rhs);
+        default:
+          throw new Error('Unsupported comparison operator: ' + cmp);
+      }
+    }
+
+    if (lhs instanceof SemVer) {
+      switch (cmp) {
+        case FilterComp.EQ:
+          return semverEq(lhs, rhs as string);
+        case FilterComp.NOT:
+          return semverNeq(lhs, rhs as string);
+        case FilterComp.GTE:
+          return semverGte(lhs, rhs as string);
+        case FilterComp.LTE:
+          return semverLte(lhs, rhs as string);
+        default:
+          throw new Error('Unsupported comparison operator: ' + cmp);
+      }
+    }
+
+    if (typeof lhs === 'string') {
+      switch (cmp) {
+        case FilterComp.EQ:
+          return lhs === rhs;
+        case FilterComp.NOT:
+          return lhs !== rhs;
+        default:
+          throw new Error('Unsupported comparison operator: ' + cmp);
+      }
+    }
+
+    if (Array.isArray(lhs)) {
+      for (let a of lhs) {
+        if (CapabilitySet.compare(a, rhsUnknown, cmp)) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    return false;
+  }
+
   private static indexCapability(index: CapabilityIndex, cap: BundleCapability, capValue: any): void {
     let caps: Set<BundleCapability> = new Set<BundleCapability>();
     const prevVal: Set<BundleCapability> = index[capValue];
@@ -184,112 +291,5 @@ export class CapabilitySet {
     }
 
     return matched;
-  }
-
-  private static matchMandatory(cap: Capability, sf?: Filter): boolean {
-    if (isAnyMissing(sf)) {
-      return false;
-    }
-    const attrs = cap.getAttributes();
-    for (const key of Object.keys(attrs)) {
-      if ((cap as BundleCapabilityImpl).isAttributeMandatory(key) && !CapabilitySet.matchMandatoryAttribute(key, sf)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private static matchMandatoryAttribute(attrName: string, sf?: Filter): boolean {
-    if (!sf) {
-      return false;
-    }
-
-    if (sf.attrib !== null && sf.attrib !== undefined && sf.attrib === attrName) {
-      return true;
-    } else if (sf.comp === FilterComp.AND) {
-      let list: any[] = sf.value;
-      for (let i = 0; i < list.length; i++) {
-        let sf2 = list[i] as Filter;
-        if (sf2.attrib !== null && sf.attrib !== undefined && sf2.attrib === attrName) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  private static compare(lhs: any, rhsUnknown: any, cmp: FilterComp): boolean {
-    if (isAnyMissing(lhs)) {
-      return false;
-    }
-
-    if (cmp === FilterComp.PRESENT) {
-      return true;
-    }
-
-    const rhs = typeof rhsUnknown === 'string' ? rhsUnknown.trim() : rhsUnknown;
-
-    if (typeof lhs === 'boolean') {
-      switch (cmp) {
-        case FilterComp.EQ:
-        case FilterComp.GTE:
-        case FilterComp.LTE:
-          return lhs === (rhs === 'true');
-        default:
-          throw new Error('Unsupported comparison operator: ' + cmp);
-      }
-    }
-
-    if (typeof lhs === 'number') {
-      switch (cmp) {
-        case FilterComp.EQ:
-          return lhs === Number(rhs);
-        case FilterComp.GTE:
-          return lhs >= Number(rhs);
-        case FilterComp.LTE:
-          return lhs <= Number(rhs);
-        default:
-          throw new Error('Unsupported comparison operator: ' + cmp);
-      }
-    }
-
-    if (lhs instanceof SemVer) {
-      switch (cmp) {
-        case FilterComp.EQ:
-          return semverEq(lhs, rhs as string);
-        case FilterComp.NOT:
-          return semverNeq(lhs, rhs as string);
-        case FilterComp.GTE:
-          return semverGte(lhs, rhs as string);
-        case FilterComp.LTE:
-          return semverLte(lhs, rhs as string);
-        default:
-          throw new Error('Unsupported comparison operator: ' + cmp);
-      }
-    }
-
-    if (typeof lhs === 'string') {
-      switch (cmp) {
-        case FilterComp.EQ:
-          return lhs === rhs;
-        case FilterComp.NOT:
-          return lhs !== rhs;
-        default:
-          throw new Error('Unsupported comparison operator: ' + cmp);
-      }
-    }
-
-    if (Array.isArray(lhs)) {
-      for (let a of lhs) {
-        if (CapabilitySet.compare(a, rhsUnknown, cmp)) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    return false;
   }
 }

@@ -22,8 +22,8 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
   private readonly declaredReqs: Array<BundleRequirement> = [];
 
   private readonly bundle: BundleImpl;
+  private readonly declaredActivationPolicy: ActivationPolicy;
   private wiring: BundleWiring;
-  private declaredActivationPolicy: ActivationPolicy;
 
   constructor(bundle: BundleImpl, id: string, headerMap?: Record<string, any>) {
     this.bundle = bundle;

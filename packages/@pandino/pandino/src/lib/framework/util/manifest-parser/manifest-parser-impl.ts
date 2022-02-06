@@ -247,7 +247,10 @@ export class ManifestParserImpl implements ManifestParser {
     return isAnyMissing(manifestVersion) ? null : manifestVersion.trim();
   }
 
-  private static parseBundleSymbolicName(owner: BundleRevision, headerMap: Record<string, any>): BundleCapabilityImpl {
+  private static parseBundleSymbolicName(
+    owner: BundleRevision,
+    headerMap: Record<string, any>,
+  ): BundleCapabilityImpl | undefined {
     const clauses: Array<ParsedHeaderClause> = this.normalizeCapabilityClauses(
       this.parseStandardHeader(headerMap[BUNDLE_SYMBOLICNAME]),
     );
@@ -281,7 +284,7 @@ export class ManifestParserImpl implements ManifestParser {
       return new BundleCapabilityImpl(owner, BUNDLE_NAMESPACE, clauses[0].dirs, clauses[0].attrs);
     }
 
-    return null;
+    return undefined;
   }
 
   private static parseStandardHeader(header: string): ParsedHeaderClause[] {

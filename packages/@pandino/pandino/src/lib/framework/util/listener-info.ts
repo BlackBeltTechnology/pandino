@@ -49,10 +49,10 @@ export class ListenerInfo {
     return this.filter;
   }
 
-  public getFilter?(): string {
+  public getFilter(): string | undefined {
     if (!!this.filter) {
       return this.filter.toString();
     }
-    return null;
+    return undefined;
   }
 }

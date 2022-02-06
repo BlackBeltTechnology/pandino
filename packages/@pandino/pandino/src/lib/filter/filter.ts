@@ -24,6 +24,10 @@ export default class Filter implements FilterApi {
   }
 
   static parse(input: string): Filter {
+    if (input === '(*)') {
+      return new Filter(undefined, FilterComp.MATCH_ALL, undefined);
+    }
+
     let newInput = input;
     for (const [original, replaceVal] of replaceMap.entries()) {
       newInput = newInput.replaceAll(original, replaceVal);

@@ -25,8 +25,6 @@ import {
   ServiceReference,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
-import { ServiceRegistryImpl } from './lib/framework/service-registry-impl';
-import { ServiceRegistry } from './lib/framework/service-registry';
 
 interface HelloService {
   sayHello(): string;
@@ -79,6 +77,7 @@ describe('Pandino', () => {
 
   beforeEach(() => {
     mockStart.mockClear();
+    mockStart.mockImplementation(() => {});
     mockStop.mockClear();
     params = {
       [DEPLOYMENT_ROOT_PROP]: '',
@@ -118,6 +117,14 @@ describe('Pandino', () => {
     expect(ctx.getProperty(FRAMEWORK_UUID)).toEqual('pandino-uuid-todo');
   });
 
+  it('Pandino APIs', async () => {
+    await preparePandino();
+    await installBundle(bundle1Headers);
+
+    expect(pandino.getDependencies()).toBeDefined();
+    expect(pandino.getActivatorsList().length).toEqual(0);
+  });
+
   it('install bundle', async () => {
     await preparePandino();
     await installBundle(bundle1Headers);
@@ -128,6 +135,17 @@ describe('Pandino', () => {
     expect(myBundle.getState()).toEqual('ACTIVE');
     expect(myBundle.getSymbolicName()).toEqual('my.bundle');
     expect(myBundle.getVersion().toString()).toEqual('1.2.3');
+  });
+
+  it('install bundle fails if activator is missing from Bundle Headers', async () => {
+    const header = {
+      ...bundle1Headers,
+    };
+    delete header[BUNDLE_ACTIVATOR];
+    await preparePandino();
+    const bundle = await installBundle(header);
+
+    expect(bundle.getState()).toEqual('RESOLVED');
   });
 
   it('installed bundle stays INSTALLED if requirement(s) are not satisfied', async () => {
@@ -176,6 +194,25 @@ describe('Pandino', () => {
     expect(catsBundle.getVersion().toString()).toEqual('1.0.0');
     expect(catsBundle.getState()).toEqual('ACTIVE');
     expect(mockStart).toHaveBeenCalledTimes(bundles.length); // we use the same mock for all bundles
+  });
+
+  it("bundle ends up in an RESOLVED state when it's activator fails", async () => {
+    mockStart.mockImplementation(() => {
+      throw new Error('Test throwing in activator!');
+    });
+    await preparePandino();
+    const bundle = await installBundle({
+      ...bundle1Headers,
+    });
+    let bundles = pandino.getBundleContext().getBundles();
+
+    expect(mockStart).toHaveBeenCalledTimes(1);
+    expect(bundles.length).toEqual(1);
+
+    expect(bundle.getSymbolicName()).toEqual('my.bundle');
+    expect(bundle.getVersion().toString()).toEqual('1.2.3');
+    expect(bundle.getState()).toEqual('RESOLVED');
+    expect(bundle.getBundleContext()).toEqual(null);
   });
 
   it('multiple requirements case', async () => {
@@ -374,6 +411,34 @@ describe('Pandino', () => {
     expect(requiredBundle.getState()).toEqual('UNINSTALLED');
     expect(requirerBundle.getState()).toEqual('RESOLVED');
     expect(mockStop).toHaveBeenCalledTimes(2);
+  });
+
+  it('uninstall bundle fails if Bundle is already in UNINSTALLED state', async () => {
+    await preparePandino();
+    const bundle = await installBundle({
+      ...bundle1Headers,
+    });
+    (bundle as BundleImpl).setState('UNINSTALLED');
+
+    expect(bundle.uninstall()).rejects.toThrow('Cannot uninstall an uninstalled bundle.');
+  });
+
+  it('uninstall bundle fails if Bundle is in STARTING or STOPPING state', async () => {
+    await preparePandino();
+    const bundle = await installBundle({
+      ...bundle1Headers,
+    });
+    (bundle as BundleImpl).setState('STARTING');
+
+    expect(bundle.uninstall()).rejects.toThrow(
+      'Bundle my.bundle-1.2.3 cannot be uninstalled, since it is either STARTING or STOPPING.',
+    );
+
+    (bundle as BundleImpl).setState('STOPPING');
+
+    expect(bundle.uninstall()).rejects.toThrow(
+      'Bundle my.bundle-1.2.3 cannot be uninstalled, since it is either STARTING or STOPPING.',
+    );
   });
 
   it('stopping bundle unregisters all services', async () => {

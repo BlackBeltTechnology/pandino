@@ -142,7 +142,7 @@ export class EventDispatcher {
     }
   }
 
-  addListener?(bc: BundleContext, type: ListenerType, listener: any, filter?: FilterApi): FilterApi {
+  addListener?(bc: BundleContext, type: ListenerType, listener: any, filter?: FilterApi): FilterApi | undefined {
     if (!listener) {
       throw new Error('Listener is missing');
     }
@@ -157,7 +157,7 @@ export class EventDispatcher {
       bc.getBundle();
     } catch (ex) {
       // Bundle context is no longer valid, so just return.
-      return null;
+      return undefined;
     }
 
     let listeners: Map<BundleContext, Array<ListenerInfo>> = null;
@@ -183,7 +183,7 @@ export class EventDispatcher {
       this.svcListeners = listeners;
     }
 
-    return null;
+    return undefined;
   }
 
   removeListener(bc: BundleContext, type: ListenerType, listener: any): void {
@@ -265,13 +265,13 @@ export class EventDispatcher {
     return listeners;
   }
 
-  updateListener(bc: BundleContext, type: ListenerType, listener: any, filter?: FilterApi): FilterApi {
+  updateListener(bc: BundleContext, type: ListenerType, listener: any, filter?: FilterApi): FilterApi | undefined {
     if (type === 'SERVICE') {
       // Verify that the bundle context is still valid.
       try {
         bc.getBundle();
       } catch (err) {
-        return null;
+        return undefined;
       }
 
       const infos: Array<ListenerInfo> = this.svcListeners.get(bc);
@@ -287,7 +287,7 @@ export class EventDispatcher {
       }
     }
 
-    return null;
+    return undefined;
   }
 
   private static updateListenerInfo(

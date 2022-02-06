@@ -107,7 +107,7 @@ export class BundleWiringImpl implements BundleWiring {
       }
       return result;
     }
-    return null;
+    return [];
   }
 
   getProvidedWires(namespace: string): BundleWire[] {
@@ -117,7 +117,7 @@ export class BundleWiringImpl implements BundleWiring {
         .getDependencies()
         .getProvidedWires(this.revision, namespace);
     }
-    return null;
+    return [];
   }
 
   getRequiredWires(namespace: string): BundleWire[] {
@@ -128,7 +128,7 @@ export class BundleWiringImpl implements BundleWiring {
       }
       return result;
     }
-    return null;
+    return [];
   }
 
   getRequirements(namespace: string): BundleRequirement[] {
@@ -146,7 +146,7 @@ export class BundleWiringImpl implements BundleWiring {
       }
       return result;
     }
-    return null;
+    return [];
   }
 
   getResource(): BundleRevision {

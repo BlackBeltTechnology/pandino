@@ -89,8 +89,7 @@ export class BundleContextImpl implements BundleContext {
     }
     this.checkValidity();
 
-    const result = await this.pandino.installBundle(this.bundle, locationOrHeaders);
-    return Promise.resolve(result);
+    return this.pandino.installBundle(this.bundle, locationOrHeaders);
   }
 
   addServiceListener(listener: ServiceListener, filter?: string): void {
@@ -108,7 +107,7 @@ export class BundleContextImpl implements BundleContext {
     return this.pandino.getService(this.bundle, reference, false);
   }
 
-  getServiceReference<S>(identifier: string): ServiceReference<S> {
+  getServiceReference<S>(identifier: string): ServiceReference<S> | undefined {
     this.checkValidity();
     try {
       const refs = this.getServiceReferences(identifier, null);
@@ -116,7 +115,7 @@ export class BundleContextImpl implements BundleContext {
     } catch (ex) {
       this.logger.error('BundleContextImpl: ' + ex);
     }
-    return null;
+    return undefined;
   }
 
   getServiceReferences<S>(identifier: string, filter?: string): ServiceReference<S>[] {
@@ -184,9 +183,9 @@ export class BundleContextImpl implements BundleContext {
     return false;
   }
 
-  private static getBestServiceReference(refs: ServiceReference<any>[]): ServiceReference<any> {
+  private static getBestServiceReference(refs: ServiceReference<any>[]): ServiceReference<any> | undefined {
     if (isAnyMissing(refs)) {
-      return null;
+      return undefined;
     }
 
     if (refs.length === 1) {

@@ -1,4 +1,4 @@
-import Filter from './filter';
+import Filter, { FilterComp } from './filter';
 
 describe('Filter', () => {
   describe('Building filters', () => {
@@ -268,12 +268,20 @@ describe('Filter', () => {
       expect(() => Filter.parse(filter)).toThrow();
     });
 
+    it('parses match all', () => {
+      const parsed = Filter.parse('(*)');
+      expect(parsed.type).toEqual('filter');
+      expect(parsed.comp).toEqual(FilterComp.MATCH_ALL);
+      expect(parsed.attrib).toEqual(undefined);
+      expect(parsed.value).toEqual(undefined);
+    });
+
     it('parses substring matches beginning with asterisk', () => {
       const filter = '(sn=*smith*)';
       const parsed = Filter.parse(filter);
       expect(parsed.type).toEqual('filter');
       expect(parsed.attrib).toEqual('sn');
-      expect(parsed.comp).toEqual('=');
+      expect(parsed.comp).toEqual(FilterComp.EQ);
       expect(parsed.value).toEqual('*smith*');
     });
 
@@ -361,7 +369,7 @@ describe('Filter', () => {
       const parsed = Filter.parse('(service.id=4)');
       expect(parsed.type).toEqual('filter');
       expect(parsed.attrib).toEqual('service.id');
-      expect(parsed.comp).toEqual('=');
+      expect(parsed.comp).toEqual(FilterComp.EQ);
       expect(parsed.value).toEqual('4');
     });
 
@@ -369,13 +377,13 @@ describe('Filter', () => {
       const parsed = Filter.parse('(|(service.id=4)(test=test)(service.description=test description))');
       expect(parsed.type).toEqual('group');
       expect(parsed.filters[0].attrib).toEqual('service.id');
-      expect(parsed.filters[0].comp).toEqual('=');
+      expect(parsed.filters[0].comp).toEqual(FilterComp.EQ);
       expect(parsed.filters[0].value).toEqual('4');
       expect(parsed.filters[1].attrib).toEqual('test');
-      expect(parsed.filters[1].comp).toEqual('=');
+      expect(parsed.filters[1].comp).toEqual(FilterComp.EQ);
       expect(parsed.filters[1].value).toEqual('test');
       expect(parsed.filters[2].attrib).toEqual('service.description');
-      expect(parsed.filters[2].comp).toEqual('=');
+      expect(parsed.filters[2].comp).toEqual(FilterComp.EQ);
       expect(parsed.filters[2].value).toEqual('test description');
     });
   });

@@ -59,7 +59,6 @@ import { Framework } from './lib/framework/framework';
 import { ServiceRegistry } from './lib/framework/service-registry';
 import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
 import { filterParser } from './lib/filter/filter-parser';
-import { ServiceRegistrationImpl } from './lib/framework/service-registration-impl';
 import { semverFactory } from './lib/utils/semver-factory';
 
 export class Pandino extends BundleImpl implements Framework {
@@ -563,7 +562,7 @@ export class Pandino extends BundleImpl implements Framework {
       return effectiveRefList;
     }
 
-    return null;
+    return [];
   }
 
   private getNextId(): number {
@@ -577,7 +576,7 @@ export class Pandino extends BundleImpl implements Framework {
     let headerMap: Record<string, any> = impl.getHeaders();
     let activatorDefinition: string | BundleActivator = headerMap[BUNDLE_ACTIVATOR];
     if (isAnyMissing(activatorDefinition)) {
-      return Promise.reject('Missing mandatory Bundle Activator!');
+      throw new Error('Missing mandatory Bundle Activator!');
     } else if (typeof activatorDefinition === 'string') {
       this.logger.debug(`Attempting to load Activator from: ${activatorDefinition}`);
       let activatorInstance: any;
@@ -586,15 +585,15 @@ export class Pandino extends BundleImpl implements Framework {
           await this.importer.import(this.getDeploymentRoot(), activatorDefinition, this.getLocation())
         ).default;
       } catch (ex) {
-        return Promise.reject('Not found: ' + activatorDefinition + ': ' + ex);
+        throw new Error('Not found: ' + activatorDefinition + ': ' + ex);
       }
       activator =
         typeof activatorInstance === 'function' ? (new activatorInstance() as BundleActivator) : activatorInstance;
     } else {
-      return Promise.resolve(impl.getActivator());
+      return impl.getActivator();
     }
 
-    return Promise.resolve(activator);
+    return activator;
   }
 
   private async refreshBundle(bundle: BundleImpl): Promise<void> {
@@ -630,14 +629,14 @@ export class Pandino extends BundleImpl implements Framework {
     return allow;
   }
 
-  getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects: boolean): S {
+  getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects: boolean): S | undefined {
     try {
       return this.registry.getService(bundle, ref, isServiceObjects);
     } catch (ex) {
       this.fireFrameworkEvent('ERROR', bundle, ex);
     }
 
-    return null;
+    return undefined;
   }
 
   ungetService(bundle: Bundle, ref: ServiceReference<any>, srvObj: any): boolean {

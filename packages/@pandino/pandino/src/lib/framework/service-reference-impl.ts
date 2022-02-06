@@ -151,7 +151,7 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
     return className.substring(0, className.lastIndexOf(PACKAGE_SEPARATOR));
   }
 
-  private static getWire(br: BundleRevision, name: string): BundleWire {
+  private static getWire(br: BundleRevision, name: string): BundleWire | undefined {
     if (isAllPresent(br.getWiring())) {
       const wires = br.getWiring().getRequiredWires(null);
       if (isAllPresent(wires)) {
@@ -165,10 +165,10 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
         }
       }
     }
-    return null;
+    return undefined;
   }
 
-  private static getPackageCapability(br: BundleRevision, name: string): BundleCapability {
+  private static getPackageCapability(br: BundleRevision, name: string): BundleCapability | undefined {
     if (isAllPresent(br.getWiring())) {
       const capabilities = br.getWiring().getCapabilities(null);
       if (isAllPresent(capabilities)) {
@@ -179,6 +179,6 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
         }
       }
     }
-    return null;
+    return undefined;
   }
 }
