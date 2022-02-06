@@ -235,6 +235,22 @@ describe('Filter', () => {
   });
 
   describe('Parsing', () => {
+    it('replacer works for multiple inputs', () => {
+      const filter = '(|(service.id=test)(service.id=test-other))';
+      const parsed = Filter.parse(filter);
+      expect(parsed).toEqual({
+        attrib: null,
+        comp: '|',
+        filters: [
+          { attrib: 'service.id', comp: '=', filters: [], type: 'filter', value: 'test' },
+          { attrib: 'service.id', comp: '=', filters: [], type: 'filter', value: 'test-other' },
+        ],
+        type: 'group',
+        value: null,
+      });
+      expect(parsed.toString()).toEqual(filter);
+    });
+
     it('parse small filter', () => {
       const filter = '(sn=smith)';
       const parsed = Filter.parse(filter);

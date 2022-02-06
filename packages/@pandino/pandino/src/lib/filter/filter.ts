@@ -30,7 +30,7 @@ export default class Filter implements FilterApi {
 
     let newInput = input;
     for (const [original, replaceVal] of replaceMap.entries()) {
-      newInput = newInput.replaceAll(original, replaceVal);
+      newInput = newInput.replace(new RegExp(original, 'g'), replaceVal);
     }
 
     const originalFilter = peg$parse(newInput);
@@ -40,7 +40,7 @@ export default class Filter implements FilterApi {
   private static recursiveReplace(filter: Filter, inverseMap: Map<string, string>): Filter {
     for (const [original, replaceVal] of inverseMap.entries()) {
       if (filter.attrib) {
-        filter.attrib = filter.attrib.replaceAll(original, replaceVal);
+        filter.attrib = filter.attrib.replace(new RegExp(original, 'g'), replaceVal);
       }
     }
 
