@@ -150,4 +150,11 @@ export interface ServiceReference<S> extends BundleReference {
    * @param {ServiceReference<any>} other The {@code ServiceReference} to be compared.
    */
   compareTo(other: ServiceReference<any>): number;
+
+  /**
+   * Checks whether the ServiceReference has been defined for the given objectClass.
+   *
+   * @param {string} objectClass
+   */
+  hasObjectClass(objectClass: string): boolean;
 }

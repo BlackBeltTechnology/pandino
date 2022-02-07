@@ -96,6 +96,7 @@ export class MockBundleContext implements BundleContext {
       isAssignableTo(bundle: Bundle, className: string): boolean {
         return true;
       },
+      hasObjectClass: (objectClass: string) => false,
     };
     this.refMap.set(identifiers, ref);
     const reg: ServiceRegistration<any> = {

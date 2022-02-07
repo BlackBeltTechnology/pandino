@@ -90,6 +90,8 @@ export const TIMESTAMP = 'timestamp';
  */
 export const EVENT_ADMIN_IMPLEMENTATION = 'pandino.event';
 
+export const EVENT_HANDLER_INTERFACE_KEY = '@pandino/pandino-event-admin/EventHandler';
+
 export const EVENT_ADMIN_INTERFACE_KEY = '@pandino/pandino-event-admin/EventAdmin';
 
 export const BUNDLE_EVENT_INTERFACE_KEY = '@pandino/pandino-event-admin/BundleEvent';

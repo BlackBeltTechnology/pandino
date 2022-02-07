@@ -2,7 +2,7 @@ import { EVENT_FILTER, EVENT_TOPIC, EventHandler } from '@pandino/pandino-event-
 import { ServiceReference } from '@pandino/pandino-api';
 
 export interface EventHandlerRegistrationInfo {
-  [EVENT_TOPIC]: string;
+  [EVENT_TOPIC]: string | string[];
   [EVENT_FILTER]?: string;
   reference: ServiceReference<EventHandler>;
   service: EventHandler;

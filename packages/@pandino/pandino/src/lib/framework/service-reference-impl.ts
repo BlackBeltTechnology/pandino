@@ -6,6 +6,7 @@ import {
   SERVICE_ID,
   SERVICE_RANKING,
   PACKAGE_NAMESPACE,
+  OBJECTCLASS,
 } from '@pandino/pandino-api';
 import { ServiceRegistrationImpl } from './service-registration-impl';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
@@ -135,6 +136,11 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
     }
 
     return allow;
+  }
+
+  hasObjectClass(objectClass: string): boolean {
+    const classOrArray = this.getProperty(OBJECTCLASS);
+    return Array.isArray(classOrArray) ? classOrArray.includes(objectClass) : classOrArray === objectClass;
   }
 
   private static getClassName(className?: string): string {

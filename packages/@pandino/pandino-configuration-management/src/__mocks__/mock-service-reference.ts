@@ -9,6 +9,10 @@ export class MockServiceReference implements ServiceReference<any> {
     this.pids = pids;
   }
 
+  hasObjectClass(objectClass: string): boolean {
+    return false;
+  }
+
   compareTo(other: ServiceReference<any>): number {
     return 0;
   }
