@@ -1,8 +1,13 @@
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import path from 'path';
+import CopyPlugin from 'copy-webpack-plugin';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export default {
   experiments: {
     outputModule: true,
   },
@@ -24,10 +29,8 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: '[name].js',
-    library: {
-      type: 'module',
-    },
+    filename: '[name].mjs',
+    libraryTarget: 'module',
     umdNamedDefine: true,
     path: path.resolve(__dirname, 'dist'),
   },

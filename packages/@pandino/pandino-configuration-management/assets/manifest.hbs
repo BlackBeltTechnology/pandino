@@ -1,10 +1,10 @@
 {
   "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/pandino-configuration-management",
+  "Bundle-SymbolicName": "{{ name }}",
   "Bundle-Name": "Pandino Configuration Management",
-  "Bundle-Version": "0.1.0",
-  "Bundle-Description": "Pandino reference implementation for Configuration Management",
-  "Bundle-Activator": "./pandino-configuration-management.js",
+  "Bundle-Version": "{{ version }}",
+  "Bundle-Description": "{{ description }}",
+  "Bundle-Activator": "./{{ entryName }}.{{ extension }}",
   "Require-Capability": "@pandino/persistence-manager;filter:=(objectClass=\"@pandino/persistence-manager/PersistenceManager\")",
   "Provide-Capability": "@pandino/pandino-configuration-management;objectClass:Array=\"@pandino/pandino-configuration-management/ConfigurationAdmin,@pandino/pandino-configuration-management/ManagedService,@pandino/pandino-configuration-management/ConfigurationListener\""
 }

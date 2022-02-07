@@ -2,7 +2,13 @@
   "name": "@pandino/pandino-persistence-manager-localstorage",
   "version": "0.1.0",
   "description": "Localstorage implementation of the Pandino Persistence Manager API",
-  "main": "dist/pandino-persistence-manager-memory.js",
+  "type": "module",
+  "module": "./dist/pandino-persistence-manager-localstorage.mjs",
+  "exports": {
+    ".": {
+      "default": "./dist/pandino-persistence-manager-localstorage.mjs"
+    }
+  },
   "private": true,
   "types": "dist/src/index.d.ts",
   "scripts": {

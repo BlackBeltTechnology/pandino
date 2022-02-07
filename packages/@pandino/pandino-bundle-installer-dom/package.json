@@ -2,7 +2,13 @@
   "name": "@pandino/pandino-bundle-installer-dom",
   "version": "0.1.0",
   "description": "",
-  "main": "dist/pandino-bundle-installer-dom.js",
+  "type": "module",
+  "module": "./dist/pandino-bundle-installer-dom.mjs",
+  "exports": {
+    ".": {
+      "default": "./dist/pandino-bundle-installer-dom.mjs"
+    }
+  },
   "private": true,
   "types": "dist/src/index.d.ts",
   "scripts": {

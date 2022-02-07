@@ -2,7 +2,14 @@
   "name": "@pandino/pandino-configuration-management",
   "version": "0.1.0",
   "description": "",
-  "main": "dist/pandino-configuration-management.js",
+  "main": "./dist/cjs/pandino-configuration-management.js",
+  "module": "./dist/esm/pandino-configuration-management.mjs",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/pandino-configuration-management.js",
+      "default": "./dist/esm/pandino-configuration-management.mjs"
+    }
+  },
   "private": true,
   "types": "dist/src/index.d.ts",
   "scripts": {
@@ -24,6 +31,7 @@
     "@types/jest": "^27.4.0",
     "@types/semver": "^7.3.9",
     "copy-webpack-plugin": "^10.2.0",
+    "handlebars-webpack-plugin": "^2.2.1",
     "jest": "^27.4.7",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.1.2",
