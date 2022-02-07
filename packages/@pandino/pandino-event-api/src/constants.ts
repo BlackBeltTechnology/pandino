@@ -89,3 +89,15 @@ export const TIMESTAMP = 'timestamp';
  * The name of the implementation capability for the Event Admin specification.
  */
 export const EVENT_ADMIN_IMPLEMENTATION = 'pandino.event';
+
+export const EVENT_ADMIN_INTERFACE_KEY = '@pandino/pandino-event-admin/EventAdmin';
+
+export const BUNDLE_EVENT_INTERFACE_KEY = '@pandino/pandino-event-admin/BundleEvent';
+
+export const FRAMEWORK_EVENT_INTERFACE_KEY = '@pandino/pandino-event-admin/FrameworkEvent';
+
+export const LOG_EVENT_INTERFACE_KEY = '@pandino/pandino-event-admin/LogEvent';
+
+export const SERVICE_EVENT_INTERFACE_KEY = '@pandino/pandino-event-admin/ServiceEvent';
+
+export const EVENT_FACTORY_INTERFACE_KEY = '@pandino/pandino-event-admin/EventFactory';

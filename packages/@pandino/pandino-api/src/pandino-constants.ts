@@ -144,6 +144,8 @@ export const FRAMEWORK_VENDOR = '@pandino/pandino/vendor';
 
 export const SERVICE_DEFAULT_RANK = 0;
 
+export const SERVICE_EVENT_INTERFACE_KEY = '@pandino/pandino/service/ServiceEvent';
+
 /**
  * Service property identifying a service's registration number. The value of this property must be of type
  * {@code number}.

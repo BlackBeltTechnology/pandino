@@ -15,5 +15,5 @@ import { Event } from './event';
  * If the syntax of this filter is invalid, then the Event Handler must be ignored by the Event Admin service.
  */
 export interface EventHandler {
-  handleEvent(event: Event): void;
+  handleEvent(event: Event): Promise<void>;
 }
