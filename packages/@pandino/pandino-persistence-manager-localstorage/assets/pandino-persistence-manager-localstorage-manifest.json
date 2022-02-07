@@ -4,6 +4,6 @@
   "Bundle-Name": "Pandino Localstorage Persistence Manager",
   "Bundle-Version": "0.1.0",
   "Bundle-Description": "Localstorage implementation of the Pandino Persistence Manager API",
-  "Bundle-Activator": "./pandino-persistence-manager-localstorage.js",
+  "Bundle-Activator": "./pandino-persistence-manager-localstorage.mjs",
   "Provide-Capability": "@pandino/persistence-manager;type=\"dom-localstorage\";objectClass=\"@pandino/persistence-manager/PersistenceManager\""
 }

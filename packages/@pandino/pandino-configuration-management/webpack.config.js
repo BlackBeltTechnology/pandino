@@ -1,13 +1,25 @@
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
+const HandlebarsPlugin = require('handlebars-webpack-plugin');
 
-module.exports = {
-  experiments: {
-    outputModule: true,
-  },
+const packageJSON = require('./package.json');
+const entryName = packageJSON.name.split('/').pop();
+
+const createManifestHandlebars = (target, entryName, extension) => {
+  return new HandlebarsPlugin({
+    entry: path.resolve(__dirname, 'assets/manifest.hbs'),
+    output: path.resolve(__dirname, `dist/${target}/${entryName}-manifest.json`),
+    data: {
+      ...packageJSON,
+      entryName,
+      extension,
+    },
+  });
+};
+
+const baseConfig = {
   entry: {
-    'pandino-configuration-management': './src/index.ts',
+    [entryName]: './src/index.ts',
   },
   mode: 'production',
   devtool: false,
@@ -23,23 +35,44 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
-  output: {
-    filename: '[name].js',
-    library: {
-      type: 'module',
-    },
-    umdNamedDefine: true,
-    path: path.resolve(__dirname, 'dist'),
-  },
   plugins: [
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',
       openAnalyzer: false,
     }),
-    new CopyPlugin({
-      patterns: [
-        { from: "assets", to: "" },
-      ],
-    }),
   ],
 };
+
+const esm = {
+  ...baseConfig,
+  experiments: {
+    outputModule: true,
+  },
+  output: {
+    filename: '[name].mjs',
+    libraryTarget: 'module',
+    path: path.resolve(__dirname, 'dist/esm'),
+  },
+  plugins: [
+    ...baseConfig.plugins,
+    createManifestHandlebars('esm', entryName, 'mjs'),
+  ],
+};
+
+const cjs = {
+  ...baseConfig,
+  experiments: {
+    outputModule: false,
+  },
+  output: {
+    filename: '[name].js',
+    libraryTarget: 'commonjs',
+    path: path.resolve(__dirname, 'dist/cjs'),
+  },
+  plugins: [
+    ...baseConfig.plugins,
+    createManifestHandlebars('cjs', entryName, 'js'),
+  ],
+};
+
+module.exports = [cjs, esm];
