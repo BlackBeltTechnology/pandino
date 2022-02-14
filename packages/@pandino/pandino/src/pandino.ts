@@ -43,7 +43,6 @@ import { BundleImpl } from './lib/framework/bundle-impl';
 import { EventDispatcher } from './lib/framework/event-dispatcher';
 import { BundleContextImpl } from './lib/framework/bundle-context-impl';
 import { BundleEventImpl } from './lib/framework/bundle-event-impl';
-import { BundleRevisionDependencies } from './lib/framework/bundle-revision-dependencies';
 import { isAllPresent, isAnyMissing } from './lib/utils/helpers';
 import { StatefulResolver } from './lib/framework/stateful-resolver';
 import { ServiceRegistryImpl } from './lib/framework/service-registry-impl';
@@ -68,7 +67,6 @@ export class Pandino extends BundleImpl implements Framework {
   private readonly installedBundles: Bundle[] = [];
   private readonly activatorsList: BundleActivator[] = [];
   private readonly dispatcher: EventDispatcher;
-  private readonly dependencies = new BundleRevisionDependencies();
   private readonly resolver: StatefulResolver;
   private readonly registry: ServiceRegistry;
   private nextId = 1;
@@ -459,10 +457,6 @@ export class Pandino extends BundleImpl implements Framework {
     return this.configMap;
   }
 
-  getDependencies(): BundleRevisionDependencies {
-    return this.dependencies;
-  }
-
   getActivatorsList(): BundleActivator[] {
     return this.activatorsList;
   }
@@ -594,20 +588,6 @@ export class Pandino extends BundleImpl implements Framework {
     }
 
     return activator;
-  }
-
-  private async refreshBundle(bundle: BundleImpl): Promise<void> {
-    try {
-      let fire: boolean = bundle.getState() !== 'INSTALLED';
-      this.dependencies.removeDependencies(bundle);
-      await bundle.refresh();
-      if (fire) {
-        this.setBundleStateAndNotify(bundle, 'INSTALLED');
-        this.fireBundleEvent('UNRESOLVED', bundle);
-      }
-    } catch (ex) {
-      this.fireFrameworkEvent('ERROR', bundle, ex);
-    }
   }
 
   private static isServiceAssignable(requester: Bundle, ref: ServiceReference<any>): boolean {

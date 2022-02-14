@@ -111,13 +111,7 @@ export class BundleWiringImpl implements BundleWiring {
   }
 
   getProvidedWires(namespace: string): BundleWire[] {
-    if (this.isInUse()) {
-      return (this.revision.getBundle() as BundleImpl)
-        .getFramework()
-        .getDependencies()
-        .getProvidedWires(this.revision, namespace);
-    }
-    return [];
+    throw new Error('Method not yet implemented!');
   }
 
   getRequiredWires(namespace: string): BundleWire[] {

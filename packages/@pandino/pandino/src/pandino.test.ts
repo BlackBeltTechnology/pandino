@@ -121,7 +121,6 @@ describe('Pandino', () => {
     await preparePandino();
     await installBundle(bundle1Headers);
 
-    expect(pandino.getDependencies()).toBeDefined();
     expect(pandino.getActivatorsList().length).toEqual(0);
   });
 
