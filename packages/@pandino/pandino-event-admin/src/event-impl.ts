@@ -23,7 +23,7 @@ export class EventImpl implements Event {
       return true;
     }
 
-    if (!(other instanceof Event)) {
+    if (!(other instanceof EventImpl)) {
       return false;
     }
 
@@ -80,7 +80,7 @@ export class EventImpl implements Event {
       if ('0' <= ch && ch <= '9') {
         continue;
       }
-      if (ch == '_' || ch == '-') {
+      if (ch === '_' || ch === '-' || ch === '@') {
         continue;
       }
       throw new Error('invalid topic: ' + topic);

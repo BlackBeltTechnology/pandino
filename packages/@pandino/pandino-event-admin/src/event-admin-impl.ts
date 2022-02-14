@@ -1,4 +1,11 @@
-import { BundleContext, Logger, ServiceEvent, ServiceListener, ServiceReference } from '@pandino/pandino-api';
+import {
+  BundleContext,
+  FilterParser,
+  Logger,
+  ServiceEvent,
+  ServiceListener,
+  ServiceReference,
+} from '@pandino/pandino-api';
 import {
   Event,
   EVENT_FILTER,
@@ -8,15 +15,18 @@ import {
   EventHandler,
 } from '@pandino/pandino-event-api';
 import { EventHandlerRegistrationInfo } from './event-handler-registration-info';
+import { Matchers } from './matchers';
 
 export class EventAdminImpl implements EventAdmin, ServiceListener {
   private readonly regs: Array<EventHandlerRegistrationInfo> = [];
   private readonly context: BundleContext;
   private readonly logger: Logger;
+  private readonly filterParser: FilterParser;
 
-  constructor(context: BundleContext, logger: Logger) {
+  constructor(context: BundleContext, logger: Logger, filterParser: FilterParser) {
     this.context = context;
     this.logger = logger;
+    this.filterParser = filterParser;
   }
 
   serviceChanged(event: ServiceEvent): void {
@@ -39,8 +49,25 @@ export class EventAdminImpl implements EventAdmin, ServiceListener {
     // Event Handler services can also be registered with an EVENT_FILTER service property to further filter the events.
     // If the syntax of this filter is invalid, then the Event Handler must be ignored by the Event Admin service.
     // The Event Admin service should log a warning.
-    event.getTopic();
-    setTimeout(() => {}, 0);
+
+    for (const reg of this.regs) {
+      const filter = typeof reg[EVENT_FILTER] === 'string' ? this.filterParser(reg[EVENT_FILTER]) : undefined;
+
+      if (!filter || event.matches(filter)) {
+        const config = (Array.isArray(reg[EVENT_TOPIC]) ? reg[EVENT_TOPIC] : [reg[EVENT_TOPIC]]) as string[];
+        const matchers = Matchers.createEventTopicMatchers(config);
+
+        if (matchers.some((matcher) => matcher.match(event.getTopic()))) {
+          setTimeout(() => {
+            reg.service.handleEvent(event);
+          }, 0);
+        }
+      }
+    }
+  }
+
+  getRegistrations(): EventHandlerRegistrationInfo[] {
+    return this.regs;
   }
 
   private eventHandlerRegistered(ref: ServiceReference<EventHandler>): void {

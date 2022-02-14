@@ -1,6 +1,8 @@
 import {
   BundleActivator,
   BundleContext,
+  FilterParser,
+  FRAMEWORK_FILTER_PARSER,
   FRAMEWORK_LOGGER,
   Logger,
   ServiceReference,
@@ -27,12 +29,16 @@ export class Activator implements BundleActivator {
   private eventFactoryRegistration: ServiceRegistration<EventFactory>;
   private loggerRef: ServiceReference<Logger>;
   private logger: Logger;
+  private filterParserReference: ServiceReference<FilterParser>;
+  private filterParser: FilterParser;
   private readonly adapters: AbstractAdapter[] = [];
 
   start(context: BundleContext): Promise<void> {
     this.loggerRef = context.getServiceReference(FRAMEWORK_LOGGER);
     this.logger = context.getService(this.loggerRef);
-    const eventAdmin = new EventAdminImpl(context, this.logger);
+    this.filterParserReference = context.getServiceReference<FilterParser>(FRAMEWORK_FILTER_PARSER);
+    this.filterParser = context.getService(this.filterParserReference);
+    const eventAdmin = new EventAdminImpl(context, this.logger, this.filterParser);
     this.eventAdminRegistration = context.registerService(EVENT_ADMIN_INTERFACE_KEY, eventAdmin);
     this.eventFactoryRegistration = context.registerService(EVENT_FACTORY_INTERFACE_KEY, eventFactoryImpl);
 
@@ -48,6 +54,9 @@ export class Activator implements BundleActivator {
     this.adapters.forEach((adapter) => adapter.destroy(context));
     if (this.loggerRef) {
       context.ungetService(this.loggerRef);
+    }
+    if (this.filterParserReference) {
+      context.ungetService(this.filterParserReference);
     }
     this.eventAdminRegistration.unregister();
     this.eventFactoryRegistration.unregister();
