@@ -4,7 +4,13 @@ import { eventFactoryImpl } from './event-factory-impl';
 import { EventHandlerRegistrationInfo } from './event-handler-registration-info';
 
 describe('EventAdminImpl', () => {
-  const DeLAY_MS = 50;
+  const DELAY_MS = 50;
+  const nonMatchingFilter = {
+    match: () => false,
+  };
+  const matchingFilter = {
+    match: () => true,
+  };
   let eventAdmin: EventAdminImpl;
   let mockFilterParser = jest.fn();
 
@@ -15,9 +21,7 @@ describe('EventAdminImpl', () => {
 
   describe('postEvent()', () => {
     it('topic matches, filter does not, no handler triggering', async () => {
-      mockFilterParser.mockImplementation(() => ({
-        match: () => false,
-      }));
+      mockFilterParser.mockImplementation(() => nonMatchingFilter);
       const event = eventFactoryImpl('@pandino/event-admin/Test', {
         prop1: 'nay',
       });
@@ -26,16 +30,14 @@ describe('EventAdminImpl', () => {
       eventAdmin.getRegistrations().push(reg);
       eventAdmin.postEvent(event);
 
-      await new Promise((r) => setTimeout(r, DeLAY_MS));
+      await delay(DELAY_MS);
 
       expect(eventAdmin.getRegistrations().length).toEqual(1);
       expect(reg.service.handleEvent).toHaveBeenCalledTimes(0);
     });
 
     it('topic matches, filter matches, handler triggering once', async () => {
-      mockFilterParser.mockImplementation(() => ({
-        match: () => true,
-      }));
+      mockFilterParser.mockImplementation(() => matchingFilter);
       const event = eventFactoryImpl('@pandino/event-admin/Test', {
         prop1: 'yayy',
       });
@@ -44,7 +46,7 @@ describe('EventAdminImpl', () => {
       eventAdmin.getRegistrations().push(reg);
       eventAdmin.postEvent(event);
 
-      await new Promise((r) => setTimeout(r, DeLAY_MS));
+      await delay(DELAY_MS);
 
       expect(eventAdmin.getRegistrations().length).toEqual(1);
       expect(reg.service.handleEvent).toHaveBeenCalledTimes(1);
@@ -61,7 +63,7 @@ describe('EventAdminImpl', () => {
       eventAdmin.getRegistrations().push(reg, reg2);
       eventAdmin.postEvent(event);
 
-      await new Promise((r) => setTimeout(r, DeLAY_MS));
+      await delay(DELAY_MS);
 
       expect(eventAdmin.getRegistrations().length).toEqual(2);
       expect(reg.service.handleEvent).toHaveBeenCalledTimes(1);
@@ -83,7 +85,7 @@ describe('EventAdminImpl', () => {
       eventAdmin.getRegistrations().push(reg, reg2);
       eventAdmin.postEvent(event);
 
-      await new Promise((r) => setTimeout(r, DeLAY_MS));
+      await delay(DELAY_MS);
 
       expect(eventAdmin.getRegistrations().length).toEqual(2);
       expect(reg.service.handleEvent).toHaveBeenCalledTimes(1);
@@ -97,7 +99,7 @@ describe('EventAdminImpl', () => {
       eventAdmin.getRegistrations().push(reg);
       eventAdmin.postEvent(event);
 
-      await new Promise((r) => setTimeout(r, DeLAY_MS));
+      await delay(DELAY_MS);
 
       expect(eventAdmin.getRegistrations().length).toEqual(1);
       expect(reg.service.handleEvent).toHaveBeenCalledTimes(1);
@@ -110,7 +112,7 @@ describe('EventAdminImpl', () => {
       eventAdmin.getRegistrations().push(reg);
       eventAdmin.postEvent(event);
 
-      await new Promise((r) => setTimeout(r, DeLAY_MS));
+      await delay(DELAY_MS);
 
       expect(eventAdmin.getRegistrations().length).toEqual(1);
       expect(reg.service.handleEvent).toHaveBeenCalledTimes(0);
@@ -130,7 +132,7 @@ describe('EventAdminImpl', () => {
       eventAdmin.postEvent(event1);
       eventAdmin.postEvent(event2);
 
-      await new Promise((r) => setTimeout(r, DeLAY_MS));
+      await delay(DELAY_MS);
 
       expect(eventAdmin.getRegistrations().length).toEqual(1);
       expect(mock).toHaveBeenCalledTimes(2);
@@ -162,5 +164,9 @@ describe('EventAdminImpl', () => {
       },
       reference: undefined,
     };
+  }
+
+  async function delay(time: number) {
+    await new Promise((r) => setTimeout(r, time));
   }
 });
