@@ -1,9 +1,10 @@
-import { EVENT_TOPIC } from '@pandino/pandino-event-api';
+import { EVENT_FILTER, EVENT_TOPIC } from '@pandino/pandino-event-api';
 import { EventAdminImpl } from './event-admin-impl';
 import { eventFactoryImpl } from './event-factory-impl';
 import { EventHandlerRegistrationInfo } from './event-handler-registration-info';
 
 describe('EventAdminImpl', () => {
+  const DeLAY_MS = 50;
   let eventAdmin: EventAdminImpl;
   let mockFilterParser = jest.fn();
 
@@ -13,6 +14,42 @@ describe('EventAdminImpl', () => {
   });
 
   describe('postEvent()', () => {
+    it('topic matches, filter does not, no handler triggering', async () => {
+      mockFilterParser.mockImplementation(() => ({
+        match: () => false,
+      }));
+      const event = eventFactoryImpl('@pandino/event-admin/Test', {
+        prop1: 'nay',
+      });
+      const reg = createRegistration(['@pandino/event-admin/Test'], undefined, '(prop1=yayy)');
+
+      eventAdmin.getRegistrations().push(reg);
+      eventAdmin.postEvent(event);
+
+      await new Promise((r) => setTimeout(r, DeLAY_MS));
+
+      expect(eventAdmin.getRegistrations().length).toEqual(1);
+      expect(reg.service.handleEvent).toHaveBeenCalledTimes(0);
+    });
+
+    it('topic matches, filter matches, handler triggering once', async () => {
+      mockFilterParser.mockImplementation(() => ({
+        match: () => true,
+      }));
+      const event = eventFactoryImpl('@pandino/event-admin/Test', {
+        prop1: 'yayy',
+      });
+      const reg = createRegistration(['@pandino/event-admin/Test'], undefined, '(prop1=yayy)');
+
+      eventAdmin.getRegistrations().push(reg);
+      eventAdmin.postEvent(event);
+
+      await new Promise((r) => setTimeout(r, DeLAY_MS));
+
+      expect(eventAdmin.getRegistrations().length).toEqual(1);
+      expect(reg.service.handleEvent).toHaveBeenCalledTimes(1);
+    });
+
     it('multiple registrations, single event, single match', async () => {
       const event = eventFactoryImpl('@pandino/event-admin/Test', {
         prop1: 'test',
@@ -24,7 +61,7 @@ describe('EventAdminImpl', () => {
       eventAdmin.getRegistrations().push(reg, reg2);
       eventAdmin.postEvent(event);
 
-      await new Promise((r) => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, DeLAY_MS));
 
       expect(eventAdmin.getRegistrations().length).toEqual(2);
       expect(reg.service.handleEvent).toHaveBeenCalledTimes(1);
@@ -46,7 +83,7 @@ describe('EventAdminImpl', () => {
       eventAdmin.getRegistrations().push(reg, reg2);
       eventAdmin.postEvent(event);
 
-      await new Promise((r) => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, DeLAY_MS));
 
       expect(eventAdmin.getRegistrations().length).toEqual(2);
       expect(reg.service.handleEvent).toHaveBeenCalledTimes(1);
@@ -60,7 +97,7 @@ describe('EventAdminImpl', () => {
       eventAdmin.getRegistrations().push(reg);
       eventAdmin.postEvent(event);
 
-      await new Promise((r) => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, DeLAY_MS));
 
       expect(eventAdmin.getRegistrations().length).toEqual(1);
       expect(reg.service.handleEvent).toHaveBeenCalledTimes(1);
@@ -73,7 +110,7 @@ describe('EventAdminImpl', () => {
       eventAdmin.getRegistrations().push(reg);
       eventAdmin.postEvent(event);
 
-      await new Promise((r) => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, DeLAY_MS));
 
       expect(eventAdmin.getRegistrations().length).toEqual(1);
       expect(reg.service.handleEvent).toHaveBeenCalledTimes(0);
@@ -93,7 +130,7 @@ describe('EventAdminImpl', () => {
       eventAdmin.postEvent(event1);
       eventAdmin.postEvent(event2);
 
-      await new Promise((r) => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, DeLAY_MS));
 
       expect(eventAdmin.getRegistrations().length).toEqual(1);
       expect(mock).toHaveBeenCalledTimes(2);
@@ -112,9 +149,14 @@ describe('EventAdminImpl', () => {
     });
   });
 
-  function createRegistration(topic: string | string[], externalMock?: any): EventHandlerRegistrationInfo {
+  function createRegistration(
+    topic: string | string[],
+    externalMock?: any,
+    filter?: string,
+  ): EventHandlerRegistrationInfo {
     return {
       [EVENT_TOPIC]: topic,
+      [EVENT_FILTER]: filter,
       service: {
         handleEvent: externalMock || jest.fn(),
       },
