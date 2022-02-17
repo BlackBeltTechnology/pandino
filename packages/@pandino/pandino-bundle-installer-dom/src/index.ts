@@ -5,9 +5,8 @@ import {
   ManifestFetcher,
   ServiceReference,
 } from '@pandino/pandino-api';
-import { BundleInstaller } from '@pandino/pandino-bundle-installer-api';
 
-export default class PandinoBundleInstallerDomActivator implements BundleActivator, BundleInstaller {
+export default class PandinoBundleInstallerDomActivator implements BundleActivator {
   private context: BundleContext;
   private observer: MutationObserver;
   private fetcherReference: ServiceReference<ManifestFetcher>;
@@ -18,7 +17,7 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
     this.context = context;
     this.fetcherReference = context.getServiceReference<ManifestFetcher>('@pandino/pandino/ManifestFetcher');
     this.fetcher = context.getService<ManifestFetcher>(this.fetcherReference);
-    await this.registerDocumentDefinedManifests(); // Not awaiting intentionally
+    this.registerDocumentDefinedManifests();
   }
 
   stop(context: BundleContext): Promise<void> {
@@ -80,9 +79,5 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
     if (bundle) {
       await bundle.uninstall();
     }
-  }
-
-  async update(path: string): Promise<void> {
-    // Changing tracking on DOM for manifests is not supported yet
   }
 }

@@ -23,7 +23,6 @@
   },
   "devDependencies": {
     "@pandino/pandino-api": "^0.1.0",
-    "@pandino/pandino-bundle-installer-api": "^0.1.0",
     "copy-webpack-plugin": "^10.2.0",
     "rimraf": "^3.0.2",
     "ts-loader": "^9.2.6",

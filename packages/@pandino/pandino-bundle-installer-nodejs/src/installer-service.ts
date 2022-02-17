@@ -1,9 +1,7 @@
-import { BundleInstaller } from '@pandino/pandino-bundle-installer-api';
 import { Bundle, BundleContext, Logger } from '@pandino/pandino-api';
 import { FSWatcher } from 'chokidar';
-import { InstallerServiceApi } from './installer-service-api';
 
-export class InstallerService implements InstallerServiceApi, BundleInstaller {
+export class InstallerService {
   private watcher: FSWatcher;
   private pathAndBundlePairs: Map<string, Bundle> = new Map<string, Bundle>();
 
