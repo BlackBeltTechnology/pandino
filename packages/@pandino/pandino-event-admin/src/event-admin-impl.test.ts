@@ -2,6 +2,7 @@ import { EVENT_FILTER, EVENT_TOPIC } from '@pandino/pandino-event-api';
 import { EventAdminImpl } from './event-admin-impl';
 import { eventFactoryImpl } from './event-factory-impl';
 import { EventHandlerRegistrationInfo } from './event-handler-registration-info';
+import { ServiceEvent } from '@pandino/pandino-api';
 
 describe('EventAdminImpl', () => {
   const DELAY_MS = 50;
@@ -13,10 +14,20 @@ describe('EventAdminImpl', () => {
   };
   let eventAdmin: EventAdminImpl;
   let mockFilterParser = jest.fn();
+  let mockContextGetService = jest.fn();
+  let mockContext: any = {
+    getService: mockContextGetService,
+  };
+  let mockWarnLog: any = jest.fn();
+  let mockLogger: any = {
+    warn: mockWarnLog,
+  };
 
   beforeEach(() => {
     mockFilterParser.mockClear();
-    eventAdmin = new EventAdminImpl(undefined, undefined, mockFilterParser);
+    mockContextGetService.mockClear();
+    mockWarnLog.mockClear();
+    eventAdmin = new EventAdminImpl(mockContext, mockLogger, mockFilterParser);
   });
 
   describe('postEvent()', () => {
@@ -148,6 +159,153 @@ describe('EventAdminImpl', () => {
           prop1: 'test2',
         },
       });
+    });
+  });
+
+  describe('serviceChanged()', () => {
+    it('does nothing if service is not an actual event handler', () => {
+      (eventAdmin as any).eventHandlerRegistered = jest.fn();
+
+      const invalidEvent: any = {
+        getServiceReference: () => ({
+          hasObjectClass: () => false,
+        }),
+      };
+
+      eventAdmin.serviceChanged(invalidEvent);
+
+      expect((eventAdmin as any).eventHandlerRegistered).toHaveBeenCalledTimes(0);
+    });
+
+    it('handles REGISTERED case', () => {
+      (eventAdmin as any).eventHandlerRegistered = jest.fn();
+      const mockServiceForRef = {
+        handleEvent: jest.fn(),
+      };
+      mockContextGetService.mockImplementation(() => mockServiceForRef);
+      const mockReference: any = {
+        hasObjectClass: () => true,
+      };
+      const event: ServiceEvent = {
+        getServiceReference: () => mockReference,
+        getType: () => 'REGISTERED',
+      };
+
+      eventAdmin.serviceChanged(event);
+
+      expect((eventAdmin as any).eventHandlerRegistered).toHaveBeenCalledTimes(1);
+      expect((eventAdmin as any).eventHandlerRegistered).toHaveBeenCalledWith(mockReference);
+    });
+
+    it('handles UNREGISTERING case', () => {
+      (eventAdmin as any).eventHandlerUnregistering = jest.fn();
+      const mockServiceForRef = {
+        handleEvent: jest.fn(),
+      };
+      mockContextGetService.mockImplementation(() => mockServiceForRef);
+      const mockReference: any = {
+        hasObjectClass: () => true,
+      };
+      const event: ServiceEvent = {
+        getServiceReference: () => mockReference,
+        getType: () => 'UNREGISTERING',
+      };
+
+      eventAdmin.serviceChanged(event);
+
+      expect((eventAdmin as any).eventHandlerUnregistering).toHaveBeenCalledTimes(1);
+      expect((eventAdmin as any).eventHandlerUnregistering).toHaveBeenCalledWith(mockReference);
+    });
+  });
+
+  describe('eventHandlerRegistered()', () => {
+    it('does not register handler if reference has no props', () => {
+      const mockRef: any = {
+        getProperties: () => ({}),
+      };
+
+      (eventAdmin as any).eventHandlerRegistered(mockRef);
+
+      expect(eventAdmin.getRegistrations().length).toEqual(0);
+      expect(mockWarnLog).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not register handler if reference topic is of wrong type', () => {
+      const mockRef1: any = {
+        getProperties: () => ({
+          [EVENT_TOPIC]: 1,
+        }),
+      };
+      const mockRef2: any = {
+        getProperties: () => ({
+          [EVENT_TOPIC]: true,
+        }),
+      };
+
+      (eventAdmin as any).eventHandlerRegistered(mockRef1);
+      (eventAdmin as any).eventHandlerRegistered(mockRef2);
+
+      expect(eventAdmin.getRegistrations().length).toEqual(0);
+      expect(mockWarnLog).toHaveBeenCalledTimes(2);
+    });
+
+    it('registers handler', () => {
+      const mockService = {};
+      mockContextGetService.mockReturnValue(mockService);
+      const mockRef: any = {
+        getProperties: () => ({
+          [EVENT_TOPIC]: '@scope/yayy/hello',
+        }),
+      };
+
+      (eventAdmin as any).eventHandlerRegistered(mockRef);
+
+      expect(eventAdmin.getRegistrations().length).toEqual(1);
+      expect(mockWarnLog).toHaveBeenCalledTimes(0);
+
+      const reg: EventHandlerRegistrationInfo = eventAdmin.getRegistrations()[0];
+
+      expect(reg[EVENT_TOPIC]).toEqual('@scope/yayy/hello');
+      expect(reg[EVENT_FILTER]).toEqual(undefined);
+      expect(reg.reference).toEqual(mockRef);
+      expect(reg.service).toEqual(mockService);
+    });
+
+    it('registers handler with filter', () => {
+      const mockService = {};
+      const mockFilter = {};
+      mockContextGetService.mockReturnValue(mockService);
+      const mockRef: any = {
+        getProperties: () => ({
+          [EVENT_TOPIC]: '@scope/yayy/hello',
+          [EVENT_FILTER]: mockFilter,
+        }),
+      };
+
+      (eventAdmin as any).eventHandlerRegistered(mockRef);
+
+      expect(eventAdmin.getRegistrations().length).toEqual(1);
+      expect(mockWarnLog).toHaveBeenCalledTimes(0);
+
+      const reg: EventHandlerRegistrationInfo = eventAdmin.getRegistrations()[0];
+
+      expect(reg[EVENT_FILTER]).toEqual(mockFilter);
+    });
+  });
+
+  describe('eventHandlerUnregistering()', () => {
+    it('removes handler if present', () => {
+      const reg = createRegistration('@pandino/event-admin/Test');
+      const reg2 = createRegistration('@pandino/other-bundle/some-topic');
+
+      eventAdmin.getRegistrations().push(reg, reg2);
+
+      expect(eventAdmin.getRegistrations().length).toEqual(2);
+
+      (eventAdmin as any).eventHandlerUnregistering(reg.reference);
+
+      expect(eventAdmin.getRegistrations().length).toEqual(1);
+      expect(eventAdmin.getRegistrations()[0][EVENT_TOPIC]).toEqual('@pandino/other-bundle/some-topic');
     });
   });
 
