@@ -11,6 +11,7 @@ import {
 import { LOG_READER_SERVICE_INTERFACE_KEY, LogEntry, LogListener, LogReaderService } from '@pandino/pandino-log-api';
 import {
   EventAdmin,
+  EventFactory,
   LOG_EVENT_INTERFACE_KEY,
   MESSAGE,
   SERVICE,
@@ -18,15 +19,16 @@ import {
   TIMESTAMP,
 } from '@pandino/pandino-event-api';
 import { AbstractAdapter } from './abstract-adapter';
-import { eventFactoryImpl } from '../event-factory-impl';
 
 export class LogEventAdapter extends AbstractAdapter implements ServiceListener {
+  private readonly eventFactory: EventFactory;
   private readonly context: BundleContext;
   private logListener: LogListener;
 
-  constructor(context: BundleContext, admin: EventAdmin) {
+  constructor(context: BundleContext, admin: EventAdmin, eventFactory: EventFactory) {
     super(admin);
     this.context = context;
+    this.eventFactory = eventFactory;
 
     try {
       context.addServiceListener(this, `(${OBJECTCLASS}=${LOG_READER_SERVICE_INTERFACE_KEY})`);
@@ -121,7 +123,7 @@ export class LogEventAdapter extends AbstractAdapter implements ServiceListener 
         }
 
         try {
-          this.getEventAdmin().postEvent(eventFactoryImpl(topic.toString(), properties));
+          this.getEventAdmin().postEvent(this.eventFactory.build(topic.toString(), properties));
         } catch (err) {
           // This is o.k. - indicates that we are stopped.
         }

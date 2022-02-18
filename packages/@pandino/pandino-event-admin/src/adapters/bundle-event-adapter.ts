@@ -1,12 +1,14 @@
 import { BundleContext, BundleEvent, BundleListener } from '@pandino/pandino-api';
-import { BUNDLE_SYMBOLICNAME, EVENT, EventAdmin } from '@pandino/pandino-event-api';
+import { BUNDLE_SYMBOLICNAME, EVENT, EventAdmin, EventFactory } from '@pandino/pandino-event-api';
 import { BUNDLE_EVENT_INTERFACE_KEY } from '@pandino/pandino-event-api';
 import { AbstractAdapter } from './abstract-adapter';
-import { eventFactoryImpl } from '../event-factory-impl';
 
 export class BundleEventAdapter extends AbstractAdapter implements BundleListener {
-  constructor(context: BundleContext, eventAdmin: EventAdmin) {
+  private readonly eventFactory: EventFactory;
+
+  constructor(context: BundleContext, eventAdmin: EventAdmin, eventFactory: EventFactory) {
     super(eventAdmin);
+    this.eventFactory = eventFactory;
     context.addBundleListener(this);
   }
 
@@ -51,7 +53,7 @@ export class BundleEventAdapter extends AbstractAdapter implements BundleListene
     }
 
     try {
-      this.getEventAdmin().postEvent(eventFactoryImpl(topic, properties));
+      this.getEventAdmin().postEvent(this.eventFactory.build(topic, properties));
     } catch (err) {
       // This is o.k. - indicates that we are stopped.
     }

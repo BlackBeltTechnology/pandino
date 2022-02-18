@@ -1,3 +1,5 @@
+import { ServiceReference } from './service-reference';
+
 /**
  * The {@code ServiceTrackerCustomizer} interface allows a {@code ServiceTracker} to customize the service objects that
  * are tracked. A {@code ServiceTrackerCustomizer} is called when a service is being added to a {@code ServiceTracker}.
@@ -12,8 +14,6 @@
  * {@code ServiceRegistration.setProperties}) or unregister ({@code ServiceRegistration.unregister}) a service while
  * being synchronized on any object.
  */
-import { ServiceReference } from './service-reference';
-
 export interface ServiceTrackerCustomizer<S, T> {
   /**
    * A service is being added to the {@code ServiceTracker}.

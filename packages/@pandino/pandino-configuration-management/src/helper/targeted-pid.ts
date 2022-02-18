@@ -29,11 +29,11 @@ export class TargetedPID {
         start = end + 1;
         end = rawPid.indexOf('|', start);
         if (end >= 0) {
-          this.version = semVerFactory(rawPid.substring(start, end));
+          this.version = semVerFactory.build(rawPid.substring(start, end));
           this.location = rawPid.substring(end + 1);
           this.bindingLevel = 3;
         } else {
-          this.version = semVerFactory(rawPid.substring(start));
+          this.version = semVerFactory.build(rawPid.substring(start));
           this.bindingLevel = 2;
         }
       } else {

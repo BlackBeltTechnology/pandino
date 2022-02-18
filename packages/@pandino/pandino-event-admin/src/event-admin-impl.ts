@@ -51,7 +51,7 @@ export class EventAdminImpl implements EventAdmin, ServiceListener {
     // The Event Admin service should log a warning.
 
     for (const reg of this.regs) {
-      const filter = typeof reg[EVENT_FILTER] === 'string' ? this.filterParser(reg[EVENT_FILTER]) : undefined;
+      const filter = typeof reg[EVENT_FILTER] === 'string' ? this.filterParser.parse(reg[EVENT_FILTER]) : undefined;
 
       if (!filter || event.matches(filter)) {
         const config = (Array.isArray(reg[EVENT_TOPIC]) ? reg[EVENT_TOPIC] : [reg[EVENT_TOPIC]]) as string[];

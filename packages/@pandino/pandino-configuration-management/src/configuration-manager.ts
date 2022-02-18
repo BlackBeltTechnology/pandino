@@ -209,7 +209,7 @@ export class ConfigurationManager implements ServiceListener {
 
   listConfigurations(filterString?: string): ConfigurationImpl[] {
     if (filterString) {
-      const filter = this.filterParser(filterString);
+      const filter = this.filterParser.parse(filterString);
       this.logger.debug(`Listing configurations matching ${filterString}`);
 
       return Array.from(this.configurationCache.values()).filter((config) => filter.match(config.getProperties()));

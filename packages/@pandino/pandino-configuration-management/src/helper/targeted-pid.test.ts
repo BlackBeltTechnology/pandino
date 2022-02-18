@@ -6,7 +6,9 @@ import { MockServiceReference } from '../__mocks__/mock-service-reference';
 import { TargetedPID } from './targeted-pid';
 
 describe('TargetedPid', () => {
-  const semverFactory: SemverFactory = (version) => new SemVer(version);
+  const semverFactory: SemverFactory = {
+    build: (version) => new SemVer(version),
+  };
 
   it('matchesTarget no target', () => {
     const pid = 'a.b.c';

@@ -1,11 +1,19 @@
 import { BundleContext, FrameworkEvent, FrameworkListener } from '@pandino/pandino-api';
-import { BUNDLE_SYMBOLICNAME, EVENT, EventAdmin, FRAMEWORK_EVENT_INTERFACE_KEY } from '@pandino/pandino-event-api';
+import {
+  BUNDLE_SYMBOLICNAME,
+  EVENT,
+  EventAdmin,
+  EventFactory,
+  FRAMEWORK_EVENT_INTERFACE_KEY,
+} from '@pandino/pandino-event-api';
 import { AbstractAdapter } from './abstract-adapter';
-import { eventFactoryImpl } from '../event-factory-impl';
 
 export class FrameworkEventAdapter extends AbstractAdapter implements FrameworkListener {
-  constructor(context: BundleContext, admin: EventAdmin) {
+  private readonly eventFactory: EventFactory;
+
+  constructor(context: BundleContext, admin: EventAdmin, eventFactory: EventFactory) {
     super(admin);
+    this.eventFactory = eventFactory;
     context.addFrameworkListener(this);
   }
 
@@ -35,7 +43,7 @@ export class FrameworkEventAdapter extends AbstractAdapter implements FrameworkL
     }
 
     try {
-      this.getEventAdmin().postEvent(eventFactoryImpl(topic, properties));
+      this.getEventAdmin().postEvent(this.eventFactory.build(topic, properties));
     } catch (err) {
       // This is o.k. - indicates that we are stopped.
     }

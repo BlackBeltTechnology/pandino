@@ -57,8 +57,8 @@ import { VoidImporter } from './lib/utils/void-importer';
 import { Framework } from './lib/framework/framework';
 import { ServiceRegistry } from './lib/framework/service-registry';
 import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
-import { filterParser } from './lib/filter/filter-parser';
-import { semverFactory } from './lib/utils/semver-factory';
+import { FilterParserImpl } from './lib/filter/filter-parser';
+import { SemverFactoryImpl } from './lib/utils/semver-factory';
 
 export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;
@@ -146,8 +146,8 @@ export class Pandino extends BundleImpl implements Framework {
         this.getBundleContext().registerService(FRAMEWORK_LOGGER, this.logger);
         this.getBundleContext().registerService(FRAMEWORK_MANIFEST_FETCHER, this.fetcher);
         this.getBundleContext().registerService(FRAMEWORK_BUNDLE_IMPORTER, this.importer);
-        this.getBundleContext().registerService(FRAMEWORK_FILTER_PARSER, filterParser);
-        this.getBundleContext().registerService(FRAMEWORK_SEMVER_FACTORY, semverFactory);
+        this.getBundleContext().registerService(FRAMEWORK_FILTER_PARSER, new FilterParserImpl());
+        this.getBundleContext().registerService(FRAMEWORK_SEMVER_FACTORY, new SemverFactoryImpl());
         this.setBundleStateAndNotify(this, 'ACTIVE');
       }
     } catch (err) {

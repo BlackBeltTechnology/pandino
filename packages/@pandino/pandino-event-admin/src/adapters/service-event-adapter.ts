@@ -9,16 +9,19 @@ import {
 import {
   EVENT,
   EventAdmin,
+  EventFactory,
   SERVICE,
   SERVICE_EVENT_INTERFACE_KEY,
   SERVICE_OBJECTCLASS,
 } from '@pandino/pandino-event-api';
 import { AbstractAdapter } from './abstract-adapter';
-import { eventFactoryImpl } from '../event-factory-impl';
 
 export class ServiceEventAdapter extends AbstractAdapter implements ServiceListener {
-  constructor(context: BundleContext, admin: EventAdmin) {
+  private readonly eventFactory: EventFactory;
+
+  constructor(context: BundleContext, admin: EventAdmin, eventFactory: EventFactory) {
     super(admin);
+    this.eventFactory = eventFactory;
     context.addServiceListener(this);
   }
 
@@ -56,7 +59,7 @@ export class ServiceEventAdapter extends AbstractAdapter implements ServiceListe
     }
 
     try {
-      this.getEventAdmin().postEvent(eventFactoryImpl(topic.toString(), properties));
+      this.getEventAdmin().postEvent(this.eventFactory.build(topic.toString(), properties));
     } catch (err) {
       // This is o.k. - indicates that we are stopped.
     }

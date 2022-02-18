@@ -1,5 +1,5 @@
 import { FrameworkEventType } from './framework-event-type';
-import { Bundle } from '../bundle/bundle';
+import { Bundle } from '../bundle';
 
 /**
  * A general event from the Framework.

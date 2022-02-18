@@ -15,7 +15,7 @@ import {
   EventFactory,
 } from '@pandino/pandino-event-api';
 import { EventAdminImpl } from './event-admin-impl';
-import { eventFactoryImpl } from './event-factory-impl';
+import { EventFactoryImpl } from './event-factory-impl';
 import {
   AbstractAdapter,
   BundleEventAdapter,
@@ -39,13 +39,14 @@ export class Activator implements BundleActivator {
     this.filterParserReference = context.getServiceReference<FilterParser>(FRAMEWORK_FILTER_PARSER);
     this.filterParser = context.getService(this.filterParserReference);
     const eventAdmin = new EventAdminImpl(context, this.logger, this.filterParser);
+    const eventFactoryImpl = new EventFactoryImpl();
     this.eventAdminRegistration = context.registerService(EVENT_ADMIN_INTERFACE_KEY, eventAdmin);
     this.eventFactoryRegistration = context.registerService(EVENT_FACTORY_INTERFACE_KEY, eventFactoryImpl);
 
-    this.adapters.push(new BundleEventAdapter(context, eventAdmin));
-    this.adapters.push(new FrameworkEventAdapter(context, eventAdmin));
-    this.adapters.push(new LogEventAdapter(context, eventAdmin));
-    this.adapters.push(new ServiceEventAdapter(context, eventAdmin));
+    this.adapters.push(new BundleEventAdapter(context, eventAdmin, eventFactoryImpl));
+    this.adapters.push(new FrameworkEventAdapter(context, eventAdmin, eventFactoryImpl));
+    this.adapters.push(new LogEventAdapter(context, eventAdmin, eventFactoryImpl));
+    this.adapters.push(new ServiceEventAdapter(context, eventAdmin, eventFactoryImpl));
 
     return Promise.resolve();
   }

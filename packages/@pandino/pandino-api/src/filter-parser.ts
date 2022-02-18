@@ -1,3 +1,5 @@
 import { FilterApi } from './filter-api';
 
-export type FilterParser = (filter: string) => FilterApi;
+export interface FilterParser {
+  parse(filter: string): FilterApi;
+}

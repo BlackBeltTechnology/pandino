@@ -2,6 +2,7 @@ import { SemVer } from 'semver';
 import {
   Bundle,
   BundleContext,
+  FilterParser,
   Logger,
   SemverFactory,
   SERVICE_PID,
@@ -24,12 +25,16 @@ import { ConfigurationAdminImpl } from './configuration-admin-impl';
 import { ConfigurationManager } from './configuration-manager';
 
 describe('ConfigurationImpl', () => {
-  const semverFactory: SemverFactory = (version) => new SemVer(version);
+  const semverFactory: SemverFactory = {
+    build: (version) => new SemVer(version),
+  };
   let context: BundleContext;
   let bundle: Bundle;
   let configAdmin: ConfigurationAdminImpl;
   let cm: ConfigurationManager;
-  let mockFilterParser = jest.fn();
+  let mockFilterParser: FilterParser = {
+    parse: jest.fn(),
+  };
   let mockDebug = jest.fn();
   let logger: Logger = {
     debug: mockDebug,

@@ -1,3 +1,5 @@
 import { SemVer } from 'semver';
 
-export type SemverFactory = (version: string) => SemVer;
+export interface SemverFactory {
+  build(version: string): SemVer;
+}

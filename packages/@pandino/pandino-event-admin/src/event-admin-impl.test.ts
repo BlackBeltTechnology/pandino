@@ -1,8 +1,8 @@
 import { EVENT_FILTER, EVENT_TOPIC } from '@pandino/pandino-event-api';
 import { EventAdminImpl } from './event-admin-impl';
-import { eventFactoryImpl } from './event-factory-impl';
+import { EventFactoryImpl } from './event-factory-impl';
 import { EventHandlerRegistrationInfo } from './event-handler-registration-info';
-import { ServiceEvent } from '@pandino/pandino-api';
+import { FilterParser, ServiceEvent } from '@pandino/pandino-api';
 
 describe('EventAdminImpl', () => {
   const DELAY_MS = 50;
@@ -12,8 +12,11 @@ describe('EventAdminImpl', () => {
   const matchingFilter = {
     match: () => true,
   };
+  let eventFactory = new EventFactoryImpl();
   let eventAdmin: EventAdminImpl;
-  let mockFilterParser = jest.fn();
+  let mockFilterParser = {
+    parse: jest.fn(),
+  };
   let mockContextGetService = jest.fn();
   let mockContext: any = {
     getService: mockContextGetService,
@@ -24,7 +27,7 @@ describe('EventAdminImpl', () => {
   };
 
   beforeEach(() => {
-    mockFilterParser.mockClear();
+    mockFilterParser.parse.mockClear();
     mockContextGetService.mockClear();
     mockWarnLog.mockClear();
     eventAdmin = new EventAdminImpl(mockContext, mockLogger, mockFilterParser);
@@ -32,8 +35,8 @@ describe('EventAdminImpl', () => {
 
   describe('postEvent()', () => {
     it('topic matches, filter does not, no handler triggering', async () => {
-      mockFilterParser.mockImplementation(() => nonMatchingFilter);
-      const event = eventFactoryImpl('@pandino/event-admin/Test', {
+      mockFilterParser.parse.mockImplementation(() => nonMatchingFilter);
+      const event = eventFactory.build('@pandino/event-admin/Test', {
         prop1: 'nay',
       });
       const reg = createRegistration(['@pandino/event-admin/Test'], undefined, '(prop1=yayy)');
@@ -48,8 +51,8 @@ describe('EventAdminImpl', () => {
     });
 
     it('topic matches, filter matches, handler triggering once', async () => {
-      mockFilterParser.mockImplementation(() => matchingFilter);
-      const event = eventFactoryImpl('@pandino/event-admin/Test', {
+      mockFilterParser.parse.mockImplementation(() => matchingFilter);
+      const event = eventFactory.build('@pandino/event-admin/Test', {
         prop1: 'yayy',
       });
       const reg = createRegistration(['@pandino/event-admin/Test'], undefined, '(prop1=yayy)');
@@ -64,7 +67,7 @@ describe('EventAdminImpl', () => {
     });
 
     it('multiple registrations, single event, single match', async () => {
-      const event = eventFactoryImpl('@pandino/event-admin/Test', {
+      const event = eventFactory.build('@pandino/event-admin/Test', {
         prop1: 'test',
         two: 2,
       });
@@ -89,7 +92,7 @@ describe('EventAdminImpl', () => {
     });
 
     it('multiple registrations, single event, multiple match', async () => {
-      const event = eventFactoryImpl('@pandino/event-admin/Test', {});
+      const event = eventFactory.build('@pandino/event-admin/Test', {});
       const reg = createRegistration('@pandino/event-admin/Test');
       const reg2 = createRegistration('@pandino/event-admin*');
 
@@ -104,7 +107,7 @@ describe('EventAdminImpl', () => {
     });
 
     it('single registration, multiple topics, single event, single match', async () => {
-      const event = eventFactoryImpl('@pandino/event-admin/Test2', {});
+      const event = eventFactory.build('@pandino/event-admin/Test2', {});
       const reg = createRegistration(['@pandino/event-admin/Test1', '@pandino/event-admin/Test2']);
 
       eventAdmin.getRegistrations().push(reg);
@@ -117,7 +120,7 @@ describe('EventAdminImpl', () => {
     });
 
     it('single registration, multiple topics, single event, no match', async () => {
-      const event = eventFactoryImpl('@pandino/event-admin/some-test', {});
+      const event = eventFactory.build('@pandino/event-admin/some-test', {});
       const reg = createRegistration(['@pandino/event-admin/Test1', '@pandino/event-admin/Test2']);
 
       eventAdmin.getRegistrations().push(reg);
@@ -130,10 +133,10 @@ describe('EventAdminImpl', () => {
     });
 
     it('single registration, multiple topics, multiple events, multiple matches', async () => {
-      const event1 = eventFactoryImpl('@pandino/event-admin/Test1', {
+      const event1 = eventFactory.build('@pandino/event-admin/Test1', {
         prop1: 'test1',
       });
-      const event2 = eventFactoryImpl('@pandino/event-admin/Test2', {
+      const event2 = eventFactory.build('@pandino/event-admin/Test2', {
         prop1: 'test2',
       });
       const mock = jest.fn();

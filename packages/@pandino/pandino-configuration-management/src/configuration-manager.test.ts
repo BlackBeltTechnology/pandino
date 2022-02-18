@@ -1,17 +1,21 @@
 import { SemVer } from 'semver';
-import { Bundle, BundleContext, Logger, SemverFactory } from '@pandino/pandino-api';
+import { Bundle, BundleContext, FilterParser, Logger, SemverFactory } from '@pandino/pandino-api';
 import { ConfigurationManager } from './configuration-manager';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
 import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
 
 describe('ConfigurationManager', function () {
-  const semverFactory: SemverFactory = (version) => new SemVer(version);
+  const semverFactory: SemverFactory = {
+    build: (version) => new SemVer(version),
+  };
   let persistenceManager: MockPersistenceManager;
   let context: BundleContext;
   let bundle: Bundle;
   let cm: ConfigurationManager;
-  let mockFilterParser = jest.fn();
+  let mockFilterParser: FilterParser = {
+    parse: jest.fn(),
+  };
   let mockDebug = jest.fn();
   let logger: Logger = {
     debug: mockDebug,
