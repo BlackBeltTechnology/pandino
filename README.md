@@ -304,7 +304,6 @@ common software development problems. Usage is opt-in of course.
 
 ### Bundle Installer
 
-- [API](./packages/@pandino/pandino-bundle-installer-api)
 - [Pandino - DOM](./packages/@pandino/pandino-bundle-installer-dom)
 - [Pandino - NodeJS](./packages/@pandino/pandino-bundle-installer-nodejs)
 
@@ -326,11 +325,6 @@ common software development problems. Usage is opt-in of course.
 
 ## TODO
 
-- Add ConfigAdmin implementation
-- Add EventAdmin implementation
 - Improve Logger API, and built in Logger implementation
-- Add more tests for bundle dependency chains
-  - e.g.: 50+ pre-generated bundle configurations as a tree
 - Document use-cases
 - Go through `TODO` and `FIXME` blocks in code and finish / close such sections
-- Bring back NodeJS 14 support ( ? )
