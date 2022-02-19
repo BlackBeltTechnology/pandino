@@ -258,16 +258,16 @@ export class ConfigurationManager implements ServiceListener {
     return new ConfigurationImpl(this, pid, this.semVerFactory, bundleLocation);
   }
 
-  private storeConfiguration(configuration: ConfigurationImpl): ConfigurationImpl {
-    const pid = configuration.getPid();
-    const existing = this.configurationCache.get(pid);
-    if (existing) {
-      return existing as ConfigurationImpl;
-    }
-
-    this.configurationCache.set(pid, configuration);
-    return configuration;
-  }
+  // private storeConfiguration(configuration: ConfigurationImpl): ConfigurationImpl {
+  //   const pid = configuration.getPid();
+  //   const existing = this.configurationCache.get(pid);
+  //   if (existing) {
+  //     return existing as ConfigurationImpl;
+  //   }
+  //
+  //   this.configurationCache.set(pid, configuration);
+  //   return configuration;
+  // }
 
   private fireConfigurationChangeEvent(type: ConfigurationEventType, pid: string, ref: ServiceReference<any>): void {
     const event: ConfigurationEvent = {
