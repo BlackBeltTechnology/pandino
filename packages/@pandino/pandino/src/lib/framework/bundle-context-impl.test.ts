@@ -315,7 +315,7 @@ describe('BundleContextImpl', () => {
     expect(service.execute()).toEqual(true);
   });
 
-  it('Service with a higher ranking overrides Service with a lower ranking', async () => {
+  it('Service with a higher ranking overrides Service with a lower ranking', () => {
     const mock1: MockService = {
       execute: () => true,
     };
@@ -336,7 +336,7 @@ describe('BundleContextImpl', () => {
     expect(service.execute()).toEqual(false);
   });
 
-  it('Service with a lower ranking does not override Service with a higher ranking', async () => {
+  it('Service with a lower ranking does not override Service with a higher ranking', () => {
     const mock1: MockService = {
       execute: () => true,
     };
@@ -355,5 +355,26 @@ describe('BundleContextImpl', () => {
     expect(serviceRegistration2.getProperty(SERVICE_RANKING)).toEqual(undefined);
     expect(reference.getProperty(SERVICE_RANKING)).toEqual('150');
     expect(service.execute()).toEqual(true);
+  });
+
+  it('Service with a higher ranking overrides Service with a higher ranking', () => {
+    const mock1: MockService = {
+      execute: () => true,
+    };
+    const mock2: MockService = {
+      execute: () => false,
+    };
+    const serviceRegistration1 = bundleContext.registerService<MockService>('some.service', mock1);
+    const serviceRegistration2 = bundleContext.registerService<MockService>('some.service', mock2, {
+      [SERVICE_RANKING]: '150',
+    });
+
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+    const service = bundleContext.getService<MockService>(reference);
+
+    expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual(undefined);
+    expect(serviceRegistration2.getProperty(SERVICE_RANKING)).toEqual('150');
+    expect(reference.getProperty(SERVICE_RANKING)).toEqual('150');
+    expect(service.execute()).toEqual(false);
   });
 });
