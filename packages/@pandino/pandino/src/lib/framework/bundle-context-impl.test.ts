@@ -46,14 +46,14 @@ describe('BundleContextImpl', () => {
       }),
   };
   const bundle1Headers: BundleManifestHeaders = {
-    [BUNDLE_SYMBOLICNAME]: 'my.bundle',
+    [BUNDLE_SYMBOLICNAME]: '@scope/bundle',
     [BUNDLE_VERSION]: '1.2.3',
     [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
     [BUNDLE_NAME]: 'My Bundle',
     [BUNDLE_DESCRIPTION]: 'Test!',
   };
   const bundle2Headers: BundleManifestHeaders = {
-    [BUNDLE_SYMBOLICNAME]: 'my.other.bundle',
+    [BUNDLE_SYMBOLICNAME]: '@scope/other/bundle',
     [BUNDLE_VERSION]: '1.0.0',
     [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
     [BUNDLE_NAME]: 'Other Bundle',
@@ -105,7 +105,7 @@ describe('BundleContextImpl', () => {
   });
 
   it('initialization', async () => {
-    expect(bundle.getSymbolicName()).toEqual('my.bundle');
+    expect(bundle.getSymbolicName()).toEqual('@scope/bundle');
     expect(bundle.getVersion().toString()).toEqual('1.2.3');
     expect(bundleContext).toBeDefined();
 
@@ -173,16 +173,16 @@ describe('BundleContextImpl', () => {
 
     expect(bundleChanged).toHaveBeenCalledTimes(4);
 
-    expect(event0.getBundle().getSymbolicName()).toEqual('my.other.bundle');
+    expect(event0.getBundle().getSymbolicName()).toEqual('@scope/other/bundle');
     expect(event0.getType()).toEqual('INSTALLED');
 
-    expect(event1.getBundle().getSymbolicName()).toEqual('my.other.bundle');
+    expect(event1.getBundle().getSymbolicName()).toEqual('@scope/other/bundle');
     expect(event1.getType()).toEqual('RESOLVED');
 
-    expect(event2.getBundle().getSymbolicName()).toEqual('my.other.bundle');
+    expect(event2.getBundle().getSymbolicName()).toEqual('@scope/other/bundle');
     expect(event2.getType()).toEqual('STARTING');
 
-    expect(event3.getBundle().getSymbolicName()).toEqual('my.other.bundle');
+    expect(event3.getBundle().getSymbolicName()).toEqual('@scope/other/bundle');
     expect(event3.getType()).toEqual('STARTED');
   });
 
@@ -211,13 +211,13 @@ describe('BundleContextImpl', () => {
 
   it('addServiceListener()', () => {
     bundleContext.addServiceListener(serviceChangedListener);
-    bundleContext.registerService<MockService>('some.service', mockService);
+    bundleContext.registerService<MockService>('@scope/bundle/some/service', mockService);
     const event0: ServiceEventImpl = serviceChanged.mock.calls[0][0];
 
     expect(serviceChanged).toHaveBeenCalledTimes(1);
 
-    expect(event0.getServiceReference().getBundle().getSymbolicName()).toEqual('my.bundle');
-    expect(event0.getServiceReference().getProperty(OBJECTCLASS)).toEqual('some.service');
+    expect(event0.getServiceReference().getBundle().getSymbolicName()).toEqual('@scope/bundle');
+    expect(event0.getServiceReference().getProperty(OBJECTCLASS)).toEqual('@scope/bundle/some/service');
     expect(event0.getType()).toEqual('REGISTERED');
   });
 
@@ -228,7 +228,7 @@ describe('BundleContextImpl', () => {
 
     expect(serviceChanged).toHaveBeenCalledTimes(1);
 
-    expect(event0.getServiceReference().getBundle().getSymbolicName()).toEqual('my.bundle');
+    expect(event0.getServiceReference().getBundle().getSymbolicName()).toEqual('@scope/bundle');
     expect(event0.getServiceReference().getProperty(OBJECTCLASS)).toEqual('@scope/some/filtered/service');
     expect(event0.getType()).toEqual('REGISTERED');
   });
@@ -236,17 +236,17 @@ describe('BundleContextImpl', () => {
   it('removeServiceListener()', () => {
     bundleContext.addServiceListener(serviceChangedListener);
     bundleContext.removeServiceListener(serviceChangedListener);
-    bundleContext.registerService<MockService>('some.service', mockService);
+    bundleContext.registerService<MockService>('@scope/bundle/service', mockService);
 
     expect(serviceChanged).toHaveBeenCalledTimes(0);
   });
 
   it('getServiceReference()', () => {
-    bundleContext.registerService<MockService>('some.service', mockService, {
+    bundleContext.registerService<MockService>('@scope/bundle/service', mockService, {
       'prop-one': 'val-one',
       'prop-two': 2,
     });
-    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
 
     expect(reference.getProperty('prop-one')).toEqual('val-one');
     expect(reference.getProperty('prop-two')).toEqual(2);
@@ -259,13 +259,13 @@ describe('BundleContextImpl', () => {
         return false;
       },
     };
-    bundleContext.registerService<MockService>('some.service', mockService, {
+    bundleContext.registerService<MockService>('@scope/bundle/service', mockService, {
       'prop-one': 'val-one',
     });
-    bundleContext.registerService<MockService>('some.service', otherMockService, {
+    bundleContext.registerService<MockService>('@scope/bundle/service', otherMockService, {
       'prop-one': 'val-two',
     });
-    const references = bundleContext.getServiceReferences('some.service', '(prop-one=val-two)');
+    const references = bundleContext.getServiceReferences('@scope/bundle/service', '(prop-one=val-two)');
     const ref1 = references[0];
 
     expect(references.length).toEqual(1);
@@ -273,16 +273,16 @@ describe('BundleContextImpl', () => {
   });
 
   it('getService()', () => {
-    bundleContext.registerService<MockService>('some.service', mockService);
-    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+    bundleContext.registerService<MockService>('@scope/bundle/service', mockService);
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
     const service = bundleContext.getService<MockService>(reference);
 
     expect(service.execute()).toEqual(true);
   });
 
   it('unGetService()', () => {
-    bundleContext.registerService<MockService>('some.service', mockService);
-    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+    bundleContext.registerService<MockService>('@scope/bundle/service', mockService);
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
     const service = bundleContext.getService<MockService>(reference);
 
     expect(reference.getUsingBundles().length).toEqual(1);
@@ -304,13 +304,13 @@ describe('BundleContextImpl', () => {
     const otherBundle = await bundleContext.installBundle(bundle2Headers);
     const otherContext = otherBundle.getBundleContext();
 
-    bundleContext.registerService<MockService>('some.service', mockService);
+    bundleContext.registerService<MockService>('@scope/bundle/service', mockService);
 
-    const reference: ServiceReference<MockService> = otherContext.getServiceReference('some.service');
+    const reference: ServiceReference<MockService> = otherContext.getServiceReference('@scope/bundle/service');
     const service = otherContext.getService<MockService>(reference);
 
-    expect(reference.getBundle().getSymbolicName()).toEqual('my.bundle');
-    expect(reference.getUsingBundles()[0].getSymbolicName()).toEqual('my.other.bundle');
+    expect(reference.getBundle().getSymbolicName()).toEqual('@scope/bundle');
+    expect(reference.getUsingBundles()[0].getSymbolicName()).toEqual('@scope/other/bundle');
     expect(reference.getUsingBundles().length).toEqual(1);
     expect(service.execute()).toEqual(true);
   });
@@ -322,12 +322,12 @@ describe('BundleContextImpl', () => {
     const mock2: MockService = {
       execute: () => false,
     };
-    const serviceRegistration1 = bundleContext.registerService<MockService>('some.service', mock1);
-    const serviceRegistration2 = bundleContext.registerService<MockService>('some.service', mock2, {
+    const serviceRegistration1 = bundleContext.registerService<MockService>('@scope/bundle/service', mock1);
+    const serviceRegistration2 = bundleContext.registerService<MockService>('@scope/bundle/service', mock2, {
       [SERVICE_RANKING]: '150',
     });
 
-    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
     const service = bundleContext.getService<MockService>(reference);
 
     expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual(undefined);
@@ -343,12 +343,12 @@ describe('BundleContextImpl', () => {
     const mock2: MockService = {
       execute: () => false,
     };
-    const serviceRegistration1 = bundleContext.registerService<MockService>('some.service', mock1, {
+    const serviceRegistration1 = bundleContext.registerService<MockService>('@scope/bundle/service', mock1, {
       [SERVICE_RANKING]: '150',
     });
-    const serviceRegistration2 = bundleContext.registerService<MockService>('some.service', mock2);
+    const serviceRegistration2 = bundleContext.registerService<MockService>('@scope/bundle/service', mock2);
 
-    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
     const service = bundleContext.getService<MockService>(reference);
 
     expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual('150');
@@ -364,12 +364,12 @@ describe('BundleContextImpl', () => {
     const mock2: MockService = {
       execute: () => false,
     };
-    const serviceRegistration1 = bundleContext.registerService<MockService>('some.service', mock1);
-    const serviceRegistration2 = bundleContext.registerService<MockService>('some.service', mock2, {
+    const serviceRegistration1 = bundleContext.registerService<MockService>('@scope/bundle/service', mock1);
+    const serviceRegistration2 = bundleContext.registerService<MockService>('@scope/bundle/service', mock2, {
       [SERVICE_RANKING]: '150',
     });
 
-    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('some.service');
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
     const service = bundleContext.getService<MockService>(reference);
 
     expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual(undefined);

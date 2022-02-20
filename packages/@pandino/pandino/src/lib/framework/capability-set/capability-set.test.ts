@@ -17,7 +17,7 @@ describe('capability-set', () => {
 
   beforeEach(() => {
     capabilitySet = new CapabilitySet();
-    rev1 = createRevision('test/bundle', '1.0.0', 1, '1.0');
+    rev1 = createRevision('@test/bundle', '1.0.0', 1, '1.0');
     cap1 = new BundleCapabilityImpl(
       rev1,
       'ns.one',

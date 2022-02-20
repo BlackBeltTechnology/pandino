@@ -36,7 +36,7 @@ describe('BundleCapabilityImpl', () => {
       }),
   };
   const bundle1Headers: BundleManifestHeaders = {
-    [BUNDLE_SYMBOLICNAME]: 'my.bundle',
+    [BUNDLE_SYMBOLICNAME]: '@scope/bundle',
     [BUNDLE_VERSION]: '1.2.3',
     [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
     [BUNDLE_NAME]: 'My Bundle',
@@ -96,7 +96,9 @@ describe('BundleCapabilityImpl', () => {
     expect(capability.isAttributeMandatory('attr1')).toEqual(false);
     expect(capability.isAttributeMandatory('attr2')).toEqual(true);
     expect(capability.getUses()).toEqual(['uses']);
-    expect(capability.toString()).toEqual('[my.bundle: 1.2.3 (R 1)] test.namespace; attr1=111; attr2=yayy; attr3=true');
+    expect(capability.toString()).toEqual(
+      '[@scope/bundle: 1.2.3 (R 1)] test.namespace; attr1=111; attr2=yayy; attr3=true',
+    );
   });
 
   it('equals', () => {

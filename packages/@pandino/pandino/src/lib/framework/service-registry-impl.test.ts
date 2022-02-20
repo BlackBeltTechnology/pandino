@@ -190,7 +190,7 @@ describe('ServiceRegistryImpl', () => {
     );
     const ref: ServiceReference<HelloService> = reg.getReference();
 
-    const service = sr.getService(bundle1, ref, false);
+    const service = sr.getService<HelloService>(bundle1, ref, false);
 
     expect(service.sayHello()).toEqual('hello');
   });

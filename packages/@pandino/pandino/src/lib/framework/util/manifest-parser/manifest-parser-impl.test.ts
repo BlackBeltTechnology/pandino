@@ -27,11 +27,11 @@ describe('ManifestParserImp', () => {
   it('single attribute', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
-      [BUNDLE_SYMBOLICNAME]: 'com.example.attribute',
+      [BUNDLE_SYMBOLICNAME]: '@scope/example/attribute',
       [REQUIRE_CAPABILITY]: `com.one;test=value`,
     };
     const mockBundleRevision = {
-      getSymbolicName: jest.fn().mockReturnValue('com.example.attribute'),
+      getSymbolicName: jest.fn().mockReturnValue('@scope/example/attribute'),
     } as unknown as BundleRevisionImpl;
     const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
     const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
@@ -42,11 +42,11 @@ describe('ManifestParserImp', () => {
   it('semver attribute', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
-      [BUNDLE_SYMBOLICNAME]: 'com.example.semver',
+      [BUNDLE_SYMBOLICNAME]: '@scope/example/semver',
       [REQUIRE_CAPABILITY]: `com.one;ver:SemVer=1.2.3`,
     };
     const mockBundleRevision = {
-      getSymbolicName: jest.fn().mockReturnValue('com.example.semver'),
+      getSymbolicName: jest.fn().mockReturnValue('@scope/example/semver'),
     } as unknown as BundleRevisionImpl;
     const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
     const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
@@ -58,13 +58,13 @@ describe('ManifestParserImp', () => {
   it('testIdentityCapabilityMinimal', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
-      [BUNDLE_SYMBOLICNAME]: 'foo.bar',
+      [BUNDLE_SYMBOLICNAME]: '@scope/foo',
       [BUNDLE_VERSION]: '1.2.3',
     };
     const mp: ManifestParserImpl = new ManifestParserImpl(null, null, headers);
     const ic = findCapability(mp.getCapabilities(), IDENTITY_NAMESPACE);
 
-    expect(ic.getAttributes()[IDENTITY_NAMESPACE]).toEqual('foo.bar');
+    expect(ic.getAttributes()[IDENTITY_NAMESPACE]).toEqual('@scope/foo');
     expect(ic.getAttributes()[CAPABILITY_TYPE_ATTRIBUTE]).toEqual(TYPE_BUNDLE);
     expect(Object.keys(ic.getDirectives()).length).toEqual(0);
   });
@@ -72,19 +72,19 @@ describe('ManifestParserImp', () => {
   it('testIdentityCapabilityFull', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
-      [BUNDLE_SYMBOLICNAME]: 'abc;singleton:=true;foo=bar;' + CAPABILITY_TAGS_ATTRIBUTE + '=test',
+      [BUNDLE_SYMBOLICNAME]: '@scope/abc;singleton:=true;foo=bar;' + CAPABILITY_TAGS_ATTRIBUTE + '=test',
       [BUNDLE_VERSION]: '1.2.3-something',
-      [BUNDLE_COPYRIGHT]: '(c) 2021 BlackBelt Technology Ltd.',
+      [BUNDLE_COPYRIGHT]: '(c) 2022 BlackBelt Technology Ltd.',
       [BUNDLE_DESCRIPTION]: 'A bundle description',
     };
     const mockBundleRevision: any = jest.fn();
     const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
     const ic = findCapability(mp.getCapabilities(), IDENTITY_NAMESPACE);
 
-    expect(ic.getAttributes()[IDENTITY_NAMESPACE]).toEqual('abc');
+    expect(ic.getAttributes()[IDENTITY_NAMESPACE]).toEqual('@scope/abc');
     expect(ic.getAttributes()[CAPABILITY_VERSION_ATTRIBUTE]).toEqual(new SemVer('1.2.3-something'));
     expect(ic.getAttributes()[CAPABILITY_TYPE_ATTRIBUTE]).toEqual(TYPE_BUNDLE);
-    expect(ic.getAttributes()[CAPABILITY_COPYRIGHT_ATTRIBUTE]).toEqual('(c) 2021 BlackBelt Technology Ltd.');
+    expect(ic.getAttributes()[CAPABILITY_COPYRIGHT_ATTRIBUTE]).toEqual('(c) 2022 BlackBelt Technology Ltd.');
     expect(ic.getAttributes()[CAPABILITY_DESCRIPTION_ATTRIBUTE]).toEqual('A bundle description');
     expect(ic.getAttributes()['foo']).toEqual('bar');
 
@@ -95,14 +95,14 @@ describe('ManifestParserImp', () => {
   it('testAttributes', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
-      [BUNDLE_SYMBOLICNAME]: 'com.example.test.sample',
+      [BUNDLE_SYMBOLICNAME]: '@scope/example/test/sample',
       [PROVIDE_CAPABILITY]:
         'com.example;theArray:Array<string>="red,green,blue";theNumber:number=111;version:SemVer=1.2.3',
       [REQUIRE_CAPABILITY]:
         'com.example.other;theArray:Array<number>="1,2,3";theNumber:number=999;com.example.other.bla="str"',
     };
     const mockBundleRevision = {
-      getSymbolicName: jest.fn().mockReturnValue('com.example.test.sample'),
+      getSymbolicName: jest.fn().mockReturnValue('@scope/example/test/sample'),
     } as unknown as BundleRevisionImpl;
     const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
     const bc: BundleCapability = findCapability(mp.getCapabilities(), 'com.example');
@@ -121,11 +121,11 @@ describe('ManifestParserImp', () => {
   it('testFilters', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
-      [BUNDLE_SYMBOLICNAME]: 'com.example',
+      [BUNDLE_SYMBOLICNAME]: '@scope/example',
       [REQUIRE_CAPABILITY]: 'com.one;filter:="(&(type=cat)(rate<=20))"',
     };
     const mockBundleRevision = {
-      getSymbolicName: jest.fn().mockReturnValue('com.example'),
+      getSymbolicName: jest.fn().mockReturnValue('@scope/example'),
     } as unknown as BundleRevisionImpl;
     const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
     const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
@@ -137,12 +137,12 @@ describe('ManifestParserImp', () => {
   it('only namespace, no attributes', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
-      [BUNDLE_SYMBOLICNAME]: 'com.example',
+      [BUNDLE_SYMBOLICNAME]: '@scope/example',
       [REQUIRE_CAPABILITY]: 'com.one',
       [PROVIDE_CAPABILITY]: 'com.two',
     };
     const mockBundleRevision = {
-      getSymbolicName: jest.fn().mockReturnValue('com.example.yet.another'),
+      getSymbolicName: jest.fn().mockReturnValue('@scope/example/yet/another'),
     } as unknown as BundleRevisionImpl;
     const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
     const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
@@ -157,14 +157,14 @@ describe('ManifestParserImp', () => {
   it('multiple requirements and capabilities', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
-      [BUNDLE_SYMBOLICNAME]: 'com.example',
+      [BUNDLE_SYMBOLICNAME]: '@scope/example',
       [REQUIRE_CAPABILITY]: `com.one;filter:="(&(type=cat)(rate<=20))"
                              com.two;test=value`,
       [PROVIDE_CAPABILITY]: `some.cap.with.filter;filter:="(&(attr1=1)(attr2<=500))"
                              some.other.cap;fine:number=1`,
     };
     const mockBundleRevision = {
-      getSymbolicName: jest.fn().mockReturnValue('com.example'),
+      getSymbolicName: jest.fn().mockReturnValue('@scope/example'),
     } as unknown as BundleRevisionImpl;
     const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
     const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');

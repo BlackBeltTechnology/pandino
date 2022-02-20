@@ -49,21 +49,21 @@ describe('Pandino', () => {
       }),
   };
   const bundle1Headers: BundleManifestHeaders = {
-    [BUNDLE_SYMBOLICNAME]: 'my.bundle',
+    [BUNDLE_SYMBOLICNAME]: '@scope/bundle',
     [BUNDLE_VERSION]: '1.2.3',
     [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
     [BUNDLE_NAME]: 'My Bundle',
     [BUNDLE_DESCRIPTION]: 'Test!',
   };
   const bundle2Headers: BundleManifestHeaders = {
-    [BUNDLE_SYMBOLICNAME]: 'hu.bundle.cats',
+    [BUNDLE_SYMBOLICNAME]: '@scope/cats',
     [BUNDLE_VERSION]: '1.0.0',
     [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
     [BUNDLE_NAME]: 'Cat Bundle',
     [BUNDLE_DESCRIPTION]: 'Test!',
   };
   const bundle3Headers: BundleManifestHeaders = {
-    [BUNDLE_SYMBOLICNAME]: 'my.independent.bundle',
+    [BUNDLE_SYMBOLICNAME]: '@scope/independent',
     [BUNDLE_VERSION]: '1.0.0',
     [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
     [BUNDLE_NAME]: 'My Independent Bundle',
@@ -130,7 +130,7 @@ describe('Pandino', () => {
     expect(mockStart).toHaveBeenCalledTimes(1);
     expect(myBundle.getBundleId()).toEqual(1);
     expect(myBundle.getState()).toEqual('ACTIVE');
-    expect(myBundle.getSymbolicName()).toEqual('my.bundle');
+    expect(myBundle.getSymbolicName()).toEqual('@scope/bundle');
     expect(myBundle.getVersion().toString()).toEqual('1.2.3');
   });
 
@@ -156,7 +156,7 @@ describe('Pandino', () => {
     expect(mockStart).toHaveBeenCalledTimes(0);
     expect(myBundle.getBundleId()).toEqual(1);
     expect(myBundle.getState()).toEqual('INSTALLED');
-    expect(myBundle.getSymbolicName()).toEqual('my.bundle');
+    expect(myBundle.getSymbolicName()).toEqual('@scope/bundle');
     expect(myBundle.getVersion().toString()).toEqual('1.2.3');
   });
 
@@ -184,10 +184,10 @@ describe('Pandino', () => {
     const myBundle = bundles[0];
     const catsBundle = bundles[1];
 
-    expect(myBundle.getSymbolicName()).toEqual('my.bundle');
+    expect(myBundle.getSymbolicName()).toEqual('@scope/bundle');
     expect(myBundle.getVersion().toString()).toEqual('1.2.3');
     expect(myBundle.getState()).toEqual('ACTIVE');
-    expect(catsBundle.getSymbolicName()).toEqual('hu.bundle.cats');
+    expect(catsBundle.getSymbolicName()).toEqual('@scope/cats');
     expect(catsBundle.getVersion().toString()).toEqual('1.0.0');
     expect(catsBundle.getState()).toEqual('ACTIVE');
     expect(mockStart).toHaveBeenCalledTimes(bundles.length); // we use the same mock for all bundles
@@ -206,7 +206,7 @@ describe('Pandino', () => {
     expect(mockStart).toHaveBeenCalledTimes(1);
     expect(bundles.length).toEqual(1);
 
-    expect(bundle.getSymbolicName()).toEqual('my.bundle');
+    expect(bundle.getSymbolicName()).toEqual('@scope/bundle');
     expect(bundle.getVersion().toString()).toEqual('1.2.3');
     expect(bundle.getState()).toEqual('RESOLVED');
     expect(bundle.getBundleContext()).toEqual(null);
@@ -226,13 +226,13 @@ describe('Pandino', () => {
     expect(bundles[0].getState()).toEqual('INSTALLED');
 
     await installBundle({
-      [BUNDLE_SYMBOLICNAME]: 'hu.bundle.one',
+      [BUNDLE_SYMBOLICNAME]: '@scope/one',
       [BUNDLE_VERSION]: '0.0.1',
       [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist-2.js',
       [PROVIDE_CAPABILITY]: 'cap.test;type=one',
     });
     await installBundle({
-      [BUNDLE_SYMBOLICNAME]: 'hu.bundle.two',
+      [BUNDLE_SYMBOLICNAME]: '@scope/two',
       [BUNDLE_VERSION]: '0.1.0',
       [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist-3.js',
       [PROVIDE_CAPABILITY]: 'cap.other;num:number=22',
@@ -246,12 +246,12 @@ describe('Pandino', () => {
     const oneBundle = bundles[1];
     const twoBundle = bundles[2];
 
-    expect(myBundle.getSymbolicName()).toEqual('my.bundle');
+    expect(myBundle.getSymbolicName()).toEqual('@scope/bundle');
     expect(myBundle.getVersion().toString()).toEqual('1.2.3');
     expect(myBundle.getState()).toEqual('ACTIVE');
-    expect(oneBundle.getSymbolicName()).toEqual('hu.bundle.one');
+    expect(oneBundle.getSymbolicName()).toEqual('@scope/one');
     expect(oneBundle.getState()).toEqual('ACTIVE');
-    expect(twoBundle.getSymbolicName()).toEqual('hu.bundle.two');
+    expect(twoBundle.getSymbolicName()).toEqual('@scope/two');
     expect(twoBundle.getState()).toEqual('ACTIVE');
     expect(mockStart).toHaveBeenCalledTimes(bundles.length); // we use the same mock for all bundles
   });
@@ -280,10 +280,10 @@ describe('Pandino', () => {
     const myBundle = bundles[0];
     const catsBundle = bundles[1];
 
-    expect(myBundle.getSymbolicName()).toEqual('my.bundle');
+    expect(myBundle.getSymbolicName()).toEqual('@scope/bundle');
     expect(myBundle.getVersion().toString()).toEqual('1.2.3');
     expect(myBundle.getState()).toEqual('ACTIVE');
-    expect(catsBundle.getSymbolicName()).toEqual('hu.bundle.cats');
+    expect(catsBundle.getSymbolicName()).toEqual('@scope/cats');
     expect(catsBundle.getVersion().toString()).toEqual('1.0.0');
     expect(catsBundle.getState()).toEqual('ACTIVE');
     expect(mockStart).toHaveBeenCalledTimes(bundles.length); // we use the same mock for all bundles
@@ -320,11 +320,11 @@ describe('Pandino', () => {
 
     await requiredBundle.stop();
 
-    expect(requiredBundle.getSymbolicName()).toEqual('hu.bundle.cats');
+    expect(requiredBundle.getSymbolicName()).toEqual('@scope/cats');
     expect(requiredBundle.getState()).toEqual('RESOLVED');
-    expect(requirerBundle.getSymbolicName()).toEqual('my.bundle');
+    expect(requirerBundle.getSymbolicName()).toEqual('@scope/bundle');
     expect(requirerBundle.getState()).toEqual('RESOLVED');
-    expect(independentBundle.getSymbolicName()).toEqual('my.independent.bundle');
+    expect(independentBundle.getSymbolicName()).toEqual('@scope/independent');
     expect(independentBundle.getState()).toEqual('ACTIVE');
     expect(mockStop).toHaveBeenCalledTimes(2);
   });
@@ -474,13 +474,13 @@ describe('Pandino', () => {
     (bundle as BundleImpl).setState('STARTING');
 
     expect(bundle.uninstall()).rejects.toThrow(
-      'Bundle my.bundle-1.2.3 cannot be uninstalled, since it is either STARTING or STOPPING.',
+      'Bundle @scope/bundle-1.2.3 cannot be uninstalled, since it is either STARTING or STOPPING.',
     );
 
     (bundle as BundleImpl).setState('STOPPING');
 
     expect(bundle.uninstall()).rejects.toThrow(
-      'Bundle my.bundle-1.2.3 cannot be uninstalled, since it is either STARTING or STOPPING.',
+      'Bundle @scope/bundle-1.2.3 cannot be uninstalled, since it is either STARTING or STOPPING.',
     );
   });
 
