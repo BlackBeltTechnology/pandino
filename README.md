@@ -250,6 +250,8 @@ export const stringInverterImpl: StringInverter = (str: string) => {
   "Bundle-Activator": "./strings.js"
 }
 ```
+The "Bundle-SymbolicName" attribute **SHOULD** contain a leading package scope, bundle name, and any number of
+additional segments in order to reduce potential conflicts!
 
 > The "Bundle-Activator" value is "./strings.js", assuming our bundler tool's output was that file, which has been built
   from `index.ts`.
@@ -329,5 +331,3 @@ common software development problems. Usage is opt-in of course.
 ## TODO
 
 - Improve Logger API, and built in Logger implementation
-- Document use-cases
-- Go through `TODO` and `FIXME` blocks in code and finish / close such sections
