@@ -5,21 +5,6 @@
 
 An OSGi - lite framework for JavaScript runtimes.
 
-## Motivation
-
-Currently we are living in a world of ever-growing dependencies in our projects. We are piling up tools
-from left to right achieve functionality necessary to deliver projects.
-
-Some of our dependencies are meant to solve build pipeline-related tasks, some to solve bundling and splitting up
-projects based on feature islands, a.k.a.: micro-frontends, etc...
-
-The goal of Pandino is to provide a dynamic runtime for the JavaScript platform, while eliminating or at least reducing
-the need of bundlers or other tools to manage dependencies, or decoupling of functionality.
-
-Although we are calling Pandino a "framework", it's only actually warranted in a sense where it provides best
-practices and guidelines how you can integrate with / into it, but it's not exclusive in a sense where it can be
-actually used as a side-car library for partial functionality.
-
 ## Inspiration
 
 Pandino is inspired by the [OSGi](https://www.osgi.org/resources/what-is-osgi/) framework originally created for Java.
@@ -28,6 +13,11 @@ Given the wast differences between the Java platform and JavaScript, Pandino onl
 [original specification](https://docs.osgi.org/specification/osgi.core/8.0.0/). In certain cases the "porting" of
 features even altered the original standard. Such differences can be observed in the source code via comments, or in the
 documentation it self.
+
+#### Highlighted differences compared to OSGI
+
+Most noteworthy differences compared to the OSGi standard are explained in the
+[docs/osgi-comparison.md](./docs/osgi-comparison.md) document.
 
 ## Who is Pandino intended for
 
@@ -52,32 +42,8 @@ Such extras are physically separated into external packages so that you can pull
 It is important to note that when we start to incorporate more and more dynamism in our projects, the complexity can
 easily sky-rocket!
 
-Given resources are managed in/via Bundles, the quality of each third-party Bundle can cause serious issues if a Bundle
-in question is poorly implemented, e.g.: not handling lifecycle properly or not freeing up resources properly.
-
-Every Bundle which we want to introduce **SHOULD** be inspected in detail to make sure it has minimal or no negative
-side effects in our scope!
-
-In our case, the quote "With Great Power Comes Great Responsibility" truly applies.
-
-## Key Architectural Decisions
-
-- Pandino is built on top of TypeScript, and TS support will always be a given for all first party packages
-- Supported platforms are: Browsers and NodeJS
-- Service decoupling is achieved via interfacing, which means that cross-bundle service references do not require
-  class imports which results in super-lean bundles.
-- Testing is paramount, but from a coverage perspective, reaching 100% coverage is not a goal. The actual goal is
-  reaching confidence
-- "Extra" Bundles may or may not contain tests, depending on how complicated they are
-- Some necessary initialization parameters such as the `BundleImporter` and `ManifestFetcher` will always rely on
-  platform specific standard solutions, e.g.: native `import` / `require` and native `fetch` depending on platform.
-- Similarly to OSGi, Pandino it self is a Bundle as well, just like any other building block
-- Configurability of the Pandino instance is paramount
-
-## Highlighted differences compared to OSGI
-
-Most noteworthy differences compared to the OSGi standard are explained in the
-[docs/osgi-comparison.md](./docs/osgi-comparison.md) document.
+Every Bundle which we want to introduce **SHOULD** be inspected in detail to make sure it handles all life-cycle and
+resource handling related tasks properly!
 
 ## Key Building blocks
 
@@ -144,6 +110,9 @@ export interface FrameworkConfigMap extends Record<string, any> {
 }
 ```
 
+> The "Manifest Fetcher" and "Bundle Importer" abstractions are introduced so that application authors can properly
+  handle non-functional concepts, such as security tokens, proxy-ing, etc...
+
 ### Adding Pandino to a plain JavaScript project
 
 ```html
@@ -201,6 +170,17 @@ await pandino.getBundleContext().installBundle('some-bundle-manifest.json');
 
 ### Creating a Bundle which exposes a Service (TypeScript)
 
+**General tips:**
+- Every Bundle **MUST** consist of two artifacts:
+  - A JavaScript resource containing at least the `BundleActivator` implementation
+  - A Manifest JSON file serving necessary meta-info about the bundle
+- **DO NOT** create a single-file bundle, because it can have negative side-effects related to tree shaking!
+- If your Bundle exposes service(s), then you **SHOULD** either create a separate package for the API-s, or at least
+  place your types/interfaces/etc in separate files.
+
+> Why are manifest headers separated from the actual code? It is an optimization for the browser context, because this
+  way the actual code-base is only loaded once every requirement (if any) is satisfied for a Bundle.
+
 #### index.ts
 
 ```typescript
@@ -209,6 +189,8 @@ export * from './string-inverter';
 
 export default Activator;
 ```
+
+> Every entrypoint resource **MUST** expose a `default` export implementing the `BundleActivator` interface!
 
 #### activator.ts
 
@@ -256,13 +238,31 @@ export const stringInverterImpl: StringInverter = (str: string) => {
 };
 ```
 
+#### bundle-manifest.json
+
+```json
+{
+  "Bundle-ManifestVersion": "1",
+  "Bundle-SymbolicName": "@pandino/examples/strings",
+  "Bundle-Name": "Strings Bundle",
+  "Bundle-Version": "0.1.0",
+  "Bundle-Description": "Strings Bundle for the documentation.",
+  "Bundle-Activator": "./strings.js"
+}
+```
+
+> The "Bundle-Activator" value is "./strings.js", assuming our bundler tool's output was that file, which has been built
+  from `index.ts`.
+
+*Pandino currently does not provide any tool to keep Manifest files in sync with the actual code!*
+
 ### Consuming Services exposed by other Bundles (TypeScript)
 
 The following example relies on the fact that we are consuming a Service which is guaranteed to be available
 at the time our `BundleActivator` implementation `start()`s.
 
-In a more real-world scenario this is not guaranteed, therefore a `null` check has to be applied, and in case
-the requested Service is not yet ready, we would need to register a `ServiceListener` to get notified once said
+In a more real-world scenario this is not guaranteed, therefore a `null` / `undefined` check has to be applied, and in
+case the requested Service is not yet ready, we would need to register a `ServiceListener` to get notified once said
 Service becomes available!
 
 #### activator.ts
@@ -292,6 +292,9 @@ export default class Activator implements BundleActivator {
 ```
 
 ## Example Projects
+
+Documenting the whole ecosystem would be too challenging for newcomers to understand, therefore to better understand how
+Pandino works, it's recommended to look into the ready-made examples!
 
 Multiple example projects are available under the [examples](./examples) folder. Each example is a stand-alone,
 dedicated project, which means that specific instructions regarding how to operate them are detailed in their respective

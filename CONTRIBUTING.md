@@ -16,6 +16,20 @@ npm run build
 npm run build -- --scope @pandino/bundle-a
 ```
 
+## Key Architectural Decisions
+
+- Pandino is built on top of TypeScript, and TS support will always be a given for all first party packages
+- Supported platforms are: Browsers and NodeJS
+- Service decoupling is achieved via interfacing, which means that cross-bundle service references do not require
+  class imports which results in super-lean bundles.
+- Testing is paramount, but from a coverage perspective, reaching 100% coverage is not a goal. The actual goal is
+  reaching confidence
+- "Extra" Bundles may or may not contain tests, depending on how complicated they are
+- Some necessary initialization parameters such as the `BundleImporter` and `ManifestFetcher` will always rely on
+  platform specific standard solutions, e.g.: native `import` / `require` and native `fetch` depending on platform.
+- Similarly to OSGi, Pandino it self is a Bundle as well, just like any other building block
+- Configurability of the Pandino instance is paramount
+
 ## Notes
 
 ### Tree-shaking
