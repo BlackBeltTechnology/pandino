@@ -9,7 +9,6 @@ import {
   BUNDLE_NAME,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
-  FRAMEWORK_UUID,
   PROVIDE_CAPABILITY,
   REQUIRE_CAPABILITY,
   PANDINO_BUNDLE_IMPORTER_PROP,
@@ -114,7 +113,6 @@ describe('Pandino', () => {
 
     expect(ctx.getBundle().getSymbolicName()).toEqual(SYSTEM_BUNDLE_SYMBOLICNAME);
     expect(ctx.getBundle().getVersion().toString()).toEqual('0.1.0');
-    expect(ctx.getProperty(FRAMEWORK_UUID)).toEqual('pandino-uuid-todo');
   });
 
   it('Pandino APIs', async () => {
@@ -410,6 +408,52 @@ describe('Pandino', () => {
     expect(requiredBundle.getState()).toEqual('UNINSTALLED');
     expect(requirerBundle.getState()).toEqual('RESOLVED');
     expect(mockStop).toHaveBeenCalledTimes(2);
+  });
+
+  it('multiple requirements', async () => {
+    await preparePandino();
+    const multiRequireBundle = await installBundle({
+      ...bundle1Headers,
+      [REQUIRE_CAPABILITY]: `pet.grooming;filter:="(&(type=cat)(rate<=20))"
+                             super.hero;filter:="(laser=true)"`,
+    });
+
+    expect(multiRequireBundle.getState()).toEqual('INSTALLED');
+
+    await installBundle({
+      ...bundle2Headers,
+      [PROVIDE_CAPABILITY]: 'pet.grooming;type:Array="dog,cat";length:number=800;soap="organic";rate:number="10"',
+    });
+
+    expect(multiRequireBundle.getState()).toEqual('INSTALLED');
+
+    await installBundle({
+      ...bundle3Headers,
+      [PROVIDE_CAPABILITY]: 'super.hero;laser=true',
+    });
+
+    const [requirerBundle, requiredBundle1, requiredBundle2] = pandino.getBundleContext().getBundles();
+
+    expect(pandino.getBundleContext().getBundles().length).toEqual(3);
+    expect(requiredBundle1.getState()).toEqual('ACTIVE');
+    expect(requiredBundle2.getState()).toEqual('ACTIVE');
+    expect(requirerBundle.getState()).toEqual('ACTIVE');
+
+    await requiredBundle1.uninstall();
+
+    expect(pandino.getBundleContext().getBundles().length).toEqual(2);
+    expect(requiredBundle1.getState()).toEqual('UNINSTALLED');
+    expect(requiredBundle2.getState()).toEqual('ACTIVE');
+    expect(requirerBundle.getState()).toEqual('RESOLVED');
+
+    await requiredBundle2.uninstall();
+
+    expect(pandino.getBundleContext().getBundles().length).toEqual(1);
+    expect(requiredBundle1.getState()).toEqual('UNINSTALLED');
+    expect(requiredBundle2.getState()).toEqual('UNINSTALLED');
+    expect(requirerBundle.getState()).toEqual('RESOLVED');
+
+    expect(mockStop).toHaveBeenCalledTimes(3);
   });
 
   it('uninstall bundle fails if Bundle is already in UNINSTALLED state', async () => {
