@@ -79,8 +79,6 @@ export class StatefulResolver {
    * Currently in the resolving process, we only take ACTIVE Bundles into consideration. Intentionally skipping RESOLVED
    * ones, given we are expecting all Bundles to have at least a start() being called from A {@link BundleActivator}.
    *
-   * TODO: investigate whether bundles should be returned instead, and resolution would only succeed if a single bundle provides all the necessary capabilities instead of the full list.
-   *
    * @private
    */
   private getEligibleCapabilities(): BundleCapability[] {

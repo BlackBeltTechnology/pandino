@@ -69,7 +69,6 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
   }
 
   getAttributes(): Record<string, any> {
-    // TODO: this does not adhere to the reference implementation, should double check later
     return {
       ...this.getRegistration().getProperties(),
     };

@@ -179,7 +179,6 @@ export class BundleContextImpl implements BundleContext {
     ) {
       return true;
     }
-    // TODO: this shouldn't be enough, should add more cases
     return false;
   }
 

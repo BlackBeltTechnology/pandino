@@ -77,7 +77,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
         }
 
         if (isAllPresent(usage)) {
-          // TODO: handle prototype use-case
+          // TODO: handle prototype/factory use-case
         }
       }
     } finally {

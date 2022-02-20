@@ -92,8 +92,6 @@ export class ManifestParserImpl implements ManifestParser {
     rbClauses = ManifestParserImpl.normalizeRequireClauses(rbClauses, this.getManifestVersion());
     const rbReqs: Array<BundleRequirementImpl> = ManifestParserImpl.convertRequires(rbClauses, owner);
 
-    // TODO support multiple Requires and Provides?!
-
     // Parse Require-Capability.
     const requireCaps: Array<BundleRequirement> = [];
     if (isAllPresent(headerMap[REQUIRE_CAPABILITY]) && headerMap[REQUIRE_CAPABILITY].includes('\n')) {
@@ -278,7 +276,7 @@ export class ManifestParserImpl implements ManifestParser {
       }
 
       // Create a require capability and return it.
-      let symName: string = clauses[0].paths[0];
+      const symName: string = clauses[0].paths[0];
       clauses[0].attrs[BUNDLE_NAMESPACE] = symName;
       clauses[0].attrs[BUNDLE_VERSION_ATTRIBUTE] = bundleVersion;
       return new BundleCapabilityImpl(owner, BUNDLE_NAMESPACE, clauses[0].dirs, clauses[0].attrs);

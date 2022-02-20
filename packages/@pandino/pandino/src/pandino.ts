@@ -142,7 +142,6 @@ export class Pandino extends BundleImpl implements Framework {
         await this.init();
       }
       if (this.getState() === 'STARTING') {
-        // TODO: implement missing parts!
         this.getBundleContext().registerService(FRAMEWORK_LOGGER, this.logger);
         this.getBundleContext().registerService(FRAMEWORK_MANIFEST_FETCHER, this.fetcher);
         this.getBundleContext().registerService(FRAMEWORK_BUNDLE_IMPORTER, this.importer);
@@ -161,7 +160,6 @@ export class Pandino extends BundleImpl implements Framework {
   async init(...listeners: FrameworkListener[]): Promise<void> {
     try {
       if (this.getState() === 'INSTALLED' || this.getState() === 'RESOLVED') {
-        this.configMap.set(FRAMEWORK_UUID, 'pandino-uuid-todo');
         this.setBundleContext(new BundleContextImpl(this.logger, this, this));
         this.setState('STARTING');
         for (const listener of listeners) {
@@ -338,8 +336,6 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   async stopBundle(bundle: BundleImpl): Promise<void> {
-    // TODO: implement missing pieces
-
     try {
       let error: Error;
       let wasActive = false;
@@ -419,7 +415,6 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   getProperty(key: string): string {
-    // TODO: add fallback getter source, e.g.: LocalStorage or SessionStorage
     return this.configMap.get(key);
   }
 

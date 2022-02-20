@@ -52,7 +52,6 @@ export default class Filter implements FilterApi {
   }
 
   static convert(attrs: Record<string, any>): Filter {
-    // TODO: clarify if this works at all, or not...
     const filters: Filter[] = [];
 
     for (let [_, value] of Object.entries(attrs)) {
