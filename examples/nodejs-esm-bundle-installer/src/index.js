@@ -43,7 +43,7 @@ const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));
         factory.init(app);
       }
     }
-  }, '(objectClass=@pandino/nodejs-simple-js/resource-manager)');
+  }, '(objectClass=@pandino/nodejs-esm-bundle-installer/resource-manager)');
 
   app.get('/', (req, res) => {
     res.send('Hello World!');

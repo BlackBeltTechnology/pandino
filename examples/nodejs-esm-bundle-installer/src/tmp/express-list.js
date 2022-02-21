@@ -9,7 +9,7 @@ export default class ExpressListActivator {
       this.expressApp = app;
     };
     this.factory = new ResourceManager(this.logger, appExtractor);
-    this.registration = context.registerService('@pandino/nodejs-simple-js/resource-manager', this.factory);
+    this.registration = context.registerService('@pandino/nodejs-esm-bundle-installer/resource-manager', this.factory);
   }
 
   stop(context) {
