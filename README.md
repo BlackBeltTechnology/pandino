@@ -331,9 +331,6 @@ export default class Activator implements BundleActivator {
 
 ## Example Projects
 
-Documenting the whole ecosystem would be too challenging for newcomers to understand, therefore to better understand how
-Pandino works, it's recommended to look into the ready-made examples!
-
 Multiple example projects are available under the [examples](./examples) folder. Each example is a stand-alone,
 dedicated project, which means that specific instructions regarding how to operate them are detailed in their respective
 folders.
