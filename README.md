@@ -168,6 +168,42 @@ await pandino.start();
 await pandino.getBundleContext().installBundle('some-bundle-manifest.json');
 ```
 
+### Adding Pandino to a NodeJS (CJS) project
+
+Install Pandino via `npm install --save @pandino/pandino`.
+
+Initialize it somewhere close in you applications own init logic, e.g.:
+
+```javascript
+const Pandino = require("@pandino/pandino").default;
+const path = require("path");
+const fs = require("fs");
+
+const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));
+
+const pandino = new Pandino({
+  'pandino.deployment.root': deploymentRoot,
+  'pandino.bundle.importer': {
+    import: (deploymentRoot, activatorLocation) => {
+      return require(path.normalize(path.join(deploymentRoot, activatorLocation)));
+    },
+  },
+  'pandino.manifest.fetcher': {
+    fetch: async (deploymentRoot, uri) => {
+      const data = fs.readFileSync(path.normalize(path.join(deploymentRoot, uri)), { encoding: 'utf8' });
+      return JSON.parse(data);
+    },
+  },
+});
+
+(async () => {
+  await pandino.init();
+  await pandino.start();
+
+  await pandino.getBundleContext().installBundle('some-bundle-manifest.json');
+})();
+```
+
 ### Creating a Bundle which exposes a Service (TypeScript)
 
 **General tips:**
