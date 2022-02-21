@@ -1,6 +1,6 @@
-# NodeJS Simple JS
+# NodeJS ESM Bundle Installer
 
-Simple NodeJS Express example Application.
+NodeJS Express example Application utilizing the Bundle Installer Bundle.
 
 ## Setup
 - Run `npm run build` in the Git Repository root
