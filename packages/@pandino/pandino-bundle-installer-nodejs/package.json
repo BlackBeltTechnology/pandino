@@ -1,10 +1,17 @@
 {
   "name": "@pandino/pandino-bundle-installer-nodejs",
   "version": "0.1.0",
-  "description": "",
-  "main": "dist/pandino-bundle-installer-nodejs.js",
-  "private": true,
+  "description": "Install Bundles defined in the filesystem",
+  "main": "./dist/cjs/pandino-bundle-installer-nodejs.js",
+  "module": "./dist/esm/pandino-bundle-installer-nodejs.mjs",
   "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/pandino-bundle-installer-nodejs.js",
+      "default": "./dist/esm/pandino-bundle-installer-nodejs.mjs"
+    }
+  },
+  "private": true,
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && webpack"
@@ -15,13 +22,10 @@
   "engines": {
     "node": ">=14"
   },
-  "peerDependencies": {
-    "chokidar": "^3.5.2"
-  },
   "devDependencies": {
     "@pandino/pandino-api": "^0.1.0",
-    "chokidar": "^3.5.2",
     "copy-webpack-plugin": "^10.2.0",
+    "handlebars-webpack-plugin": "^2.2.1",
     "rimraf": "^3.0.2",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.4",

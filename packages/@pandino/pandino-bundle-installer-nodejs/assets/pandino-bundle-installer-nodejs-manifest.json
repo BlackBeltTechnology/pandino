@@ -1,8 +1,0 @@
-{
-  "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/pandino-bundle-installer-nodejs",
-  "Bundle-Name": "Pandino Bundle Installer for NodeJS",
-  "Bundle-Version": "0.1.0",
-  "Bundle-Description": "Install Bundles defined in the filesystem",
-  "Bundle-Activator": "./pandino-bundle-installer-nodejs.js"
-}
