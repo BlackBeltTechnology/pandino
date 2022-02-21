@@ -4,5 +4,6 @@
   "Bundle-Name": "Pandino Bundle Installer DOM",
   "Bundle-Version": "0.1.0",
   "Bundle-Description": "Install Bundles defined in a browser's DOM",
-  "Bundle-Activator": "./pandino-bundle-installer-dom.mjs"
+  "Bundle-Activator": "./pandino-bundle-installer-dom.mjs",
+  "Provide-Capability": "pandino.bundle-installer;type=\"DOM\""
 }
