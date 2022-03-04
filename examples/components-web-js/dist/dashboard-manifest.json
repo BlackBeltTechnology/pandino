@@ -1,6 +1,6 @@
 {
   "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/ecomponents-web-js-dashboard",
+  "Bundle-SymbolicName": "@pandino/components-web-js-dashboard",
   "Bundle-Name": "Dashboard",
   "Bundle-Version": "0.1.0",
   "Bundle-Activator": "./dashboard.js",
