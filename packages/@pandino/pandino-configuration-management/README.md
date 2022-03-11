@@ -42,7 +42,6 @@ export default class BundleActivator {
   }
 
   async stop(context) {
-    // ...
     context.unregisterService(this.registration);
 
     return Promise.resolve();
@@ -98,6 +97,7 @@ export default class Activator {
 
     const mstConfig = this.configAdmin.getConfiguration('test.pid');
     
+    // only update configuration if it's not already set
     if (!mstConfig.getProperties()) {
       mstConfig.update({
         prop1: 'fresh value',
@@ -126,7 +126,7 @@ API, and providing the `PID` we want to track.
 export default class Activator {
   async start(context) {
     this.listenerRegistration = context.registerService('@pandino/pandino-configuration-management/ConfigurationListener', new MyListener(), {
-      [SERVICE_PID]: 'test.pid',
+      'service.pid': 'test.pid',
     });
 
     return Promise.resolve();
