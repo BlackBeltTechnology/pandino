@@ -360,7 +360,3 @@ common software development problems. Usage is opt-in of course.
 
 - [API](./packages/@pandino/pandino-event-api)
 - [Pandino - Event Admin](./packages/@pandino/pandino-event-admin)
-
-## TODO
-
-- Improve Logger API, and built in Logger implementation

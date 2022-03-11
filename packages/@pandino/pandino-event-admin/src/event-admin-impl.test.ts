@@ -2,7 +2,7 @@ import { EVENT_FILTER, EVENT_TOPIC } from '@pandino/pandino-event-api';
 import { EventAdminImpl } from './event-admin-impl';
 import { EventFactoryImpl } from './event-factory-impl';
 import { EventHandlerRegistrationInfo } from './event-handler-registration-info';
-import { FilterParser, ServiceEvent } from '@pandino/pandino-api';
+import { ServiceEvent } from '@pandino/pandino-api';
 
 describe('EventAdminImpl', () => {
   const DELAY_MS = 50;

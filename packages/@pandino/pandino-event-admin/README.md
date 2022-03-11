@@ -1,3 +1,111 @@
 # Pandino Event Admin
 
 The Reference implementation for the Pandino Event API.
+
+## Creating Events
+
+Events consist of quite a lot of properties, therefore the easiest way to construct one is by utilizing the
+`EventFactory`. Sending the `Event` can be achieved by calling the `postEvent()` method on the obtained `EventAdmin`
+instance.
+
+Every Event consists of a `topic` (string), and a `properties` object.
+
+**Please note, that Event delivery is fully async, and the order of delivery is not pre-defined!**
+
+> It should be considered as a best practice to ensure that the `properies` objects is serializable. E.g.:
+  `JSON.stringify()` and `JSON.parse()` compliant.
+
+### Example
+
+```javascript
+export default class Activator {
+  async start(context) {
+    this.eventAdminReference = context.getServiceReference('@pandino/pandino-event-admin/EventAdmin');
+    this.eventAdmin = context.getService(this.eventAdminReference);
+    this.eventFactoryReference = context.getServiceReference('@pandino/pandino-event-admin/EventFactory');
+    this.eventFactory = context.getService(this.eventFactoryReference);
+
+    // create the Event
+    const event = eventFactory.build('@scope/app/TestTopic', {
+      prop1: 'yayy',
+    });
+    
+    // send the Event
+    this.eventAdmin.postEvent(event);
+
+    return Promise.resolve();
+  }
+
+  stop(context) {
+    context.ungetService(this.eventFactoryReference);
+    context.ungetService(this.eventAdminReference);
+
+    return Promise.resolve();
+  }
+}
+```
+
+## Listening to Events
+
+Any Service which implements the `@pandino/pandino-event-admin/EventHandler` interface and has the service property
+`event.topics` (either a single `string`, or an `Array<string>` can be provided as value) defined can listen to Pandino
+Events.
+
+In order to narrow down unnecessary triggering of `EventHandler`s, an additional service property `event.filter` can be
+defined!
+
+### Example
+
+```javascript
+export default class BundleActivator {
+  async start(context) {
+    this.registration = context.registerService('@pandino/pandino-event-admin/EventHandler', new TestTopicEventHandler(), {
+      'event.topics': '@scope/app/TestTopic'
+    });
+
+    return Promise.resolve();
+  }
+
+  async stop(context) {
+    context.unregisterService(this.registration);
+
+    return Promise.resolve();
+  }
+}
+
+class TestTopicEventHandler {
+  handleEvent(event) {
+    console.log(event.getTopic());
+    console.log(event.getPropertyNames());
+    // ...
+  }
+}
+```
+
+## Topics
+
+Topics should be unique. The recommended way of setting them up to prefix every topic with an actual package scope, and
+make them as explicit as possible. Topic segment separator **MUST** be the `/` character. Topics **CAN** start with the
+`@` character to mirror NPM-style scopes, but it is not mandatory.
+
+### Topic matching
+
+Matching by default is done in an case-sensitive, as-is manner for plain topics, e.g.: `@scope/package/topic1`. In this
+case, only exact matches will trigger listeners.
+
+However there are two reserved keys which you can use as suffixes to loosen up the matching:
+- `.`: matches for exactly one additional segment, no more, no less
+- `*`: matches for at least one additional segment, no less
+
+
+### Examples
+
+In the Table below headers represent `topic`s, and the first column the test cases:
+
+|                           | @pandino/pandino/Foo | @pandino/pandino. | @pandino/pandino* |
+|---------------------------|----------------------|-------------------|-------------------|
+| @pandino/pandino/Foo      | true                 | true              | true              |
+| @pandino/pandino/Bar      | false                | true              | true              |
+| @pandino/pandino/Foo$1    | false                | true              | true              |
+| @pandino/pandino/Foo/Test | false                | false             | true              |
+| @pandino/pandino          | false                | false             | false             |
