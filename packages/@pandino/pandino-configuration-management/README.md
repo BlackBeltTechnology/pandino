@@ -33,8 +33,7 @@ initial loading of the service)!
 ```javascript
 export default class BundleActivator {
   async start(context) {
-    // ...
-    const mst = new ManagedServiceTest(this.logger);
+    const mst = new ManagedServiceTest();
     this.registration = context.registerService('@pandino/pandino-configuration-management/ManagedService', mst, {
       'service.pid': 'test.pid'
     });
