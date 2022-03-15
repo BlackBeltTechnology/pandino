@@ -87,6 +87,7 @@ export class EventAdminImpl implements EventAdmin, ServiceListener {
       if (props[EVENT_FILTER] !== null && props[EVENT_FILTER] !== undefined) {
         newReg[EVENT_FILTER] = props[EVENT_FILTER];
       }
+      this.logger.debug(`Registering new event handler for topic(s): ${props[EVENT_TOPIC]}.`);
       this.regs.push(newReg);
     }
   }

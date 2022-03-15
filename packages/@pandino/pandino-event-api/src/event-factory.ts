@@ -2,5 +2,5 @@ import { Event } from './event';
 import { EventProperties } from './event-properties';
 
 export interface EventFactory {
-  build(topic: string, properties: EventProperties): Event;
+  build<T extends EventProperties>(topic: string, properties: T): Event;
 }

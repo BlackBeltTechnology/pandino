@@ -10,6 +10,7 @@ import {
 } from '@pandino/pandino-api';
 import { LOG_READER_SERVICE_INTERFACE_KEY, LogEntry, LogListener, LogReaderService } from '@pandino/pandino-log-api';
 import {
+  BUNDLE_ID,
   EventAdmin,
   EventFactory,
   LOG_EVENT_INTERFACE_KEY,
@@ -79,7 +80,7 @@ export class LogEventAdapter extends AbstractAdapter implements ServiceListener 
         let bundle = entry.getBundle();
 
         if (bundle) {
-          properties['bundle.id'] = bundle.getBundleId();
+          properties[BUNDLE_ID] = bundle.getBundleId();
           properties['bundle'] = bundle;
           properties[BUNDLE_SYMBOLICNAME] = bundle.getSymbolicName();
         }

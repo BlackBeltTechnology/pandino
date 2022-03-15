@@ -20,7 +20,10 @@ export class InstallerService {
         const bundle = await this.context.installBundle(path);
         this.pathAndBundlePairs.set(path, bundle);
       } finally {
-        this.processing.splice(this.processing.findIndex(p => p === path), 1);
+        this.processing.splice(
+          this.processing.findIndex((p) => p === path),
+          1,
+        );
       }
     }
   }
@@ -34,7 +37,10 @@ export class InstallerService {
         await bundle.uninstall();
         this.pathAndBundlePairs.delete(path);
       } finally {
-        this.processing.splice(this.processing.findIndex(p => p === path), 1);
+        this.processing.splice(
+          this.processing.findIndex((p) => p === path),
+          1,
+        );
       }
     }
   }

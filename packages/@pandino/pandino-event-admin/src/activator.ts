@@ -5,6 +5,8 @@ import {
   FRAMEWORK_FILTER_PARSER,
   FRAMEWORK_LOGGER,
   Logger,
+  SERVICE_LISTENER_INTERFACE_KEY,
+  ServiceListener,
   ServiceReference,
   ServiceRegistration,
 } from '@pandino/pandino-api';
@@ -31,6 +33,7 @@ export class Activator implements BundleActivator {
   private logger: Logger;
   private filterParserReference: ServiceReference<FilterParser>;
   private filterParser: FilterParser;
+  private eventAdmin: EventAdmin & ServiceListener;
   private readonly adapters: AbstractAdapter[] = [];
 
   start(context: BundleContext): Promise<void> {
@@ -38,21 +41,27 @@ export class Activator implements BundleActivator {
     this.logger = context.getService(this.loggerRef);
     this.filterParserReference = context.getServiceReference<FilterParser>(FRAMEWORK_FILTER_PARSER);
     this.filterParser = context.getService(this.filterParserReference);
-    const eventAdmin = new EventAdminImpl(context, this.logger, this.filterParser);
+    this.eventAdmin = new EventAdminImpl(context, this.logger, this.filterParser);
     const eventFactoryImpl = new EventFactoryImpl();
-    this.eventAdminRegistration = context.registerService(EVENT_ADMIN_INTERFACE_KEY, eventAdmin);
+    this.eventAdminRegistration = context.registerService(
+      [EVENT_ADMIN_INTERFACE_KEY, SERVICE_LISTENER_INTERFACE_KEY],
+      this.eventAdmin,
+    );
     this.eventFactoryRegistration = context.registerService(EVENT_FACTORY_INTERFACE_KEY, eventFactoryImpl);
 
-    this.adapters.push(new BundleEventAdapter(context, eventAdmin, eventFactoryImpl));
-    this.adapters.push(new FrameworkEventAdapter(context, eventAdmin, eventFactoryImpl));
-    this.adapters.push(new LogEventAdapter(context, eventAdmin, eventFactoryImpl));
-    this.adapters.push(new ServiceEventAdapter(context, eventAdmin, eventFactoryImpl));
+    context.addServiceListener(this.eventAdmin);
+
+    this.adapters.push(new BundleEventAdapter(context, this.eventAdmin, eventFactoryImpl));
+    this.adapters.push(new FrameworkEventAdapter(context, this.eventAdmin, eventFactoryImpl));
+    this.adapters.push(new LogEventAdapter(context, this.eventAdmin, eventFactoryImpl));
+    this.adapters.push(new ServiceEventAdapter(context, this.eventAdmin, eventFactoryImpl));
 
     return Promise.resolve();
   }
 
   stop(context: BundleContext): Promise<void> {
     this.adapters.forEach((adapter) => adapter.destroy(context));
+    context.removeServiceListener(this.eventAdmin);
     if (this.loggerRef) {
       context.ungetService(this.loggerRef);
     }
