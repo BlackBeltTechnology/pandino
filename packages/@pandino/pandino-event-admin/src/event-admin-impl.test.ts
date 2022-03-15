@@ -21,14 +21,17 @@ describe('EventAdminImpl', () => {
   let mockContext: any = {
     getService: mockContextGetService,
   };
+  let mockDebugLog: any = jest.fn();
   let mockWarnLog: any = jest.fn();
   let mockLogger: any = {
+    debug: mockDebugLog,
     warn: mockWarnLog,
   };
 
   beforeEach(() => {
     mockFilterParser.parse.mockClear();
     mockContextGetService.mockClear();
+    mockDebugLog.mockClear();
     mockWarnLog.mockClear();
     eventAdmin = new EventAdminImpl(mockContext, mockLogger, mockFilterParser);
   });
