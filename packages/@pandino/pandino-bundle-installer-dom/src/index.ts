@@ -2,6 +2,7 @@ import {
   BundleActivator,
   BundleContext,
   DEPLOYMENT_ROOT_PROP,
+  FRAMEWORK_MANIFEST_FETCHER,
   ManifestFetcher,
   ServiceReference,
 } from '@pandino/pandino-api';
@@ -15,7 +16,7 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
 
   async start(context: BundleContext): Promise<void> {
     this.context = context;
-    this.fetcherReference = context.getServiceReference<ManifestFetcher>('@pandino/pandino/ManifestFetcher');
+    this.fetcherReference = context.getServiceReference<ManifestFetcher>(FRAMEWORK_MANIFEST_FETCHER);
     this.fetcher = context.getService<ManifestFetcher>(this.fetcherReference);
     this.registerDocumentDefinedManifests();
   }

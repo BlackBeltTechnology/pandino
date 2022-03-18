@@ -1,4 +1,13 @@
-import { BundleActivator, BundleContext, Logger, ManifestFetcher, ServiceReference } from '@pandino/pandino-api';
+import {
+  BundleActivator,
+  BundleContext,
+  DEPLOYMENT_ROOT_PROP,
+  FRAMEWORK_LOGGER,
+  FRAMEWORK_MANIFEST_FETCHER,
+  Logger,
+  ManifestFetcher,
+  ServiceReference,
+} from '@pandino/pandino-api';
 import { InstallerService } from './installer-service';
 
 export class Activator implements BundleActivator {
@@ -11,12 +20,12 @@ export class Activator implements BundleActivator {
 
   async start(context: BundleContext): Promise<void> {
     this.context = context;
-    this.loggerReference = context.getServiceReference<Logger>('@pandino/pandino/Logger');
+    this.loggerReference = context.getServiceReference<Logger>(FRAMEWORK_LOGGER);
     this.logger = context.getService<Logger>(this.loggerReference);
-    this.fetcherReference = context.getServiceReference<ManifestFetcher>('@pandino/pandino/ManifestFetcher');
+    this.fetcherReference = context.getServiceReference<ManifestFetcher>(FRAMEWORK_MANIFEST_FETCHER);
     this.fetcher = context.getService<ManifestFetcher>(this.fetcherReference);
     this.installerService = new InstallerService(
-      this.context.getProperty('pandino.deployment.root'),
+      this.context.getProperty(DEPLOYMENT_ROOT_PROP),
       this.context,
       this.logger,
     );

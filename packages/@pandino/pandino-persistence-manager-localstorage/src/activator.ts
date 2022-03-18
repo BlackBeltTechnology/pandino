@@ -1,4 +1,11 @@
-import { BundleActivator, BundleContext, Logger, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
+import {
+  BundleActivator,
+  BundleContext,
+  FRAMEWORK_LOGGER,
+  Logger,
+  ServiceReference,
+  ServiceRegistration,
+} from '@pandino/pandino-api';
 import {
   INTERFACE_KEY,
   PersistenceManager,
@@ -16,7 +23,7 @@ export class Activator implements BundleActivator {
 
   async start(context: BundleContext): Promise<void> {
     this.managedKeysKey = context.getProperty('persistence-manager-managed-keys') || PM_MANAGED_KEYS_KEY;
-    this.loggerReference = context.getServiceReference<Logger>('@pandino/pandino/Logger');
+    this.loggerReference = context.getServiceReference<Logger>(FRAMEWORK_LOGGER);
     this.logger = context.getService<Logger>(this.loggerReference);
     this.service = new LocalstoragePersistenceManager(window.localStorage, this.managedKeysKey, this.logger);
     this.serviceRegistration = context.registerService<PersistenceManager>(INTERFACE_KEY, this.service, {

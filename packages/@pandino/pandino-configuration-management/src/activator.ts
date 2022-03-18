@@ -4,6 +4,7 @@ import {
   BundleContext,
   FilterParser,
   FRAMEWORK_FILTER_PARSER,
+  FRAMEWORK_LOGGER,
   FRAMEWORK_SEMVER_FACTORY,
   Logger,
   OBJECTCLASS,
@@ -37,7 +38,7 @@ export class Activator implements BundleActivator {
 
   start(context: BundleContext): Promise<void> {
     this.context = context;
-    this.loggerReference = context.getServiceReference<Logger>('@pandino/pandino/Logger');
+    this.loggerReference = context.getServiceReference<Logger>(FRAMEWORK_LOGGER);
     this.logger = context.getService<Logger>(this.loggerReference);
     this.filterParserReference = context.getServiceReference<FilterParser>(FRAMEWORK_FILTER_PARSER);
     this.filterParser = context.getService(this.filterParserReference);
