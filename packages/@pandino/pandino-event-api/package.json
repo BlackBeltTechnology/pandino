@@ -2,12 +2,12 @@
   "name": "@pandino/pandino-event-api",
   "version": "0.1.0",
   "description": "Pandino Event API",
-  "main": "dist/pandino-event-api.js",
+  "main": "dist/index.js",
   "private": true,
-  "types": "dist/src/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "npm run clean && webpack"
+    "build": "rimraf dist && rollup -c rollup.config.js"
   },
   "keywords": [],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
@@ -17,10 +17,9 @@
   },
   "devDependencies": {
     "@pandino/pandino-api": "^0.1.0",
+    "@rollup/plugin-typescript": "^8.3.1",
     "rimraf": "^3.0.2",
-    "ts-loader": "^9.2.6",
-    "typescript": "^4.5.4",
-    "webpack": "^5.65.0",
-    "webpack-cli": "^4.9.1"
+    "rollup": "^2.70.1",
+    "typescript": "^4.6.2"
   }
 }

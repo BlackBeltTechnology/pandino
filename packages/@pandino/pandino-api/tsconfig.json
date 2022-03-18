@@ -5,10 +5,14 @@
     "declarationDir": "./dist/",
     "outDir": "./dist/",
     "noImplicitAny": true,
-    "module": "es6",
-    "target": "es5",
-    "allowJs": true,
+    "target": "es2018",
+    "module": "esnext",
     "moduleResolution": "node",
+    "noEmitOnError": true,
+    "lib": ["es2017"],
+    "strict": true,
+    "esModuleInterop": false,
     "sourceMap": false
-  }
+  },
+  "include": ["./src/**/*.ts"]
 }
