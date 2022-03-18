@@ -324,15 +324,15 @@ describe('BundleContextImpl', () => {
     };
     const serviceRegistration1 = bundleContext.registerService<MockService>('@scope/bundle/service', mock1);
     const serviceRegistration2 = bundleContext.registerService<MockService>('@scope/bundle/service', mock2, {
-      [SERVICE_RANKING]: '150',
+      [SERVICE_RANKING]: 150,
     });
 
     const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
     const service = bundleContext.getService<MockService>(reference);
 
     expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual(undefined);
-    expect(serviceRegistration2.getProperty(SERVICE_RANKING)).toEqual('150');
-    expect(reference.getProperty(SERVICE_RANKING)).toEqual('150');
+    expect(serviceRegistration2.getProperty(SERVICE_RANKING)).toEqual(150);
+    expect(reference.getProperty(SERVICE_RANKING)).toEqual(150);
     expect(service.execute()).toEqual(false);
   });
 
@@ -344,16 +344,16 @@ describe('BundleContextImpl', () => {
       execute: () => false,
     };
     const serviceRegistration1 = bundleContext.registerService<MockService>('@scope/bundle/service', mock1, {
-      [SERVICE_RANKING]: '150',
+      [SERVICE_RANKING]: 150,
     });
     const serviceRegistration2 = bundleContext.registerService<MockService>('@scope/bundle/service', mock2);
 
     const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
     const service = bundleContext.getService<MockService>(reference);
 
-    expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual('150');
+    expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual(150);
     expect(serviceRegistration2.getProperty(SERVICE_RANKING)).toEqual(undefined);
-    expect(reference.getProperty(SERVICE_RANKING)).toEqual('150');
+    expect(reference.getProperty(SERVICE_RANKING)).toEqual(150);
     expect(service.execute()).toEqual(true);
   });
 
@@ -366,15 +366,15 @@ describe('BundleContextImpl', () => {
     };
     const serviceRegistration1 = bundleContext.registerService<MockService>('@scope/bundle/service', mock1);
     const serviceRegistration2 = bundleContext.registerService<MockService>('@scope/bundle/service', mock2, {
-      [SERVICE_RANKING]: '150',
+      [SERVICE_RANKING]: 150,
     });
 
     const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
     const service = bundleContext.getService<MockService>(reference);
 
     expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual(undefined);
-    expect(serviceRegistration2.getProperty(SERVICE_RANKING)).toEqual('150');
-    expect(reference.getProperty(SERVICE_RANKING)).toEqual('150');
+    expect(serviceRegistration2.getProperty(SERVICE_RANKING)).toEqual(150);
+    expect(reference.getProperty(SERVICE_RANKING)).toEqual(150);
     expect(service.execute()).toEqual(false);
   });
 });
