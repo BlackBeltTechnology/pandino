@@ -1,0 +1,64 @@
+{
+  "appName": "ReactTSComponentProxy",
+  "actor": {
+    "name": "ReactTSComponentProxy"
+  },
+  "menu": [
+    {
+      "label": "Dashboard",
+      "route": "/"
+    },
+    {
+      "label": "About",
+      "route": "/about"
+    }
+  ],
+  "pages": [
+    {
+      "type": "@scope/react-ts-component-proxy/pages/Dashboard",
+      "name": "Dashboard",
+      "children": [
+        {
+          "name": "root",
+          "type": "@scope/react-ts-component-proxy/components/Flex",
+          "props": {
+            "flex-direction": "vertical"
+          },
+          "label": "Dashboard",
+          "children": [
+            {
+              "name": "content",
+              "type": "@scope/react-ts-component-proxy/components/TextBox",
+              "props": {
+                "textContent": "Hello from the Dashboard!"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "@scope/react-ts-component-proxy/pages/About",
+      "name": "About",
+      "children": [
+        {
+          "name": "root",
+          "type": "@scope/react-ts-component-proxy/components/Flex",
+          "props": {
+            "flex-direction": "vertical"
+          },
+          "label": "About",
+          "children": [
+            {
+              "name": "content",
+              "type": "@scope/react-ts-component-proxy/components/TextBox",
+              "props": {
+                "textContent": "Hello from About!"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
