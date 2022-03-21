@@ -1,9 +1,9 @@
 {
-  "name": "remote-component",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@example/app-custom",
+  "version": "0.1.0",
+  "description": "A collection of App Customizers",
   "main": "index.js",
-  "module": "dist/remote-component.mjs",
+  "module": "dist/app-custom.mjs",
   "scripts": {
     "clear": "rimraf dist",
     "build": "npm run clear && rollup -c",
@@ -13,6 +13,7 @@
   "author": "Norbert Herczeg",
   "license": "ISC",
   "devDependencies": {
+    "@example/app-platform-api": "^0.1.0",
     "@pandino/pandino-api": "file:../../../../packages/@pandino/pandino-api",
     "@rollup/plugin-typescript": "^8.3.1",
     "@types/react": "^17.0.41",

@@ -20,7 +20,6 @@ export interface Menu {
 
 export interface Component {
   type: string,
-  name: string,
   props?: any,
   children?: Component[],
 }

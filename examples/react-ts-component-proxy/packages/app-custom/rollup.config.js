@@ -1,16 +1,16 @@
 import typescript from '@rollup/plugin-typescript';
 import { pandinoExternalizeReact } from './rollup/pandino-externalize-react';
+import { readFileSync } from "fs";
+
+const packageJSON = JSON.parse(readFileSync('package.json').toString('utf8'));
 
 export default {
   input: 'src/index.ts',
   output: [
     {
-      file: 'dist/remote-component.mjs',
+      file: 'dist/app-custom.mjs',
       format: 'esm',
     }
-  ],
-  external: [
-    'react/jsx-runtime'
   ],
   plugins: [
     typescript({ tsconfig: './tsconfig.json' }),
@@ -25,20 +25,22 @@ export default {
       ],
       componentsMap: [
         {
-          component: 'RemoteComponent',
-          identifier: '@example/react-remote-component/remote-component/RemoteComponent',
-          props: {
-            'service.ranking': 90,
-          },
-        },
-        {
-          component: 'OtherComponent',
-          identifier: '@example/react-remote-component/remote-component/OtherComponent',
+          component: 'CustomDashboardPageComponent',
+          identifier: '@scope/react-ts-component-proxy/pages/Dashboard',
           props: {
             'service.ranking': 90,
           },
         },
       ],
+      manifestData: {
+        "Bundle-ManifestVersion": "1",
+        "Bundle-SymbolicName": packageJSON.name,
+        "Bundle-Name": "App Custom",
+        "Bundle-Version": packageJSON.version,
+        "Bundle-Description": packageJSON.description,
+        "Bundle-Activator": "./app-custom.mjs",
+        "Require-Capability": "app.platform;filter:=\"(type=DOM)\""
+      },
     }),
   ],
 };

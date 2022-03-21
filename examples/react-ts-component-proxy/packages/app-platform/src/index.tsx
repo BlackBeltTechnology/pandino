@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {AppMeta} from "app-platform-api";
+import {AppMeta} from "@example/app-platform-api";
 import Pandino from "@pandino/pandino";
 import {
     Bundle,
@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await pandino.start();
 
     const platformBundle: Bundle = await pandino.getBundleContext().installBundle(headers);
+    const bundleInstallerDom = await pandino.getBundleContext().installBundle('./pandino-bundle-installer-dom-manifest.json');
 
     ReactDOM.render(
         <React.StrictMode>

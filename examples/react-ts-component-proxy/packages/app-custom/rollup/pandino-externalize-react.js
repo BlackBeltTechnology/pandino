@@ -1,4 +1,5 @@
 import { EOL } from 'os';
+import { sep } from 'path';
 import { minify as terserMinify } from "terser";
 
 const providerTemplate = (componentMap) => {
@@ -51,7 +52,7 @@ export { Activator as default };
 
 `;
 
-export const pandinoExternalizeReact = ({ componentsMap = {}, externalRefsMap = {}, minify = false }) => {
+export const pandinoExternalizeReact = ({ componentsMap = {}, externalRefsMap = {}, minify = false, manifestData = {} }) => {
   const codes = [];
 
   return {
@@ -67,6 +68,19 @@ export const pandinoExternalizeReact = ({ componentsMap = {}, externalRefsMap = 
       const key = Object.keys(bundle)[0];
       const result = template(componentsMap, externalRefsMap, codes);
       bundle[key].code = minify ? (await terserMinify(result)).code : result;
+
+      const manifestKey = key.replace(/\.(m?)js$/, '-manifest.json');
+      const manifestFile = key
+        .substring(key.lastIndexOf(sep))
+        .replace(/\.(m?)js$/, '-manifest.json');
+
+      bundle[manifestKey] = {
+        name: manifestFile,
+        isAsset: true,
+        type: 'asset',
+        fileName: manifestFile,
+        source: JSON.stringify(manifestData, null, 4),
+      };
     },
   }
 }

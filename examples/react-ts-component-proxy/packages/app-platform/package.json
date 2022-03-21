@@ -1,5 +1,5 @@
 {
-  "name": "app-platform",
+  "name": "@example/app-platform",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,7 +12,7 @@
     "@types/node": "^16.11.26",
     "@types/react": "^17.0.40",
     "@types/react-dom": "^17.0.13",
-    "app-platform-api": "^0.1.0",
+    "@example/app-platform-api": "^0.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.0",

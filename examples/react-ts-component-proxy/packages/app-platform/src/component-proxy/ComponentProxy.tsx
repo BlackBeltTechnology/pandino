@@ -1,17 +1,16 @@
 import {Component, FC, useContext, useEffect, useState} from "react";
 import {SERVICE_RANKING, ServiceEvent, ServiceListener, ServiceReference} from "@pandino/pandino-api";
-import {ComponentProvider} from "app-platform-api";
+import {ComponentProvider} from "@example/app-platform-api";
 import {PlatformBundleContext} from "../PlatformBundleContext";
 
 export interface ComponentProxyProps extends Record<any, any> {
     identifier: string,
-    defaultComponent: FC<any> | typeof Component
-    filter?: string,
+    defaultComponent: FC<any> | typeof Component,
 }
 
-export function ComponentProxy({identifier, filter, defaultComponent: DefaultComponent, ...props}: ComponentProxyProps) {
+export function ComponentProxy({identifier, defaultComponent: DefaultComponent, ...props}: ComponentProxyProps) {
     const { bundleContext } = useContext(PlatformBundleContext);
-    const refs: Array<ServiceReference<ComponentProvider>> = bundleContext.getServiceReferences<ComponentProvider>(identifier, filter);
+    const refs: Array<ServiceReference<ComponentProvider>> = bundleContext.getServiceReferences<ComponentProvider>(identifier);
     let ref: ServiceReference<ComponentProvider> | undefined = refs.length > 0
         ? refs.sort((a, b) => b.getProperty(SERVICE_RANKING) - a.getProperty(SERVICE_RANKING))[0]
         : undefined;
@@ -31,7 +30,7 @@ export function ComponentProxy({identifier, filter, defaultComponent: DefaultCom
                 }
             }
         };
-        bundleContext.addServiceListener(listener, filter);
+        bundleContext.addServiceListener(listener, `(objectClass=${identifier})`);
 
         return () => {
             bundleContext.removeServiceListener(listener);

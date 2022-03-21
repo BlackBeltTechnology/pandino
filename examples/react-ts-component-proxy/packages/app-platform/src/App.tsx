@@ -1,10 +1,10 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import {Bundle} from "@pandino/pandino-api";
+import { AppMeta } from "@example/app-platform-api";
 import './App.css';
-import {AppMeta} from "app-platform-api";
 import { PlatformBundleContext } from './PlatformBundleContext';
-import {ComponentProxy} from "./component-proxy/ComponentProxy";
-import PageComponent from "./components/PageComponent";
+import { ComponentProxy } from "./component-proxy/ComponentProxy";
+import { PageComponent } from "./components/PageComponent";
 
 interface AppProps {
   bundle: Bundle,
@@ -16,7 +16,10 @@ function App({ bundle, meta }: AppProps) {
     <div className="App">
       <PlatformBundleContext.Provider value={{ bundleContext: bundle.getBundleContext(), meta: meta }}>
         <h1>{meta.appName}</h1>
-        <ComponentProxy identifier={meta.pages[0].type} defaultComponent={PageComponent} page={meta.pages[0]} />
+        <ComponentProxy identifier={meta.pages[0].type} defaultComponent={PageComponent} {...meta.pages[0].props} meta={meta.pages[0]}>
+            <p>Child1</p>
+            <p>Child2</p>
+        </ComponentProxy>
       </PlatformBundleContext.Provider>
     </div>
   );

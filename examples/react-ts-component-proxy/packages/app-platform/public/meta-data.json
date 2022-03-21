@@ -16,18 +16,18 @@
   "pages": [
     {
       "type": "@scope/react-ts-component-proxy/pages/Dashboard",
-      "name": "Dashboard",
+      "props": {
+        "label": "Dashboard"
+      },
       "children": [
         {
-          "name": "root",
           "type": "@scope/react-ts-component-proxy/components/Flex",
           "props": {
-            "flex-direction": "vertical"
+            "flex-direction": "vertical",
+            "label": "Dashboard"
           },
-          "label": "Dashboard",
           "children": [
             {
-              "name": "content",
               "type": "@scope/react-ts-component-proxy/components/TextBox",
               "props": {
                 "textContent": "Hello from the Dashboard!"
@@ -39,18 +39,18 @@
     },
     {
       "type": "@scope/react-ts-component-proxy/pages/About",
-      "name": "About",
+      "props": {
+        "label": "About"
+      },
       "children": [
         {
-          "name": "root",
           "type": "@scope/react-ts-component-proxy/components/Flex",
           "props": {
-            "flex-direction": "vertical"
+            "flex-direction": "vertical",
+            "label": "About"
           },
-          "label": "About",
           "children": [
             {
-              "name": "content",
               "type": "@scope/react-ts-component-proxy/components/TextBox",
               "props": {
                 "textContent": "Hello from About!"

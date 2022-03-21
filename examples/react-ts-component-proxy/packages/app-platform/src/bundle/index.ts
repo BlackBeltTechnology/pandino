@@ -12,5 +12,5 @@ export const headers: BundleManifestHeaders = {
   [BUNDLE_SYMBOLICNAME]: packageJson.name,
   [BUNDLE_VERSION]: packageJson.version,
   [BUNDLE_ACTIVATOR]: new Activator(),
-  [PROVIDE_CAPABILITY]: 'app.platform'
+  [PROVIDE_CAPABILITY]: 'app.platform;type="DOM"'
 };
