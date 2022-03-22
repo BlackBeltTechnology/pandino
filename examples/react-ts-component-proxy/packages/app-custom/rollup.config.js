@@ -21,7 +21,7 @@ export default {
         { token: 'Fragment',  identifier: '@pandino/react-provider/react/jsx-runtime/Fragment' },
         { token: 'jsx',       identifier: '@pandino/react-provider/react/jsx-runtime/jsx' },
         { token: 'useState',  identifier: '@pandino/react-provider/react/useState' },
-        { token: 'Component',  identifier: '@pandino/react-provider/react/Component' },
+        { token: 'Component', identifier: '@pandino/react-provider/react/Component' },
       ],
       componentsMap: [
         {

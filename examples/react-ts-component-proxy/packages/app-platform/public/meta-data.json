@@ -17,7 +17,7 @@
     {
       "type": "@scope/react-ts-component-proxy/pages/Dashboard",
       "props": {
-        "label": "Dashboard"
+        "label": "Dashboard ASDASDS"
       },
       "children": [
         {

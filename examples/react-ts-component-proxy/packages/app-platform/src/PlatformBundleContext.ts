@@ -1,5 +1,5 @@
 import {Context, createContext} from 'react';
-import {PlatformBundleContextType} from "app-platform-api";
+import {PlatformBundleContextType} from "@example/app-platform-api";
 
 export const PlatformBundleContext: Context<PlatformBundleContextType> = createContext<PlatformBundleContextType>({
   bundleContext: undefined as any,
