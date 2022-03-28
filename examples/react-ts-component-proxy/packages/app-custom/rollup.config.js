@@ -1,5 +1,5 @@
 import typescript from '@rollup/plugin-typescript';
-import { pandinoExternalizeReact } from './rollup/pandino-externalize-react';
+import { pandinoExternalizeReact } from '@pandino/rollup-plugin-pandino-react-externalize';
 import { readFileSync } from "fs";
 
 const packageJSON = JSON.parse(readFileSync('package.json').toString('utf8'));
@@ -15,13 +15,14 @@ export default {
   plugins: [
     typescript({ tsconfig: './tsconfig.json' }),
     pandinoExternalizeReact({
-      minify: false,
+      prettify: true,
       externalRefsMap: [
-        { token: 'jsxs',      identifier: '@pandino/react-provider/react/jsx-runtime/jsxs' },
-        { token: 'Fragment',  identifier: '@pandino/react-provider/react/jsx-runtime/Fragment' },
-        { token: 'jsx',       identifier: '@pandino/react-provider/react/jsx-runtime/jsx' },
-        { token: 'useState',  identifier: '@pandino/react-provider/react/useState' },
-        { token: 'Component', identifier: '@pandino/react-provider/react/Component' },
+        { token: 'useBundleContext',  identifier: '@example/app-platform-api/useBundleContext' },
+        { token: 'jsxs',              identifier: '@pandino/react-provider/react/jsx-runtime/jsxs' },
+        // { token: 'Fragment',          identifier: '@pandino/react-provider/react/jsx-runtime/Fragment' },
+        { token: 'jsx',               identifier: '@pandino/react-provider/react/jsx-runtime/jsx' },
+        // { token: 'useState',          identifier: '@pandino/react-provider/react/useState' },
+        // { token: 'Component',         identifier: '@pandino/react-provider/react/Component' },
       ],
       componentsMap: [
         {
