@@ -1,0 +1,13 @@
+{
+  "name": "react-pandino",
+  "version": "1.0.0",
+  "description": "A simple example showcasing Pandino implementation details for a Browser-based project written in pure JavaScript.",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "npx serve dist -p 5001"
+  },
+  "keywords": [],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "MIT"
+}
