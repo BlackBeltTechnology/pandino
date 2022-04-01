@@ -5,5 +5,6 @@
   "Bundle-Version": "0.1.0",
   "Bundle-Description": "Custom Application implementation",
   "Bundle-Activator": "./custom-application.mjs",
-  "Require-Capability": "@pandino/pandino-react-dom;filter:=\"(type=dom)\""
+  "Require-Capability": "@pandino/pandino-react-dom;filter:=\"(type=dom)\"",
+  "Provide-Capability": "@example/react-pandino;type=\"dom\""
 }
