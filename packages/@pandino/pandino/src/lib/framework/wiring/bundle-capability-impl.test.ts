@@ -74,7 +74,9 @@ describe('BundleCapabilityImpl', () => {
     await pandino.getBundleContext().installBundle(bundle1Headers);
 
     bundle = pandino.getBundleContext().getBundles()[0] as BundleImpl;
-    revision = new BundleRevisionImpl(bundle, '1', {});
+    revision = new BundleRevisionImpl(bundle, '1', {
+      [BUNDLE_SYMBOLICNAME]: '@test/test',
+    });
     capability = new BundleCapabilityImpl(revision, 'test.namespace', dirs, attrs);
   });
 

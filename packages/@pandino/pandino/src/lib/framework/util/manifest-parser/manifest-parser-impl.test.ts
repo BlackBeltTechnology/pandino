@@ -158,10 +158,8 @@ describe('ManifestParserImp', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
       [BUNDLE_SYMBOLICNAME]: '@scope/example',
-      [REQUIRE_CAPABILITY]: `com.one;filter:="(&(type=cat)(rate<=20))"
-                             com.two;test=value`,
-      [PROVIDE_CAPABILITY]: `some.cap.with.filter;filter:="(&(attr1=1)(attr2<=500))"
-                             some.other.cap;fine:number=1`,
+      [REQUIRE_CAPABILITY]: ['com.one;filter:="(&(type=cat)(rate<=20))"', 'com.two;test=value'],
+      [PROVIDE_CAPABILITY]: ['some.cap.with.filter;filter:="(&(attr1=1)(attr2<=500))"', 'some.other.cap;fine:number=1'],
     };
     const mockBundleRevision = {
       getSymbolicName: jest.fn().mockReturnValue('@scope/example'),

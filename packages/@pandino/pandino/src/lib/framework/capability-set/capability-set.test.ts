@@ -188,6 +188,8 @@ describe('capability-set', () => {
       getBundles: () => [] as any[],
     } as unknown as Pandino;
     const bundle1 = new BundleImpl(new MuteLogger(), bid, headers1, 'root', 'location', framework);
-    return new BundleRevisionImpl(bundle1, revId, {});
+    return new BundleRevisionImpl(bundle1, revId, {
+      [BUNDLE_SYMBOLICNAME]: '@test/test',
+    });
   }
 });

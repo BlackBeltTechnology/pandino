@@ -27,6 +27,7 @@ import {
   SINGLETON_DIRECTIVE,
   TYPE_BUNDLE,
   TYPE_FRAGMENT,
+  BundleManifestHeaders,
 } from '@pandino/pandino-api';
 import { BundleCapabilityImpl } from '../../wiring/bundle-capability-impl';
 import { ParsedHeaderClause } from './parsed-header-clause';
@@ -51,7 +52,7 @@ export class ManifestParserImpl implements ManifestParser {
 
   static readonly EMPTY_VERSION = new SemVer('0.0.0');
 
-  constructor(configMap: BundleConfigMap, owner: BundleRevision, headerMap: Record<string, any>) {
+  constructor(configMap: BundleConfigMap, owner: BundleRevision, headerMap: BundleManifestHeaders) {
     this.configMap = configMap;
     this.headerMap = headerMap;
 
@@ -94,24 +95,26 @@ export class ManifestParserImpl implements ManifestParser {
 
     // Parse Require-Capability.
     const requireCaps: Array<BundleRequirement> = [];
-    if (isAllPresent(headerMap[REQUIRE_CAPABILITY]) && headerMap[REQUIRE_CAPABILITY].includes('\n')) {
-      const split = headerMap[REQUIRE_CAPABILITY].split('\n').map((str: string) => str.trim());
-      for (const part of split) {
-        requireCaps.push(...ManifestParserImpl.getRequiredClauses(part, owner));
+    if (Array.isArray(headerMap[REQUIRE_CAPABILITY])) {
+      for (const part of headerMap[REQUIRE_CAPABILITY]) {
+        requireCaps.push(...ManifestParserImpl.getRequiredClauses(part.trim(), owner));
       }
-    } else {
-      requireCaps.push(...ManifestParserImpl.getRequiredClauses(headerMap[REQUIRE_CAPABILITY], owner));
+    } else if (typeof headerMap[REQUIRE_CAPABILITY] === 'string') {
+      requireCaps.push(
+        ...ManifestParserImpl.getRequiredClauses((headerMap[REQUIRE_CAPABILITY] as string).trim(), owner),
+      );
     }
 
     // Parse Provide-Capability.
     const provideCaps: Array<BundleCapability> = [];
-    if (isAllPresent(headerMap[PROVIDE_CAPABILITY]) && headerMap[PROVIDE_CAPABILITY].includes('\n')) {
-      const split = headerMap[PROVIDE_CAPABILITY].split('\n').map((str: string) => str.trim());
-      for (const part of split) {
-        provideCaps.push(...ManifestParserImpl.getProviderClauses(part, owner));
+    if (Array.isArray(headerMap[PROVIDE_CAPABILITY])) {
+      for (const part of headerMap[PROVIDE_CAPABILITY]) {
+        provideCaps.push(...ManifestParserImpl.getProviderClauses(part.trim(), owner));
       }
-    } else {
-      provideCaps.push(...ManifestParserImpl.getProviderClauses(headerMap[PROVIDE_CAPABILITY], owner));
+    } else if (typeof headerMap[PROVIDE_CAPABILITY] === 'string') {
+      provideCaps.push(
+        ...ManifestParserImpl.getProviderClauses((headerMap[PROVIDE_CAPABILITY] as string).trim(), owner),
+      );
     }
 
     // Combine all requirements.

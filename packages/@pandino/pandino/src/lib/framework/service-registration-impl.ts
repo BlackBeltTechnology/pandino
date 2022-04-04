@@ -66,7 +66,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
 
   getReference(): ServiceReference<any> {
     if (!this.isValid()) {
-      throw new Error('The service registration is no longer valid.');
+      throw new Error('The service registration is no longer valid for class(es): ' + JSON.stringify(this.classes));
     }
     return this.ref;
   }
@@ -74,7 +74,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
   setProperties(properties: ServiceProperties): void {
     let oldProps: ServiceProperties;
     if (!this.isValid()) {
-      throw new Error('The service registration is no longer valid.');
+      throw new Error('The service registration is no longer valid for class(es): ' + JSON.stringify(this.classes));
     }
     oldProps = this.propMap;
     this.initializeProperties(properties);

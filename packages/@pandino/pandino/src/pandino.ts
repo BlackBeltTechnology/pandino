@@ -17,7 +17,6 @@ import {
   BUNDLE_NAME,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
-  FRAMEWORK_UUID,
   SYSTEMBUNDLE_ACTIVATORS_PROP,
   LOG_LOGGER_PROP,
   LOG_LEVEL_PROP,
@@ -562,8 +561,8 @@ export class Pandino extends BundleImpl implements Framework {
 
   private async createBundleActivator(impl: BundleImpl): Promise<BundleActivator> {
     let activator: BundleActivator = null;
-    let headerMap: Record<string, any> = impl.getHeaders();
-    let activatorDefinition: string | BundleActivator = headerMap[BUNDLE_ACTIVATOR];
+    let headerMap: BundleManifestHeaders = impl.getHeaders();
+    let activatorDefinition = headerMap[BUNDLE_ACTIVATOR];
     if (isAnyMissing(activatorDefinition)) {
       throw new Error('Missing mandatory Bundle Activator!');
     } else if (typeof activatorDefinition === 'string') {

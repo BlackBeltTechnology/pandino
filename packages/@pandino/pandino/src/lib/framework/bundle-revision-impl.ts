@@ -1,5 +1,5 @@
 import { SemVer } from 'semver';
-import { ActivationPolicy, Bundle } from '@pandino/pandino-api';
+import { ActivationPolicy, Bundle, BundleManifestHeaders } from '@pandino/pandino-api';
 import { BundleImpl } from './bundle-impl';
 import { ManifestParserImpl } from './util/manifest-parser/manifest-parser-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
@@ -25,7 +25,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
   private readonly declaredActivationPolicy: ActivationPolicy;
   private wiring: BundleWiring;
 
-  constructor(bundle: BundleImpl, id: string, headerMap?: Record<string, any>) {
+  constructor(bundle: BundleImpl, id: string, headerMap?: BundleManifestHeaders) {
     this.bundle = bundle;
     this.id = id;
     this.headerMap = headerMap;

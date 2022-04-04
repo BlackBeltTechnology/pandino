@@ -414,8 +414,7 @@ describe('Pandino', () => {
     await preparePandino();
     const multiRequireBundle = await installBundle({
       ...bundle1Headers,
-      [REQUIRE_CAPABILITY]: `pet.grooming;filter:="(&(type=cat)(rate<=20))"
-                             super.hero;filter:="(laser=true)"`,
+      [REQUIRE_CAPABILITY]: ['pet.grooming;filter:="(&(type=cat)(rate<=20))"', 'super.hero;filter:="(laser=true)"'],
     });
 
     expect(multiRequireBundle.getState()).toEqual('INSTALLED');
