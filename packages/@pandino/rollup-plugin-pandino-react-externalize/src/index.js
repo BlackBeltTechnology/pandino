@@ -69,9 +69,7 @@ const pandinoExternalizeReact = ({
     name: 'pandino-externalize-react',
     renderChunk: async (code, chunk, options) => {
       for (module of Object.values(chunk.modules)) {
-        if (module.code && (module.code.startsWith('function') || module.code.startsWith('class'))) {
-          codes.push(module.code);
-        }
+        codes.push(module.code);
       }
     },
     generateBundle: async (options, bundle, isWrite) => {
