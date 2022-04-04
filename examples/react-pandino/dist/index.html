@@ -1,39 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Pandino - React DOM</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="pandino-manifests">
-      [
-        "./pandino-react-dom-manifest.json",
-        "./custom-application-manifest.json"
-      ]
-    </script>
-    <script type="module">
-      window.addEventListener('DOMContentLoaded', async () => {
-        const Pandino = (await import('./pandino.mjs')).default;
-        const pandino = new Pandino({
-          'pandino.deployment.root': location.href,
-          'pandino.bundle.importer': {
-            import: (deploymentRoot, activatorLocation) => import(activatorLocation),
-          },
-          'pandino.manifest.fetcher': {
-            fetch: async (deploymentRoot, uri) => (await fetch(uri)).json(),
-          },
-          'react-dom-element-selector': '#root',
-          'react-dom-application-object-class': '@pandino/pandino-react-dom/application',
-        });
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Pandino - React DOM</title>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="pandino-manifests">
+          [
+            "./pandino-react-dom-manifest.json",
+            "./pandino-react-router-dom-manifest.json",
+            "./custom-application-manifest.json"
+          ]
+        </script>
+        <script type="module">
+            window.addEventListener('DOMContentLoaded', async () => {
+                const Pandino = (await import('./pandino.mjs')).default;
+                const pandino = new Pandino({
+                    'pandino.deployment.root': location.href,
+                    'pandino.bundle.importer': {
+                        import: (deploymentRoot, activatorLocation) => import(activatorLocation),
+                    },
+                    'pandino.manifest.fetcher': {
+                        fetch: async (deploymentRoot, uri) => (await fetch(uri)).json(),
+                    },
+                    'pandino.log.level': 5,
+                    'react-dom-element-selector': '#root',
+                    'react-dom-application-object-class': '@example/react-pandino/application',
+                });
 
-        await pandino.init();
-        await pandino.start();
+                await pandino.init();
+                await pandino.start();
 
-        await pandino.getBundleContext().installBundle('./pandino-bundle-installer-dom-manifest.json');
-      });
-    </script>
-  </body>
+                await pandino.getBundleContext().installBundle('./pandino-bundle-installer-dom-manifest.json');
+
+                // window.setTimeout(() => {
+                //     pandino.getBundleContext().installBundle('./custom-application-manifest.json');
+                // }, 500);
+            });
+        </script>
+    </body>
 </html>

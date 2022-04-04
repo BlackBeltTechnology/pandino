@@ -1,5 +1,3 @@
-dist/pandino-bundle-installer-dom-manifest.json
-dist/pandino-bundle-installer-dom.mjs
-dist/pandino-react-dom-manifest.json
-dist/pandino-react-dom.mjs
-dist/pandino.mjs
+dist/*
+!dist/index.html
+
