@@ -2,7 +2,7 @@
 
 **EXPERIMENTAL TECHNOLOGY!**
 
-A Pandio Bundle wrapping React itself
+A Pandino Bundle wrapping React itself
 
 ## Usage
 

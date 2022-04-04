@@ -1,9 +1,0 @@
-{
-  "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/pandino-react-dom",
-  "Bundle-Name": "Pandino React DOM",
-  "Bundle-Version": "0.1.0",
-  "Bundle-Description": "A Pandio Bundle wrapping React it self",
-  "Bundle-Activator": "./pandino-react-dom.mjs",
-  "Provide-Capability": "@pandino/pandino-react-dom;type=\"dom\""
-}
