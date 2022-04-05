@@ -216,8 +216,7 @@ describe('Pandino', () => {
     await preparePandino();
     await installBundle({
       ...bundle1Headers,
-      [REQUIRE_CAPABILITY]: `cap.test;filter:="(type=one)"
-                             cap.other;filter:="(num<=50)"`,
+      [REQUIRE_CAPABILITY]: ['cap.test;filter:="(type=one)"', 'cap.other;filter:="(num<=50)"'],
     });
     let bundles = pandino.getBundleContext().getBundles();
 
