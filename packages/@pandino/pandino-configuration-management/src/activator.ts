@@ -36,7 +36,7 @@ export class Activator implements BundleActivator {
   private pmUsed = false;
   private pmListener: ServiceListener;
 
-  start(context: BundleContext): Promise<void> {
+  async start(context: BundleContext): Promise<void> {
     this.context = context;
     this.loggerReference = context.getServiceReference<Logger>(FRAMEWORK_LOGGER);
     this.logger = context.getService<Logger>(this.loggerReference);
@@ -78,11 +78,9 @@ export class Activator implements BundleActivator {
       this.logger.info(`Configuration Management activation delayed, waiting for a Persistence Manager Reference...`);
       this.context.addServiceListener(this.pmListener, `(objectClass=${INTERFACE_KEY})`);
     }
-
-    return Promise.resolve();
   }
 
-  stop(context: BundleContext): Promise<void> {
+  async stop(context: BundleContext): Promise<void> {
     context.ungetService(this.loggerReference);
     context.ungetService(this.filterParserReference);
     context.ungetService(this.persistenceManagerReference);
@@ -96,8 +94,6 @@ export class Activator implements BundleActivator {
     if (this.pmListener) {
       context.removeServiceListener(this.pmListener);
     }
-
-    return Promise.resolve();
   }
 
   private init(pm: PersistenceManager): void {

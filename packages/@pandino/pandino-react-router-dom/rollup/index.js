@@ -20,7 +20,8 @@ const template = (componentsMap, externalRefsMap, codes, mockProcess) => `
 class Activator {
     ${externalRefsMap.map(m => `${m.token}Ref`).join(EOL)}
     ${componentsMap.map(m => `provide${m.component}Registration`).join(EOL)}
-    start(context) {
+
+    async start(context) {
         ${mockProcess ? `const process = Object.freeze(${JSON.stringify(mockProcess, null, 2)});` : ''}
 
         /**** External Refs ****/
@@ -31,13 +32,11 @@ class Activator {
         
         /**** Register Providers ****/
         ${componentsMap.map(providerTemplate).join(EOL)}
-
-        return Promise.resolve();
     }
-    stop(context) {
+
+    async stop(context) {
         ${externalRefsMap.map(m => `context.ungetService(this.${m.token}Ref);`).join(EOL)}
         ${componentsMap.map(m => `this.provide${m.component}Registration?.unregister();`).join(EOL)}
-        return Promise.resolve();
     }
 }
 

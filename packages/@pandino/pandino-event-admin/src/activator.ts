@@ -36,7 +36,7 @@ export class Activator implements BundleActivator {
   private eventAdmin: EventAdmin & ServiceListener;
   private readonly adapters: AbstractAdapter[] = [];
 
-  start(context: BundleContext): Promise<void> {
+  async start(context: BundleContext): Promise<void> {
     this.loggerRef = context.getServiceReference(FRAMEWORK_LOGGER);
     this.logger = context.getService(this.loggerRef);
     this.filterParserReference = context.getServiceReference<FilterParser>(FRAMEWORK_FILTER_PARSER);
@@ -55,11 +55,9 @@ export class Activator implements BundleActivator {
     this.adapters.push(new FrameworkEventAdapter(context, this.eventAdmin, eventFactoryImpl));
     this.adapters.push(new LogEventAdapter(context, this.eventAdmin, eventFactoryImpl));
     this.adapters.push(new ServiceEventAdapter(context, this.eventAdmin, eventFactoryImpl));
-
-    return Promise.resolve();
   }
 
-  stop(context: BundleContext): Promise<void> {
+  async stop(context: BundleContext): Promise<void> {
     this.adapters.forEach((adapter) => adapter.destroy(context));
     context.removeServiceListener(this.eventAdmin);
     if (this.loggerRef) {
@@ -70,7 +68,5 @@ export class Activator implements BundleActivator {
     }
     this.eventAdminRegistration.unregister();
     this.eventFactoryRegistration.unregister();
-
-    return Promise.resolve();
   }
 }

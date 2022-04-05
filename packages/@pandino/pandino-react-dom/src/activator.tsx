@@ -10,7 +10,7 @@ export class Activator implements BundleActivator {
   private applicationObjectClass?: string;
   private serviceRegistrations: ServiceRegistration<any>[] = [];
 
-  start(context: BundleContext): Promise<void> {
+  async start(context: BundleContext): Promise<void> {
     const rootSelector = context.getProperty(REACT_DOM_ELEMENT_SELECTOR);
     this.rootElement = document.querySelector(rootSelector);
     this.applicationObjectClass = context.getProperty(REACT_DOM_APPLICATION_OBJECT_CLASS);
@@ -18,15 +18,11 @@ export class Activator implements BundleActivator {
     this.serviceRegistrations = registerReactServices(context);
 
     this.render(context);
-
-    return Promise.resolve();
   }
 
-  stop(context: BundleContext): Promise<void> {
+  async stop(context: BundleContext): Promise<void> {
     this.serviceRegistrations.forEach((reg) => reg.unregister());
     this.rootElement.innerHTML = '';
-
-    return Promise.resolve();
   }
 
   private render(context: BundleContext): void {
@@ -35,7 +31,7 @@ export class Activator implements BundleActivator {
     root.render(
       <React.StrictMode>
         <ReactWrapper context={context} applicationObjectClass={this.applicationObjectClass} />
-      </React.StrictMode>
+      </React.StrictMode>,
     );
   }
 }
