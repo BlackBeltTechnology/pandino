@@ -40,7 +40,7 @@ export class StatefulResolver {
         await this.pandino.startBundle(bundle as BundleImpl);
         const unresolvedRevs = this.revisions.filter((r) => isAnyMissing(r.getWiring()));
         const revsToReRun = unresolvedRevs.filter((r) => {
-          const wires = this.getResolvableWires(r, this.getEligibleCapabilities());
+          const wires = StatefulResolver.getResolvableWires(r, this.getEligibleCapabilities());
           return r.getSymbolicName() !== SYSTEM_BUNDLE_SYMBOLICNAME && StatefulResolver.canBundleBeResolved(r, wires);
         });
         for (const rev of revsToReRun) {
@@ -91,7 +91,7 @@ export class StatefulResolver {
   }
 
   private resolve(rev: BundleRevisionImpl, allProvidedCapabilities: BundleCapability[]): BundleWiring | undefined {
-    const wires = this.getResolvableWires(rev, allProvidedCapabilities);
+    const wires = StatefulResolver.getResolvableWires(rev, allProvidedCapabilities);
 
     if (StatefulResolver.canBundleBeResolved(rev, wires)) {
       const bundleWiring = new BundleWiringImpl(rev.getHeaders(), this, rev, wires);
@@ -102,16 +102,20 @@ export class StatefulResolver {
 
   private static canBundleBeResolved(rev: BundleRevision, wires: Array<BundleWire>): boolean {
     const requirements = rev.getDeclaredRequirements(null);
+    const reqs = requirements.map((r) => r.getNamespace());
+    const wireCaps = wires.map((w) => w.getCapability().getNamespace());
 
-    return requirements.length === 0 || wires.length === requirements.length;
+    return requirements.length === 0 || reqs.every((r) => wireCaps.includes(r));
   }
 
-  private getResolvableWires(rev: BundleRevision, allProvidedCapabilities: BundleCapability[]): Array<BundleWire> {
+  static getResolvableWires(rev: BundleRevision, allProvidedCapabilities: BundleCapability[]): Array<BundleWire> {
     const requirements = rev.getDeclaredRequirements(null);
     const wires: Array<BundleWire> = [];
     for (const req of requirements) {
       const filter = (req as BundleRequirementImpl).getFilter();
-      const providedCap = allProvidedCapabilities.find((p) => CapabilitySet.matches(p, filter));
+      const providedCap = allProvidedCapabilities.find(
+        (p) => p.getNamespace() === req.getNamespace() && CapabilitySet.matches(p, filter),
+      );
       if (providedCap) {
         const wire = new BundleWireImpl(req.getResource(), req, providedCap?.getResource(), providedCap);
         wires.push(wire);
