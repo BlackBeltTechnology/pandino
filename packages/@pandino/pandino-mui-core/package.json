@@ -1,0 +1,45 @@
+{
+  "name": "@pandino/pandino-mui-core",
+  "version": "0.1.0",
+  "description": "A Pandio Bundle wrapping Material Core components",
+  "main": "./dist/esm/pandino-mui-core.mjs",
+  "module": "./dist/esm/pandino-mui-core.mjs",
+  "exports": {
+    ".": {
+      "default": "./dist/esm/pandino-mui-core.mjs"
+    }
+  },
+  "private": true,
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npm run clean && rollup -c"
+  },
+  "keywords": [],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  },
+  "devDependencies": {
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@mui/material": "^5.6.0",
+    "@pandino/pandino-api": "^0.1.0",
+    "@pandino/rollup-plugin-pandino-react-externalize": "^0.1.0",
+    "@rollup/plugin-commonjs": "^21.0.3",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@rollup/plugin-typescript": "^8.3.1",
+    "@types/react": "^18.0.1",
+    "@yelo/rollup-node-external": "^1.0.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.70.1",
+    "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.22",
+    "typescript": "^4.6.2",
+    "prettier": "^2.6.1",
+    "terser": "^5.12.1"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}
