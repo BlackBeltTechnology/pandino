@@ -1,5 +1,6 @@
 import { BundleContext, ServiceRegistration } from '@pandino/pandino-api';
 import {
+  default as React,
   Component,
   useContext,
   useEffect,
@@ -32,6 +33,7 @@ export function registerReactServices(context: BundleContext): ServiceRegistrati
     ['@pandino/pandino-react-dom/react/useEffect', useEffect],
     ['@pandino/pandino-react-dom/react/useCallback', useCallback],
     ['@pandino/pandino-react-dom/react/useState', useState],
+    ['@pandino/pandino-react-dom/react/React', React],
     ['@pandino/pandino-react-dom/react/Component', Component],
     ['@pandino/pandino-react-dom/react/Children', Children],
     ['@pandino/pandino-react-dom/react/jsx-runtime/jsxs', jxsr.jsxs],
