@@ -12,6 +12,7 @@
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "MIT",
   "devDependencies": {
+    "@mui/material": "^5.6.0",
     "@pandino/pandino-api": "file:../../packages/@pandino/pandino-api",
     "@pandino/rollup-plugin-pandino-react-externalize": "file:../../packages/@pandino/rollup-plugin-pandino-react-externalize",
     "@rollup/plugin-typescript": "^8.3.1",

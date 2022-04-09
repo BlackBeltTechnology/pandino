@@ -10,3 +10,6 @@ cp ../../packages/@pandino/pandino-react-dom/dist/esm/pandino-react-dom.mjs dist
 
 cp ../../packages/@pandino/pandino-react-router-dom/dist/esm/pandino-react-router-dom-manifest.json dist/pandino-react-router-dom-manifest.json
 cp ../../packages/@pandino/pandino-react-router-dom/dist/esm/pandino-react-router-dom.mjs dist/pandino-react-router-dom.mjs
+
+cp ../../packages/@pandino/pandino-mui-core/dist/esm/pandino-mui-core-manifest.json dist/pandino-mui-core-manifest.json
+cp ../../packages/@pandino/pandino-mui-core/dist/esm/pandino-mui-core.mjs dist/pandino-mui-core.mjs

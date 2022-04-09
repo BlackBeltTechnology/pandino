@@ -24,6 +24,8 @@ export default {
         { token: 'Route',             identifier: '@pandino/pandino-react-router-dom/react-router-dom/Route' },
         { token: 'Link',              identifier: '@pandino/pandino-react-router-dom/react-router-dom/Link' },
         { token: 'Outlet',            identifier: '@pandino/pandino-react-router-dom/react-router-dom/Outlet' },
+        { token: 'Box',               identifier: '@pandino/pandino-mui-core/material/Box/Box' },
+        { token: 'TextField',         identifier: '@pandino/pandino-mui-core/material/TextField/TextField' },
       ],
       componentsMap: [
         {
@@ -41,7 +43,10 @@ export default {
         "Bundle-Version": packageJSON.version,
         "Bundle-Description": packageJSON.description,
         "Bundle-Activator": "./custom-application.mjs",
-        "Require-Capability": "@pandino/pandino-react-router-dom;filter:=\"(type=dom)\"",
+        "Require-Capability": [
+          "@pandino/pandino-react-router-dom;filter:=\"(type=dom)\"",
+          "@pandino/pandino-mui-core;filter:=\"(type=dom)\""
+        ],
         "Provide-Capability": "@example/react-pandino;type=\"dom\""
       },
     }),

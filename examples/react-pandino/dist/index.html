@@ -12,6 +12,8 @@
           [
             "./pandino-react-dom-manifest.json",
             "./pandino-react-router-dom-manifest.json",
+            "./pandino-react-router-dom-manifest.json",
+            "./pandino-mui-core-manifest.json",
             "./custom-application-manifest.json"
           ]
         </script>
@@ -26,7 +28,7 @@
                     'pandino.manifest.fetcher': {
                         fetch: async (deploymentRoot, uri) => (await fetch(uri)).json(),
                     },
-                    'pandino.log.level': 5,
+                    'pandino.log.level': 3,
                     'react-dom-element-selector': '#root',
                     'react-dom-application-object-class': '@example/react-pandino/application',
                 });
