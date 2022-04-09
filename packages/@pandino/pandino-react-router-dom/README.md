@@ -2,7 +2,7 @@
 
 **EXPERIMENTAL TECHNOLOGY!**
 
-A Pandino Bundle wrapping React Router DOM itself
+A Pandino Bundle wrapping [React Router](https://reactrouterdotcom.fly.dev/) (DOM) itself
 
 ## Usage
 
