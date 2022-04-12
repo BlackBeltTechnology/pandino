@@ -37,6 +37,7 @@ export default {
           identifier: '@pokedex/feature',
           props: {
             'service.ranking': 90,
+            'name': 'feature-settings',
           },
         },
       ],

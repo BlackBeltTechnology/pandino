@@ -8,6 +8,8 @@ import { Pokemon } from "./Pokemon";
 import { FeatureListener } from "./feature-listener";
 
 export function Application() {
+    const context = useReactBundleContext();
+    const additionalFeatures = context.bundleContext.getServiceReferences<PokedexFeature>('@pokedex/feature');
     const [features, setFeatures] = useState<Array<PokedexFeature>>([
         {
             route: '/',
@@ -21,8 +23,8 @@ export function Application() {
             className: 'fa fa-paw',
             getComponent: () => <Pokemon />,
         },
+        ...additionalFeatures.map(r => context.bundleContext.getService(r))
     ]);
-    const context = useReactBundleContext();
 
     console.info(features);
 
