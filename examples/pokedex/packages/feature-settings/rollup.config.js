@@ -23,11 +23,11 @@ export default {
         { token: 'useState',              identifier: '@pandino/pandino-react-dom/react/useState' },
         { token: 'useEffect',             identifier: '@pandino/pandino-react-dom/react/useEffect' },
 
-        { token: 'useNavigate',           identifier: '@pandino/pandino-react-router-dom/react-router-dom/useNavigate' },
-        { token: 'HashRouter',            identifier: '@pandino/pandino-react-router-dom/react-router-dom/HashRouter' },
-        { token: 'Routes',                identifier: '@pandino/pandino-react-router-dom/react-router-dom/Routes' },
-        { token: 'Route',                 identifier: '@pandino/pandino-react-router-dom/react-router-dom/Route' },
-        { token: 'Link',                  identifier: '@pandino/pandino-react-router-dom/react-router-dom/Link' },
+        // { token: 'useNavigate',           identifier: '@pandino/pandino-react-router-dom/react-router-dom/useNavigate' },
+        // { token: 'HashRouter',            identifier: '@pandino/pandino-react-router-dom/react-router-dom/HashRouter' },
+        // { token: 'Routes',                identifier: '@pandino/pandino-react-router-dom/react-router-dom/Routes' },
+        // { token: 'Route',                 identifier: '@pandino/pandino-react-router-dom/react-router-dom/Route' },
+        // { token: 'Link',                  identifier: '@pandino/pandino-react-router-dom/react-router-dom/Link' },
 
         { token: 'useReactBundleContext', identifier: '@pandino/pandino-react-dom/useReactBundleContext' },
       ],
