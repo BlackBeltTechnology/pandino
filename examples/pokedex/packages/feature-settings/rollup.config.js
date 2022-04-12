@@ -1,5 +1,5 @@
 import typescript from '@rollup/plugin-typescript';
-import { pandinoExternalizeReact } from '@pandino/rollup-plugin-pandino-react-externalize';
+import { pandinoExternalizeReact } from './rollup/index';
 import { readFileSync } from "fs";
 
 const packageJSON = JSON.parse(readFileSync('package.json').toString('utf8'));
@@ -8,7 +8,7 @@ export default {
   input: 'src/index.ts',
   output: [
     {
-      file: 'dist/application.mjs',
+      file: 'dist/feature-settings.mjs',
       format: 'esm',
     }
   ],
@@ -23,8 +23,6 @@ export default {
         { token: 'useState',              identifier: '@pandino/pandino-react-dom/react/useState' },
         { token: 'useEffect',             identifier: '@pandino/pandino-react-dom/react/useEffect' },
 
-        { token: 'flushSync',             identifier: '@pandino/pandino-react-dom/react-dom/flushSync' },
-
         { token: 'useNavigate',           identifier: '@pandino/pandino-react-router-dom/react-router-dom/useNavigate' },
         { token: 'HashRouter',            identifier: '@pandino/pandino-react-router-dom/react-router-dom/HashRouter' },
         { token: 'Routes',                identifier: '@pandino/pandino-react-router-dom/react-router-dom/Routes' },
@@ -35,8 +33,8 @@ export default {
       ],
       componentsMap: [
         {
-          component: 'Application',
-          identifier: 'pokedex-application',
+          component: 'settingsFeature',
+          identifier: '@pokedex/feature',
           props: {
             'service.ranking': 90,
           },
@@ -45,15 +43,15 @@ export default {
       manifestData: {
         "Bundle-ManifestVersion": "1",
         "Bundle-SymbolicName": packageJSON.name,
-        "Bundle-Name": "Application",
+        "Bundle-Name": "Settings",
         "Bundle-Version": packageJSON.version,
         "Bundle-Description": packageJSON.description,
-        "Bundle-Activator": "./application.mjs",
+        "Bundle-Activator": "./feature-settings.mjs",
         "Require-Capability": [
           "@pandino/pandino-react-dom;filter:=\"(type=dom)\"",
           "@pandino/pandino-react-router-dom;filter:=\"(type=dom)\""
         ],
-        "Provide-Capability": "pokedex-application;type=\"dom\""
+        "Provide-Capability": "@pokedex/feature;type=\"dom\""
       },
     }),
   ],

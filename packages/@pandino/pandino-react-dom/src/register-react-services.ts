@@ -15,13 +15,17 @@ import {
   Children,
   forwardRef,
 } from 'react';
+import { flushSync } from 'react-dom';
 import jsxRuntime from 'react/jsx-runtime';
 import { ReactBundleContext } from './react-bundle-context';
+import { ComponentProxy } from "./component-proxy";
 
 const jxsr = jsxRuntime as any;
 
 export function registerReactServices(context: BundleContext): ServiceRegistration<any>[] {
   const registrations: Map<string, any> = new Map<string, any>([
+    ['@pandino/pandino-react-dom/react-dom/flushSync', flushSync],
+
     ['@pandino/pandino-react-dom/react/isValidElement', isValidElement],
     ['@pandino/pandino-react-dom/react/createContext', createContext],
     ['@pandino/pandino-react-dom/react/useLayoutEffect', useLayoutEffect],
@@ -41,6 +45,7 @@ export function registerReactServices(context: BundleContext): ServiceRegistrati
     ['@pandino/pandino-react-dom/react/jsx-runtime/Fragment', jxsr.Fragment],
     ['@pandino/pandino-react-dom/useReactBundleContext', () => useContext(ReactBundleContext)],
     ['@pandino/pandino-react-dom/ReactBundleContext', ReactBundleContext],
+    ['@pandino/pandino-react-dom/ComponentProxy', ComponentProxy],
   ]);
 
   return Array.from(registrations.entries()).map(([objectClass, value]) => context.registerService(objectClass, value));

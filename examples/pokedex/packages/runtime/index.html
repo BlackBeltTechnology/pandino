@@ -39,6 +39,10 @@
                 await pandino.start();
 
                 await pandino.getBundleContext().installBundle('./pandino-bundle-installer-dom-manifest.json');
+
+                // window.setTimeout(() => {
+                //     pandino.getBundleContext().installBundle('./feature-settings-manifest.json');
+                // }, 3000);
             });
         </script>
     </body>

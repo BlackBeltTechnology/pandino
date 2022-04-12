@@ -1,0 +1,23 @@
+{
+  "name": "pokedex-application-contract",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "rimraf dist && rollup -c rollup.config.js"
+  },
+  "keywords": [],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "MIT",
+  "devDependencies": {
+    "@pandino/pandino-api": "file:../../../../packages/@pandino/pandino-api",
+    "@rollup/plugin-typescript": "^8.3.1",
+    "@types/react": "^17.0.40",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.70.1",
+    "typescript": "^4.6.2"
+  }
+}

@@ -21,7 +21,7 @@ const baseConfig = {
   entry: {
     [entryName]: './src/index.ts',
   },
-  mode: 'production',
+  mode: 'development',
   devtool: false,
   module: {
     rules: [
