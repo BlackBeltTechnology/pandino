@@ -50,7 +50,8 @@ export default {
         "Bundle-Activator": "./feature-settings.mjs",
         "Require-Capability": [
           "@pandino/pandino-react-dom;filter:=\"(type=dom)\"",
-          "@pandino/pandino-react-router-dom;filter:=\"(type=dom)\""
+          "@pandino/pandino-react-router-dom;filter:=\"(type=dom)\"",
+          "@pandino/pandino-configuration-management;filter:=\"(objectClass=@pandino/pandino-configuration-management/ConfigurationAdmin)\""
         ],
         "Provide-Capability": "@pokedex/feature;type=\"dom\""
       },
