@@ -15,6 +15,7 @@
     "@pandino/pandino-api": "file:../../../../packages/@pandino/pandino-api",
     "@pandino/pandino-react-dom-api": "file:../../../../packages/@pandino/pandino-react-dom-api",
     "@pandino/rollup-plugin-pandino-react-externalize": "file:../../../../packages/@pandino/rollup-plugin-pandino-react-externalize",
+    "@pandino/pandino-configuration-management-api": "file:../../../../packages/@pandino/pandino-configuration-management-api",
     "@rollup/plugin-typescript": "^8.3.1",
     "@types/react": "^17.0.43",
     "@types/react-router-dom": "^5.3.3",

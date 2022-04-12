@@ -1,5 +1,7 @@
-import { FC, useEffect, useState } from "react";
-import { ComponentProxyProps, useReactBundleContext } from "@pandino/pandino-react-dom-api";
+import { useEffect, useState } from "react";
+import { useReactBundleContext } from "@pandino/pandino-react-dom-api";
+import { ConfigurationAdmin } from "@pandino/pandino-configuration-management-api";
+import { SettingsModel } from "pokedex-application-contract";
 
 interface Pokemon {
     id: number,
@@ -8,30 +10,23 @@ interface Pokemon {
 }
 
 export function Pokemon() {
-    const [list, setList] = useState<Array<Pokemon>>([]);
-    const [visibleList, setVisibleList] = useState<Array<Pokemon>>([]);
-    const [page, setPage] = useState(0);
-    const [limit, setLimit] = useState(10);
-    const [pages, setPages] = useState(1);
-    const context = useReactBundleContext();
-    const componentProxyRef = context.bundleContext.getServiceReference<FC<ComponentProxyProps>>('@pandino/pandino-react-dom/ComponentProxy');
-    let ComponentProxy: FC<ComponentProxyProps> = context.bundleContext.getService(componentProxyRef);
+    const [ visibleList, setVisibleList ] = useState<Array<Pokemon>>([]);
+    const { bundleContext } = useReactBundleContext();
+    // const componentProxyRef = bundleContext.getServiceReference<FC<ComponentProxyProps>>('@pandino/pandino-react-dom/ComponentProxy');
+    // let ComponentProxy: FC<ComponentProxyProps> = bundleContext.getService(componentProxyRef);
+
+    const configAdminReference = bundleContext.getServiceReference<ConfigurationAdmin>('@pandino/pandino-configuration-management/ConfigurationAdmin');
+    const configAdmin = configAdminReference ? bundleContext.getService<ConfigurationAdmin>(configAdminReference) : undefined;
 
     useEffect(() => {
         (async () => {
             const res = await fetch('https://raw.githubusercontent.com/jherr/pokemon/main/index.json');
             const json = await res.json();
-            setList(json.slice(0, 99));
-            setVisibleList(json.slice(0, limit - 1));
-            setPages(10); // yes, static for now
+            const config = configAdmin?.getConfiguration('pokedex.settings');
+            const configProps = config?.getProperties() as SettingsModel;
+            setVisibleList(json.slice(0, configProps ? (configProps.maxNumberOfElements) : 10));
         })();
     }, []);
-
-    const loadPage = (pageNum: number): void => {
-        const trimStart = pageNum * limit;
-        setPage(pageNum);
-        setVisibleList(list.splice(trimStart, limit - 1))
-    };
 
     return (
         <>
@@ -62,17 +57,6 @@ export function Pokemon() {
                 ))}
                 </tbody>
             </table>
-            <nav aria-label="Page navigation example">
-                <ul className="pagination">
-                    <li className="page-item"><a className="page-link" href="#">Previous</a></li>
-                    {[...Array(pages).keys()].map(p => (
-                        <li key={p} className="page-item">
-                            <a className="page-link" style={{ cursor: 'pointer' }} onClick={() => loadPage(p)}>{p + 1}</a>
-                        </li>
-                    ))}
-                    <li className="page-item"><a className="page-link" href="#">Next</a></li>
-                </ul>
-            </nav>
         </>
     );
 }

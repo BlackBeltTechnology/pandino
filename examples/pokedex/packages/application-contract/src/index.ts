@@ -6,3 +6,7 @@ export interface PokedexFeature {
   className: string,
   getComponent: () => ReactNode | any,
 }
+
+export interface SettingsModel {
+  maxNumberOfElements: number;
+}

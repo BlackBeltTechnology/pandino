@@ -33,7 +33,6 @@ export function Application() {
         context.bundleContext.addServiceListener(featureListener, '(objectClass=@pokedex/feature)');
 
         return () => {
-            console.log('CCCCCCCCCCCCC');
             context.bundleContext.removeServiceListener(featureListener);
         };
     });
