@@ -10,3 +10,9 @@ export interface PokedexFeature {
 export interface SettingsModel {
   maxNumberOfElements: number;
 }
+
+interface Pokemon {
+  id: number,
+  name: string,
+  image: string,
+}

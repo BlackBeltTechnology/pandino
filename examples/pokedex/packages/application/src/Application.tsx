@@ -26,8 +26,6 @@ export function Application() {
         ...additionalFeatures.map(r => context.bundleContext.getService(r))
     ]);
 
-    console.info(features);
-
     useEffect(() => {
         const featureListener = new FeatureListener(context.bundleContext, features, setFeatures);
         context.bundleContext.addServiceListener(featureListener, '(objectClass=@pokedex/feature)');
