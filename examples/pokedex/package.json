@@ -6,6 +6,8 @@
   "private": true,
   "scripts": {
     "install": "lerna bootstrap",
+    "format": "prettier --config .prettierrc \"packages/*/src/**/*.ts\" --write",
+    "format-tsx": "prettier --config .prettierrc \"packages/*/src/**/*.tsx\" --write",
     "build": "lerna run build",
     "start": "lerna run --scope app start --stream"
   },
@@ -16,6 +18,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "lerna": "^4.0.0",
+    "prettier": "^2.4.1"
   }
 }

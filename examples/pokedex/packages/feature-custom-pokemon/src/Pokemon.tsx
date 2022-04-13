@@ -22,33 +22,39 @@ export function CustomPokemon() {
       const configProps = config?.getProperties() as SettingsModel;
       setVisibleList(json.slice(0, configProps ? configProps.maxNumberOfElements : 10));
     })();
+
+    return () => {
+      if (configAdminReference) {
+        bundleContext.ungetService(configAdminReference);
+      }
+    };
   }, []);
 
   return (
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-        }}
-      >
-        {visibleList.map((pokemon, idx) => (
-          <div
-            key={pokemon.name}
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+      }}
+    >
+      {visibleList.map((pokemon, idx) => (
+        <div
+          key={pokemon.name}
+          style={{
+            flex: '1 0 21%',
+            margin: '5px',
+            height: '200px',
+          }}
+        >
+          <img
             style={{
-              flex: '1 0 21%',
-              margin: '5px',
-              height: '200px',
+              maxHeight: '200px',
             }}
-          >
-            <img
-              style={{
-                  maxHeight: '200px',
-              }}
-              src={`https://raw.githubusercontent.com/jherr/pokemon/main/images/${pokemon.name.toLowerCase()}.jpg`}
-              alt={pokemon.name}
-            />
-          </div>
-        ))}
-      </div>
+            src={`https://raw.githubusercontent.com/jherr/pokemon/main/images/${pokemon.name.toLowerCase()}.jpg`}
+            alt={pokemon.name}
+          />
+        </div>
+      ))}
+    </div>
   );
 }

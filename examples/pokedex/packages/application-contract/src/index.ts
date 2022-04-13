@@ -1,10 +1,10 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 export interface PokedexFeature {
-  route: string,
-  label: string,
-  className: string,
-  getComponent: () => ReactNode | any,
+  route: string;
+  label: string;
+  className: string;
+  getComponent: () => ReactNode | any;
 }
 
 export interface SettingsModel {
@@ -12,7 +12,7 @@ export interface SettingsModel {
 }
 
 interface Pokemon {
-  id: number,
-  name: string,
-  image: string,
+  id: number;
+  name: string;
+  image: string;
 }
