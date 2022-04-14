@@ -58,13 +58,15 @@ export function Application() {
           <nav id="sidebarMenu" className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
             <div className="position-sticky pt-3">
               <ul className="nav flex-column">
-                {features.map((route) => (
-                  <li key={route.route} className="nav-item">
-                    <Link to={route.route} className="nav-link">
-                      <i className={route.className} /> {route.label}
-                    </Link>
-                  </li>
-                ))}
+                {features
+                  .filter((f) => !!f.label)
+                  .map((route) => (
+                    <li key={route.route} className="nav-item">
+                      <Link to={route.route} className="nav-link">
+                        <i className={route.className} /> {route.label}
+                      </Link>
+                    </li>
+                  ))}
               </ul>
             </div>
           </nav>

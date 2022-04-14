@@ -10,7 +10,6 @@ const defaultSettings: SettingsModel = {
 export function Settings() {
   const { bundleContext } = useReactBundleContext();
   const [settings, setSettings] = useState<SettingsModel | undefined>(undefined);
-  // const navigate = useNavigate();
 
   useEffect(() => {
     const configAdminReference = bundleContext.getServiceReference(
@@ -59,12 +58,6 @@ export function Settings() {
       maxNumberOfElements,
     });
   }
-
-  // useEffect(() => {
-  //     return () => {
-  //         navigate('/');
-  //     }
-  // }, []);
 
   return (
     <>

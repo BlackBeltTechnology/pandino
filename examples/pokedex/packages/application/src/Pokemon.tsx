@@ -2,8 +2,9 @@ import { FC, useEffect, useState } from 'react';
 import { ComponentProxyProps, useReactBundleContext } from '@pandino/pandino-react-dom-api';
 import { ConfigurationAdmin } from '@pandino/pandino-configuration-management-api';
 import { Pokemon, SettingsModel } from 'pokedex-application-contract';
+import { Link } from 'react-router-dom';
 
-function TableComponent({ pokemonList }: { pokemonList: Pokemon[] }) {
+function TableComponent({ pokemonList, detailsSupported }: { pokemonList: Pokemon[]; detailsSupported: boolean }) {
   return (
     <table className="table">
       <thead>
@@ -24,7 +25,7 @@ function TableComponent({ pokemonList }: { pokemonList: Pokemon[] }) {
                 alt={pokemon.name}
               />
             </td>
-            <td>{pokemon.name}</td>
+            <td>{detailsSupported ? <Link to={`${pokemon.id}`}>{pokemon.name}</Link> : pokemon.name}</td>
           </tr>
         ))}
       </tbody>
@@ -40,6 +41,7 @@ export function Pokemon() {
   );
   let ComponentProxy: FC<ComponentProxyProps> = bundleContext.getService(componentProxyRef);
 
+  const detailsReferences = bundleContext.getServiceReferences('@pokedex/feature', '(name=feature-details)');
   const configAdminReference = bundleContext.getServiceReference<ConfigurationAdmin>(
     '@pandino/pandino-configuration-management/ConfigurationAdmin',
   );
@@ -60,6 +62,9 @@ export function Pokemon() {
       if (componentProxyRef) {
         bundleContext.ungetService(componentProxyRef);
       }
+      if (detailsReferences.length) {
+        detailsReferences.forEach((ref) => bundleContext.ungetService(ref));
+      }
       if (configAdminReference) {
         bundleContext.ungetService(configAdminReference);
       }
@@ -71,7 +76,12 @@ export function Pokemon() {
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 className="h2">Pokémon</h1>
       </div>
-      <ComponentProxy identifier="pokedex-pokemon" defaultComponent={TableComponent} pokemonList={visibleList} />
+      <ComponentProxy
+        identifier="pokedex-pokemon"
+        defaultComponent={TableComponent}
+        pokemonList={visibleList}
+        detailsSupported={detailsReferences.length}
+      />
     </div>
   );
 }

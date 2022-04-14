@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { useReactBundleContext } from '@pandino/pandino-react-dom-api';
 import { ConfigurationAdmin } from '@pandino/pandino-configuration-management-api';
 import { Pokemon, SettingsModel } from 'pokedex-application-contract';
+import { Link } from 'react-router-dom';
 
 export function CustomPokemon() {
   const [visibleList, setVisibleList] = useState<Array<Pokemon>>([]);
   const { bundleContext } = useReactBundleContext();
 
+  const detailsReferences = bundleContext.getServiceReferences('@pokedex/feature', '(name=feature-details)');
   const configAdminReference = bundleContext.getServiceReference<ConfigurationAdmin>(
     '@pandino/pandino-configuration-management/ConfigurationAdmin',
   );
@@ -27,6 +29,9 @@ export function CustomPokemon() {
       if (configAdminReference) {
         bundleContext.ungetService(configAdminReference);
       }
+      if (detailsReferences.length) {
+        detailsReferences.forEach((ref) => bundleContext.ungetService(ref));
+      }
     };
   }, []);
 
@@ -46,13 +51,26 @@ export function CustomPokemon() {
             height: '200px',
           }}
         >
-          <img
-            style={{
-              maxHeight: '200px',
-            }}
-            src={`https://raw.githubusercontent.com/jherr/pokemon/main/images/${pokemon.name.toLowerCase()}.jpg`}
-            alt={pokemon.name}
-          />
+          {detailsReferences.length ? (
+            <Link to={`${pokemon.id}`}>
+              <img
+                style={{
+                  maxHeight: '200px',
+                  border: '3px solid red',
+                }}
+                src={`https://raw.githubusercontent.com/jherr/pokemon/main/images/${pokemon.name.toLowerCase()}.jpg`}
+                alt={pokemon.name}
+              />
+            </Link>
+          ) : (
+            <img
+              style={{
+                maxHeight: '200px',
+              }}
+              src={`https://raw.githubusercontent.com/jherr/pokemon/main/images/${pokemon.name.toLowerCase()}.jpg`}
+              alt={pokemon.name}
+            />
+          )}
         </div>
       ))}
     </div>
