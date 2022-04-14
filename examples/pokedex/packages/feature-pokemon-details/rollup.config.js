@@ -22,10 +22,9 @@ export default {
         { token: 'Fragment',              identifier: '@pandino/pandino-react-dom/react/jsx-runtime/Fragment' },
         { token: 'useState',              identifier: '@pandino/pandino-react-dom/react/useState' },
         { token: 'useEffect',             identifier: '@pandino/pandino-react-dom/react/useEffect' },
+        { token: 'useReactBundleContext', identifier: '@pandino/pandino-react-dom/useReactBundleContext' },
 
         { token: 'useParams',             identifier: '@pandino/pandino-react-router-dom/react-router-dom/useParams' },
-
-        { token: 'useReactBundleContext', identifier: '@pandino/pandino-react-dom/useReactBundleContext' },
       ],
       componentsMap: [
         {
