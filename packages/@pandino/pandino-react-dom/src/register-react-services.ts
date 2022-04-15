@@ -1,4 +1,5 @@
 import { BundleContext, ServiceRegistration } from '@pandino/pandino-api';
+import { COMPONENT_PROXY_INTERFACE_KEY } from '@pandino/pandino-react-dom-api';
 import {
   default as React,
   Component,
@@ -26,26 +27,30 @@ export function registerReactServices(context: BundleContext): ServiceRegistrati
   const registrations: Map<string, any> = new Map<string, any>([
     ['@pandino/pandino-react-dom/react-dom/flushSync', flushSync],
 
-    ['@pandino/pandino-react-dom/react/isValidElement', isValidElement],
-    ['@pandino/pandino-react-dom/react/createContext', createContext],
+    ['@pandino/pandino-react-dom/react/jsx-runtime/jsxs', jxsr.jsxs],
+    ['@pandino/pandino-react-dom/react/jsx-runtime/jsx', jxsr.jsx],
+    ['@pandino/pandino-react-dom/react/jsx-runtime/Fragment', jxsr.Fragment],
+
+    ['@pandino/pandino-react-dom/react/React', React],
+    ['@pandino/pandino-react-dom/react/Component', Component],
+    ['@pandino/pandino-react-dom/react/Children', Children],
+
     ['@pandino/pandino-react-dom/react/useLayoutEffect', useLayoutEffect],
     ['@pandino/pandino-react-dom/react/useRef', useRef],
-    ['@pandino/pandino-react-dom/react/createElement', createElement],
-    ['@pandino/pandino-react-dom/react/forwardRef', forwardRef],
     ['@pandino/pandino-react-dom/react/useMemo', useMemo],
     ['@pandino/pandino-react-dom/react/useContext', useContext],
     ['@pandino/pandino-react-dom/react/useEffect', useEffect],
     ['@pandino/pandino-react-dom/react/useCallback', useCallback],
     ['@pandino/pandino-react-dom/react/useState', useState],
-    ['@pandino/pandino-react-dom/react/React', React],
-    ['@pandino/pandino-react-dom/react/Component', Component],
-    ['@pandino/pandino-react-dom/react/Children', Children],
-    ['@pandino/pandino-react-dom/react/jsx-runtime/jsxs', jxsr.jsxs],
-    ['@pandino/pandino-react-dom/react/jsx-runtime/jsx', jxsr.jsx],
-    ['@pandino/pandino-react-dom/react/jsx-runtime/Fragment', jxsr.Fragment],
+
+    ['@pandino/pandino-react-dom/react/createContext', createContext],
+    ['@pandino/pandino-react-dom/react/createElement', createElement],
+    ['@pandino/pandino-react-dom/react/isValidElement', isValidElement],
+    ['@pandino/pandino-react-dom/react/forwardRef', forwardRef],
+
     ['@pandino/pandino-react-dom/useReactBundleContext', () => useContext(ReactBundleContext)],
     ['@pandino/pandino-react-dom/ReactBundleContext', ReactBundleContext],
-    ['@pandino/pandino-react-dom/ComponentProxy', ComponentProxy],
+    [COMPONENT_PROXY_INTERFACE_KEY, ComponentProxy],
   ]);
 
   return Array.from(registrations.entries()).map(([objectClass, value]) => context.registerService(objectClass, value));
