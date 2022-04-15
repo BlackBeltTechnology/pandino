@@ -1,4 +1,4 @@
-import {ReactBundleContextType} from "./react-bundle-context-type";
+import { ReactBundleContextType } from './react-bundle-context-type';
 
 export type UseReactBundleContextType = () => ReactBundleContextType;
 

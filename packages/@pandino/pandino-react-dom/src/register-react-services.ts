@@ -18,7 +18,7 @@ import {
 import { flushSync } from 'react-dom';
 import jsxRuntime from 'react/jsx-runtime';
 import { ReactBundleContext } from './react-bundle-context';
-import { ComponentProxy } from "./component-proxy";
+import { ComponentProxy } from './component-proxy';
 
 const jxsr = jsxRuntime as any;
 
