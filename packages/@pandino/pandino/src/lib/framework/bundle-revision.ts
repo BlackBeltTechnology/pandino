@@ -18,7 +18,7 @@ export interface BundleRevision extends BundleReference, Resource {
   getVersion(): SemVer;
   getDeclaredCapabilities(namespace: string): BundleCapability[];
   getDeclaredRequirements(namespace: string): BundleRequirement[];
-  getWiring(): BundleWiring;
+  getWiring(): BundleWiring | undefined;
   getCapabilities(namespace: string): Capability[];
   getRequirements(namespace: string): Requirement[];
 }

@@ -23,7 +23,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
 
   private readonly bundle: BundleImpl;
   private readonly declaredActivationPolicy: ActivationPolicy;
-  private wiring: BundleWiring;
+  private wiring?: BundleWiring;
 
   constructor(bundle: BundleImpl, id: string, headerMap?: BundleManifestHeaders) {
     this.bundle = bundle;
@@ -91,7 +91,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
     return this.version;
   }
 
-  getWiring(): BundleWiring {
+  getWiring(): BundleWiring | undefined {
     return this.wiring;
   }
 
@@ -107,7 +107,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
     return this.id;
   }
 
-  resolve(wiring: BundleWiring): void {
+  resolve(wiring?: BundleWiring): void {
     if (isAllPresent(this.wiring)) {
       this.wiring = null;
     }

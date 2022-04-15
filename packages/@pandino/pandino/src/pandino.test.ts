@@ -1,4 +1,3 @@
-import { Pandino } from './pandino';
 import {
   Bundle,
   BundleActivator,
@@ -23,6 +22,7 @@ import {
   OBJECTCLASS,
   ServiceReference,
 } from '@pandino/pandino-api';
+import { Pandino } from './pandino';
 import { BundleImpl } from './lib/framework/bundle-impl';
 
 interface HelloService {
@@ -331,31 +331,30 @@ describe('Pandino', () => {
   it('restart bundle', async () => {
     await preparePandino();
     await installBundle(bundle1Headers);
-    const [myBundle] = pandino.getBundleContext().getBundles();
+    const [bundle1] = pandino.getBundleContext().getBundles();
     const mockBundleChangedListener = jest.fn();
     const bundleListener: BundleListener = {
       bundleChanged: mockBundleChangedListener,
+      isSync: true,
     };
-    myBundle.getBundleContext().addBundleListener(bundleListener);
+    bundle1.getBundleContext().addBundleListener(bundleListener);
 
-    expect(myBundle.getState()).toEqual('ACTIVE');
+    expect(bundle1.getState()).toEqual('ACTIVE');
 
-    await myBundle.stop();
+    await bundle1.stop();
 
-    expect(myBundle.getState()).toEqual('RESOLVED');
-    expect(myBundle.getBundleContext()).toEqual(null);
-    expect((myBundle as BundleImpl).getActivator()).toEqual(null);
+    expect(bundle1.getState()).toEqual('RESOLVED');
+    expect(bundle1.getBundleContext()).toEqual(null);
+    expect((bundle1 as BundleImpl).getActivator()).toEqual(null);
     expect(mockStop).toHaveBeenCalledTimes(1);
-
-    await new Promise((r) => setTimeout(r, 100));
 
     expect(mockBundleChangedListener).toHaveBeenCalledTimes(1); // only 1, since listeners are removed after stop
 
-    await myBundle.start();
+    await bundle1.start();
 
-    expect(myBundle.getState()).toEqual('ACTIVE');
-    expect(myBundle.getBundleContext()).toBeDefined();
-    expect((myBundle as BundleImpl).getActivator()).toBeDefined();
+    expect(bundle1.getState()).toEqual('ACTIVE');
+    expect(bundle1.getBundleContext()).toBeDefined();
+    expect((bundle1 as BundleImpl).getActivator()).toBeDefined();
     expect(mockStart).toHaveBeenCalledTimes(2); // 1 original start + 1 restart
   });
 
@@ -403,6 +402,7 @@ describe('Pandino', () => {
 
     await requiredBundle.uninstall();
 
+    expect((requiredBundle as BundleImpl).getCurrentRevision().getWiring()).toEqual(null);
     expect(pandino.getBundleContext().getBundles().length).toEqual(1);
     expect(requiredBundle.getState()).toEqual('UNINSTALLED');
     expect(requirerBundle.getState()).toEqual('RESOLVED');
@@ -553,10 +553,6 @@ describe('Pandino', () => {
   }
 
   async function installBundle(headers: BundleManifestHeaders): Promise<Bundle> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(pandino.getBundleContext().installBundle(headers));
-      }, 100);
-    });
+    return pandino.getBundleContext().installBundle(headers);
   }
 });

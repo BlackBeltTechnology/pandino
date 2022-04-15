@@ -26,7 +26,7 @@ export class StatefulResolver {
   }
 
   async resolveOne(revision: BundleRevision): Promise<void> {
-    const bundleWiring = this.resolve(revision as BundleRevisionImpl, this.getEligibleCapabilities());
+    const bundleWiring = this.resolve(revision as BundleRevisionImpl);
     if (bundleWiring) {
       this.logger.debug(
         `Bundle Wiring created for Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`,
@@ -78,8 +78,6 @@ export class StatefulResolver {
   /**
    * Currently in the resolving process, we only take ACTIVE Bundles into consideration. Intentionally skipping RESOLVED
    * ones, given we are expecting all Bundles to have at least a start() being called from A {@link BundleActivator}.
-   *
-   * @private
    */
   private getEligibleCapabilities(): BundleCapability[] {
     const caps: BundleCapability[] = [];
@@ -90,13 +88,12 @@ export class StatefulResolver {
     return caps;
   }
 
-  private resolve(rev: BundleRevisionImpl, allProvidedCapabilities: BundleCapability[]): BundleWiring | undefined {
-    const wires = StatefulResolver.getResolvableWires(rev, allProvidedCapabilities);
+  private resolve(rev: BundleRevisionImpl): BundleWiring | undefined {
+    const wiring = this.createWiringForRevision(rev);
 
-    if (StatefulResolver.canBundleBeResolved(rev, wires)) {
-      const bundleWiring = new BundleWiringImpl(rev.getHeaders(), this, rev, wires);
-      rev.resolve(bundleWiring);
-      return bundleWiring;
+    if (wiring) {
+      rev.resolve(wiring);
+      return wiring;
     }
   }
 
@@ -122,6 +119,15 @@ export class StatefulResolver {
       }
     }
     return wires;
+  }
+
+  createWiringForRevision(revision: BundleRevision): BundleWiring | undefined {
+    const wires = StatefulResolver.getResolvableWires(revision, this.getEligibleCapabilities());
+
+    if (StatefulResolver.canBundleBeResolved(revision, wires)) {
+      const impl = revision as BundleRevisionImpl;
+      return new BundleWiringImpl(impl.getHeaders(), this, impl, wires);
+    }
   }
 
   addRevision(br: BundleRevision): void {
