@@ -2,6 +2,8 @@
 
 This is a complex, decoupled, highly dynamic, and configurable app, showcasing multiple Pandino capabilities.
 
+The JSON API, and images are fetched from https://github.com/jherr/pokemon. Thanks to https://github.com/jherr for it!
+
 ## Setup
 - Run `npm run build` in the Git Repository root
 - Run `./cp-extra-manifests.sh` in this folder to obtain dependencies
