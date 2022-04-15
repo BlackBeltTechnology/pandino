@@ -278,6 +278,7 @@ export class Pandino extends BundleImpl implements Framework {
     if (isAnyMissing(rethrow)) {
       this.fireBundleEvent('STARTED', bundle);
       this.logger.info(`Started Bundle: ${bundle.getSymbolicName()}: ${bundle.getVersion()}`);
+      await this.resolver.resolveRemaining();
     } else {
       this.fireBundleEvent('STOPPED', bundle);
       throw rethrow;

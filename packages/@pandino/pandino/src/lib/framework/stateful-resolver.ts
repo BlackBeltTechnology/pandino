@@ -1,4 +1,4 @@
-import { Logger, SYSTEM_BUNDLE_SYMBOLICNAME } from '@pandino/pandino-api';
+import { BundleState, Logger, SYSTEM_BUNDLE_SYMBOLICNAME } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { CapabilitySet } from './capability-set/capability-set';
 import { BundleRevisionImpl } from './bundle-revision-impl';
@@ -26,6 +26,10 @@ export class StatefulResolver {
   }
 
   async resolveOne(revision: BundleRevision): Promise<void> {
+    if (['ACTIVE'].includes(revision.getBundle().getState())) {
+      return;
+    }
+
     const bundleWiring = this.resolve(revision as BundleRevisionImpl);
     if (bundleWiring) {
       this.logger.debug(
@@ -38,15 +42,7 @@ export class StatefulResolver {
 
       try {
         await this.pandino.startBundle(bundle as BundleImpl);
-        const unresolvedRevs = this.revisions.filter((r) => isAnyMissing(r.getWiring()));
-        const revsToReRun = unresolvedRevs.filter((r) => {
-          const wires = StatefulResolver.getResolvableWires(r, this.getEligibleCapabilities());
-          return r.getSymbolicName() !== SYSTEM_BUNDLE_SYMBOLICNAME && StatefulResolver.canBundleBeResolved(r, wires);
-        });
-        for (const rev of revsToReRun) {
-          // On paper, we are not required to await for recursive calls, time will tell...
-          this.resolveOne(rev);
-        }
+        await this.resolveRemaining();
       } catch (err) {
         this.logger.error(err);
       }
@@ -54,6 +50,17 @@ export class StatefulResolver {
       this.logger.debug(
         `No Wiring found for Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`,
       );
+    }
+  }
+
+  async resolveRemaining(): Promise<void> {
+    const unresolvedRevs = this.revisions.filter((r) => isAnyMissing(r.getWiring()));
+    const revsToReRun = unresolvedRevs.filter((r) => {
+      const wires = StatefulResolver.getResolvableWires(r, this.getEligibleCapabilities());
+      return r.getSymbolicName() !== SYSTEM_BUNDLE_SYMBOLICNAME && StatefulResolver.canBundleBeResolved(r, wires);
+    });
+    for (const rev of revsToReRun) {
+      await this.resolveOne(rev);
     }
   }
 
