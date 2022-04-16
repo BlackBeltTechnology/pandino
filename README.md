@@ -231,7 +231,12 @@ export default Activator;
 #### activator.ts
 
 ```typescript
-import { BundleActivator, BundleContext, Logger, ServiceReference } from '@pandino/pandino-api';
+import {
+  BundleActivator,
+  BundleContext,
+  Logger,
+  ServiceReference,
+} from '@pandino/pandino-api';
 import { SERVICE_INTERFACE, StringInverter } from './string-inverter';
 import { stringInverterImpl } from './string-inverter-impl';
 
@@ -241,14 +246,10 @@ export default class Activator implements BundleActivator {
   async start(context: BundleContext): Promise<void> {
     this.inverterRegistration = context
             .registerService<StringInverter>(SERVICE_INTERFACE, stringInverterImpl);
-
-    return Promise.resolve();
   }
 
   async stop(context: BundleContext): Promise<void> {
     this.inverterRegistration.unregister();
-
-    return Promise.resolve();
   }
 }
 ```
@@ -306,24 +307,27 @@ Service becomes available!
 #### activator.ts
 
 ```typescript
-import { BundleActivator, BundleContext, Logger, ServiceReference } from '@pandino/pandino-api';
+import {
+  BundleActivator,
+  BundleContext,
+  Logger,
+  ServiceReference,
+  FRAMEWORK_LOGGER,
+} from '@pandino/pandino-api';
 
 export default class Activator implements BundleActivator {
   private loggerReference: ServiceReference<Logger>;
   private logger: Logger;
 
   async start(context: BundleContext): Promise<void> {
-    this.loggerReference = context.getServiceReference<Logger>('@pandino/pandino/Logger');
+    this.loggerReference = context.getServiceReference<Logger>(FRAMEWORK_LOGGER);
     this.logger = context.getService(this.loggerReference);
 
     this.logger.info('Yayy');
-
-    return Promise.resolve();
   }
 
   async stop(context: BundleContext): Promise<void> {
     context.ungetService(this.loggerReference);
-    return Promise.resolve();
   }
 }
 
@@ -337,7 +341,7 @@ folders.
 
 ## Extras
 
-This repository contains extra packages, e.g.: specifications, corresponding reference-implementations solving 
+This repository contains extra packages, e.g.: specifications, corresponding reference-implementations solving
 common software development problems. Usage is opt-in of course.
 
 ### Bundle Installer
@@ -360,3 +364,7 @@ common software development problems. Usage is opt-in of course.
 
 - [API](./packages/@pandino/pandino-event-api)
 - [Pandino - Event Admin](./packages/@pandino/pandino-event-admin)
+
+### Bundler Plugins
+
+- [rollup-plugin-pandino-react-externalize](./packages/@pandino/rollup-plugin-pandino-react-externalize)
