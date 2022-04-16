@@ -1,0 +1,1 @@
+export { CustomPokemon } from './Pokemon';

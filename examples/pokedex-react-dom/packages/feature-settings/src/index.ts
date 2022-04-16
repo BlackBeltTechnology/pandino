@@ -1,0 +1,1 @@
+export { settingsFeature } from './SettingsFeature';

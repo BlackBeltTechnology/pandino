@@ -1,4 +1,4 @@
-import { Logger, SYSTEM_BUNDLE_SYMBOLICNAME } from '@pandino/pandino-api';
+import { BundleState, Logger, SYSTEM_BUNDLE_SYMBOLICNAME } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { CapabilitySet } from './capability-set/capability-set';
 import { BundleRevisionImpl } from './bundle-revision-impl';
@@ -26,7 +26,11 @@ export class StatefulResolver {
   }
 
   async resolveOne(revision: BundleRevision): Promise<void> {
-    const bundleWiring = this.resolve(revision as BundleRevisionImpl, this.getEligibleCapabilities());
+    if (['ACTIVE'].includes(revision.getBundle().getState())) {
+      return;
+    }
+
+    const bundleWiring = this.resolve(revision as BundleRevisionImpl);
     if (bundleWiring) {
       this.logger.debug(
         `Bundle Wiring created for Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`,
@@ -38,15 +42,7 @@ export class StatefulResolver {
 
       try {
         await this.pandino.startBundle(bundle as BundleImpl);
-        const unresolvedRevs = this.revisions.filter((r) => isAnyMissing(r.getWiring()));
-        const revsToReRun = unresolvedRevs.filter((r) => {
-          const wires = StatefulResolver.getResolvableWires(r, this.getEligibleCapabilities());
-          return r.getSymbolicName() !== SYSTEM_BUNDLE_SYMBOLICNAME && StatefulResolver.canBundleBeResolved(r, wires);
-        });
-        for (const rev of revsToReRun) {
-          // On paper, we are not required to await for recursive calls, time will tell...
-          this.resolveOne(rev);
-        }
+        await this.resolveRemaining();
       } catch (err) {
         this.logger.error(err);
       }
@@ -54,6 +50,17 @@ export class StatefulResolver {
       this.logger.debug(
         `No Wiring found for Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`,
       );
+    }
+  }
+
+  async resolveRemaining(): Promise<void> {
+    const unresolvedRevs = this.revisions.filter((r) => isAnyMissing(r.getWiring()));
+    const revsToReRun = unresolvedRevs.filter((r) => {
+      const wires = StatefulResolver.getResolvableWires(r, this.getEligibleCapabilities());
+      return r.getSymbolicName() !== SYSTEM_BUNDLE_SYMBOLICNAME && StatefulResolver.canBundleBeResolved(r, wires);
+    });
+    for (const rev of revsToReRun) {
+      await this.resolveOne(rev);
     }
   }
 
@@ -78,8 +85,6 @@ export class StatefulResolver {
   /**
    * Currently in the resolving process, we only take ACTIVE Bundles into consideration. Intentionally skipping RESOLVED
    * ones, given we are expecting all Bundles to have at least a start() being called from A {@link BundleActivator}.
-   *
-   * @private
    */
   private getEligibleCapabilities(): BundleCapability[] {
     const caps: BundleCapability[] = [];
@@ -90,13 +95,12 @@ export class StatefulResolver {
     return caps;
   }
 
-  private resolve(rev: BundleRevisionImpl, allProvidedCapabilities: BundleCapability[]): BundleWiring | undefined {
-    const wires = StatefulResolver.getResolvableWires(rev, allProvidedCapabilities);
+  private resolve(rev: BundleRevisionImpl): BundleWiring | undefined {
+    const wiring = this.createWiringForRevision(rev);
 
-    if (StatefulResolver.canBundleBeResolved(rev, wires)) {
-      const bundleWiring = new BundleWiringImpl(rev.getHeaders(), this, rev, wires);
-      rev.resolve(bundleWiring);
-      return bundleWiring;
+    if (wiring) {
+      rev.resolve(wiring);
+      return wiring;
     }
   }
 
@@ -122,6 +126,15 @@ export class StatefulResolver {
       }
     }
     return wires;
+  }
+
+  createWiringForRevision(revision: BundleRevision): BundleWiring | undefined {
+    const wires = StatefulResolver.getResolvableWires(revision, this.getEligibleCapabilities());
+
+    if (StatefulResolver.canBundleBeResolved(revision, wires)) {
+      const impl = revision as BundleRevisionImpl;
+      return new BundleWiringImpl(impl.getHeaders(), this, impl, wires);
+    }
   }
 
   addRevision(br: BundleRevision): void {

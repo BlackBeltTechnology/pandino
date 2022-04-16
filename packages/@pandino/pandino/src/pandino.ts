@@ -266,7 +266,8 @@ export class Pandino extends BundleImpl implements Framework {
     this.setBundleStateAndNotify(bundle, 'STARTING');
 
     try {
-      if (isAllPresent(bundle.getCurrentRevision().getWiring())) {
+      const revision = bundle.getCurrentRevision();
+      if (isAllPresent(revision.getWiring()) || this.resolver.createWiringForRevision(revision)) {
         await this.activateBundle(bundle, false);
       }
     } catch (ex) {
@@ -277,6 +278,7 @@ export class Pandino extends BundleImpl implements Framework {
     if (isAnyMissing(rethrow)) {
       this.fireBundleEvent('STARTED', bundle);
       this.logger.info(`Started Bundle: ${bundle.getSymbolicName()}: ${bundle.getVersion()}`);
+      await this.resolver.resolveRemaining();
     } else {
       this.fireBundleEvent('STOPPED', bundle);
       throw rethrow;
@@ -353,6 +355,7 @@ export class Pandino extends BundleImpl implements Framework {
           break;
       }
 
+      this.logger.info(`Stopping Bundle: ${bundle.getUniqueIdentifier()}...`);
       bundle.setState('STOPPING');
       this.fireBundleEvent('STOPPING', bundle);
 
@@ -378,9 +381,12 @@ export class Pandino extends BundleImpl implements Framework {
         // Release any services being used by this bundle.
         this.registry.ungetServices(bundle);
 
-        // The spec says that we must remove all event
-        // listeners for a bundle when it is stopped.
+        // The spec says that we must remove all event listeners for a bundle when it is stopped.
         this.dispatcher.removeListeners(bci);
+
+        // tear down wires where bundle was a requirement for others
+        bundle.getCurrentRevision().resolve(undefined);
+
         bundle.setState('RESOLVED');
       }
 
@@ -390,11 +396,12 @@ export class Pandino extends BundleImpl implements Framework {
     } finally {
     }
 
-    this.fireBundleEvent('STOPPED', bundle);
-
     for (const requirer of this.resolver.getActiveRequirers(bundle)) {
       await this.stopBundle(requirer);
     }
+
+    this.logger.info(`Stopped Bundle: ${bundle.getUniqueIdentifier()}...`);
+    this.fireBundleEvent('STOPPED', bundle);
   }
 
   getBundle(id: number): Bundle {
