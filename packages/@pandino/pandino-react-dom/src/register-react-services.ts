@@ -18,7 +18,6 @@ import {
 } from 'react';
 import { flushSync } from 'react-dom';
 import jsxRuntime from 'react/jsx-runtime';
-import { ReactBundleContext } from './react-bundle-context';
 import { ComponentProxy } from './component-proxy';
 
 const jxsr = jsxRuntime as any;
@@ -48,8 +47,7 @@ export function registerReactServices(context: BundleContext): ServiceRegistrati
     ['@pandino/pandino-react-dom/react/isValidElement', isValidElement],
     ['@pandino/pandino-react-dom/react/forwardRef', forwardRef],
 
-    ['@pandino/pandino-react-dom/useReactBundleContext', () => useContext(ReactBundleContext)],
-    ['@pandino/pandino-react-dom/ReactBundleContext', ReactBundleContext],
+    ['@pandino/pandino-react-dom/useReactBundleContext', () => context],
     [COMPONENT_PROXY_INTERFACE_KEY, ComponentProxy],
   ]);
 

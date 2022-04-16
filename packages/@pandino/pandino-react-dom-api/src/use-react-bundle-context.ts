@@ -1,9 +1,3 @@
-import { ReactBundleContextType } from './react-bundle-context-type';
+import { BundleContext } from '@pandino/pandino-api';
 
-export type UseReactBundleContextType = () => ReactBundleContextType;
-
-/**
- * Placeholder implementation which will always be replaced by an actual implementation returning the BundleContext for
- * the application.
- */
-export const useReactBundleContext: UseReactBundleContextType = () => undefined as any;
+export type UseReactBundleContextType = () => BundleContext;
