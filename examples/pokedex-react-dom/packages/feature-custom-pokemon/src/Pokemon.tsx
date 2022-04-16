@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useReactBundleContext } from '@pandino/pandino-react-dom-api';
+import { useReactBundleContext } from '@pandino/pandino-react-dom';
 import { CONFIG_ADMIN_INTERFACE_KEY, ConfigurationAdmin } from '@pandino/pandino-configuration-management-api';
 import { Pokemon, SettingsModel } from 'pokedex-application-contract';
 import { Link } from 'react-router-dom';
 
 export function CustomPokemon() {
   const [visibleList, setVisibleList] = useState<Array<Pokemon>>([]);
-  const { bundleContext } = useReactBundleContext();
+  const bundleContext = useReactBundleContext();
 
   const detailsReferences = bundleContext.getServiceReferences('@pokedex/feature', '(name=feature-details)');
   const configAdminReference = bundleContext.getServiceReference<ConfigurationAdmin>(CONFIG_ADMIN_INTERFACE_KEY);

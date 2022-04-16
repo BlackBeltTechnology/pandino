@@ -1,5 +1,7 @@
 import typescript from '@rollup/plugin-typescript';
 import { pandinoExternalizeReact } from '@pandino/rollup-plugin-pandino-react-externalize';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import { readFileSync } from "fs";
 
 const packageJSON = JSON.parse(readFileSync('package.json').toString('utf8'));
@@ -13,22 +15,11 @@ export default {
     }
   ],
   plugins: [
+    nodeResolve(),
+    commonjs(),
     typescript({ tsconfig: './tsconfig.json' }),
     pandinoExternalizeReact({
       prettify: true,
-      externalRefsMap: [
-        { token: 'jsxs',                  identifier: '@pandino/pandino-react-dom/react/jsx-runtime/jsxs' },
-        { token: 'jsx',                   identifier: '@pandino/pandino-react-dom/react/jsx-runtime/jsx' },
-        { token: 'Fragment',              identifier: '@pandino/pandino-react-dom/react/jsx-runtime/Fragment' },
-        { token: 'useState',              identifier: '@pandino/pandino-react-dom/react/useState' },
-        { token: 'useEffect',             identifier: '@pandino/pandino-react-dom/react/useEffect' },
-        { token: 'useReactBundleContext', identifier: '@pandino/pandino-react-dom/useReactBundleContext' },
-
-        { token: 'HashRouter',            identifier: '@pandino/pandino-react-router-dom/react-router-dom/HashRouter' },
-        { token: 'Routes',                identifier: '@pandino/pandino-react-router-dom/react-router-dom/Routes' },
-        { token: 'Route',                 identifier: '@pandino/pandino-react-router-dom/react-router-dom/Route' },
-        { token: 'Link',                  identifier: '@pandino/pandino-react-router-dom/react-router-dom/Link' },
-      ],
       componentsMap: [
         {
           component: 'Application',

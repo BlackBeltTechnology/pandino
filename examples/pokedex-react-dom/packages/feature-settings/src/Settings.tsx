@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useReactBundleContext } from '@pandino/pandino-react-dom-api';
+import { useReactBundleContext } from '@pandino/pandino-react-dom';
 import { ConfigurationAdmin } from '@pandino/pandino-configuration-management-api';
 import { SettingsModel } from 'pokedex-application-contract';
 
@@ -8,7 +8,7 @@ const defaultSettings: SettingsModel = {
 };
 
 export function Settings() {
-  const { bundleContext } = useReactBundleContext();
+  const bundleContext = useReactBundleContext();
   const [settings, setSettings] = useState<SettingsModel | undefined>(undefined);
 
   useEffect(() => {

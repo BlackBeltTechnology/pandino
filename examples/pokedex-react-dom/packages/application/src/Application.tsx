@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { HashRouter, Route, Routes, Link } from 'react-router-dom';
-import { useReactBundleContext } from '@pandino/pandino-react-dom-api';
+import { useReactBundleContext } from '@pandino/pandino-react-dom';
 import { PokedexFeature } from 'pokedex-application-contract';
 
 import { Dashboard } from './Dashboard';
@@ -8,8 +8,8 @@ import { Pokemon } from './Pokemon';
 import { FeatureListener } from './feature-listener';
 
 export function Application() {
-  const context = useReactBundleContext();
-  const additionalFeatures = context.bundleContext.getServiceReferences<PokedexFeature>('@pokedex/feature');
+  const bundleContext = useReactBundleContext();
+  const additionalFeatures = bundleContext.getServiceReferences<PokedexFeature>('@pokedex/feature');
   const [features, setFeatures] = useState<Array<PokedexFeature>>([
     {
       route: '/',
@@ -23,15 +23,15 @@ export function Application() {
       className: 'fa fa-paw',
       getComponent: () => <Pokemon />,
     },
-    ...additionalFeatures.map((r) => context.bundleContext.getService(r)),
+    ...additionalFeatures.map((r) => bundleContext.getService(r)),
   ]);
 
   useEffect(() => {
-    const featureListener = new FeatureListener(context.bundleContext, features, setFeatures);
-    context.bundleContext.addServiceListener(featureListener, '(objectClass=@pokedex/feature)');
+    const featureListener = new FeatureListener(bundleContext, features, setFeatures);
+    bundleContext.addServiceListener(featureListener, '(objectClass=@pokedex/feature)');
 
     return () => {
-      context.bundleContext.removeServiceListener(featureListener);
+      bundleContext.removeServiceListener(featureListener);
     };
   });
 

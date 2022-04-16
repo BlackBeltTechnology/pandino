@@ -1,10 +1,12 @@
-import typescript from '@rollup/plugin-typescript';
-import { pandinoExternalizeReact } from './rollup/index';
-import { readFileSync } from "fs";
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+const typescript = require('@rollup/plugin-typescript');
+const { pandinoExternalizeReact } = require('@pandino/rollup-plugin-pandino-react-externalize');
+const { readFileSync } = require('fs');
 
 const packageJSON = JSON.parse(readFileSync('package.json').toString('utf8'));
 
-export default {
+module.exports = {
   input: 'src/index.ts',
   output: [
     {
@@ -13,17 +15,11 @@ export default {
     }
   ],
   plugins: [
+    nodeResolve(),
+    commonjs(),
     typescript({ tsconfig: './tsconfig.json' }),
     pandinoExternalizeReact({
       prettify: true,
-      externalRefsMap: [
-        { token: 'jsxs',                  identifier: '@pandino/pandino-react-dom/react/jsx-runtime/jsxs' },
-        { token: 'jsx',                   identifier: '@pandino/pandino-react-dom/react/jsx-runtime/jsx' },
-        { token: 'Fragment',              identifier: '@pandino/pandino-react-dom/react/jsx-runtime/Fragment' },
-        { token: 'useState',              identifier: '@pandino/pandino-react-dom/react/useState' },
-        { token: 'useEffect',             identifier: '@pandino/pandino-react-dom/react/useEffect' },
-        { token: 'useReactBundleContext', identifier: '@pandino/pandino-react-dom/useReactBundleContext' },
-      ],
       componentsMap: [
         {
           component: 'settingsFeature',

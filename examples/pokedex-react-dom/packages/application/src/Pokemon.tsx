@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
+import { useReactBundleContext } from '@pandino/pandino-react-dom';
 import {
   ComponentProxyProps,
-  useReactBundleContext,
   COMPONENT_PROXY_INTERFACE_KEY,
 } from '@pandino/pandino-react-dom-api';
 import { CONFIG_ADMIN_INTERFACE_KEY, ConfigurationAdmin } from '@pandino/pandino-configuration-management-api';
@@ -39,7 +39,7 @@ function TableComponent({ pokemonList, detailsSupported }: { pokemonList: Pokemo
 
 export function Pokemon() {
   const [visibleList, setVisibleList] = useState<Array<Pokemon>>([]);
-  const { bundleContext } = useReactBundleContext();
+  const bundleContext = useReactBundleContext();
   const componentProxyRef = bundleContext.getServiceReference<FC<ComponentProxyProps>>(COMPONENT_PROXY_INTERFACE_KEY);
   let ComponentProxy: FC<ComponentProxyProps> = bundleContext.getService(componentProxyRef);
 
@@ -77,6 +77,7 @@ export function Pokemon() {
         <h1 className="h2">Pokémon</h1>
       </div>
       <ComponentProxy
+        bundleContext={bundleContext}
         identifier="pokedex-pokemon"
         defaultComponent={TableComponent}
         pokemonList={visibleList}

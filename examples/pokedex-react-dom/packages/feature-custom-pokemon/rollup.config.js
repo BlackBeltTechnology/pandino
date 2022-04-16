@@ -1,3 +1,5 @@
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import { pandinoExternalizeReact } from '@pandino/rollup-plugin-pandino-react-externalize';
 import { readFileSync } from "fs";
@@ -13,19 +15,11 @@ export default {
     }
   ],
   plugins: [
+    nodeResolve(),
+    commonjs(),
     typescript({ tsconfig: './tsconfig.json' }),
     pandinoExternalizeReact({
       prettify: true,
-      externalRefsMap: [
-        { token: 'jsxs',                  identifier: '@pandino/pandino-react-dom/react/jsx-runtime/jsxs' },
-        { token: 'jsx',                   identifier: '@pandino/pandino-react-dom/react/jsx-runtime/jsx' },
-        { token: 'Fragment',              identifier: '@pandino/pandino-react-dom/react/jsx-runtime/Fragment' },
-        { token: 'useState',              identifier: '@pandino/pandino-react-dom/react/useState' },
-        { token: 'useEffect',             identifier: '@pandino/pandino-react-dom/react/useEffect' },
-        { token: 'useReactBundleContext', identifier: '@pandino/pandino-react-dom/useReactBundleContext' },
-
-        { token: 'Link',                  identifier: '@pandino/pandino-react-router-dom/react-router-dom/Link' },
-      ],
       componentsMap: [
         {
           component: 'CustomPokemon',
