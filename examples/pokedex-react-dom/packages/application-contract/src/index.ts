@@ -16,3 +16,5 @@ export interface Pokemon {
   name: string;
   image: string;
 }
+
+export const POKEDEX_FEATURE_INTERFACE_KEY = '@pokedex/feature';

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { HashRouter, Route, Routes, Link } from 'react-router-dom';
 import { useReactBundleContext } from '@pandino/pandino-react-dom';
-import { PokedexFeature } from 'pokedex-application-contract';
+import { POKEDEX_FEATURE_INTERFACE_KEY, PokedexFeature } from 'pokedex-application-contract';
 
 import { Dashboard } from './Dashboard';
 import { Pokemon } from './Pokemon';
@@ -9,7 +9,7 @@ import { FeatureListener } from './feature-listener';
 
 export function Application() {
   const bundleContext = useReactBundleContext();
-  const additionalFeatures = bundleContext.getServiceReferences<PokedexFeature>('@pokedex/feature');
+  const additionalFeatures = bundleContext.getServiceReferences<PokedexFeature>(POKEDEX_FEATURE_INTERFACE_KEY);
   const [features, setFeatures] = useState<Array<PokedexFeature>>([
     {
       route: '/',
@@ -28,7 +28,7 @@ export function Application() {
 
   useEffect(() => {
     const featureListener = new FeatureListener(bundleContext, features, setFeatures);
-    bundleContext.addServiceListener(featureListener, '(objectClass=@pokedex/feature)');
+    bundleContext.addServiceListener(featureListener, `(objectClass=${POKEDEX_FEATURE_INTERFACE_KEY})`);
 
     return () => {
       bundleContext.removeServiceListener(featureListener);

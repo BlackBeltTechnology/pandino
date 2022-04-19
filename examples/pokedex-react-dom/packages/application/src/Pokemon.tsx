@@ -1,11 +1,8 @@
 import { FC, useEffect, useState } from 'react';
 import { useReactBundleContext } from '@pandino/pandino-react-dom';
-import {
-  ComponentProxyProps,
-  COMPONENT_PROXY_INTERFACE_KEY,
-} from '@pandino/pandino-react-dom-api';
+import { ComponentProxyProps, COMPONENT_PROXY_INTERFACE_KEY } from '@pandino/pandino-react-dom-api';
 import { CONFIG_ADMIN_INTERFACE_KEY, ConfigurationAdmin } from '@pandino/pandino-configuration-management-api';
-import { Pokemon, SettingsModel } from 'pokedex-application-contract';
+import { POKEDEX_FEATURE_INTERFACE_KEY, Pokemon, SettingsModel } from 'pokedex-application-contract';
 import { Link } from 'react-router-dom';
 
 function TableComponent({ pokemonList, detailsSupported }: { pokemonList: Pokemon[]; detailsSupported: boolean }) {
@@ -43,7 +40,7 @@ export function Pokemon() {
   const componentProxyRef = bundleContext.getServiceReference<FC<ComponentProxyProps>>(COMPONENT_PROXY_INTERFACE_KEY);
   let ComponentProxy: FC<ComponentProxyProps> = bundleContext.getService(componentProxyRef);
 
-  const detailsReferences = bundleContext.getServiceReferences('@pokedex/feature', '(name=feature-details)');
+  const detailsReferences = bundleContext.getServiceReferences(POKEDEX_FEATURE_INTERFACE_KEY, '(name=feature-details)');
   const configAdminReference = bundleContext.getServiceReference<ConfigurationAdmin>(CONFIG_ADMIN_INTERFACE_KEY);
   const configAdmin = configAdminReference
     ? bundleContext.getService<ConfigurationAdmin>(configAdminReference)
