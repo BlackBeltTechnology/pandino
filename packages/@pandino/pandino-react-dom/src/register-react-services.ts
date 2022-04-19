@@ -1,5 +1,26 @@
 import { BundleContext, ServiceRegistration } from '@pandino/pandino-api';
-import { COMPONENT_PROXY_INTERFACE_KEY } from '@pandino/pandino-react-dom-api';
+import {
+  COMPONENT_PROXY_INTERFACE_KEY,
+  REACT_CHILDREN_INTERFACE_KEY,
+  REACT_COMPONENT_INTERFACE_KEY,
+  REACT_CREATE_CONTEXT_INTERFACE_KEY,
+  REACT_CREATE_ELEMENT_INTERFACE_KEY,
+  REACT_DOM_FLUSH_SYNC_INTERFACE_KEY,
+  REACT_FORWARD_REF_INTERFACE_KEY,
+  REACT_FRAGMENT_INTERFACE_KEY,
+  REACT_IS_VALID_ELEMENT_INTERFACE_KEY,
+  REACT_JSX_INTERFACE_KEY,
+  REACT_JSXS_INTERFACE_KEY,
+  REACT_REACT_INTERFACE_KEY,
+  REACT_USE_CALLBACK_INTERFACE_KEY,
+  REACT_USE_CONTEXT_INTERFACE_KEY,
+  REACT_USE_EFFECT_INTERFACE_KEY,
+  REACT_USE_LAYOUT_EFFECT_INTERFACE_KEY,
+  REACT_USE_MEMO_INTERFACE_KEY,
+  REACT_USE_REF_INTERFACE_KEY,
+  REACT_USE_STATE_INTERFACE_KEY,
+  USE_REACT_BUNDLE_CONTEXT_INTERFACE_KEY,
+} from '@pandino/pandino-react-dom-api';
 import {
   default as React,
   Component,
@@ -24,30 +45,30 @@ const jxsr = jsxRuntime as any;
 
 export function registerReactServices(context: BundleContext): ServiceRegistration<any>[] {
   const registrations: Map<string, any> = new Map<string, any>([
-    ['@pandino/pandino-react-dom/react-dom/flushSync', flushSync],
+    [REACT_DOM_FLUSH_SYNC_INTERFACE_KEY, flushSync],
 
-    ['@pandino/pandino-react-dom/react/jsx-runtime/jsxs', jxsr.jsxs],
-    ['@pandino/pandino-react-dom/react/jsx-runtime/jsx', jxsr.jsx],
-    ['@pandino/pandino-react-dom/react/jsx-runtime/Fragment', jxsr.Fragment],
+    [REACT_JSXS_INTERFACE_KEY, jxsr.jsxs],
+    [REACT_JSX_INTERFACE_KEY, jxsr.jsx],
+    [REACT_FRAGMENT_INTERFACE_KEY, jxsr.Fragment],
 
-    ['@pandino/pandino-react-dom/react/React', React],
-    ['@pandino/pandino-react-dom/react/Component', Component],
-    ['@pandino/pandino-react-dom/react/Children', Children],
+    [REACT_REACT_INTERFACE_KEY, React],
+    [REACT_COMPONENT_INTERFACE_KEY, Component],
+    [REACT_CHILDREN_INTERFACE_KEY, Children],
 
-    ['@pandino/pandino-react-dom/react/useLayoutEffect', useLayoutEffect],
-    ['@pandino/pandino-react-dom/react/useRef', useRef],
-    ['@pandino/pandino-react-dom/react/useMemo', useMemo],
-    ['@pandino/pandino-react-dom/react/useContext', useContext],
-    ['@pandino/pandino-react-dom/react/useEffect', useEffect],
-    ['@pandino/pandino-react-dom/react/useCallback', useCallback],
-    ['@pandino/pandino-react-dom/react/useState', useState],
+    [REACT_USE_LAYOUT_EFFECT_INTERFACE_KEY, useLayoutEffect],
+    [REACT_USE_REF_INTERFACE_KEY, useRef],
+    [REACT_USE_MEMO_INTERFACE_KEY, useMemo],
+    [REACT_USE_CONTEXT_INTERFACE_KEY, useContext],
+    [REACT_USE_EFFECT_INTERFACE_KEY, useEffect],
+    [REACT_USE_CALLBACK_INTERFACE_KEY, useCallback],
+    [REACT_USE_STATE_INTERFACE_KEY, useState],
 
-    ['@pandino/pandino-react-dom/react/createContext', createContext],
-    ['@pandino/pandino-react-dom/react/createElement', createElement],
-    ['@pandino/pandino-react-dom/react/isValidElement', isValidElement],
-    ['@pandino/pandino-react-dom/react/forwardRef', forwardRef],
+    [REACT_CREATE_CONTEXT_INTERFACE_KEY, createContext],
+    [REACT_CREATE_ELEMENT_INTERFACE_KEY, createElement],
+    [REACT_IS_VALID_ELEMENT_INTERFACE_KEY, isValidElement],
+    [REACT_FORWARD_REF_INTERFACE_KEY, forwardRef],
 
-    ['@pandino/pandino-react-dom/useReactBundleContext', () => context],
+    [USE_REACT_BUNDLE_CONTEXT_INTERFACE_KEY, () => context],
     [COMPONENT_PROXY_INTERFACE_KEY, ComponentProxy],
   ]);
 
