@@ -13,7 +13,6 @@
   "types": "dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
-    "test": "jest",
     "build": "npm run clean && webpack"
   },
   "keywords": [],
