@@ -154,7 +154,7 @@ class StatusBar extends HTMLElement {
             Active (${this.stats.ACTIVE.length})
         </div>
         <div class="navbar-item" title="${this.stats.STOPPING.map((a) => a.symbolicName).join(', ')}">
-          Stopped (${this.stats.STOPPING.length})
+          Stopping (${this.stats.STOPPING.length})
         </div>
         <div class="navbar-item" title="${this.stats.UNINSTALLED.map((a) => a.symbolicName).join(', ')}">
           Uninstalled (${this.stats.UNINSTALLED.length})
