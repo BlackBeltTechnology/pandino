@@ -63,7 +63,7 @@ export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;
   private readonly importer: BundleImporter;
   private readonly configMap: Map<string, any> = new Map<string, any>();
-  private readonly installedBundles: Bundle[] = [];
+  private readonly bundles: Bundle[] = [];
   private readonly activatorsList: BundleActivator[] = [];
   private readonly dispatcher: EventDispatcher;
   private readonly resolver: StatefulResolver;
@@ -187,7 +187,7 @@ export class Pandino extends BundleImpl implements Framework {
         ? await this.fetcher.fetch(this.getDeploymentRoot(), locationOrHeaders)
         : locationOrHeaders;
     let bundle: BundleImpl;
-    let existing: Bundle = this.isBundleInstalled(resolvedHeaders);
+    let existing: Bundle = this.isBundlePresent(resolvedHeaders);
 
     if (!existing) {
       const id = this.getNextId();
@@ -202,7 +202,7 @@ export class Pandino extends BundleImpl implements Framework {
         this,
         origin,
       );
-      this.installedBundles.push(bundle);
+      this.bundles.push(bundle);
       this.fireBundleEvent('INSTALLED', bundle, origin);
       this.logger.info(`Installed Bundle: ${resolvedHeaders[BUNDLE_SYMBOLICNAME]}: ${resolvedHeaders[BUNDLE_VERSION]}`);
       await this.resolver.resolveOne(bundle.getCurrentRevision());
@@ -210,6 +210,7 @@ export class Pandino extends BundleImpl implements Framework {
     } else {
       try {
         await this.updateBundle(existing as BundleImpl, resolvedHeaders, origin);
+        await this.resolver.resolveOne((existing as BundleImpl).getCurrentRevision());
         return existing;
       } catch (err) {
         this.logger.error(err);
@@ -405,11 +406,11 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   getBundle(id: number): Bundle {
-    return this.installedBundles.find((b) => b.getBundleId() === id);
+    return this.bundles.find((b) => b.getBundleId() === id);
   }
 
-  isBundleInstalled(headers: BundleManifestHeaders): Bundle | undefined {
-    return this.installedBundles.find((b) => b.getSymbolicName() === headers[BUNDLE_SYMBOLICNAME]);
+  isBundlePresent(headers: BundleManifestHeaders): Bundle | undefined {
+    return this.bundles.find((b) => b.getSymbolicName() === headers[BUNDLE_SYMBOLICNAME]);
   }
 
   fireBundleEvent(type: BundleEventType, bundle: Bundle, origin?: Bundle): void {
@@ -425,7 +426,7 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   getBundles(bc?: BundleContext): Bundle[] {
-    return [...this.installedBundles];
+    return [...this.bundles];
   }
 
   addBundleListener(bundle: BundleImpl, l: BundleListener): void {
@@ -494,28 +495,24 @@ export class Pandino extends BundleImpl implements Framework {
       );
     }
 
+    let errored = null;
+
     if (bundle.getState() === 'ACTIVE') {
       try {
         await this.stopBundle(bundle);
       } catch (err) {
+        this.logger.error(`Error stopping bundle: ${bundle.getUniqueIdentifier()}`, err);
         this.fireFrameworkEvent('ERROR', bundle, err);
+        errored = err;
       }
     }
 
-    const installedIdx = this.installedBundles.findIndex((bnd) => bnd.getBundleId() === bundle.getBundleId());
-
-    if (installedIdx === -1) {
-      this.logger.error(
-        `Cannot uninstall Bundle ${bundle.getUniqueIdentifier()}, because it was not found in the list of installed bundles!`,
-        bundle,
-      );
-    } else {
-      this.installedBundles.splice(installedIdx, 1);
-    }
-
     this.fireBundleEvent('UNRESOLVED', bundle);
-    bundle.setState('UNINSTALLED');
-    this.logger.info(`Uninstalled bundle: ${bundle.getUniqueIdentifier()}`);
+    if (!errored) {
+      bundle.setState('UNINSTALLED');
+      this.fireBundleEvent('UNINSTALLED', bundle);
+      this.logger.info(`Uninstalled bundle: ${bundle.getUniqueIdentifier()}`);
+    }
 
     return Promise.resolve();
   }

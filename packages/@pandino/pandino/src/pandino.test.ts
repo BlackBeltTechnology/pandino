@@ -512,7 +512,7 @@ describe('Pandino', () => {
     await requiredBundle.uninstall();
 
     expect((requiredBundle as BundleImpl).getCurrentRevision().getWiring()).toEqual(null);
-    expect(pandino.getBundleContext().getBundles().length).toEqual(1);
+    expect(pandino.getBundleContext().getBundles().length).toEqual(2);
     expect(requiredBundle.getState()).toEqual('UNINSTALLED');
     expect(requirerBundle.getState()).toEqual('RESOLVED');
     expect(mockStop).toHaveBeenCalledTimes(2);
@@ -540,22 +540,23 @@ describe('Pandino', () => {
     });
 
     const [requirerBundle, requiredBundle1, requiredBundle2] = pandino.getBundleContext().getBundles();
+    const THREE_BUNDLES_PRESENT = 3;
 
-    expect(pandino.getBundleContext().getBundles().length).toEqual(3);
+    expect(pandino.getBundleContext().getBundles().length).toEqual(THREE_BUNDLES_PRESENT);
     expect(requiredBundle1.getState()).toEqual('ACTIVE');
     expect(requiredBundle2.getState()).toEqual('ACTIVE');
     expect(requirerBundle.getState()).toEqual('ACTIVE');
 
     await requiredBundle1.uninstall();
 
-    expect(pandino.getBundleContext().getBundles().length).toEqual(2);
+    expect(pandino.getBundleContext().getBundles().length).toEqual(THREE_BUNDLES_PRESENT);
     expect(requiredBundle1.getState()).toEqual('UNINSTALLED');
     expect(requiredBundle2.getState()).toEqual('ACTIVE');
     expect(requirerBundle.getState()).toEqual('RESOLVED');
 
     await requiredBundle2.uninstall();
 
-    expect(pandino.getBundleContext().getBundles().length).toEqual(1);
+    expect(pandino.getBundleContext().getBundles().length).toEqual(THREE_BUNDLES_PRESENT);
     expect(requiredBundle1.getState()).toEqual('UNINSTALLED');
     expect(requiredBundle2.getState()).toEqual('UNINSTALLED');
     expect(requirerBundle.getState()).toEqual('RESOLVED');
