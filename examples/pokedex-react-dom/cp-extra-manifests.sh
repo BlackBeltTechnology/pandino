@@ -16,3 +16,6 @@ cp ../../packages/@pandino/pandino-persistence-manager-localstorage/dist/pandino
 
 cp ../../packages/@pandino/pandino-configuration-management/dist/esm/pandino-configuration-management-manifest.json packages/runtime/pandino-configuration-management-manifest.json
 cp ../../packages/@pandino/pandino-configuration-management/dist/esm/pandino-configuration-management.mjs packages/runtime/pandino-configuration-management.mjs
+
+cp ../../packages/@pandino/pandino-mission-control-dom/dist/esm/pandino-mission-control-dom-manifest.json packages/runtime/pandino-mission-control-dom-manifest.json
+cp ../../packages/@pandino/pandino-mission-control-dom/dist/esm/pandino-mission-control-dom.mjs packages/runtime/pandino-mission-control-dom.mjs
