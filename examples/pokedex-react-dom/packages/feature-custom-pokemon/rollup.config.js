@@ -33,13 +33,12 @@ export default {
       manifestData: {
         "Bundle-ManifestVersion": "1",
         "Bundle-SymbolicName": packageJSON.name,
-        "Bundle-Name": "Settings",
+        "Bundle-Name": "Custom Pokemon List",
         "Bundle-Version": packageJSON.version,
         "Bundle-Description": packageJSON.description,
         "Bundle-Activator": "./feature-pokemon.mjs",
         "Require-Capability": [
-          "@pandino/pandino-react-dom;filter:=\"(type=dom)\"",
-          "@pandino/pandino-react-router-dom;filter:=\"(type=dom)\""
+          "pokedex-application;filter:=\"(type=dom)\""
         ],
         "Provide-Capability": "@pokedex/feature;type=\"dom\""
       },

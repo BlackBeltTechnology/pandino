@@ -38,8 +38,7 @@ export default {
         "Bundle-Description": packageJSON.description,
         "Bundle-Activator": "./feature-pokemon-details.mjs",
         "Require-Capability": [
-          "@pandino/pandino-react-dom;filter:=\"(type=dom)\"",
-          "@pandino/pandino-react-router-dom;filter:=\"(type=dom)\""
+          "pokedex-application;filter:=\"(type=dom)\""
         ],
         "Provide-Capability": "@pokedex/feature;type=\"dom\""
       },
