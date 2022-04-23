@@ -276,13 +276,16 @@ export class Pandino extends BundleImpl implements Framework {
       this.logger.error(`Error while starting Bundle: ${bundle.getSymbolicName()}: ${bundle.getVersion()}`, ex);
     }
 
-    if (isAnyMissing(rethrow)) {
+    if (bundle.getState() === 'ACTIVE') {
       this.fireBundleEvent('STARTED', bundle);
       this.logger.info(`Started Bundle: ${bundle.getSymbolicName()}: ${bundle.getVersion()}`);
       await this.resolver.resolveRemaining();
     } else {
+      bundle.setState('RESOLVED');
       this.fireBundleEvent('STOPPED', bundle);
-      throw rethrow;
+      if (rethrow) {
+        throw rethrow;
+      }
     }
   }
 
@@ -513,8 +516,6 @@ export class Pandino extends BundleImpl implements Framework {
       this.fireBundleEvent('UNINSTALLED', bundle);
       this.logger.info(`Uninstalled bundle: ${bundle.getUniqueIdentifier()}`);
     }
-
-    return Promise.resolve();
   }
 
   getAllowedServiceReferences(

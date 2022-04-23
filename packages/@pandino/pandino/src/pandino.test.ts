@@ -401,8 +401,6 @@ describe('Pandino', () => {
       [PROVIDE_CAPABILITY]: 'greater.service;name=test',
     });
 
-    await new Promise((r) => setTimeout(r, 100));
-
     expect(bundle1.getState()).toEqual('ACTIVE');
     expect(bundle2.getState()).toEqual('ACTIVE');
     expect(bundle3.getState()).toEqual('ACTIVE');
@@ -449,8 +447,6 @@ describe('Pandino', () => {
 
     await bundle1.start();
 
-    await new Promise((r) => setTimeout(r, 100));
-
     expect(bundle1.getState()).toEqual('ACTIVE');
     expect(bundle2.getState()).toEqual('ACTIVE');
     expect(bundle3.getState()).toEqual('ACTIVE');
@@ -475,10 +471,8 @@ describe('Pandino', () => {
       [REQUIRE_CAPABILITY]: bundleRequiresCapability,
     });
 
-    await new Promise((r) => setTimeout(r, 100));
-
     expect(myBundle.getVersion().toString()).toEqual('1.4.0');
-    expect(myBundle.getState()).toEqual('STARTING');
+    expect(myBundle.getState()).toEqual('RESOLVED');
     expect(mockStart).toHaveBeenCalledTimes(1); // Bundle 1 should not start, given updated version brought a requirement
     expect(mockStop).toHaveBeenCalledTimes(1); // Bundle 1 stopping, given a new requirement arrived without a provider
 
@@ -511,7 +505,7 @@ describe('Pandino', () => {
 
     await requiredBundle.uninstall();
 
-    expect((requiredBundle as BundleImpl).getCurrentRevision().getWiring()).toEqual(null);
+    expect((requiredBundle as BundleImpl).getCurrentRevision().getWiring()).toEqual(undefined);
     expect(pandino.getBundleContext().getBundles().length).toEqual(2);
     expect(requiredBundle.getState()).toEqual('UNINSTALLED');
     expect(requirerBundle.getState()).toEqual('RESOLVED');
@@ -655,6 +649,39 @@ describe('Pandino', () => {
     expect(() => bundle.getRegisteredServices()).toThrow('The bundle is uninstalled.');
     expect(refHello.getBundle()).toBeUndefined();
     expect(refWelcome.getBundle()).toBeUndefined();
+  });
+
+  it('uninstalled dependency blocks starting of dependent bundle', async () => {
+    await preparePandino();
+
+    const bundle1 = {
+      [BUNDLE_SYMBOLICNAME]: '@scope/prov',
+      [BUNDLE_VERSION]: '1.0.0',
+      [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
+      [BUNDLE_NAME]: 'Provider1',
+      [PROVIDE_CAPABILITY]: '@scope/feature1;type:Array="test,bundle"',
+    };
+
+    const bundle2 = {
+      [BUNDLE_SYMBOLICNAME]: '@scope/cons',
+      [BUNDLE_VERSION]: '1.0.0',
+      [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
+      [BUNDLE_NAME]: 'Consumer1',
+      [REQUIRE_CAPABILITY]: '@scope/feature1;filter:=(type=test)',
+    };
+
+    const b1 = await installBundle(bundle1);
+    const b2 = await installBundle(bundle2);
+
+    await b1.uninstall();
+
+    expect(b1.getState()).toEqual('UNINSTALLED');
+    expect(b2.getState()).toEqual('RESOLVED');
+
+    await b2.start();
+
+    expect(b1.getState()).toEqual('UNINSTALLED');
+    expect(b2.getState()).toEqual('RESOLVED');
   });
 
   async function preparePandino() {

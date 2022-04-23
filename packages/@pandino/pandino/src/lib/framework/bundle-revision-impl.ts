@@ -108,13 +108,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
   }
 
   resolve(wiring?: BundleWiring): void {
-    if (isAllPresent(this.wiring)) {
-      this.wiring = null;
-    }
-
-    if (isAllPresent(wiring)) {
-      this.wiring = wiring;
-    }
+    this.wiring = wiring;
   }
 
   toString(): string {

@@ -98,13 +98,15 @@ export class StatefulResolver {
   private resolve(rev: BundleRevisionImpl): BundleWiring | undefined {
     const wiring = this.createWiringForRevision(rev);
 
-    if (wiring) {
-      rev.resolve(wiring);
-      return wiring;
-    }
+    rev.resolve(wiring);
+    return wiring;
   }
 
   private static canBundleBeResolved(rev: BundleRevision, wires: Array<BundleWire>): boolean {
+    const validStates: BundleState[] = ['INSTALLED', 'STARTING', 'RESOLVED'];
+    if (!validStates.includes(rev.getBundle().getState())) {
+      return false;
+    }
     const requirements = rev.getDeclaredRequirements(null);
     const reqs = requirements.map((r) => r.getNamespace());
     const wireCaps = wires.map((w) => w.getCapability().getNamespace());
