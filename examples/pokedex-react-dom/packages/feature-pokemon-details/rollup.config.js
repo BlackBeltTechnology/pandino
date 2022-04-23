@@ -20,6 +20,7 @@ export default {
     typescript({ tsconfig: './tsconfig.json' }),
     pandinoExternalizeReact({
       prettify: true,
+      minify: true,
       componentsMap: [
         {
           component: 'detailsFeature',
@@ -38,9 +39,9 @@ export default {
         "Bundle-Description": packageJSON.description,
         "Bundle-Activator": "./feature-pokemon-details.mjs",
         "Require-Capability": [
-          "pokedex-application;filter:=\"(type=dom)\""
+          "pokedex-application;filter:=(type=dom)"
         ],
-        "Provide-Capability": "@pokedex/feature;type=\"dom\""
+        "Provide-Capability": "@pokedex/feature;type=dom"
       },
     }),
   ],

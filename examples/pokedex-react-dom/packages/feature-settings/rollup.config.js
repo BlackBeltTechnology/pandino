@@ -38,10 +38,10 @@ module.exports = {
         "Bundle-Description": packageJSON.description,
         "Bundle-Activator": "./feature-settings.mjs",
         "Require-Capability": [
-          "pokedex-application;filter:=\"(type=dom)\"",
-          "@pandino/pandino-configuration-management;filter:=\"(objectClass=@pandino/pandino-configuration-management/ConfigurationAdmin)\""
+          "pokedex-application;filter:=(type=dom)",
+          "@pandino/pandino-configuration-management;filter:=(objectClass=@pandino/pandino-configuration-management/ConfigurationAdmin)"
         ],
-        "Provide-Capability": "@pokedex/feature;type=\"dom\""
+        "Provide-Capability": "@pokedex/feature;type=dom"
       },
     }),
   ],

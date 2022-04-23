@@ -38,9 +38,8 @@ export default {
         "Bundle-Description": packageJSON.description,
         "Bundle-Activator": "./feature-pokemon.mjs",
         "Require-Capability": [
-          "pokedex-application;filter:=\"(type=dom)\""
-        ],
-        "Provide-Capability": "@pokedex/feature;type=\"dom\""
+          "pokedex-application;filter:=(type=dom)"
+        ]
       },
     }),
   ],
