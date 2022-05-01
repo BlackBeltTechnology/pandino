@@ -31,11 +31,13 @@ initial loading of the service)!
 ### Example:
 
 ```javascript
+import { MANAGED_SERVICE_INTERFACE_KEY, SERVICE_PID } from '@pandino/pandino-configuration-management-api';
+
 export default class BundleActivator {
   async start(context) {
     const mst = new ManagedServiceTest();
-    this.registration = context.registerService('@pandino/pandino-configuration-management/ManagedService', mst, {
-      'service.pid': 'test.pid'
+    this.registration = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, mst, {
+      [SERVICE_PID]: 'test.pid'
     });
 
     return Promise.resolve();
@@ -90,9 +92,11 @@ Once we have a Configuration instance we can query and alter it.
 ### Example
 
 ```javascript
+import { CONFIG_ADMIN_INTERFACE_KEY } from '@pandino/pandino-configuration-management-api';
+
 export default class Activator {
   async start(context) {
-    this.configAdminReference = context.getServiceReference('@pandino/pandino-configuration-management/ConfigurationAdmin');
+    this.configAdminReference = context.getServiceReference(CONFIG_ADMIN_INTERFACE_KEY);
     this.configAdmin = context.getService(this.configAdminReference);
 
     const mstConfig = this.configAdmin.getConfiguration('test.pid');
@@ -123,10 +127,12 @@ API, and providing the `PID` we want to track.
 ### Example
 
 ```javascript
+import { CONFIGURATION_LISTENER_INTERFACE_KEY, SERVICE_PID } from '@pandino/pandino-configuration-management-api';
+
 export default class Activator {
   async start(context) {
-    this.listenerRegistration = context.registerService('@pandino/pandino-configuration-management/ConfigurationListener', new MyListener(), {
-      'service.pid': 'test.pid',
+    this.listenerRegistration = context.registerService(CONFIGURATION_LISTENER_INTERFACE_KEY, new MyListener(), {
+      [SERVICE_PID]: 'test.pid',
     });
 
     return Promise.resolve();

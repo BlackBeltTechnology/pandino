@@ -2,9 +2,9 @@
 
 **EXPERIMENTAL TECHNOLOGY!**
 
-A Pandino Bundle which can display Pandino stats and other useful info to the DOM to help developers.
+A Pandino Bundle which can display Pandino stats and other useful info to the DOM, to help developers.
 
-## Usage
+## Installation
 
 ### Install via adding it to `pandino-manifests`
 

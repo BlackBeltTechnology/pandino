@@ -35,16 +35,6 @@ functionality on a higher level, e.g.: Bundle loaders, eventing systems, configu
 
 Such extras are physically separated into external packages so that you can pull them in on-demand.
 
-## What Pandino is not / caveats
-
-> Pandino won't solve business problems. Pandino is intended to solve technical problems.
-
-It is important to note that when we start to incorporate more and more dynamism in our projects, the complexity can
-easily sky-rocket!
-
-Every Bundle which we want to introduce **SHOULD** be inspected in detail to make sure it handles all life-cycle and
-resource handling related tasks properly!
-
 ## Key Building blocks
 
 ### 1. Bundle
@@ -67,12 +57,18 @@ export interface BundleManifestHeaders {
   // ...
 }
 ```
-> Missing out any of the above will result in a bundle being stuck in a `RESOLVED` state indefinitely.
+> Missing out any of the above will result in a bundle being stuck in a `INSTALLED` state indefinitely.
 
 #### 1.2. Bundle Version
 
 Every Bundle must provide a [semver-compliant](https://www.npmjs.com/package/semver) version number in all relevant
 parts of a Manifest!
+
+#### 1.3. Bundle Lifecycle
+
+Bundle lifecycle in Pandino is a simplified/modified version of the OSGi Bundle lifecycle.
+
+![Bundle Lifecycle](./docs/pandino-bundle-lifecycle.svg "Bundle Lifecycle")
 
 ### 2. Service
 
@@ -364,6 +360,12 @@ common software development problems. Usage is opt-in of course.
 
 - [API](./packages/@pandino/pandino-event-api)
 - [Pandino - Event Admin](./packages/@pandino/pandino-event-admin)
+
+### React (DOM)
+
+- [API](./packages/@pandino/pandino-react-dom-api)
+- [Pandino - React (DOM)](./packages/@pandino/pandino-react-dom)
+- [Pandino - Router (DOM)](./packages/@pandino/pandino-react-router-dom)
 
 ### Bundler Plugins
 

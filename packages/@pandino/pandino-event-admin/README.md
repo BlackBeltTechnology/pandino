@@ -18,11 +18,13 @@ Every Event consists of a `topic` (string), and a `properties` object.
 ### Example
 
 ```javascript
+import { EVENT_ADMIN_INTERFACE_KEY, EVENT_FACTORY_INTERFACE_KEY } from '@pandino/pandino-event-api';
+
 export default class Activator {
   async start(context) {
-    this.eventAdminReference = context.getServiceReference('@pandino/pandino-event-admin/EventAdmin');
+    this.eventAdminReference = context.getServiceReference(EVENT_ADMIN_INTERFACE_KEY);
     this.eventAdmin = context.getService(this.eventAdminReference);
-    this.eventFactoryReference = context.getServiceReference('@pandino/pandino-event-admin/EventFactory');
+    this.eventFactoryReference = context.getServiceReference(EVENT_FACTORY_INTERFACE_KEY);
     this.eventFactory = context.getService(this.eventFactoryReference);
 
     // create the Event
@@ -57,10 +59,12 @@ defined!
 ### Example
 
 ```javascript
+import { EVENT_HANDLER_INTERFACE_KEY, EVENT_TOPIC } from '@pandino/pandino-event-api';
+
 export default class BundleActivator {
   async start(context) {
-    this.registration = context.registerService('@pandino/pandino-event-admin/EventHandler', new TestTopicEventHandler(), {
-      'event.topics': '@scope/app/TestTopic'
+    this.registration = context.registerService(EVENT_HANDLER_INTERFACE_KEY, new TestTopicEventHandler(), {
+      [EVENT_TOPIC]: '@scope/app/TestTopic'
     });
 
     return Promise.resolve();

@@ -20,3 +20,5 @@ export const CONFIGURATION_ADMIN_SPECIFICATION_VERSION = '1.0.0';
 export const CONFIG_ADMIN_INTERFACE_KEY = '@pandino/pandino-configuration-management/ConfigurationAdmin';
 export const MANAGED_SERVICE_INTERFACE_KEY = '@pandino/pandino-configuration-management/ManagedService';
 export const CONFIGURATION_LISTENER_INTERFACE_KEY = '@pandino/pandino-configuration-management/ConfigurationListener';
+
+export const SERVICE_PID = 'service.pid';

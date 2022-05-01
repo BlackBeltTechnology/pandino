@@ -17,11 +17,10 @@ import { SemVer } from 'semver';
  * a new unique identity.
  *
  * <p>
- * A bundle can be in one of six states:
+ * A bundle can be in one of five states:
  * <ul>
  * <li>UNINSTALLED</li>
  * <li>INSTALLED</li>
- * <li>RESOLVED</li>
  * <li>STARTING</li>
  * <li>STOPPING</li>
  * <li>ACTIVE</li>
