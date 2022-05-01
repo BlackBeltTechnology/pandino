@@ -33,7 +33,7 @@ pandino.getBundleContext().installBundle('./pandino-react-router-dom-manifest.js
 
 ## Usage
 
-### Install react and react-dom as peerDependencies
+### Install react-router-dom and @types/react-router-dom as peerDependencies
 
 ```json
 {
