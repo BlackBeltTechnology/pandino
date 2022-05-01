@@ -142,7 +142,7 @@ describe('Pandino', () => {
     await preparePandino();
     const bundle = await installBundle(header);
 
-    expect(bundle.getState()).toEqual('RESOLVED');
+    expect(bundle.getState()).toEqual('INSTALLED');
   });
 
   it('installed bundle stays INSTALLED if requirement(s) are not satisfied', async () => {
@@ -193,7 +193,7 @@ describe('Pandino', () => {
     expect(mockStart).toHaveBeenCalledTimes(bundles.length); // we use the same mock for all bundles
   });
 
-  it("bundle ends up in an RESOLVED state when it's activator fails", async () => {
+  it("bundle ends up in an INSTALLED state when it's activator fails", async () => {
     mockStart.mockImplementation(() => {
       throw new Error('Test throwing in activator!');
     });
@@ -208,7 +208,7 @@ describe('Pandino', () => {
 
     expect(bundle.getSymbolicName()).toEqual('@scope/bundle');
     expect(bundle.getVersion().toString()).toEqual('1.2.3');
-    expect(bundle.getState()).toEqual('RESOLVED');
+    expect(bundle.getState()).toEqual('INSTALLED');
     expect(bundle.getBundleContext()).toEqual(null);
   });
 
@@ -297,7 +297,7 @@ describe('Pandino', () => {
 
     await myBundle.stop();
 
-    expect(myBundle.getState()).toEqual('RESOLVED');
+    expect(myBundle.getState()).toEqual('INSTALLED');
     expect(myBundle.getBundleContext()).toEqual(null);
     expect((myBundle as BundleImpl).getActivator()).toEqual(null);
     expect(mockStop).toHaveBeenCalledTimes(1);
@@ -320,9 +320,9 @@ describe('Pandino', () => {
     await requiredBundle.stop();
 
     expect(requiredBundle.getSymbolicName()).toEqual('@scope/cats');
-    expect(requiredBundle.getState()).toEqual('RESOLVED');
+    expect(requiredBundle.getState()).toEqual('INSTALLED');
     expect(requirerBundle.getSymbolicName()).toEqual('@scope/bundle');
-    expect(requirerBundle.getState()).toEqual('RESOLVED');
+    expect(requirerBundle.getState()).toEqual('INSTALLED');
     expect(independentBundle.getSymbolicName()).toEqual('@scope/independent');
     expect(independentBundle.getState()).toEqual('ACTIVE');
     expect(mockStop).toHaveBeenCalledTimes(2);
@@ -343,7 +343,7 @@ describe('Pandino', () => {
 
     await bundle1.stop();
 
-    expect(bundle1.getState()).toEqual('RESOLVED');
+    expect(bundle1.getState()).toEqual('INSTALLED');
     expect(bundle1.getBundleContext()).toEqual(null);
     expect((bundle1 as BundleImpl).getActivator()).toEqual(null);
     expect(mockStop).toHaveBeenCalledTimes(1);
@@ -389,8 +389,8 @@ describe('Pandino', () => {
     await bundle1.uninstall();
 
     expect(bundle1.getState()).toEqual('UNINSTALLED');
-    expect(bundle2.getState()).toEqual('RESOLVED');
-    expect(bundle3.getState()).toEqual('RESOLVED');
+    expect(bundle2.getState()).toEqual('INSTALLED');
+    expect(bundle3.getState()).toEqual('INSTALLED');
     expect(independentBundle.getState()).toEqual('ACTIVE');
     expect(mockStart).toHaveBeenCalledTimes(4);
     expect(mockStop).toHaveBeenCalledTimes(3);
@@ -438,9 +438,9 @@ describe('Pandino', () => {
 
     await bundle1.stop();
 
-    expect(bundle1.getState()).toEqual('RESOLVED');
-    expect(bundle2.getState()).toEqual('RESOLVED');
-    expect(bundle3.getState()).toEqual('RESOLVED');
+    expect(bundle1.getState()).toEqual('INSTALLED');
+    expect(bundle2.getState()).toEqual('INSTALLED');
+    expect(bundle3.getState()).toEqual('INSTALLED');
     expect(independentBundle.getState()).toEqual('ACTIVE');
     expect(mockStart).toHaveBeenCalledTimes(4);
     expect(mockStop).toHaveBeenCalledTimes(3);
@@ -472,7 +472,7 @@ describe('Pandino', () => {
     });
 
     expect(myBundle.getVersion().toString()).toEqual('1.4.0');
-    expect(myBundle.getState()).toEqual('RESOLVED');
+    expect(myBundle.getState()).toEqual('INSTALLED');
     expect(mockStart).toHaveBeenCalledTimes(1); // Bundle 1 should not start, given updated version brought a requirement
     expect(mockStop).toHaveBeenCalledTimes(1); // Bundle 1 stopping, given a new requirement arrived without a provider
 
@@ -508,7 +508,7 @@ describe('Pandino', () => {
     expect((requiredBundle as BundleImpl).getCurrentRevision().getWiring()).toEqual(undefined);
     expect(pandino.getBundleContext().getBundles().length).toEqual(2);
     expect(requiredBundle.getState()).toEqual('UNINSTALLED');
-    expect(requirerBundle.getState()).toEqual('RESOLVED');
+    expect(requirerBundle.getState()).toEqual('INSTALLED');
     expect(mockStop).toHaveBeenCalledTimes(2);
   });
 
@@ -546,14 +546,14 @@ describe('Pandino', () => {
     expect(pandino.getBundleContext().getBundles().length).toEqual(THREE_BUNDLES_PRESENT);
     expect(requiredBundle1.getState()).toEqual('UNINSTALLED');
     expect(requiredBundle2.getState()).toEqual('ACTIVE');
-    expect(requirerBundle.getState()).toEqual('RESOLVED');
+    expect(requirerBundle.getState()).toEqual('INSTALLED');
 
     await requiredBundle2.uninstall();
 
     expect(pandino.getBundleContext().getBundles().length).toEqual(THREE_BUNDLES_PRESENT);
     expect(requiredBundle1.getState()).toEqual('UNINSTALLED');
     expect(requiredBundle2.getState()).toEqual('UNINSTALLED');
-    expect(requirerBundle.getState()).toEqual('RESOLVED');
+    expect(requirerBundle.getState()).toEqual('INSTALLED');
 
     expect(mockStop).toHaveBeenCalledTimes(3);
   });
@@ -676,12 +676,12 @@ describe('Pandino', () => {
     await b1.uninstall();
 
     expect(b1.getState()).toEqual('UNINSTALLED');
-    expect(b2.getState()).toEqual('RESOLVED');
+    expect(b2.getState()).toEqual('INSTALLED');
 
     await b2.start();
 
     expect(b1.getState()).toEqual('UNINSTALLED');
-    expect(b2.getState()).toEqual('RESOLVED');
+    expect(b2.getState()).toEqual('INSTALLED');
   });
 
   async function preparePandino() {

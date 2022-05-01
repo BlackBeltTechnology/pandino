@@ -37,7 +37,6 @@ export class StatefulResolver {
       );
 
       const bundle = bundleWiring.getRevision().getBundle();
-      this.pandino.setBundleStateAndNotify(bundle as BundleImpl, 'RESOLVED');
       this.pandino.fireBundleEvent('RESOLVED', bundle);
 
       try {
@@ -83,8 +82,8 @@ export class StatefulResolver {
   }
 
   /**
-   * Currently in the resolving process, we only take ACTIVE Bundles into consideration. Intentionally skipping RESOLVED
-   * ones, given we are expecting all Bundles to have at least a start() being called from A {@link BundleActivator}.
+   * Currently in the resolving process, we only take ACTIVE Bundles into consideration. Given we are expecting all
+   * Bundles to have at least a start() being called from A {@link BundleActivator}.
    */
   private getEligibleCapabilities(): BundleCapability[] {
     const caps: BundleCapability[] = [];
@@ -103,7 +102,7 @@ export class StatefulResolver {
   }
 
   private static canBundleBeResolved(rev: BundleRevision, wires: Array<BundleWire>): boolean {
-    const validStates: BundleState[] = ['INSTALLED', 'STARTING', 'RESOLVED'];
+    const validStates: BundleState[] = ['INSTALLED', 'STARTING'];
     if (!validStates.includes(rev.getBundle().getState())) {
       return false;
     }

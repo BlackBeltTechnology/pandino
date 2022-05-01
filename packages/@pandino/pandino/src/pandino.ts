@@ -137,7 +137,7 @@ export class Pandino extends BundleImpl implements Framework {
 
   async start(): Promise<void> {
     try {
-      if (this.getState() === 'INSTALLED' || this.getState() === 'RESOLVED') {
+      if (this.getState() === 'INSTALLED') {
         await this.init();
       }
       if (this.getState() === 'STARTING') {
@@ -158,7 +158,7 @@ export class Pandino extends BundleImpl implements Framework {
 
   async init(...listeners: FrameworkListener[]): Promise<void> {
     try {
-      if (this.getState() === 'INSTALLED' || this.getState() === 'RESOLVED') {
+      if (this.getState() === 'INSTALLED') {
         this.setBundleContext(new BundleContextImpl(this.logger, this, this));
         this.setState('STARTING');
         for (const listener of listeners) {
@@ -254,8 +254,8 @@ export class Pandino extends BundleImpl implements Framework {
   async startBundle(bundle: BundleImpl): Promise<void> {
     this.logger.info(`Starting Bundle: ${bundle.getSymbolicName()}: ${bundle.getVersion()}`);
     let rethrow: Error;
-    const validStates: BundleState[] = ['RESOLVED', 'INSTALLED'];
-    if (!['RESOLVED', 'INSTALLED'].includes(bundle.getState())) {
+    const validStates: BundleState[] = ['INSTALLED'];
+    if (!validStates.includes(bundle.getState())) {
       throw new Error(
         `Cannot start ${bundle.getUniqueIdentifier()}, because it\'s not in any of the valid states: ${validStates.join(
           ', ',
@@ -281,7 +281,7 @@ export class Pandino extends BundleImpl implements Framework {
       this.logger.info(`Started Bundle: ${bundle.getSymbolicName()}: ${bundle.getVersion()}`);
       await this.resolver.resolveRemaining();
     } else {
-      bundle.setState('RESOLVED');
+      bundle.setState('INSTALLED');
       this.fireBundleEvent('STOPPED', bundle);
       if (rethrow) {
         throw rethrow;
@@ -322,7 +322,7 @@ export class Pandino extends BundleImpl implements Framework {
       this.logger.error(th);
       this.fireBundleEvent('STOPPING', bundle);
 
-      this.setBundleStateAndNotify(bundle, 'RESOLVED');
+      this.setBundleStateAndNotify(bundle, 'INSTALLED');
 
       bundle.setActivator(null);
 
@@ -352,7 +352,6 @@ export class Pandino extends BundleImpl implements Framework {
         case 'STOPPING':
           throw new Error('Stopping a starting or stopping bundle is currently not supported.');
         case 'INSTALLED':
-        case 'RESOLVED':
           return;
         case 'ACTIVE':
           wasActive = true;
@@ -391,7 +390,7 @@ export class Pandino extends BundleImpl implements Framework {
         // tear down wires where bundle was a requirement for others
         bundle.getCurrentRevision().resolve(undefined);
 
-        bundle.setState('RESOLVED');
+        bundle.setState('INSTALLED');
       }
 
       if (!!error) {
@@ -480,7 +479,7 @@ export class Pandino extends BundleImpl implements Framework {
 
   async uninstallBundle(bundle: BundleImpl): Promise<void> {
     this.logger.info(`Uninstalling Bundle: ${bundle.getUniqueIdentifier()}...`);
-    const desiredStates: BundleState[] = ['INSTALLED', 'RESOLVED', 'STARTING', 'ACTIVE', 'STOPPING'];
+    const desiredStates: BundleState[] = ['INSTALLED', 'STARTING', 'ACTIVE', 'STOPPING'];
 
     if (!desiredStates.includes(bundle.getState())) {
       if (bundle.getState() === 'UNINSTALLED') {

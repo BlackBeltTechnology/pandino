@@ -1,5 +1,4 @@
 import {
-  BUNDLE_NAME,
   BundleActivator,
   BundleContext,
   BundleEvent,
@@ -17,7 +16,6 @@ interface BundleStat {
 
 interface BundleStats {
   INSTALLED: Array<BundleStat>;
-  RESOLVED: Array<BundleStat>;
   STARTING: Array<BundleStat>;
   ACTIVE: Array<BundleStat>;
   STOPPING: Array<BundleStat>;
@@ -144,7 +142,7 @@ class BundleTable extends HTMLElement {
                 <td>${a.version}</td>
                 <td class="mc-bundle-table-action-items">
                   ${
-                    a.state === 'INSTALLED' || a.state === 'RESOLVED'
+                    a.state === 'INSTALLED'
                       ? `
                     <button type="button" class="btn btn-sm" data-mc-action="start" data-mc-bundle-id="${a.id}">
                       start
@@ -196,7 +194,6 @@ class StatusBar extends HTMLElement {
   private listener: BundleListener;
   private stats: BundleStats = {
     INSTALLED: [],
-    RESOLVED: [],
     STARTING: [],
     ACTIVE: [],
     STOPPING: [],
@@ -212,7 +209,6 @@ class StatusBar extends HTMLElement {
   private updateStats(): void {
     this.stats = {
       INSTALLED: [],
-      RESOLVED: [],
       STARTING: [],
       ACTIVE: [],
       STOPPING: [],
@@ -232,21 +228,18 @@ class StatusBar extends HTMLElement {
 
   private updateStatsNumbersDisplay(): void {
     const installedSpan = this.shadow.querySelector('span.mc-bundle-installed');
-    const resolvedSpan = this.shadow.querySelector('span.mc-bundle-resolved');
     const startingSpan = this.shadow.querySelector('span.mc-bundle-starting');
     const activeSpan = this.shadow.querySelector('span.mc-bundle-active');
     const stoppingSpan = this.shadow.querySelector('span.mc-bundle-stopping');
     const uninstalledSpan = this.shadow.querySelector('span.mc-bundle-uninstalled');
 
     installedSpan.textContent = this.stats.INSTALLED.length.toString();
-    resolvedSpan.textContent = this.stats.RESOLVED.length.toString();
     startingSpan.textContent = this.stats.STARTING.length.toString();
     activeSpan.textContent = this.stats.ACTIVE.length.toString();
     stoppingSpan.textContent = this.stats.STOPPING.length.toString();
     uninstalledSpan.textContent = this.stats.UNINSTALLED.length.toString();
 
     const dropUpContextInstalled = this.shadow.querySelector('.dropup-content.bundle-installed');
-    const dropUpContextResolved = this.shadow.querySelector('.dropup-content.bundle-resolved');
     const dropUpContextStarting = this.shadow.querySelector('.dropup-content.bundle-starting');
     const dropUpContextActive = this.shadow.querySelector('.dropup-content.bundle-active');
     const dropUpContextStopping = this.shadow.querySelector('.dropup-content.bundle-stopping');
@@ -254,8 +247,6 @@ class StatusBar extends HTMLElement {
 
     dropUpContextInstalled.innerHTML = '';
     dropUpContextInstalled.appendChild(new BundleTable('INSTALLED', this.stats.INSTALLED, this.context));
-    dropUpContextResolved.innerHTML = '';
-    dropUpContextResolved.appendChild(new BundleTable('RESOLVED', this.stats.RESOLVED, this.context));
     dropUpContextStarting.innerHTML = '';
     dropUpContextStarting.appendChild(new BundleTable('STARTING', this.stats.STARTING, this.context));
     dropUpContextActive.innerHTML = '';
@@ -340,12 +331,6 @@ class StatusBar extends HTMLElement {
         <div class="mc-status-item dropup">
           Installed (<span class="mc-bundle-installed">${this.stats.INSTALLED.length}</span>)
           <div class="dropup-content bundle-installed">
-            <!-- CONTENT GOES HERE -->
-          </div>
-        </div>
-        <div class="mc-status-item dropup">
-          Resolved (<span class="mc-bundle-resolved">${this.stats.RESOLVED.length}</span>)
-          <div class="dropup-content bundle-resolved">
             <!-- CONTENT GOES HERE -->
           </div>
         </div>
