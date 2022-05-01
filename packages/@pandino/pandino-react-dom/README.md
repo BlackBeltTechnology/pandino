@@ -34,6 +34,24 @@ pandino.getBundleContext().installBundle('./pandino-react-dom-manifest.json');
 
 ## Usage
 
+### Install react and react-dom as peerDependencies
+
+```json
+{
+  "peerDependencies": {
+    "@pandino/pandino-react-dom": "^0.1.0",
+    "@types/react": "^17.0.43",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}
+```
+> Sadly `@types/react` is not enough, not all tokens / variables / functions / etc are defined in it...
+
+When working with Pandino-wrapped bundles we usually rely on their usual exports, therefore we need the actual sources.
+
+The plugin [@pandino/rollup-plugin-pandino-react-externalize](../rollup-plugin-pandino-react-externalize) will exclude them at the build step!
+
 ### Define React App component DOM node
 
 Somewhere in your HTML file define a DOM-node where we mount React as-per usual:
@@ -65,9 +83,13 @@ const pandino = new Pandino({
 #### Application.tsx
 
 ```tsx
+import { useState } from 'react';
+
 export function Application() {
+    const [greeting] = useState<string>('Sir');
+    
     return (
-        <h3>Hello!</h3>
+        <h3>Hello {greeting}!</h3>
     );
 } 
 ```
