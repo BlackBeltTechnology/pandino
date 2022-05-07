@@ -95,7 +95,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     }
   }
 
-  getServiceReferences(identifier: string, filter?: FilterApi): Array<Capability> {
+  getServiceReferences(identifier?: string, filter?: FilterApi): Array<Capability> {
     let filterEffective: Filter = filter as Filter;
     if (isAnyMissing(identifier) && isAnyMissing(filter)) {
       filterEffective = new Filter(null, FilterComp.MATCH_ALL, null);

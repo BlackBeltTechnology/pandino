@@ -118,7 +118,13 @@ export class BundleContextImpl implements BundleContext {
     return undefined;
   }
 
-  getServiceReferences<S>(identifier: string, filter?: string): ServiceReference<S>[] {
+  getAllServiceReferences(identifier?: string, filter?: string): Array<ServiceReference<any>> {
+    this.checkValidity();
+
+    return this.pandino.getAllowedServiceReferences(this.bundle, identifier, filter, false);
+  }
+
+  getServiceReferences<S>(identifier?: string, filter?: string): ServiceReference<S>[] {
     this.checkValidity();
 
     return this.pandino.getAllowedServiceReferences(this.bundle, identifier, filter, true);
