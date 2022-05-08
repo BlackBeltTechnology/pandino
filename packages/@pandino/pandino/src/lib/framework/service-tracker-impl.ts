@@ -7,17 +7,17 @@ import {
   ServiceEvent,
   ServiceListener,
   ServiceReference,
+  ServiceTracker,
   ServiceTrackerCustomizer,
 } from '@pandino/pandino-api';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
 
-export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
+export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
+  readonly customizer: ServiceTrackerCustomizer<S, T>;
   protected readonly context: BundleContext;
   protected readonly filter: FilterApi;
-  readonly customizer: ServiceTrackerCustomizer<S, T>;
-  listenerFilter: string;
+  private readonly listenerFilter: string;
   private readonly identifier?: string;
-  private readonly trackReference?: ServiceReference<S>;
   private tracked: Tracked<S, T>;
   private cachedReference: ServiceReference<S>;
   private cachedService: T;
@@ -36,38 +36,23 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
       typeof identifierOrFilter === 'string' ? context.createFilter(this.listenerFilter) : identifierOrFilter;
   }
 
-  /**
-   * Open this {@code ServiceTracker} and begin tracking services.
-   *
-   * <p>
-   * Services which match the search criteria specified when this {@code ServiceTracker} was created are now tracked by
-   * this {@code ServiceTracker}.
-   *
-   * @param trackAllServices If {@code true}, then this {@code ServiceTracker} will track all matching services
-   */
-  open(trackAllServices = false): void {
+  open(): void {
     let t: Tracked<S, T>;
 
     if (isAllPresent(this.tracked)) {
       return;
     }
 
-    t = trackAllServices ? new AllTracked(this) : new Tracked(this);
+    t = new AllTracked(this);
 
     this.context.addServiceListener(t, this.listenerFilter);
 
     let references: Array<ServiceReference<S>> = [];
 
     if (isAllPresent(this.identifier)) {
-      references = this.getInitialReferences(trackAllServices, this.identifier);
+      references = this.getInitialReferences(this.identifier);
     } else {
-      if (isAllPresent(this.trackReference)) {
-        if (isAllPresent(this.trackReference.getBundle())) {
-          references = [this.trackReference];
-        }
-      } else {
-        references = this.getInitialReferences(trackAllServices, undefined, this.listenerFilter);
-      }
+      references = this.getInitialReferences(undefined, this.listenerFilter);
     }
 
     t.setInitial(references);
@@ -77,15 +62,6 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
     t.trackInitial();
   }
 
-  /**
-   * Close this {@code ServiceTracker}.
-   *
-   * <p>
-   * This method should be called when this {@code ServiceTracker} should end the tracking of services.
-   *
-   * <p>
-   * This implementation calls {@link #getServiceReferences()} to get the list of tracked services to remove.
-   */
   close(): void {
     let outgoing: Tracked<S, T>;
     let references: Array<ServiceReference<S>>;
@@ -117,11 +93,6 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
     }
   }
 
-  /**
-   * Return an array of {@code ServiceReference}s for all services being tracked by this {@code ServiceTracker}.
-   *
-   * @return Array of {@code ServiceReference}s or {@code undefined} if no services are being tracked.
-   */
   getServiceReferences(): Array<ServiceReference<S>> {
     let t: Tracked<S, T> = this.tracked;
     if (isAnyMissing(t)) {
@@ -144,18 +115,12 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
   }
 
   removedService(reference: ServiceReference<S>, service: T): void {
-    this.context.ungetService(reference);
+    try {
+      // If a Bundle is in a STOPPING state, unget will fail
+      this.context.ungetService(reference);
+    } catch (_) {}
   }
 
-  /**
-   * Returns a service object for one of the services being tracked by this {@code ServiceTracker}.
-   *
-   * <p>
-   * If any services are being tracked, this implementation returns the result of calling
-   * {@code getService(getServiceReference())}.
-   *
-   * @return A service object or {@code undefined} if no services are being tracked.
-   */
   getService(): T | undefined {
     let service: T = this.cachedService;
     if (isAllPresent(service)) {
@@ -168,20 +133,6 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
     return (this.cachedService = this.getServiceForReference(reference));
   }
 
-  /**
-   * Returns a {@code ServiceReference} for one of the services being tracked by this {@code ServiceTracker}.
-   *
-   * <p>
-   * If multiple services are being tracked, the service with the highest ranking (as specified in its
-   * {@code service.ranking} property) is returned. If there is a tie in ranking, the service with the lowest service id
-   * (as specified in its {@code service.id} property); that is, the service that was registered first is returned. This
-   * is the same algorithm used by {@code BundleContext.getServiceReference}.
-   *
-   * <p>
-   * This implementation calls {@link #getServiceReferences()} to get the list of references for the tracked services.
-   *
-   * @return A {@code ServiceReference} or {@code undefined} if no services are being tracked.
-   */
   getServiceReference(): ServiceReference<S> | undefined {
     const reference: ServiceReference<S> = this.cachedReference;
     if (isAllPresent(reference)) {
@@ -235,16 +186,7 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
     return t.getCustomizedObject(reference);
   }
 
-  /**
-   * Return an array of service objects for all services being tracked by this {@code ServiceTracker}.
-   *
-   * <p>
-   * This implementation calls {@link #getServiceReferences()} to get the list of references for the tracked services
-   * and then calls {@link #getService(ServiceReference)} for each reference to get the tracked service object.
-   *
-   * @return An array of service objects or {@code []]} if no services are being tracked.
-   */
-  getServices(): any[] {
+  getServices(): T[] {
     let t: Tracked<S, T> = this.tracked;
     if (isAnyMissing(t)) {
       return [];
@@ -254,7 +196,7 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
     if (length === 0) {
       return [];
     }
-    const objects: any[] = [];
+    const objects: T[] = [];
     for (let i = 0; i < length; i++) {
       objects[i] = this.getServiceForReference(references[i]);
     }
@@ -266,14 +208,6 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
     this.cachedService = undefined;
   }
 
-  /**
-   * Remove a service from this {@code ServiceTracker}.
-   *
-   * The specified service will be removed from this {@code ServiceTracker}. If the specified service was being tracked
-   * then the {@code ServiceTrackerCustomizer.removedService} method will be called for that service.
-   *
-   * @param reference The reference to the service to be removed.
-   */
   remove(reference: ServiceReference<S>): void {
     let t: Tracked<S, T> = this.tracked;
     if (isAnyMissing(t)) {
@@ -282,11 +216,6 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
     t.untrack(reference, undefined);
   }
 
-  /**
-   * Return the number of services being tracked by this {@code ServiceTracker}.
-   *
-   * @return The number of services being tracked.
-   */
   size(): number {
     const t: Tracked<S, T> = this.tracked;
     if (isAnyMissing(t)) {
@@ -296,20 +225,6 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
     return t.size();
   }
 
-  /**
-   * Returns the tracking count for this {@code ServiceTracker}.
-   *
-   * The tracking count is initialized to 0 when this {@code ServiceTracker} is opened. Every time a service is added,
-   * modified or removed from this {@code ServiceTracker}, the tracking count is incremented.
-   *
-   * <p>
-   * The tracking count can be used to determine if this {@code ServiceTracker} has added, modified or removed a service
-   * by comparing a tracking count value previously collected with the current tracking count value. If the value has
-   * not changed, then no service has been added, modified or removed from this {@code ServiceTracker} since the
-   * previous tracking count was collected.
-   *
-   * @return The tracking count for this {@code ServiceTracker} or -1 if this {@code ServiceTracker} is not open.
-   */
   getTrackingCount(): number {
     const t: Tracked<S, T> = this.tracked;
 
@@ -320,30 +235,6 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
     return t.getTrackingCount();
   }
 
-  /**
-   * Return a {@code SortedMap} of the {@code ServiceReference}s and service objects for all services being tracked by
-   * this {@code ServiceTracker}. The map is sorted in reverse natural order of {@code ServiceReference}. That is, the
-   * first entry is the service with the highest ranking and the lowest service id.
-   *
-   * @return A {@code SortedMap} with the {@code ServiceReference}s and service objects for all services being tracked
-   *         by this {@code ServiceTracker}. If no services are being tracked, then the returned map is empty.
-   */
-  getTracked(): Map<ServiceReference<S>, T> {
-    const map: Map<ServiceReference<S>, T> = new Map<ServiceReference<S>, T>();
-    const t: Tracked<S, T> = this.tracked;
-
-    if (isAnyMissing(t)) {
-      return map;
-    }
-
-    return t.copyEntries(map);
-  }
-
-  /**
-   * Return if this {@code ServiceTracker} is empty.
-   *
-   * @return {@code true} if this {@code ServiceTracker} is not tracking any services.
-   */
   isEmpty(): boolean {
     const t: Tracked<S, T> = this.tracked;
 
@@ -354,17 +245,11 @@ export class ServiceTracker<S, T> implements ServiceTrackerCustomizer<S, T> {
     return t.isEmpty();
   }
 
-  private getInitialReferences(
-    trackAllServices: boolean,
-    identifier?: string,
-    filterString?: string,
-  ): Array<ServiceReference<S>> {
+  private getInitialReferences(identifier?: string, filterString?: string): Array<ServiceReference<S>> {
     if (isAnyMissing(identifier) && isAnyMissing(filterString)) {
       throw new Error('Either the parameter "identifier" or "filterString" must be provided!');
     }
-    return trackAllServices
-      ? this.context.getAllServiceReferences(identifier, filterString)
-      : this.context.getServiceReferences(identifier, filterString);
+    return this.context.getAllServiceReferences(identifier, filterString);
   }
 }
 
@@ -510,13 +395,6 @@ abstract class AbstractTracked<S, T, R> {
     return this.trackingCount;
   }
 
-  copyEntries<M extends Map<S, T>>(map: M): M {
-    this.tracked.forEach((value, key) => {
-      map.set(key, value);
-    });
-    return map;
-  }
-
   private trackAdding(item: S, related?: R): void {
     let object: T;
     let becameUntracked = false;
@@ -543,9 +421,9 @@ abstract class AbstractTracked<S, T, R> {
 
 class Tracked<S, T> extends AbstractTracked<ServiceReference<S>, T, ServiceEvent> implements ServiceListener {
   isSync = true;
-  private tracker: ServiceTracker<S, T>;
+  private tracker: ServiceTrackerImpl<S, T>;
 
-  constructor(tracker: ServiceTracker<S, T>) {
+  constructor(tracker: ServiceTrackerImpl<S, T>) {
     super();
     this.tracker = tracker;
   }
@@ -587,7 +465,7 @@ class Tracked<S, T> extends AbstractTracked<ServiceReference<S>, T, ServiceEvent
 }
 
 class AllTracked<S, T> extends Tracked<S, T> implements ServiceListener {
-  constructor(tracker: ServiceTracker<S, T>) {
+  constructor(tracker: ServiceTrackerImpl<S, T>) {
     super(tracker);
   }
 }
