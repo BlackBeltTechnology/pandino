@@ -519,7 +519,7 @@ export class Pandino extends BundleImpl implements Framework {
 
   getAllowedServiceReferences(
     bundle: BundleImpl,
-    className: string,
+    className?: string,
     expr?: string,
     checkAssignable = false,
   ): ServiceReference<any>[] {
@@ -530,7 +530,7 @@ export class Pandino extends BundleImpl implements Framework {
 
   private getServiceReferences(
     bundle: BundleImpl,
-    className: string,
+    className?: string,
     expr?: string,
     checkAssignable = false,
   ): ServiceReference<any>[] {

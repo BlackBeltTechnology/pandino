@@ -129,4 +129,8 @@ export class MockBundleContext implements BundleContext {
   ungetService<S>(reference: ServiceReference<S>): boolean {
     return false;
   }
+
+  getAllServiceReferences(identifier: string, filter: string): Array<ServiceReference<any>> {
+    return [];
+  }
 }

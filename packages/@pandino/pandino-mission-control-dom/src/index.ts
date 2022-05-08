@@ -1,10 +1,4 @@
-import {
-  BundleActivator,
-  BundleContext,
-  BundleEvent,
-  BundleListener,
-  BundleState,
-} from '@pandino/pandino-api';
+import { BundleActivator, BundleContext, BundleEvent, BundleListener, BundleState } from '@pandino/pandino-api';
 
 interface BundleStat {
   id: number;

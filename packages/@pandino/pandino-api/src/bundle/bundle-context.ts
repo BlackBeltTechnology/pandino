@@ -260,6 +260,38 @@ export interface BundleContext extends BundleReference {
 
   /**
    * Returns an array of {@code ServiceReference} objects. The returned array of {@code ServiceReference} objects
+   * contains services that were registered under the specified class and match the specified filter expression.
+   *
+   * <p>
+   * The list is valid at the time of the call to this method. However since the Framework is a very dynamic
+   * environment, services can be modified or unregistered at any time.
+   *
+   * <p>
+   * The specified {@code filter} expression is used to select the registered services whose service properties contain
+   * keys and values which satisfy the filter expression. See {@link Filter} for a description of the filter syntax. If
+   * the specified {@code filter} is {@code undefined}, all registered services are considered to match the filter. If
+   * the specified {@code filter} expression cannot be parsed, an {@link Error} will be thrown with a human readable
+   * message where the filter became unparsable.
+   *
+   * <p>
+   * The result is an array of {@code ServiceReference} objects for all services that meet all of the following
+   * conditions:
+   * <ul>
+   * <li>If the specified class name, {@code clazz}, is not {@code undefined}, the service must have been registered
+   * with the specified class name. The complete list of class names with which a service was registered is available
+   * from the service's {@link OBJECTCLASS objectClass}property.</li>
+   * <li>If the specified {@code filter} is not {@code undefined}, the filter expression must match the service.</li>
+   * </ul>
+   *
+   * @param identifier The class name with which the service was registered or {@code undefined} for all services.
+   * @param filter The filter expression or {@code undefined} for all services.
+   * @return An array of {@code ServiceReference} objects or {@code undefined} if no services are registered which
+   *         satisfy the search.
+   */
+  getAllServiceReferences(identifier?: string, filter?: string): Array<ServiceReference<any>>;
+
+  /**
+   * Returns an array of {@code ServiceReference} objects. The returned array of {@code ServiceReference} objects
    * contains services that were registered under the specified class, match the specified filter expression.
    *
    * <p>
@@ -283,12 +315,13 @@ export interface BundleContext extends BundleReference {
    * <li>If the specified {@code filter} is not {@code undefined}, the filter expression must match the service.</li>
    * </ul>
    *
-   * @param {string} identifier The class name with which the service was registered or {@code undefined} for all services.
+   * @param {string} identifier The class name with which the service was registered or {@code undefined} for all
+   *                            services.
    * @param {string} filter The filter expression or {@code undefined} for all services.
-   * @returns An array of {@code ServiceReference} objects or {@code null} if
-   *          no services are registered which satisfy the search.
+   * @returns An array of {@code ServiceReference} objects or {@code []} if no services are registered which satisfy
+   *          the search.
    */
-  getServiceReferences<S>(identifier: string, filter?: string): ServiceReference<S>[];
+  getServiceReferences<S>(identifier?: string, filter?: string): ServiceReference<S>[];
 
   /**
    * Returns the service object for the service referenced by the specified {@code ServiceReference} object.

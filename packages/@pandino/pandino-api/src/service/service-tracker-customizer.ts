@@ -7,12 +7,8 @@ import { ServiceReference } from './service-reference';
  * {@code ServiceTrackerCustomizer} is also called when a tracked service is modified or has been removed from a
  * {@code ServiceTracker}.
  *
- * <p>
- * The methods in this interface may be called as the result of a {@code ServiceEvent} being received by a
- * {@code ServiceTracker}. Since {@code ServiceEvent}s are synchronously delivered by the Framework, it is highly
- * recommended that implementations of these methods do not register ( {@code BundleContext.registerService}), modify (
- * {@code ServiceRegistration.setProperties}) or unregister ({@code ServiceRegistration.unregister}) a service while
- * being synchronized on any object.
+ * @param <S> The type of the service being tracked.
+ * @param <T> The type of the tracked object.
  */
 export interface ServiceTrackerCustomizer<S, T> {
   /**
@@ -21,8 +17,12 @@ export interface ServiceTrackerCustomizer<S, T> {
    * <p>
    * This method is called before a service which matched the search parameters of the {@code ServiceTracker} is added
    * to the {@code ServiceTracker}. This method should return the service object to be tracked for the specified
-   * {@code ServiceReference}. The returned service object is stored in the {@code ServiceTracker} and is available
-   * from the {@code getService} and {@code getServices} methods.
+   * {@code ServiceReference}. The returned service object is stored in the {@code ServiceTracker} and is available from
+   * the {@code getService} and {@code getServices} methods.
+   *
+   * @param reference The reference to the service being added to the {@code ServiceTracker}.
+   * @return The service object to be tracked for the specified referenced service or {@code null} if the specified
+   *         referenced service should not be tracked.
    */
   addingService(reference: ServiceReference<S>): T;
 
@@ -31,6 +31,9 @@ export interface ServiceTrackerCustomizer<S, T> {
    *
    * <p>
    * This method is called when a service being tracked by the {@code ServiceTracker} has had it properties modified.
+   *
+   * @param reference The reference to the service that has been modified.
+   * @param service The service object for the specified referenced service.
    */
   modifiedService(reference: ServiceReference<S>, service: T): void;
 
@@ -39,6 +42,9 @@ export interface ServiceTrackerCustomizer<S, T> {
    *
    * <p>
    * This method is called after a service is no longer being tracked by the {@code ServiceTracker}.
+   *
+   * @param reference The reference to the service that has been removed.
+   * @param service The service object for the specified referenced service.
    */
   removedService(reference: ServiceReference<S>, service: T): void;
 }
