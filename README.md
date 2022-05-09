@@ -353,31 +353,31 @@ common software development problems. Usage is opt-in of course.
 
 ### Bundle Installer
 
-- [Pandino - DOM](./packages/@pandino/pandino-bundle-installer-dom)
-- [Pandino - NodeJS](./packages/@pandino/pandino-bundle-installer-nodejs)
+- [Bundle Installer - DOM](./packages/@pandino/bundle-installer-dom)
+- [Bundle Installer - NodeJS](./packages/@pandino/bundle-installer-nodejs)
 
 ### Persistence Manager
 
-- [API](./packages/@pandino/pandino-persistence-manager-api)
-- [Pandino - In Memory](./packages/@pandino/pandino-persistence-manager-memory)
-- [Pandino - Localstorage](./packages/@pandino/pandino-persistence-manager-localstorage)
+- [API](./packages/@pandino/persistence-manager-api)
+- [Persistence Manager - In Memory](./packages/@pandino/persistence-manager-memory)
+- [Persistence Manager - Localstorage](./packages/@pandino/persistence-manager-localstorage)
 
 ### Configuration Management
 
-- [API](./packages/@pandino/pandino-configuration-management-api)
-- [Pandino - Configuration Management](./packages/@pandino/pandino-configuration-management)
+- [API](./packages/@pandino/configuration-management-api)
+- [Configuration Management](./packages/@pandino/configuration-management)
 
 ### Event Admin
 
-- [API](./packages/@pandino/pandino-event-api)
-- [Pandino - Event Admin](./packages/@pandino/pandino-event-admin)
+- [API](./packages/@pandino/event-api)
+- [Event Admin](./packages/@pandino/event-admin)
 
 ### React (DOM)
 
-- [API](./packages/@pandino/pandino-react-dom-api)
-- [Pandino - React (DOM)](./packages/@pandino/pandino-react-dom)
-- [Pandino - Router (DOM)](./packages/@pandino/pandino-react-router-dom)
+- [API](./packages/@pandino/react-dom-api)
+- [React (DOM)](./packages/@pandino/react-dom)
+- [Router (DOM)](./packages/@pandino/react-router-dom)
 
 ### Bundler Plugins
 
-- [rollup-plugin-pandino-react-externalize](./packages/@pandino/rollup-plugin-pandino-react-externalize)
+- [rollup-plugin-react-externalize](./packages/@pandino/rollup-plugin-react-externalize)

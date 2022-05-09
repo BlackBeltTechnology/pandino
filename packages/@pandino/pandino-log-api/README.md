@@ -1,3 +1,0 @@
-# Pandino Event API
-
-Work In Progress...

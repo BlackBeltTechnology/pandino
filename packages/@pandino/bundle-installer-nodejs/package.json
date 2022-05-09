@@ -1,0 +1,36 @@
+{
+  "name": "@pandino/bundle-installer-nodejs",
+  "version": "0.1.0",
+  "description": "Install Bundles defined in the filesystem",
+  "main": "./dist/cjs/bundle-installer-nodejs.js",
+  "module": "./dist/esm/bundle-installer-nodejs.mjs",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/bundle-installer-nodejs.js",
+      "default": "./dist/esm/bundle-installer-nodejs.mjs"
+    }
+  },
+  "private": true,
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npm run clean && webpack"
+  },
+  "keywords": [],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  },
+  "devDependencies": {
+    "@pandino/pandino-api": "^0.1.0",
+    "copy-webpack-plugin": "^10.2.0",
+    "handlebars-webpack-plugin": "^2.2.1",
+    "rimraf": "^3.0.2",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.6.2",
+    "webpack": "^5.65.0",
+    "webpack-bundle-analyzer": "^4.5.0",
+    "webpack-cli": "^4.9.1"
+  }
+}
