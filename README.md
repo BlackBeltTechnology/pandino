@@ -68,7 +68,18 @@ parts of a Manifest!
 
 Bundle lifecycle in Pandino is a simplified/modified version of the OSGi Bundle lifecycle.
 
-![Bundle Lifecycle](./docs/pandino-bundle-lifecycle.svg "Bundle Lifecycle")
+```mermaid
+stateDiagram-v2
+
+Installed --> Uninstalled
+Uninstalled --> Installed
+Installed --> Starting
+Starting --> Stopping
+Starting --> Active
+Active --> Stopping
+Stopping --> Installed
+
+```
 
 ### 2. Service
 
