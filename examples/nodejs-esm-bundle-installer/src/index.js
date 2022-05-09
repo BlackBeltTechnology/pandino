@@ -2,7 +2,7 @@ import express from 'express';
 import {fileURLToPath} from 'url';
 import path from 'path';
 import Pandino from '@pandino/pandino';
-import bundleInstallerHeaders from '@pandino/pandino-bundle-installer-nodejs';
+import bundleInstallerHeaders from '@pandino/bundle-installer-nodejs';
 import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);

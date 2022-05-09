@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   await pandino.start();
 
   // install Event Admin
-  await pandino.getBundleContext().installBundle('pandino-event-admin-manifest.json');
+  await pandino.getBundleContext().installBundle('event-admin-manifest.json');
 
   // initialize Application
   const divApp = document.getElementById('app');

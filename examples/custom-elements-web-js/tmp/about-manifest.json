@@ -1,6 +1,6 @@
 {
   "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/ecomponents-web-js-about",
+  "Bundle-SymbolicName": "@pandino/custom-elements-web-js-about",
   "Bundle-Name": "About",
   "Bundle-Version": "0.1.0",
   "Bundle-Activator": "./about.js",

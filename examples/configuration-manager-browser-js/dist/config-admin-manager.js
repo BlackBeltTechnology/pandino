@@ -2,7 +2,7 @@ export default class Activator {
   async start(context) {
     this.loggerReference = context.getServiceReference('@pandino/pandino/Logger');
     this.logger = context.getService(this.loggerReference);
-    this.configAdminReference = context.getServiceReference('@pandino/pandino-configuration-management/ConfigurationAdmin');
+    this.configAdminReference = context.getServiceReference('@pandino/configuration-management/ConfigurationAdmin');
     this.configAdmin = context.getService(this.configAdminReference);
 
     this.logger.log('ConfigAdmin Manager - Activator');

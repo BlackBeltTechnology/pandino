@@ -13,7 +13,7 @@
   "dependencies": {
     "@pandino/pandino": "file:../../packages/@pandino/pandino",
     "@pandino/pandino-api": "file:../../packages/@pandino/pandino-api",
-    "@pandino/pandino-bundle-installer-nodejs": "file:../../packages/@pandino/pandino-bundle-installer-nodejs",
+    "@pandino/bundle-installer-nodejs": "file:../../packages/@pandino/bundle-installer-nodejs",
     "express": "^4.17.2"
   }
 }

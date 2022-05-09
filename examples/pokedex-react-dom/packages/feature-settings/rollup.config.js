@@ -1,7 +1,7 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 const typescript = require('@rollup/plugin-typescript');
-const { pandinoExternalizeReact } = require('@pandino/rollup-plugin-pandino-react-externalize');
+const { pandinoExternalizeReact } = require('@pandino/rollup-plugin-react-externalize');
 const { readFileSync } = require('fs');
 
 const packageJSON = JSON.parse(readFileSync('package.json').toString('utf8'));
@@ -20,6 +20,7 @@ module.exports = {
     typescript({ tsconfig: './tsconfig.json' }),
     pandinoExternalizeReact({
       prettify: true,
+      minify: true,
       componentsMap: [
         {
           component: 'settingsFeature',
@@ -38,10 +39,10 @@ module.exports = {
         "Bundle-Description": packageJSON.description,
         "Bundle-Activator": "./feature-settings.mjs",
         "Require-Capability": [
-          "pokedex-application;filter:=(type=dom)",
-          "@pandino/pandino-configuration-management;filter:=(objectClass=@pandino/pandino-configuration-management/ConfigurationAdmin)"
+          "pokedex-application;filter:=(type=DOM)",
+          "@pandino/configuration-management;filter:=(objectClass=@pandino/configuration-management/ConfigurationAdmin)"
         ],
-        "Provide-Capability": "@pokedex/feature;type=dom"
+        "Provide-Capability": "@pokedex/feature;type=\"DOM\""
       },
     }),
   ],

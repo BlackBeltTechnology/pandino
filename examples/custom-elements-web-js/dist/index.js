@@ -14,7 +14,7 @@ const pandino = new Pandino({
 await pandino.init();
 await pandino.start();
 
-pandino.getBundleContext().installBundle('./pandino-bundle-installer-dom-manifest.json');
+pandino.getBundleContext().installBundle('./bundle-installer-dom-manifest.json');
 
 const root = document.querySelector('#root');
 root.appendChild(new AppWire(pandino.getBundleContext()));

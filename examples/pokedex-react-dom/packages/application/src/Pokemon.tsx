@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
-import { useReactBundleContext } from '@pandino/pandino-react-dom';
-import { ComponentProxyProps, COMPONENT_PROXY_INTERFACE_KEY } from '@pandino/pandino-react-dom-api';
-import { CONFIG_ADMIN_INTERFACE_KEY, ConfigurationAdmin } from '@pandino/pandino-configuration-management-api';
+import { useReactBundleContext } from '@pandino/react-dom';
+import { ComponentProxyProps, COMPONENT_PROXY_INTERFACE_KEY } from '@pandino/react-dom-api';
+import { CONFIG_ADMIN_INTERFACE_KEY, ConfigurationAdmin } from '@pandino/configuration-management-api';
 import { POKEDEX_FEATURE_INTERFACE_KEY, Pokemon, SettingsModel } from 'pokedex-application-contract';
 import { Link } from 'react-router-dom';
 

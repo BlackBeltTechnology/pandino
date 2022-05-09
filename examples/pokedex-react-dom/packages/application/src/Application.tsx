@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { HashRouter, Route, Routes, Link } from 'react-router-dom';
-import { useReactBundleContext } from '@pandino/pandino-react-dom';
+import { useReactBundleContext } from '@pandino/react-dom';
 import { POKEDEX_FEATURE_INTERFACE_KEY, PokedexFeature } from 'pokedex-application-contract';
 
 import { Dashboard } from './Dashboard';

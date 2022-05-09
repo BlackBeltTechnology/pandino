@@ -4,7 +4,7 @@ import {
   EVENT_FACTORY_INTERFACE_KEY,
   EventAdmin,
   EventFactory
-} from "@pandino/pandino-event-api";
+} from "@pandino/event-api";
 import {ConfigurationChangedProperties, TOPIC} from "./configuration-changed-event";
 
 export class Configuration extends HTMLElement {

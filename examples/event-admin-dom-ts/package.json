@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@pandino/pandino-api": "file:../../packages/@pandino/pandino-api",
-    "@pandino/pandino-event-api": "file:../../packages/@pandino/pandino-event-api",
+    "@pandino/event-api": "file:../../packages/@pandino/event-api",
     "copy-webpack-plugin": "^10.2.4",
     "html-webpack-plugin": "^5.5.0",
     "ts-loader": "^9.2.8",

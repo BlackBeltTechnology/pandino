@@ -4,5 +4,5 @@
   "Bundle-Name": "ConfigAdmin Manager",
   "Bundle-Version": "0.1.0",
   "Bundle-Activator": "./config-admin-manager.js",
-  "Require-Capability": "@pandino/pandino-configuration-management;filter:=(objectClass=\"@pandino/pandino-configuration-management/ConfigurationAdmin\")"
+  "Require-Capability": "@pandino/configuration-management;filter:=(objectClass=\"@pandino/configuration-management/ConfigurationAdmin\")"
 }

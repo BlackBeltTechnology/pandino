@@ -4,7 +4,7 @@ import {
   EVENT_HANDLER_INTERFACE_KEY,
   EventAdmin,
   EventHandler
-} from "@pandino/pandino-event-api";
+} from "@pandino/event-api";
 import {TOPIC} from "./configuration-changed-event";
 
 interface Entry {

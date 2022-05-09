@@ -1,5 +1,5 @@
 import typescript from '@rollup/plugin-typescript';
-import { pandinoExternalizeReact } from '@pandino/rollup-plugin-pandino-react-externalize';
+import { pandinoExternalizeReact } from '@pandino/rollup-plugin-react-externalize';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { readFileSync } from "fs";
@@ -20,6 +20,7 @@ export default {
     typescript({ tsconfig: './tsconfig.json' }),
     pandinoExternalizeReact({
       prettify: true,
+      minify: true,
       componentsMap: [
         {
           component: 'Application',
@@ -37,10 +38,10 @@ export default {
         "Bundle-Description": packageJSON.description,
         "Bundle-Activator": "./application.mjs",
         "Require-Capability": [
-          "@pandino/pandino-react-dom;filter:=\"(type=dom)\"",
-          "@pandino/pandino-react-router-dom;filter:=\"(type=dom)\""
+          "@pandino/react-dom;filter:=(type=DOM)",
+          "@pandino/react-router-dom;filter:=(type=DOM)"
         ],
-        "Provide-Capability": "pokedex-application;type=\"dom\""
+        "Provide-Capability": "pokedex-application;type=\"DOM\""
       },
     }),
   ],

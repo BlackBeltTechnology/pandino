@@ -8,8 +8,7 @@
     "install": "lerna bootstrap",
     "format": "prettier --config .prettierrc \"packages/*/src/**/*.ts\" --write",
     "format-tsx": "prettier --config .prettierrc \"packages/*/src/**/*.tsx\" --write",
-    "build": "lerna run build",
-    "start": "lerna run --scope app start --stream"
+    "build": "lerna run build"
   },
   "keywords": [
     "demo",

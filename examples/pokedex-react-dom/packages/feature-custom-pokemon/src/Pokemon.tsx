@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useReactBundleContext } from '@pandino/pandino-react-dom';
-import { CONFIG_ADMIN_INTERFACE_KEY, ConfigurationAdmin } from '@pandino/pandino-configuration-management-api';
+import { useReactBundleContext } from '@pandino/react-dom';
+import { CONFIG_ADMIN_INTERFACE_KEY, ConfigurationAdmin } from '@pandino/configuration-management-api';
 import { Pokemon, SettingsModel } from 'pokedex-application-contract';
 import { Link } from 'react-router-dom';
 import { POKEDEX_FEATURE_INTERFACE_KEY } from 'pokedex-application-contract';

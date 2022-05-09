@@ -17,11 +17,11 @@
         <div id="root"></div>
         <script type="pandino-manifests">
           [
-            "./pandino-mission-control-dom-manifest.json",
-            "./pandino-react-dom-manifest.json",
-            "./pandino-react-router-dom-manifest.json",
-            "./pandino-persistence-manager-localstorage-manifest.json",
-            "./pandino-configuration-management-manifest.json",
+            "./mission-control-dom-manifest.json",
+            "./react-dom-manifest.json",
+            "./react-router-dom-manifest.json",
+            "./persistence-manager-localstorage-manifest.json",
+            "./configuration-management-manifest.json",
             "./application-manifest.json",
             "./feature-settings-manifest.json",
             "./feature-pokemon-manifest.json",
@@ -47,11 +47,7 @@
                 await pandino.init();
                 await pandino.start();
 
-                await pandino.getBundleContext().installBundle('./pandino-bundle-installer-dom-manifest.json');
-
-                // window.setTimeout(() => {
-                //     pandino.getBundleContext().installBundle('./feature-settings-manifest.json');
-                // }, 3000);
+                await pandino.getBundleContext().installBundle('./bundle-installer-dom-manifest.json');
             });
         </script>
     </body>

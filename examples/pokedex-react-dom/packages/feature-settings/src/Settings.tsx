@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useReactBundleContext } from '@pandino/pandino-react-dom';
-import { ConfigurationAdmin } from '@pandino/pandino-configuration-management-api';
+import { useReactBundleContext } from '@pandino/react-dom';
+import { ConfigurationAdmin } from '@pandino/configuration-management-api';
 import { SettingsModel } from 'pokedex-application-contract';
 
 const defaultSettings: SettingsModel = {
@@ -13,7 +13,7 @@ export function Settings() {
 
   useEffect(() => {
     const configAdminReference = bundleContext.getServiceReference(
-      '@pandino/pandino-configuration-management/ConfigurationAdmin',
+      '@pandino/configuration-management/ConfigurationAdmin',
     );
     const configAdmin = bundleContext.getService<ConfigurationAdmin>(configAdminReference);
     const mstConfig = configAdmin.getConfiguration('pokedex.settings');
@@ -36,7 +36,7 @@ export function Settings() {
 
   useEffect(() => {
     const configAdminReference = bundleContext.getServiceReference(
-      '@pandino/pandino-configuration-management/ConfigurationAdmin',
+      '@pandino/configuration-management/ConfigurationAdmin',
     );
     const configAdmin = bundleContext.getService<ConfigurationAdmin>(configAdminReference);
     const mstConfig = configAdmin.getConfiguration('pokedex.settings');
