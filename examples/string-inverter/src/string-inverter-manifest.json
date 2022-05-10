@@ -1,0 +1,7 @@
+{
+  "Bundle-ManifestVersion": "1",
+  "Bundle-SymbolicName": "@example/string-inverter",
+  "Bundle-Name": "String Inverter",
+  "Bundle-Version": "0.1.0",
+  "Bundle-Activator": "./string-inverter.js"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "string-inverter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/string-inverter.js",
+  "private": true,
+  "scripts": {
+    "start": "serve src -p 5001"
+  },
+  "keywords": [],
+  "author": "Norbert Herczeg",
+  "license": "MIT",
+  "dependencies": {
+    "serve": "^13.0.2"
+  }
+}
