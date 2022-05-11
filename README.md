@@ -99,11 +99,12 @@ a custom service which will alter the application it self.
   </head>
   <body>
     <h1>Hello!</h1>
-    <p>This text should be reversed!</p>
+    <p id="text-to-invert">This text should be inverted!</p>
 
     <script type="module">
       window.addEventListener('DOMContentLoaded', async () => {
-        // 0. Import Pandino it self. Since we are running in the browsers with modules, we need the .mjs version.
+        // 0. Import Pandino it self. Since we are running in the browsers with modules, we need
+        // the .mjs version.
         const Pandino = (await import('./pandino.mjs')).default;
         const pandino = new Pandino({
           'pandino.deployment.root': location.href,
@@ -118,8 +119,8 @@ a custom service which will alter the application it self.
         await pandino.init();
         await pandino.start();
 
-        // Pandino should be up and running, which should be visible by looking at the console window of your browser's
-        // dev-tools
+        // Pandino should be up and running, which should be visible by looking at the console
+        // window of your browser's dev-tools
       });
     </script>
   </body>
@@ -128,7 +129,7 @@ a custom service which will alter the application it self.
 
 Pandino has 3 mandatory init parameters:
 - `pandino.deployment.root`: defines the root path under which we will serve our bundles from
-- `pandino.manifest.fetcher`: an object with a `fetch()` method where we define JSON manifest fetcher functionality
+- `pandino.manifest.fetcher`: an object with a `fetch()` method where we implement the Manifest loading mechanism
 - `pandino.bundle.importer`: an object with an `import()` method where we implement the JavaScript loading mechanism
 
 The reason why we need to manually define the `pandino.manifest.fetcher` and `pandino.bundle.importer` behavior is that 
@@ -161,12 +162,14 @@ class StringInverterImpl {
 }
 
 export default class Activator {
+  inverterRegistration;
+
   async start(context) {
-    context.registerService(STRING_INVERTER_INTERFACE_KEY, new StringInverterImpl());
+    this.inverterRegistration = context.registerService(STRING_INVERTER_INTERFACE_KEY, new StringInverterImpl());
   }
 
   async stop(context) {
-    context.ungetService(this.loggerReference);
+    this.inverterRegistration.unregister();
   }
 }
 ```
@@ -209,11 +212,10 @@ A complete list of Bundle Manifest Header properties can be found in the corresp
   </head>
   <body>
     <h1>Hello!</h1>
-    <p id="text-to-invert">This text should be inverter!</p>
+    <p id="text-to-invert">This text should be inverted!</p>
 
     <script type="module">
       window.addEventListener('DOMContentLoaded', async () => {
-        // 0. Import Pandino it self. Since we are running in the browsers with modules, we need the .mjs version.
         const Pandino = (await import('./pandino.mjs')).default;
         const pandino = new Pandino({
           'pandino.deployment.root': location.href,

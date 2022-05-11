@@ -7,11 +7,13 @@ class StringInverterImpl {
 }
 
 export default class Activator {
+  inverterRegistration;
+
   async start(context) {
-    context.registerService(STRING_INVERTER_INTERFACE_KEY, new StringInverterImpl());
+    this.inverterRegistration = context.registerService(STRING_INVERTER_INTERFACE_KEY, new StringInverterImpl());
   }
 
   async stop(context) {
-    context.ungetService(this.loggerReference);
+    this.inverterRegistration.unregister();
   }
 }

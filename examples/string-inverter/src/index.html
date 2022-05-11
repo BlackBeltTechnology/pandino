@@ -8,11 +8,12 @@
 </head>
 <body>
 <h1>Hello!</h1>
-<p id="text-to-invert">This text should be inverter!</p>
+<p id="text-to-invert">This text should be inverted!</p>
 
 <script type="module">
     window.addEventListener('DOMContentLoaded', async () => {
-        // 0. Import Pandino it self. Since we are running in the browsers with modules, we need the .mjs version.
+        // 0. Import Pandino it self. Since we are running in the browsers with modules, we need
+        // the .mjs version.
         const Pandino = (await import('./pandino.mjs')).default;
         const pandino = new Pandino({
             'pandino.deployment.root': location.href,
@@ -27,8 +28,8 @@
         await pandino.init();
         await pandino.start();
 
-        // Pandino should be up and running, which should be visible by looking at the console window of your browser's
-        // dev-tools
+        // Pandino should be up and running, which should be visible by looking at the console
+        // window of your browser's dev-tools
 
         // 1. Install our new bundle via it's manifest:
         const context = pandino.getBundleContext();
