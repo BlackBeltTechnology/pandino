@@ -9,4 +9,5 @@ export * from './bundle-listener';
 export * from './bundle-manifest-headers';
 export * from './bundle-reference';
 export * from './bundle-state';
+export * from './bundle-tracker';
 export * from './bundle-tracker-customizer';
