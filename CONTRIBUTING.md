@@ -8,12 +8,13 @@ npm i
 
 # Format code:
 npm run format
+npm run format-tsx
 
 # Build all packages (excluding example project):
 npm run build
 
 # Build single package, e.g.:
-npm run build -- --scope @pandino/bundle-a
+npm run build -- --scope @pandino/pandino
 ```
 
 ## Key Architectural Decisions

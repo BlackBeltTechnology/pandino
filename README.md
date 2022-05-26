@@ -42,12 +42,7 @@ In Pandino a Bundle is a unit of modularization. A bundle is comprised of:
 
 Manifest Headers can be used by bundle developers to supply descriptive information about a Bundle.
 
-#### 1.2. Bundle Version
-
-Every Bundle must provide a [semver-compliant](https://www.npmjs.com/package/semver) version number in all relevant
-parts of a Manifest!
-
-#### 1.3. Bundle Lifecycle
+#### 1.2. Bundle Lifecycle
 
 Bundle lifecycle in Pandino is a simplified/modified version of the OSGi Bundle lifecycle.
 
@@ -64,6 +59,40 @@ Active --> Stopping
 Stopping --> Installed
 ```
 
+**Installed**
+
+A Bundle goes to an `Installed` state when it's JavaScript code has been loaded successfully, or when it has been
+stopped.
+
+**Starting**
+
+A Bundle changes state to `Starting` once all of it's pre-defined dependencies are met, and it's `activate()` method has
+been called. Any Bundle failing to activate briefly transitions to the `Stopping` state.
+
+**Active**
+
+When a Bundle's `activate()` method has successfully ran, the `Starting` concludes, and the Bundle transitions to the
+`Active` state.
+
+> A Bundle's pre-defined `Providers` are only considered usable by the Framework if their host Bundle is in the `Active`
+state!
+
+**Stopping**
+
+A Bundle can go to the `Stopping` state either when it's `stop()` method has been pragmatically called, or when it
+fails to `activate()`.
+
+Successful stopping results in the Bundle transitioning to the `Installed` state.
+
+**Uninstalled**
+
+The main differences between `Installed` and `Uninstalled` states are: if a Bundle ends up in a state of `Uninstalled`,
+then it no longer participates in the Bundle resolution process, which means that even it's dependencies are satisfied
+and resolved, it still won't be considered usable by the Framework. This means that other Bundles depending on such
+Bundle won't ever start.
+
+The only state a Bundle can transition from `Uninstalled` to is `Installed`, via programmatically re-installing it.
+
 ### 2. Service
 
 Bundles are built around a set of cooperating Services available from a shared Service Registry. Such a Pandino service
@@ -77,6 +106,57 @@ when a Bundle is stopped, all the Services registered with Pandino by that Bundl
 
 Pandino also provides an event mechanism so that bundles can receive events of Services that are registered, modified,
 or unregistered.
+
+#### 2.1 Service References
+
+In general, registered service objects are referenced through `ServiceReference` objects. This avoids creating
+unnecessary dynamic service dependencies between bundles when a bundle needs to know about a service but does not
+require the service object itself.
+
+A `ServiceReference` object can be stored and passed on to other bundles without the implications of dependencies.
+A `ServiceReference` object encapsulates the properties and other meta-information about the service object it
+represents. This meta-information can be queried by a bundle to assist in the selection of a service that best suits its
+needs.
+
+#### 2.2 Service Interfaces
+
+A service interface is the specification of the service's public methods.
+
+In practice, a bundle developer creates a service object by implementing its service interface and registers the service
+object with the Framework service registry via a `string` representing the interface.
+
+> Since JavaScript does not support interfaces on a language level, we need to manually maintain a `string ` to
+> `interface` pairing.
+ 
+Once a bundle has registered a service object under an interface name, the associated service can be acquired by bundles
+under that interface name.
+
+When requesting a service object from the Framework, a bundle can specify the name of the service interface that the
+requested service object must implement. In the request, the bundle may also specify a filter string to narrow the
+search.
+
+One class may implement multiple interfaces therefore when such service needs to be registered, we can do so by
+providing a `string[]` representing each interface. On a consumer side, we can of course still obtain a
+`ServiceReference` object corresponding to a single interface by requesting a service object by only one of it's
+interface-representing strings.
+
+#### 2.3 Service Properties
+
+Properties hold information as key/value pairs. The key must be a `string` and the value should be a type recognized by
+`Filter` objects. Multiple values for the same key are supported with arrays ([]).
+
+The values of properties should be limited to primitive types to prevent unwanted inter bundle dependencies.
+
+The key of a property is **case sensitive**. ObjectClass, OBJECTCLASS and objectclass are **NOT** the same property
+keys.
+
+The service properties are intended to provide information about the service. The properties should not be used to
+participate in the actual function of the service. Modifying the properties for the service registration is a
+potentially expensive operation.
+
+The Filter interface supports complex filtering; it can be used to find matching services. Therefore, all properties
+share a single namespace in the Framework service registry. Filter strings MUST adhere to LDAP standard filter patterns,
+e.g.: `(|(someProp=test)(someProp=test-other))`
 
 ## Beginner's guide
 
@@ -147,9 +227,9 @@ A complete list of Framework configuration properties can be found in the corres
 ### 2) Create a Bundle which exposes a string-inverter service
 
 Every Bundle consists of at least 2 artifacts:
+- One JSON file containing Manifest info necessary for Pandino to manage the Bundle and it's dependencies / features
 - One Activator JavaScript file with or without the source code bundled into it
   - the Activator it self **MUST** be default exported!
-- One JSON file containing Manifest info necessary for Pandino to manage the Bundle and it's dependencies / features
 
 **string-inverter.js**
 ```javascript
@@ -173,11 +253,6 @@ export default class Activator {
   }
 }
 ```
-**About the `STRING_INVERTER_INTERFACE_KEY` variable:**
-
-Services are registered under 1 or more "`objectClass`" string(s) which could be considered as a 1:1 mapping to an
-imaginary "`interface`" which they implement. The same "keys" can be used later on in different Bundles to obtain a
-reference to the registered Service.
 
 **string-inverter-manifest.json**
 ```json
@@ -190,7 +265,7 @@ reference to the registered Service.
 }
 ```
 
-The `Bundle-SymbolicName` property should be considered the same as the `name` property in a `package.json` file.
+The `Bundle-SymbolicName` property should be considered to be similar to the `name` property in a `package.json` file.
 
 The `Bundle-SymbolicName` and `Bundle-Version` properties together serve as "composite keys" (make the bundle uniquely
 identifiable)!
