@@ -6,9 +6,11 @@ export class UsageCountImpl implements UsageCount {
   private service?: any;
   private count = 0;
   private serviceObjectsCount = 0;
+  private isProto = false;
 
-  constructor(ref: ServiceReference<any>) {
+  constructor(ref: ServiceReference<any>, isPrototype = false) {
     this.ref = ref;
+    this.isProto = isPrototype;
   }
 
   getReference(): ServiceReference<any> {
@@ -49,5 +51,9 @@ export class UsageCountImpl implements UsageCount {
 
   setService(service: any): void {
     this.service = service;
+  }
+
+  isPrototype(): boolean {
+    return this.isProto;
   }
 }

@@ -9,4 +9,5 @@ export interface UsageCount {
   decrementAndGet(): number;
   incrementToPositiveValue(): number;
   incrementServiceObjectsCountToPositiveValue(): number;
+  isPrototype(): boolean;
 }

@@ -22,6 +22,11 @@ import {
   DEPLOYMENT_ROOT_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
   SERVICE_RANKING,
+  SERVICE_SCOPE,
+  SCOPE_PROTOTYPE,
+  ServiceFactory,
+  ServiceRegistration,
+  ServiceObjects,
 } from '@pandino/pandino-api';
 import { MuteLogger } from '../../__mocks__/mute-logger';
 import { BundleContextImpl } from './bundle-context-impl';
@@ -357,24 +362,27 @@ describe('BundleContextImpl', () => {
     expect(service.execute()).toEqual(true);
   });
 
-  it('Service with a higher ranking overrides Service with a higher ranking', () => {
-    const mock1: MockService = {
-      execute: () => true,
+  it('Service prototype factory', () => {
+    const factory: ServiceFactory<MockService> = {
+      factoryType: 'service-prototype',
+      getService(bundle: Bundle, registration: ServiceRegistration<MockService>): MockService {
+        return {
+          execute: () => true,
+        };
+      },
+      ungetService(bundle: Bundle, registration: ServiceRegistration<MockService>, service: MockService): void {},
     };
-    const mock2: MockService = {
-      execute: () => false,
-    };
-    const serviceRegistration1 = bundleContext.registerService<MockService>('@scope/bundle/service', mock1);
-    const serviceRegistration2 = bundleContext.registerService<MockService>('@scope/bundle/service', mock2, {
-      [SERVICE_RANKING]: 150,
+    bundleContext.registerService<MockService>('@scope/bundle/service', factory, {
+      [SERVICE_SCOPE]: SCOPE_PROTOTYPE,
     });
 
     const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
-    const service = bundleContext.getService<MockService>(reference);
+    const serviceObject = bundleContext.getServiceObjects<MockService>(reference);
+    const service1 = serviceObject.getService();
+    const service2 = serviceObject.getService();
 
-    expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual(undefined);
-    expect(serviceRegistration2.getProperty(SERVICE_RANKING)).toEqual(150);
-    expect(reference.getProperty(SERVICE_RANKING)).toEqual(150);
-    expect(service.execute()).toEqual(false);
+    expect(service1.execute()).toEqual(true);
+    expect(service2.execute()).toEqual(true);
+    expect(service1).not.toEqual(service2);
   });
 });

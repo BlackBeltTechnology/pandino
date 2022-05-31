@@ -1,6 +1,8 @@
 import {
   Bundle,
   OBJECTCLASS,
+  PrototypeServiceFactory,
+  SCOPE_PROTOTYPE,
   SCOPE_SINGLETON,
   SERVICE_BUNDLEID,
   SERVICE_ID,
@@ -61,8 +63,8 @@ describe('ServiceRegistryImpl', () => {
     const ref: ServiceReference<HelloService> = reg.getReference();
 
     expect(sr.getRegisteredServices(bundle1).length).toEqual(1);
-    expect(sr.getService(bundle1, ref, false)).toEqual(helloService);
-    expect(sr.getService(bundle2, ref, false)).toEqual(helloService);
+    expect(sr.getService(bundle1, ref)).toEqual(helloService);
+    expect(sr.getService(bundle2, ref)).toEqual(helloService);
 
     expect(reg.getPropertyKeys()).toEqual([...defaultPropKeys]);
     expect(reg.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/hello-impl');
@@ -119,8 +121,8 @@ describe('ServiceRegistryImpl', () => {
     );
     const ref: ServiceReference<HelloService> = reg.getReference();
 
-    sr.getService(bundle1, ref, false);
-    sr.getService(bundle2, ref, false);
+    sr.getService(bundle1, ref);
+    sr.getService(bundle2, ref);
 
     expect(sr.getRegisteredServices(bundle1).length).toEqual(1);
     expect(ref.getUsingBundles()).toEqual([bundle1, bundle2]);
@@ -145,8 +147,8 @@ describe('ServiceRegistryImpl', () => {
     const refHello: ServiceReference<HelloService> = regHello.getReference();
     const refWelcome: ServiceReference<WelcomeService> = regWelcome.getReference();
 
-    sr.getService(bundle1, refHello, false);
-    sr.getService(bundle1, refWelcome, false);
+    sr.getService(bundle1, refHello);
+    sr.getService(bundle1, refWelcome);
 
     expect(sr.getRegisteredServices(bundle1).length).toEqual(2);
     expect(refHello.getUsingBundles()).toEqual([bundle1]);
@@ -169,9 +171,9 @@ describe('ServiceRegistryImpl', () => {
     const uc1 = sr.obtainUsageCount(bundle1, ref, helloService);
     const uc2 = sr.obtainUsageCount(bundle2, ref, helloService);
 
-    sr.getService(bundle1, ref, false);
-    sr.getService(bundle1, ref, false);
-    sr.getService(bundle2, ref, false);
+    sr.getService(bundle1, ref);
+    sr.getService(bundle1, ref);
+    sr.getService(bundle2, ref);
 
     expect(uc1.getCount()).toEqual(2);
     expect(uc2.getCount()).toEqual(1);
@@ -182,7 +184,7 @@ describe('ServiceRegistryImpl', () => {
     expect(uc2.getCount()).toEqual(0);
   });
 
-  it('getService() returns working service', async () => {
+  it('getService() returns singleton service', async () => {
     const reg: ServiceRegistration<HelloService> = sr.registerService(
       bundle1,
       '@pandino/pandino/hello-impl',
@@ -190,9 +192,12 @@ describe('ServiceRegistryImpl', () => {
     );
     const ref: ServiceReference<HelloService> = reg.getReference();
 
-    const service = sr.getService<HelloService>(bundle1, ref, false);
+    const service1 = sr.getService<HelloService>(bundle1, ref);
+    const service2 = sr.getService<HelloService>(bundle1, ref);
 
-    expect(service.sayHello()).toEqual('hello');
+    expect(service1.sayHello()).toEqual('hello');
+    expect(service2.sayHello()).toEqual('hello');
+    expect(service1).toEqual(service2);
   });
 
   it('unregister() removes Reference from ServiceRegistration', async () => {
@@ -205,7 +210,7 @@ describe('ServiceRegistryImpl', () => {
 
     reg.unregister();
 
-    const service = sr.getService(bundle1, ref, false);
+    const service = sr.getService(bundle1, ref);
 
     expect(service).toEqual(null);
   });
@@ -246,5 +251,34 @@ describe('ServiceRegistryImpl', () => {
       'new-prop': 'new value!',
       ...oldProps,
     });
+  });
+
+  it('register() prototype factory', async () => {
+    const prototypeFactory: PrototypeServiceFactory<HelloService> = {
+      factoryType: 'service-prototype',
+      getService(bundle: Bundle, registration: ServiceRegistration<HelloService>): HelloService {
+        return {
+          sayHello(): string {
+            return 'Created by factory service!';
+          },
+        };
+      },
+      ungetService(bundle: Bundle, registration: ServiceRegistration<HelloService>, service: HelloService) {},
+    };
+    const reg: ServiceRegistration<HelloService> = sr.registerService(
+      bundle1,
+      '@pandino/pandino/hello-impl',
+      prototypeFactory,
+      {
+        [SERVICE_SCOPE]: SCOPE_PROTOTYPE,
+      },
+    );
+    const ref: ServiceReference<HelloService> = reg.getReference();
+    const service1 = sr.getService(bundle1, ref, true);
+    const service2 = sr.getService(bundle1, ref, true);
+
+    expect(service1.sayHello()).toEqual('Created by factory service!');
+    expect(service2.sayHello()).toEqual('Created by factory service!');
+    expect(service1).not.toEqual(service2);
   });
 });

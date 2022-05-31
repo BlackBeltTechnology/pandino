@@ -12,11 +12,15 @@ import {
   ServiceReference,
   ServiceProperties,
   ServiceRegistration,
+  ServiceFactory,
+  ServiceObjects,
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import Filter from '../filter/filter';
 import { BundleImpl } from './bundle-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
+import { ServiceReferenceImpl } from './service-reference-impl';
+import { ServiceObjectsImpl } from './service-objects-impl';
 
 export class BundleContextImpl implements BundleContext {
   private valid = true;
@@ -132,7 +136,7 @@ export class BundleContextImpl implements BundleContext {
 
   registerService<S>(
     identifiers: string[] | string,
-    service: S,
+    service: S | ServiceFactory<S>,
     properties?: ServiceProperties,
   ): ServiceRegistration<S> {
     this.checkValidity();
@@ -154,6 +158,16 @@ export class BundleContextImpl implements BundleContext {
     return this.pandino.ungetService(this.bundle, reference, null);
   }
 
+  getServiceObjects<S>(reference: ServiceReference<S>): ServiceObjects<S> | undefined {
+    this.checkValidity();
+
+    const reg = (reference as ServiceReferenceImpl).getRegistration();
+    if (reg.isValid()) {
+      return new ServiceObjectsImpl<S>(reference, this, this.pandino);
+    }
+    return undefined;
+  }
+
   isValid(): boolean {
     return this.valid;
   }
@@ -162,7 +176,7 @@ export class BundleContextImpl implements BundleContext {
     this.valid = false;
   }
 
-  private checkValidity(): void {
+  checkValidity(): void {
     if (this.valid) {
       switch (this.bundle.getState()) {
         case 'ACTIVE':

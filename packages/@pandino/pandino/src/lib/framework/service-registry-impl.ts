@@ -3,7 +3,9 @@ import {
   FilterApi,
   Logger,
   OBJECTCLASS,
+  SCOPE_PROTOTYPE,
   SERVICE_ID,
+  SERVICE_SCOPE,
   ServiceProperties,
   ServiceReference,
   ServiceRegistration,
@@ -54,7 +56,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects = false): S {
-    const isPrototype = false;
+    const isPrototype = isServiceObjects && ref.getProperty(SERVICE_SCOPE) === SCOPE_PROTOTYPE;
     let usage: UsageCount = null;
     let svcObj: any = null;
 
@@ -76,8 +78,16 @@ export class ServiceRegistryImpl implements ServiceRegistry {
           usage.incrementServiceObjectsCountToPositiveValue();
         }
 
-        if (isAllPresent(usage)) {
-          // TODO: handle prototype/factory use-case
+        if (isAllPresent(usage) && isPrototype) {
+          const existingUsage = this.obtainUsageCount(bundle, ref, svcObj, null);
+          if (existingUsage && existingUsage !== usage) {
+            this.flushUsageCount(bundle, ref, usage);
+            usage = existingUsage;
+            usage.incrementToPositiveValue();
+            if (isServiceObjects) {
+              usage.incrementServiceObjectsCountToPositiveValue();
+            }
+          }
         }
       }
     } finally {
@@ -220,8 +230,35 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     }
   }
 
-  private flushUsageCount(bundle: Bundle, ref: ServiceReference<any>, uc: UsageCount): void {
-    // TODO: implement
+  /**
+   * Utility method to flush the specified bundle's usage count for the
+   * specified service reference. This should be called to completely
+   * remove the associated usage count object for the specified service
+   * reference. If the goal is to simply decrement the usage, then get
+   * the usage count and decrement its counter. This method will also
+   * remove the specified bundle from the "in use" map if it has no more
+   * usage counts after removing the usage count for the specified service
+   * reference.
+   **/
+  private flushUsageCount(bundle: Bundle, ref: ServiceReference<any>, uc?: UsageCount): void {
+    const usages: UsageCount[] = this.inUseMap.get(bundle) || [];
+    let processUsage = true;
+
+    while (processUsage === true) {
+      const usageIdx = usages.findIndex(
+        (usage) => (isAnyMissing(uc) && usage.getReference().compareTo(ref) === 0) || uc === usage,
+      );
+
+      if (usageIdx > -1) {
+        usages.splice(usageIdx, 1);
+      } else {
+        processUsage = false;
+      }
+    }
+
+    if (usages.length === 0) {
+      this.inUseMap.delete(bundle);
+    }
   }
 
   obtainUsageCount(bundle: Bundle, ref: ServiceReference<any>, svcObj: any, isPrototype = false): UsageCount {
@@ -229,15 +266,22 @@ export class ServiceRegistryImpl implements ServiceRegistry {
 
     const usages: UsageCount[] = this.inUseMap.get(bundle);
 
-    if (!isPrototype && isAllPresent(usages)) {
+    if (isPrototype === false && isAllPresent(usages)) {
       for (const usage of usages) {
-        if (usage.getReference().compareTo(ref) === 0) {
+        if (
+          usage.getReference().compareTo(ref) === 0 &&
+          ((isAnyMissing(svcObj) && !usage.isPrototype()) || usage.getService() === svcObj)
+        ) {
           return usage;
         }
       }
     }
 
-    usage = new UsageCountImpl(ref);
+    if (isAnyMissing(isPrototype)) {
+      return undefined;
+    }
+
+    usage = new UsageCountImpl(ref, isPrototype);
 
     if (isAnyMissing(usages)) {
       const newUsages: UsageCount[] = [usage];
@@ -273,7 +317,9 @@ export class ServiceRegistryImpl implements ServiceRegistry {
 
     for (let i = 0; i < usages.length; i++) {
       // Keep ungetting until all usage count is zero.
-      while (this.ungetService(bundle, usages[i].getReference(), null)) {
+      while (
+        this.ungetService(bundle, usages[i].getReference(), usages[i].isPrototype() ? usages[i].getService() : null)
+      ) {
         // Empty loop body.
       }
     }
@@ -285,9 +331,13 @@ export class ServiceRegistryImpl implements ServiceRegistry {
       const usages: UsageCount[] = this.inUseMap.get(client);
       for (const usage of usages) {
         if (usage.getReference().compareTo(ref) === 0) {
-          this.ungetService(client, ref, null);
+          this.ungetService(client, ref, usage.isPrototype() ? usage.getService() : null);
         }
       }
     }
+  }
+
+  getLogger(): Logger {
+    return this.logger;
   }
 }

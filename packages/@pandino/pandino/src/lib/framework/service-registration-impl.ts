@@ -8,10 +8,14 @@ import {
   SERVICE_BUNDLEID,
   SERVICE_ID,
   SERVICE_SCOPE,
+  SCOPE_BUNDLE,
+  SCOPE_PROTOTYPE,
+  ServiceFactory,
 } from '@pandino/pandino-api';
 import { ServiceReferenceImpl } from './service-reference-impl';
 import { isAllPresent } from '../utils/helpers';
 import { ServiceRegistry } from './service-registry';
+import { ServiceRegistryImpl } from './service-registry-impl';
 
 export class ServiceRegistrationImpl implements ServiceRegistration<any> {
   private readonly registry: ServiceRegistry;
@@ -19,6 +23,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
   private readonly classes: string | string[];
   private readonly serviceId: number;
   private svcObj: any;
+  private factory?: ServiceFactory<any>;
   private propMap?: ServiceProperties;
   private readonly ref: ServiceReferenceImpl;
   private isUnregistering = false;
@@ -36,6 +41,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     this.classes = classNames;
     this.serviceId = serviceId;
     this.svcObj = svcObj;
+    this.factory = isAllPresent((this.svcObj as ServiceFactory<any>).factoryType) ? this.svcObj : undefined;
     this.propMap = dict;
 
     this.initializeProperties(dict);
@@ -55,13 +61,23 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     return this.registry.getUsingBundles(ref);
   }
 
-  getService(ackBundle?: Bundle): any {
+  getService(acqBundle?: Bundle): any {
+    if (this.factory) {
+      return this.getFactoryUnchecked(acqBundle);
+    }
     return this.svcObj;
-    // TODO: handle factory use-case
   }
 
   ungetService(relBundle: Bundle, svcObj: any) {
-    // TODO: re-introduce once we support factories
+    if (this.factory) {
+      try {
+        this.ungetFactoryUnchecked(relBundle, svcObj);
+      } catch (e) {
+        (this.registry as ServiceRegistryImpl)
+          .getLogger()
+          .error('ServiceRegistrationImpl: Error ungetting service.', e);
+      }
+    }
   }
 
   getReference(): ServiceReference<any> {
@@ -89,6 +105,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     // TODO: re-introduce
     this.registry.unregisterService(this.bundle, this);
     this.svcObj = null;
+    this.factory = null;
   }
 
   getProperty(key: string): any {
@@ -103,6 +120,14 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     return Object.keys(this.propMap || {});
   }
 
+  private getFactoryUnchecked(bundle?: Bundle): any {
+    return this.factory.getService(bundle, this);
+  }
+
+  private ungetFactoryUnchecked(bundle: Bundle, svcObj: any): void {
+    this.factory.ungetService(bundle, this, svcObj);
+  }
+
   private initializeProperties(dict: Record<string, any>): void {
     const props: Record<string, any> = {};
     if (isAllPresent(dict)) {
@@ -112,8 +137,12 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     props[OBJECTCLASS] = this.classes;
     props[SERVICE_ID] = this.serviceId;
     props[SERVICE_BUNDLEID] = this.bundle.getBundleId();
-    props[SERVICE_SCOPE] = SCOPE_SINGLETON;
-    // TODO: handle factory use-case
+
+    if (this.factory) {
+      props[SERVICE_SCOPE] = this.factory.factoryType === 'service-prototype' ? SCOPE_PROTOTYPE : SCOPE_BUNDLE;
+    } else {
+      props[SERVICE_SCOPE] = SCOPE_SINGLETON;
+    }
 
     this.propMap = props;
   }

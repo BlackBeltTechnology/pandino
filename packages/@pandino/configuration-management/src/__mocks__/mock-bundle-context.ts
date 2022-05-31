@@ -7,6 +7,7 @@ import {
   FrameworkListener,
   ServiceEventType,
   ServiceListener,
+  ServiceObjects,
   ServiceProperties,
   ServiceReference,
   ServiceRegistration,
@@ -132,5 +133,9 @@ export class MockBundleContext implements BundleContext {
 
   getAllServiceReferences(identifier: string, filter: string): Array<ServiceReference<any>> {
     return [];
+  }
+
+  getServiceObjects<S>(reference: ServiceReference<S>): ServiceObjects<S> | undefined {
+    return undefined;
   }
 }
