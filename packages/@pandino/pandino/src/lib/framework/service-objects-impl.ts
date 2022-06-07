@@ -1,6 +1,7 @@
 import { ServiceObjects, ServiceReference } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { BundleContextImpl } from './bundle-context-impl';
+import { isAllPresent } from '../utils/helpers';
 
 export class ServiceObjectsImpl<S> implements ServiceObjects<S> {
   private readonly ref: ServiceReference<S>;
@@ -25,5 +26,9 @@ export class ServiceObjectsImpl<S> implements ServiceObjects<S> {
 
   ungetService(service: S): void {
     this.context.checkValidity();
+
+    if (isAllPresent(this.ref.getBundle()) && !this.pandino.ungetService(this.ref.getBundle(), this.ref, service)) {
+      throw new Error(`Cannot unget service: ${service}`);
+    }
   }
 }

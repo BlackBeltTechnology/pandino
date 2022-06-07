@@ -6,7 +6,7 @@ export class UsageCountImpl implements UsageCount {
   private service?: any;
   private count = 0;
   private serviceObjectsCount = 0;
-  private isProto = false;
+  private readonly isProto: boolean;
 
   constructor(ref: ServiceReference<any>, isPrototype = false) {
     this.ref = ref;
@@ -21,6 +21,10 @@ export class UsageCountImpl implements UsageCount {
     return this.count;
   }
 
+  getServiceObjectsCount(): number {
+    return this.serviceObjectsCount;
+  }
+
   incrementToPositiveValue(): number {
     if (this.count + 1 < 1) {
       this.count = 1;
@@ -30,8 +34,8 @@ export class UsageCountImpl implements UsageCount {
   }
 
   incrementServiceObjectsCountToPositiveValue(): number {
-    if (this.serviceObjectsCount + 1 < 1) {
-      this.serviceObjectsCount = 1;
+    if (this.serviceObjectsCount <= 0) {
+      return (this.serviceObjectsCount = 1);
     }
     this.serviceObjectsCount++;
     return this.serviceObjectsCount;
@@ -43,6 +47,10 @@ export class UsageCountImpl implements UsageCount {
 
   decrementAndGet(): number {
     return --this.count;
+  }
+
+  serviceObjectsDecrementAndGet(): number {
+    return --this.serviceObjectsCount;
   }
 
   getService(): any {

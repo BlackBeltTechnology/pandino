@@ -55,16 +55,17 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     return [];
   }
 
-  getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects = false): S {
+  getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects = false): S | undefined {
     const isPrototype = isServiceObjects && ref.getProperty(SERVICE_SCOPE) === SCOPE_PROTOTYPE;
-    let usage: UsageCount = null;
-    let svcObj: any = null;
+    let usage: UsageCount;
+    let svcObj: any;
 
     const reg = (ref as ServiceReferenceImpl).getRegistration();
 
     try {
       if (reg.isValid()) {
-        usage = this.obtainUsageCount(bundle, ref, null, isPrototype);
+        // Get the usage count, or create a new one. If this is a prototype, then we'll always create a new one.
+        usage = this.obtainUsageCount(bundle, ref, undefined, isPrototype);
 
         usage.incrementToPositiveValue();
         svcObj = usage.getService();
@@ -79,7 +80,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
         }
 
         if (isAllPresent(usage) && isPrototype) {
-          const existingUsage = this.obtainUsageCount(bundle, ref, svcObj, null);
+          const existingUsage = this.obtainUsageCount(bundle, ref, svcObj);
           if (existingUsage && existingUsage !== usage) {
             this.flushUsageCount(bundle, ref, usage);
             usage = existingUsage;
@@ -191,6 +192,11 @@ export class ServiceRegistryImpl implements ServiceRegistry {
 
     try {
       const usage = this.obtainUsageCount(bundle, ref, svcObj);
+
+      if (isAnyMissing(usage)) {
+        return false;
+      }
+
       if (isAllPresent(svcObj)) {
         if (usage.decrementAndGet() < 0) {
           return false;
@@ -231,14 +237,11 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   /**
-   * Utility method to flush the specified bundle's usage count for the
-   * specified service reference. This should be called to completely
-   * remove the associated usage count object for the specified service
-   * reference. If the goal is to simply decrement the usage, then get
-   * the usage count and decrement its counter. This method will also
-   * remove the specified bundle from the "in use" map if it has no more
-   * usage counts after removing the usage count for the specified service
-   * reference.
+   * Utility method to flush the specified bundle's usage count for the specified service reference. This should be
+   * called to completely remove the associated usage count object for the specified service reference. If the goal is
+   * to simply decrement the usage, then get the usage count and decrement its counter. This method will also remove
+   * the specified bundle from the "in use" map if it has no more usage counts after removing the usage count for the
+   * specified service reference.
    **/
   private flushUsageCount(bundle: Bundle, ref: ServiceReference<any>, uc?: UsageCount): void {
     const usages: UsageCount[] = this.inUseMap.get(bundle) || [];
@@ -261,7 +264,18 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     }
   }
 
-  obtainUsageCount(bundle: Bundle, ref: ServiceReference<any>, svcObj: any, isPrototype = false): UsageCount {
+  /**
+   * Obtain a UsageCount object, by looking for an existing one or creating a new one (if possible). This method tries
+   * to find a UsageCount object in the {@code inUseMap}. If one is found then this is returned, otherwise a UsageCount
+   * object will be created, but this can only be done if the {@code isPrototype} parameter is not {@code undefined}.
+   * If {@code isPrototype} is {@code TRUE} then a new UsageCount object will always be created.
+   */
+  obtainUsageCount(
+    bundle: Bundle,
+    ref: ServiceReference<any>,
+    svcObj: any,
+    isPrototype = false,
+  ): UsageCount | undefined {
     let usage: UsageCount = null;
 
     const usages: UsageCount[] = this.inUseMap.get(bundle);
@@ -277,9 +291,9 @@ export class ServiceRegistryImpl implements ServiceRegistry {
       }
     }
 
-    if (isAnyMissing(isPrototype)) {
-      return undefined;
-    }
+    // if (isAnyMissing(isPrototype)) {
+    //   return undefined;
+    // }
 
     usage = new UsageCountImpl(ref, isPrototype);
 
@@ -339,5 +353,9 @@ export class ServiceRegistryImpl implements ServiceRegistry {
 
   getLogger(): Logger {
     return this.logger;
+  }
+
+  getInUseMap(bundle: Bundle): UsageCount[] {
+    return this.inUseMap.get(bundle);
   }
 }
