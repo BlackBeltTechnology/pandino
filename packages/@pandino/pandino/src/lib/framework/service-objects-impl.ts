@@ -14,7 +14,7 @@ export class ServiceObjectsImpl<S> implements ServiceObjects<S> {
     this.pandino = pandino;
   }
 
-  getService(): S {
+  getService(): S | undefined {
     this.context.checkValidity();
 
     return this.pandino.getService(this.context.getBundle(), this.ref, true);

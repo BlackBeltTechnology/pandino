@@ -45,7 +45,7 @@ export interface ServiceObjects<S> {
    *         customized service object returned by a {@code ServiceFactory} does not implement the classes under which
    *         it was registered or the {@code ServiceFactory} threw an exception.
    */
-  getService(): S;
+  getService(): S | undefined;
 
   /**
    * Releases a service object for the {@link #getServiceReference() associated} service.
