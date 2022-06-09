@@ -408,32 +408,27 @@ export interface BundleContext extends BundleReference {
   equals(other: any): boolean;
 
   /**
-   * Returns the {@link ServiceObjects} object for the service referenced by
-   * the specified {@code ServiceReference} object.
-   *
-   * <p>
-   * The {@link ServiceObjects} object can be used to obtain multiple service
-   * objects for services with {@link SCOPE_PROTOTYPE prototype}
-   * scope.
-   *
-   * <p>
-   * For services with {@link SCOPE_SINGLETON singleton} or
-   * {@link SCOPE_BUNDLE bundle} scope, the
-   * {@link ServiceObjects#getService()} method behaves the same as the
-   * {@link #getService(ServiceReference)} method and the
-   * {@link ServiceObjects#ungetService(Object)} method behaves the same as
-   * the {@link #ungetService(ServiceReference)} method. That is, only one,
-   * use-counted service object is available from the {@link ServiceObjects}
+   * Returns the {@link ServiceObjects} object for the service referenced by the specified {@code ServiceReference}
    * object.
    *
    * <p>
-   * This method will always return {@code undefined} when the service associated
-   * with the specified {@code reference} has been unregistered.
+   * The {@link ServiceObjects} object can be used to obtain multiple service objects for services with
+   * {@link SCOPE_PROTOTYPE prototype} scope.
+   *
+   * <p>
+   * For services with {@link SCOPE_SINGLETON singleton} or {@link SCOPE_BUNDLE bundle} scope, the
+   * {@link ServiceObjects#getService()} method behaves the same as the {@link #getService(ServiceReference)} method and
+   * the {@link ServiceObjects#ungetService(Object)} method behaves the same as the
+   * {@link #ungetService(ServiceReference)} method. That is, only one, use-counted service object is available from the
+   * {@link ServiceObjects} object.
+   *
+   * <p>
+   * This method will always return {@code undefined} when the service associated with the specified {@code reference}
+   * has been unregistered.
    *
    * @param reference A reference to the service.
-   * @return A {@link ServiceObjects} object for the service associated with
-   *         the specified {@code reference} or {@code undefined} if the service is
-   *         not registered.
+   * @return A {@link ServiceObjects} object for the service associated with the specified {@code reference} or
+   *         {@code undefined} if the service is not registered.
    */
   getServiceObjects<S>(reference: ServiceReference<S>): ServiceObjects<S> | undefined;
 }
