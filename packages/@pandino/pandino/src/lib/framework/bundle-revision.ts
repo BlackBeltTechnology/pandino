@@ -16,9 +16,9 @@ import { Resource } from './resource/resource';
 export interface BundleRevision extends BundleReference, Resource {
   getSymbolicName(): string;
   getVersion(): SemVer;
-  getDeclaredCapabilities(namespace: string): BundleCapability[];
-  getDeclaredRequirements(namespace: string): BundleRequirement[];
+  getDeclaredCapabilities(namespace?: string): BundleCapability[];
+  getDeclaredRequirements(namespace?: string): BundleRequirement[];
   getWiring(): BundleWiring | undefined;
-  getCapabilities(namespace: string): Capability[];
-  getRequirements(namespace: string): Requirement[];
+  getCapabilities(namespace?: string): Capability[];
+  getRequirements(namespace?: string): Requirement[];
 }

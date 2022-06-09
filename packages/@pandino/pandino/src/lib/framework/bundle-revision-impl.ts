@@ -55,7 +55,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
     return this.bundle;
   }
 
-  getCapabilities(namespace: string): Capability[] {
+  getCapabilities(namespace?: string): Capability[] {
     let result = this.declaredCaps;
     if (!isAnyMissing(namespace)) {
       result = this.declaredCaps.filter((cap) => cap.getNamespace() === namespace);
@@ -63,7 +63,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
     return result;
   }
 
-  getDeclaredCapabilities(namespace: string): BundleCapability[] {
+  getDeclaredCapabilities(namespace?: string): BundleCapability[] {
     let result = this.declaredCaps;
     if (!isAnyMissing(namespace)) {
       result = this.declaredCaps.filter((cap) => cap.getNamespace() === namespace);
@@ -71,7 +71,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
     return result;
   }
 
-  getDeclaredRequirements(namespace: string): BundleRequirement[] {
+  getDeclaredRequirements(namespace?: string): BundleRequirement[] {
     let result = this.declaredReqs;
     if (isAllPresent(namespace)) {
       result = this.declaredReqs.filter((req) => req.getNamespace() === namespace);
@@ -79,7 +79,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
     return result;
   }
 
-  getRequirements(namespace: string): Requirement[] {
+  getRequirements(namespace?: string): Requirement[] {
     return this.getDeclaredRequirements(namespace);
   }
 
