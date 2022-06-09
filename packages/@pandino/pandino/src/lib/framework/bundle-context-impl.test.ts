@@ -74,6 +74,16 @@ describe('BundleContextImpl', () => {
   const serviceChangedListener: ServiceListener = {
     serviceChanged,
   };
+  const mockGetService = jest
+    .fn()
+    .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>) => ({
+      execute: () => true,
+    }));
+  const mockUngetService = jest
+    .fn()
+    .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>, service: MockService) => {
+      return;
+    });
   let params: FrameworkConfigMap;
   let logger: Logger;
   let pandino: Pandino;
@@ -85,6 +95,8 @@ describe('BundleContextImpl', () => {
     frameworkEvent.mockClear();
     bundleChanged.mockClear();
     serviceChanged.mockClear();
+    mockGetService.mockClear();
+    mockUngetService.mockClear();
     logger = new MuteLogger();
     params = {
       [DEPLOYMENT_ROOT_PROP]: '',
@@ -365,16 +377,7 @@ describe('BundleContextImpl', () => {
   });
 
   it('Service prototype factory', () => {
-    const mockGetService = jest
-      .fn()
-      .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>) => ({
-        execute: () => true,
-      }));
-    const factory: ServiceFactory<MockService> = {
-      factoryType: 'prototype',
-      getService: mockGetService,
-      ungetService(bundle: Bundle, registration: ServiceRegistration<MockService>, service: MockService): void {},
-    };
+    const factory: ServiceFactory<MockService> = createMockServiceFactory();
     bundleContext.registerService<MockService>('@scope/bundle/service', factory, {
       [SERVICE_SCOPE]: SCOPE_PROTOTYPE,
     });
@@ -391,17 +394,7 @@ describe('BundleContextImpl', () => {
   });
 
   it('Service prototype factory unget trigger', () => {
-    const mockGetService = jest
-      .fn()
-      .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>) => ({
-        execute: () => true,
-      }));
-    const mockUngetService = jest.fn();
-    const factory: ServiceFactory<MockService> = {
-      factoryType: 'prototype',
-      getService: mockGetService,
-      ungetService: mockUngetService,
-    };
+    const factory: ServiceFactory<MockService> = createMockServiceFactory();
     bundleContext.registerService<MockService>('@scope/bundle/service', factory, {
       [SERVICE_SCOPE]: SCOPE_PROTOTYPE,
     });
@@ -416,4 +409,29 @@ describe('BundleContextImpl', () => {
 
     expect(mockUngetService).toHaveBeenCalledTimes(1);
   });
+
+  it('stopping bundle de-registers prototype services', async () => {
+    const factory: ServiceFactory<MockService> = createMockServiceFactory();
+    bundleContext.registerService<MockService>('@scope/bundle/service', factory, {
+      [SERVICE_SCOPE]: SCOPE_PROTOTYPE,
+    });
+
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
+    const serviceObject = bundleContext.getServiceObjects<MockService>(reference);
+    const service = serviceObject.getService();
+
+    expect(mockUngetService).toHaveBeenCalledTimes(0);
+
+    await bundle.stop();
+
+    expect(mockUngetService).toHaveBeenCalledTimes(1);
+  });
+
+  function createMockServiceFactory(): ServiceFactory<MockService> {
+    return {
+      factoryType: 'prototype',
+      getService: mockGetService,
+      ungetService: mockUngetService,
+    };
+  }
 });
