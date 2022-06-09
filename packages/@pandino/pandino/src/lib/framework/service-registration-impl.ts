@@ -139,7 +139,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     props[SERVICE_BUNDLEID] = this.bundle.getBundleId();
 
     if (this.factory) {
-      props[SERVICE_SCOPE] = this.factory.factoryType === 'service-prototype' ? SCOPE_PROTOTYPE : SCOPE_BUNDLE;
+      props[SERVICE_SCOPE] = this.factory.factoryType === 'prototype' ? SCOPE_PROTOTYPE : SCOPE_BUNDLE;
     } else {
       props[SERVICE_SCOPE] = SCOPE_SINGLETON;
     }

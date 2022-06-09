@@ -194,7 +194,7 @@ export const SERVICE_BUNDLEID = 'service.bundleid';
  */
 export const SERVICE_DESCRIPTION = 'service.description';
 
-export type SERVICE_FACTORY_TYPE = 'service' | 'service-prototype';
+export type SERVICE_FACTORY_TYPE = 'bundle' | 'prototype';
 
 /**
  * Service property identifying a service's scope.

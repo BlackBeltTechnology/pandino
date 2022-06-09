@@ -185,6 +185,10 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     (reg as ServiceRegistrationImpl).invalidate();
 
     this.ungetServicesByRef(ref);
+
+    for (const bundle of this.inUseMap.keys()) {
+      this.flushUsageCount(bundle, ref);
+    }
   }
 
   ungetService(bundle: Bundle, ref: ServiceReference<any>, svcObj: any): boolean {
@@ -211,17 +215,20 @@ export class ServiceRegistryImpl implements ServiceRegistry {
           if (isAllPresent(svc)) {
             usage.setService(null);
             if (usage.getCount() <= 0) {
-              usage.incrementAndGet();
+              // Temporarily increase the usage again so that the service factory still sees the usage in the unget
+              usage.incrementToPositiveValue();
               try {
+                // Remove reference from usages array.
                 reg.ungetService(bundle, svc);
               } finally {
+                // now we can decrease the usage again
                 usage.decrementAndGet();
               }
             }
           }
         }
 
-        return count >= 0;
+        return usage.getCount() >= 0;
       } finally {
         if (!reg.isValid()) {
           usage.setService(null);
@@ -329,11 +336,9 @@ export class ServiceRegistryImpl implements ServiceRegistry {
       return;
     }
 
-    for (let i = 0; i < usages.length; i++) {
+    for (const usage of usages) {
       // Keep ungetting until all usage count is zero.
-      while (
-        this.ungetService(bundle, usages[i].getReference(), usages[i].isPrototype() ? usages[i].getService() : null)
-      ) {
+      while (this.ungetService(bundle, usage.getReference(), usage.isPrototype() ? usage.getService() : null)) {
         // Empty loop body.
       }
     }

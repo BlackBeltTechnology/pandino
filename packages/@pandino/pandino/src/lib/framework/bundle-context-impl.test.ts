@@ -26,7 +26,6 @@ import {
   SCOPE_PROTOTYPE,
   ServiceFactory,
   ServiceRegistration,
-  ServiceObjects,
 } from '@pandino/pandino-api';
 import { MuteLogger } from '../../__mocks__/mute-logger';
 import { BundleContextImpl } from './bundle-context-impl';
@@ -280,9 +279,12 @@ describe('BundleContextImpl', () => {
   it('getService()', () => {
     bundleContext.registerService<MockService>('@scope/bundle/service', mockService);
     const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
-    const service = bundleContext.getService<MockService>(reference);
+    const service1 = bundleContext.getService<MockService>(reference);
+    const service2 = bundleContext.getService<MockService>(reference);
 
-    expect(service.execute()).toEqual(true);
+    expect(service1.execute()).toEqual(true);
+    expect(service2.execute()).toEqual(true);
+    expect(service1).toEqual(service2);
   });
 
   it('unGetService()', () => {
@@ -363,13 +365,14 @@ describe('BundleContextImpl', () => {
   });
 
   it('Service prototype factory', () => {
+    const mockGetService = jest
+      .fn()
+      .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>) => ({
+        execute: () => true,
+      }));
     const factory: ServiceFactory<MockService> = {
-      factoryType: 'service-prototype',
-      getService(bundle: Bundle, registration: ServiceRegistration<MockService>): MockService {
-        return {
-          execute: () => true,
-        };
-      },
+      factoryType: 'prototype',
+      getService: mockGetService,
       ungetService(bundle: Bundle, registration: ServiceRegistration<MockService>, service: MockService): void {},
     };
     bundleContext.registerService<MockService>('@scope/bundle/service', factory, {
@@ -384,5 +387,33 @@ describe('BundleContextImpl', () => {
     expect(service1.execute()).toEqual(true);
     expect(service2.execute()).toEqual(true);
     expect(service1).not.toEqual(service2);
+    expect(mockGetService).toHaveBeenCalledTimes(2);
+  });
+
+  it('Service prototype factory unget trigger', () => {
+    const mockGetService = jest
+      .fn()
+      .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>) => ({
+        execute: () => true,
+      }));
+    const mockUngetService = jest.fn();
+    const factory: ServiceFactory<MockService> = {
+      factoryType: 'prototype',
+      getService: mockGetService,
+      ungetService: mockUngetService,
+    };
+    bundleContext.registerService<MockService>('@scope/bundle/service', factory, {
+      [SERVICE_SCOPE]: SCOPE_PROTOTYPE,
+    });
+
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
+    const serviceObject = bundleContext.getServiceObjects<MockService>(reference);
+    const service = serviceObject.getService();
+
+    expect(mockUngetService).toHaveBeenCalledTimes(0);
+
+    serviceObject.ungetService(service);
+
+    expect(mockUngetService).toHaveBeenCalledTimes(1);
   });
 });

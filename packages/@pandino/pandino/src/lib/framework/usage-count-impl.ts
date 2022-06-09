@@ -27,7 +27,7 @@ export class UsageCountImpl implements UsageCount {
 
   incrementToPositiveValue(): number {
     if (this.count + 1 < 1) {
-      this.count = 1;
+      return (this.count = 1);
     }
     this.count++;
     return this.count;

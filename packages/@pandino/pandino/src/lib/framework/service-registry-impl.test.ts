@@ -255,7 +255,7 @@ describe('ServiceRegistryImpl', () => {
 
   it('register() prototype factory', () => {
     const prototypeFactory: PrototypeServiceFactory<HelloService> = {
-      factoryType: 'service-prototype',
+      factoryType: 'prototype',
       getService(bundle: Bundle, registration: ServiceRegistration<HelloService>): HelloService {
         return {
           sayHello(): string {
@@ -284,7 +284,7 @@ describe('ServiceRegistryImpl', () => {
 
   it('usageCount calculation for prototype factory', () => {
     const prototypeFactory: PrototypeServiceFactory<string> = {
-      factoryType: 'service-prototype',
+      factoryType: 'prototype',
       getService(bundle: Bundle, registration: ServiceRegistration<HelloService>): string {
         return 'Created by factory service!';
       },
