@@ -31,7 +31,7 @@ interface TestService {
   sayHello(): string;
 }
 
-describe('ServiceTracker', () => {
+describe('ServiceTrackerImpl', () => {
   let params: FrameworkConfigMap;
   let pandino: Pandino;
 
