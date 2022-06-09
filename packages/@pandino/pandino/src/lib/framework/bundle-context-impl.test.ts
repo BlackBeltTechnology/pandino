@@ -22,6 +22,10 @@ import {
   DEPLOYMENT_ROOT_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
   SERVICE_RANKING,
+  SERVICE_SCOPE,
+  SCOPE_PROTOTYPE,
+  ServiceFactory,
+  ServiceRegistration,
 } from '@pandino/pandino-api';
 import { MuteLogger } from '../../__mocks__/mute-logger';
 import { BundleContextImpl } from './bundle-context-impl';
@@ -70,6 +74,16 @@ describe('BundleContextImpl', () => {
   const serviceChangedListener: ServiceListener = {
     serviceChanged,
   };
+  const mockGetService = jest
+    .fn()
+    .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>) => ({
+      execute: () => true,
+    }));
+  const mockUngetService = jest
+    .fn()
+    .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>, service: MockService) => {
+      return;
+    });
   let params: FrameworkConfigMap;
   let logger: Logger;
   let pandino: Pandino;
@@ -81,6 +95,8 @@ describe('BundleContextImpl', () => {
     frameworkEvent.mockClear();
     bundleChanged.mockClear();
     serviceChanged.mockClear();
+    mockGetService.mockClear();
+    mockUngetService.mockClear();
     logger = new MuteLogger();
     params = {
       [DEPLOYMENT_ROOT_PROP]: '',
@@ -275,9 +291,12 @@ describe('BundleContextImpl', () => {
   it('getService()', () => {
     bundleContext.registerService<MockService>('@scope/bundle/service', mockService);
     const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
-    const service = bundleContext.getService<MockService>(reference);
+    const service1 = bundleContext.getService<MockService>(reference);
+    const service2 = bundleContext.getService<MockService>(reference);
 
-    expect(service.execute()).toEqual(true);
+    expect(service1.execute()).toEqual(true);
+    expect(service2.execute()).toEqual(true);
+    expect(service1).toEqual(service2);
   });
 
   it('unGetService()', () => {
@@ -357,24 +376,62 @@ describe('BundleContextImpl', () => {
     expect(service.execute()).toEqual(true);
   });
 
-  it('Service with a higher ranking overrides Service with a higher ranking', () => {
-    const mock1: MockService = {
-      execute: () => true,
-    };
-    const mock2: MockService = {
-      execute: () => false,
-    };
-    const serviceRegistration1 = bundleContext.registerService<MockService>('@scope/bundle/service', mock1);
-    const serviceRegistration2 = bundleContext.registerService<MockService>('@scope/bundle/service', mock2, {
-      [SERVICE_RANKING]: 150,
+  it('Service prototype factory', () => {
+    const factory: ServiceFactory<MockService> = createMockServiceFactory();
+    bundleContext.registerService<MockService>('@scope/bundle/service', factory, {
+      [SERVICE_SCOPE]: SCOPE_PROTOTYPE,
     });
 
     const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
-    const service = bundleContext.getService<MockService>(reference);
+    const serviceObject = bundleContext.getServiceObjects<MockService>(reference);
+    const service1 = serviceObject.getService();
+    const service2 = serviceObject.getService();
 
-    expect(serviceRegistration1.getProperty(SERVICE_RANKING)).toEqual(undefined);
-    expect(serviceRegistration2.getProperty(SERVICE_RANKING)).toEqual(150);
-    expect(reference.getProperty(SERVICE_RANKING)).toEqual(150);
-    expect(service.execute()).toEqual(false);
+    expect(service1.execute()).toEqual(true);
+    expect(service2.execute()).toEqual(true);
+    expect(service1).not.toEqual(service2);
+    expect(mockGetService).toHaveBeenCalledTimes(2);
   });
+
+  it('Service prototype factory unget trigger', () => {
+    const factory: ServiceFactory<MockService> = createMockServiceFactory();
+    bundleContext.registerService<MockService>('@scope/bundle/service', factory, {
+      [SERVICE_SCOPE]: SCOPE_PROTOTYPE,
+    });
+
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
+    const serviceObject = bundleContext.getServiceObjects<MockService>(reference);
+    const service = serviceObject.getService();
+
+    expect(mockUngetService).toHaveBeenCalledTimes(0);
+
+    serviceObject.ungetService(service);
+
+    expect(mockUngetService).toHaveBeenCalledTimes(1);
+  });
+
+  it('stopping bundle de-registers prototype services', async () => {
+    const factory: ServiceFactory<MockService> = createMockServiceFactory();
+    bundleContext.registerService<MockService>('@scope/bundle/service', factory, {
+      [SERVICE_SCOPE]: SCOPE_PROTOTYPE,
+    });
+
+    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
+    const serviceObject = bundleContext.getServiceObjects<MockService>(reference);
+    const service = serviceObject.getService();
+
+    expect(mockUngetService).toHaveBeenCalledTimes(0);
+
+    await bundle.stop();
+
+    expect(mockUngetService).toHaveBeenCalledTimes(1);
+  });
+
+  function createMockServiceFactory(): ServiceFactory<MockService> {
+    return {
+      factoryType: 'prototype',
+      getService: mockGetService,
+      ungetService: mockUngetService,
+    };
+  }
 });

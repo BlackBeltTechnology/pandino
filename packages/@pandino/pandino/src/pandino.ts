@@ -37,6 +37,7 @@ import {
   FRAMEWORK_FILTER_PARSER,
   FrameworkConfigMap,
   FRAMEWORK_SEMVER_FACTORY,
+  ServiceFactory,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { EventDispatcher } from './lib/framework/event-dispatcher';
@@ -624,7 +625,7 @@ export class Pandino extends BundleImpl implements Framework {
   registerService<S>(
     context: BundleContextImpl,
     identifier: string[] | string,
-    svcObj: S,
+    svcObj: S | ServiceFactory<S>,
     dict: Record<any, any>,
   ): ServiceRegistration<S> {
     let reg = this.registry.registerService(context.getBundle(), identifier, svcObj, dict);

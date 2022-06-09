@@ -1,7 +1,14 @@
 import { BundleReference } from './bundle-reference';
 import { Bundle } from './bundle';
 import { BundleManifestHeaders } from './bundle-manifest-headers';
-import { ServiceListener, ServiceProperties, ServiceReference, ServiceRegistration } from '../service';
+import {
+  ServiceFactory,
+  ServiceListener,
+  ServiceObjects,
+  ServiceProperties,
+  ServiceReference,
+  ServiceRegistration,
+} from '../service';
 import { BundleListener } from './bundle-listener';
 import { FrameworkListener } from '../framework';
 import { FilterApi } from '../filter-api';
@@ -230,7 +237,7 @@ export interface BundleContext extends BundleReference {
    */
   registerService<S>(
     identifiers: string[] | string,
-    service: S,
+    service: S | ServiceFactory<S>,
     properties?: ServiceProperties,
   ): ServiceRegistration<S>;
 
@@ -399,4 +406,29 @@ export interface BundleContext extends BundleReference {
    * @returns {boolean}
    */
   equals(other: any): boolean;
+
+  /**
+   * Returns the {@link ServiceObjects} object for the service referenced by the specified {@code ServiceReference}
+   * object.
+   *
+   * <p>
+   * The {@link ServiceObjects} object can be used to obtain multiple service objects for services with
+   * {@link SCOPE_PROTOTYPE prototype} scope.
+   *
+   * <p>
+   * For services with {@link SCOPE_SINGLETON singleton} or {@link SCOPE_BUNDLE bundle} scope, the
+   * {@link ServiceObjects#getService()} method behaves the same as the {@link #getService(ServiceReference)} method and
+   * the {@link ServiceObjects#ungetService(Object)} method behaves the same as the
+   * {@link #ungetService(ServiceReference)} method. That is, only one, use-counted service object is available from the
+   * {@link ServiceObjects} object.
+   *
+   * <p>
+   * This method will always return {@code undefined} when the service associated with the specified {@code reference}
+   * has been unregistered.
+   *
+   * @param reference A reference to the service.
+   * @return A {@link ServiceObjects} object for the service associated with the specified {@code reference} or
+   *         {@code undefined} if the service is not registered.
+   */
+  getServiceObjects<S>(reference: ServiceReference<S>): ServiceObjects<S> | undefined;
 }
