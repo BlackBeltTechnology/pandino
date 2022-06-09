@@ -43,7 +43,7 @@ describe('Pandino', () => {
     stop: mockStop,
   };
   const importer: BundleImporter = {
-    import: (root: string, activator: string, manifest: string) =>
+    import: (activator: string, manifest: string) =>
       Promise.resolve({
         default: dummyActivator,
       }),

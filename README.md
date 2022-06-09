@@ -215,12 +215,11 @@ a custom service which will alter the application it self.
         // the .mjs version.
         const Pandino = (await import('./pandino.mjs')).default;
         const pandino = new Pandino({
-          'pandino.deployment.root': location.href,
           'pandino.manifest.fetcher': {
-            fetch: async (deploymentRoot, uri) => (await fetch(uri)).json(),
+            fetch: async (uri) => (await fetch(uri)).json(),
           },
           'pandino.bundle.importer': {
-            import: (deploymentRoot, activatorLocation) => import(activatorLocation),
+            import: (activatorLocation) => import(activatorLocation),
           },
         });
 
@@ -236,7 +235,6 @@ a custom service which will alter the application it self.
 ```
 
 Pandino has 3 mandatory init parameters:
-- `pandino.deployment.root`: defines the root path under which we will serve our bundles from
 - `pandino.manifest.fetcher`: an object with a `fetch()` method where we implement the Manifest loading mechanism
 - `pandino.bundle.importer`: an object with an `import()` method where we implement the JavaScript loading mechanism
 
@@ -322,12 +320,11 @@ A complete list of Bundle Manifest Header properties can be found in the corresp
       window.addEventListener('DOMContentLoaded', async () => {
         const Pandino = (await import('./pandino.mjs')).default;
         const pandino = new Pandino({
-          'pandino.deployment.root': location.href,
           'pandino.manifest.fetcher': {
-            fetch: async (deploymentRoot, uri) => (await fetch(uri)).json(),
+            fetch: async (uri) => (await fetch(uri)).json(),
           },
           'pandino.bundle.importer': {
-            import: (deploymentRoot, activatorLocation) => import(activatorLocation),
+            import: (activatorLocation) => import(activatorLocation),
           },
         });
 

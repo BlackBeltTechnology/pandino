@@ -7,12 +7,12 @@ const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));
 const pandino = new Pandino({
   'pandino.deployment.root': deploymentRoot,
   'pandino.bundle.importer': {
-    import: (deploymentRoot, activatorLocation) => {
+    import: (activatorLocation, manifestLocation, deploymentRoot) => {
       return require(path.normalize(path.join(deploymentRoot, activatorLocation)));
     },
   },
   'pandino.manifest.fetcher': {
-    fetch: async (deploymentRoot, uri) => {
+    fetch: async (uri, deploymentRoot) => {
       const data = fs.readFileSync(path.normalize(path.join(deploymentRoot, uri)), { encoding: 'utf8' });
       return JSON.parse(data);
     },

@@ -15,10 +15,10 @@ export interface BundleImporter {
    * Given all parameters could differ in format, it is the concrete implementation's job, to normalize the effective
    * path in the end.
    *
-   * @param {string} deploymentRoot
    * @param {string} activatorLocation
    * @param {string} manifestLocation
+   * @param {string|undefined} deploymentRoot
    * @returns Promise<ImporterReturns>
    */
-  import(deploymentRoot: string, activatorLocation: string, manifestLocation: string): Promise<ImporterReturns>;
+  import(activatorLocation: string, manifestLocation: string, deploymentRoot?: string): Promise<ImporterReturns>;
 }

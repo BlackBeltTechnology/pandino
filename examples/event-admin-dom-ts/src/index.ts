@@ -12,10 +12,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   const pandino = new Pandino({
     [DEPLOYMENT_ROOT_PROP]: location.href + 'assets/deploy',
     [PANDINO_MANIFEST_FETCHER_PROP]: {
-      fetch: async (deploymentRoot: string, uri: string) => (await fetch(deploymentRoot + '/' + uri)).json(),
+      fetch: async (uri: string, deploymentRoot?: string) => (await fetch(deploymentRoot + '/' + uri)).json(),
     },
     [PANDINO_BUNDLE_IMPORTER_PROP]: {
-      import: (deploymentRoot: string, activatorLocation: string, manifestLocation: string) =>
+      import: (activatorLocation: string, manifestLocation: string, deploymentRoot?: string) =>
         import(/* webpackIgnore: true */ deploymentRoot + '/' + activatorLocation),
     },
     [LOG_LEVEL_PROP]: LogLevel.DEBUG,

@@ -72,7 +72,7 @@ export class Pandino extends BundleImpl implements Framework {
   private nextId = 1;
 
   constructor(configMap: FrameworkConfigMap) {
-    const deploymentRoot: string = isAllPresent(configMap[DEPLOYMENT_ROOT_PROP]) ? configMap[DEPLOYMENT_ROOT_PROP] : '';
+    const deploymentRoot: string | undefined = configMap[DEPLOYMENT_ROOT_PROP];
     const logger: Logger = isAllPresent(configMap[LOG_LOGGER_PROP]) ? configMap[LOG_LOGGER_PROP] : new ConsoleLogger();
     const fetcher: ManifestFetcher = isAllPresent(configMap[PANDINO_MANIFEST_FETCHER_PROP])
       ? configMap[PANDINO_MANIFEST_FETCHER_PROP]
@@ -90,8 +90,8 @@ export class Pandino extends BundleImpl implements Framework {
         [BUNDLE_VERSION]: '0.1.0',
         [BUNDLE_NAME]: 'Pandino Framework',
       },
-      deploymentRoot,
       '',
+      deploymentRoot,
     );
 
     this.fetcher = fetcher;
@@ -99,7 +99,9 @@ export class Pandino extends BundleImpl implements Framework {
     Object.keys(configMap).forEach((configKey) => {
       this.configMap.set(configKey, configMap[configKey]);
     });
-    this.configMap.set(DEPLOYMENT_ROOT_PROP, deploymentRoot);
+    if (deploymentRoot) {
+      this.configMap.set(DEPLOYMENT_ROOT_PROP, deploymentRoot);
+    }
     this.activatorsList = this.configMap.get(SYSTEMBUNDLE_ACTIVATORS_PROP) || [];
     this.registry = new ServiceRegistryImpl(
       this.logger,
@@ -185,7 +187,7 @@ export class Pandino extends BundleImpl implements Framework {
 
     const resolvedHeaders: BundleManifestHeaders =
       typeof locationOrHeaders === 'string'
-        ? await this.fetcher.fetch(this.getDeploymentRoot(), locationOrHeaders)
+        ? await this.fetcher.fetch(locationOrHeaders, this.getDeploymentRoot())
         : locationOrHeaders;
     let bundle: BundleImpl;
     let existing: Bundle = this.isBundlePresent(resolvedHeaders);
@@ -198,8 +200,8 @@ export class Pandino extends BundleImpl implements Framework {
         this.logger,
         id,
         resolvedHeaders,
-        this.getDeploymentRoot(),
         manifestLocation,
+        this.getDeploymentRoot(),
         this,
         origin,
       );
@@ -575,7 +577,7 @@ export class Pandino extends BundleImpl implements Framework {
       let activatorInstance: any;
       try {
         activatorInstance = (
-          await this.importer.import(this.getDeploymentRoot(), activatorDefinition, this.getLocation())
+          await this.importer.import(activatorDefinition, this.getLocation(), this.getDeploymentRoot())
         ).default;
       } catch (ex) {
         throw new Error('Not found: ' + activatorDefinition + ': ' + ex);

@@ -9,9 +9,9 @@ export interface ManifestFetcher {
    * Given all parameters could differ in format, it is the concrete implementation's job, to normalize the effective
    * path in the end.
    *
-   * @param {string} deploymentRoot
    * @param {string} uri
+   * @param {string|undefined} deploymentRoot
    * @returns {Promise<any>} SHOULD return content similar to the RFC standard fetch() function's return type
    */
-  fetch(deploymentRoot: string, uri: string): Promise<any>;
+  fetch(uri: string, deploymentRoot?: string): Promise<any>;
 }

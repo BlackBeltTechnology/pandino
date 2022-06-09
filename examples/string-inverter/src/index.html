@@ -16,12 +16,11 @@
         // the .mjs version.
         const Pandino = (await import('./pandino.mjs')).default;
         const pandino = new Pandino({
-            'pandino.deployment.root': location.href,
             'pandino.manifest.fetcher': {
-                fetch: async (deploymentRoot, uri) => (await fetch(uri)).json(),
+                fetch: async (uri) => (await fetch(uri)).json(),
             },
             'pandino.bundle.importer': {
-                import: (deploymentRoot, activatorLocation) => import(activatorLocation),
+                import: (activatorLocation) => import(activatorLocation),
             },
         });
 

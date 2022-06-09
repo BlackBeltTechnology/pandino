@@ -11,6 +11,12 @@ module.exports = {
   },
   mode: 'development',
   devtool: 'inline-source-map',
+  devServer: {
+    port: 8080,
+    static: {
+      directory: path.join(__dirname, 'assets'),
+    },
+  },
   module: {
     rules: [
       {

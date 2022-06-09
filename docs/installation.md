@@ -9,12 +9,11 @@ In the sections below, we will showcase different use-cases in which you can ins
   window.addEventListener('DOMContentLoaded', async () => {
     const Pandino = (await import('./pandino.js')).default;
     const pandino = new Pandino({
-      'pandino.deployment.root': location.href,
       'pandino.bundle.importer': {
-        import: (deploymentRoot, activatorLocation) => import(activatorLocation),
+        import: (activatorLocation) => import(activatorLocation),
       },
       'pandino.manifest.fetcher': {
-        fetch: async (deploymentRoot, uri) => (await fetch(uri)).json(),
+        fetch: async (uri) => (await fetch(uri)).json(),
       },
     });
 
@@ -43,11 +42,11 @@ import {
 const pandino = new Pandino({
   [DEPLOYMENT_ROOT_PROP]: location.href + 'deploy',
   [PANDINO_MANIFEST_FETCHER_PROP]: {
-    fetch: async (deploymentRoot: string, uri: string) => (await fetch(deploymentRoot + '/' + uri)).json(),
+    fetch: async (uri: string, deploymentRoot?: string) => (await fetch(uri)).json(),
   },
   [PANDINO_BUNDLE_IMPORTER_PROP]: {
-    import: (deploymentRoot: string, activatorLocation: string, manifestLocation: string) =>
-      import(/* webpackIgnore: true */ deploymentRoot + '/' + activatorLocation),
+    import: (activatorLocation: string, manifestLocation: string, deploymentRoot?: string) =>
+      import(/* webpackIgnore: true */ activatorLocation),
   },
 });
 
@@ -73,12 +72,12 @@ const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));
 const pandino = new Pandino({
   'pandino.deployment.root': deploymentRoot,
   'pandino.bundle.importer': {
-    import: (deploymentRoot, activatorLocation) => {
+    import: (activatorLocation, manifestLocation, deploymentRoot) => {
       return require(path.normalize(path.join(deploymentRoot, activatorLocation)));
     },
   },
   'pandino.manifest.fetcher': {
-    fetch: async (deploymentRoot, uri) => {
+    fetch: async (uri, deploymentRoot) => {
       const data = fs.readFileSync(path.normalize(path.join(deploymentRoot, uri)), { encoding: 'utf8' });
       return JSON.parse(data);
     },
