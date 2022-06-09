@@ -158,6 +158,34 @@ The Filter interface supports complex filtering; it can be used to find matching
 share a single namespace in the Framework service registry. Filter strings MUST adhere to LDAP standard filter patterns,
 e.g.: `(|(someProp=test)(someProp=test-other))`
 
+#### 2.4 Service Scopes
+
+Currently, there are two types of scopes supported:
+
+- `SINGLETON`
+- `PROTOTYPE`
+
+**SINGLETON**:
+
+Whenever a developer tries to obtain a service via calling `bundleContext.getService<any>(reference)`, the framework
+will always provide the same reference of the registered service.
+
+**PROTOTYPE**:
+
+Whenever a developer tries to obtain services via calling:
+
+```typescript
+const serviceObject = bundleContext.getServiceObjects<any>(reference);
+const service1 = serviceObject.getService();
+const service2 = serviceObject.getService();
+```
+
+the framework will provide a new instance from the registered `ServiceFactory<any>` for every `serviceObject.getService()`
+call.
+
+> Registration and handling of different scoped services will be discussed in a more detailed way later. In the meantime
+> behavior can be observed in the corresponding tests: [bundle-context-impl.test.ts](./packages/@pandino/pandino/src/lib/framework/bundle-context-impl.test.ts)
+
 ## Beginner's guide
 
 For brevity's sake, we will demonstrate how to add Pandino to a pure and plain JavaScript application. We will also load
@@ -245,6 +273,7 @@ export default class Activator {
   inverterRegistration;
 
   async start(context) {
+    // Registers the service with the scope type of SINGLETON
     this.inverterRegistration = context.registerService(STRING_INVERTER_INTERFACE_KEY, new StringInverterImpl());
   }
 
