@@ -234,7 +234,7 @@ a custom service which will alter the application it self.
 </html>
 ```
 
-Pandino has 3 mandatory init parameters:
+Pandino has 2 mandatory init parameters:
 - `pandino.manifest.fetcher`: an object with a `fetch()` method where we implement the Manifest loading mechanism
 - `pandino.bundle.importer`: an object with an `import()` method where we implement the JavaScript loading mechanism
 
