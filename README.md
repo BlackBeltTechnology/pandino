@@ -357,12 +357,11 @@ Keep in mind that Bundles can be managed by other Bundles as well! This means th
 
 #### Provided Capabilities
 
-A Bundle can define `1..*` "Capabilities" in it's Manifest, which is/are `string` / `string[]` values representing any
+A Bundle can define `0..*` "Capabilities" in it's Manifest, which is/are `string` / `string[]` values representing any
 functionality provided by the Bundle. This string can be anything, the Bundle developer decides what these values are.
 
 ```json
 {
-  // ...
   "Provide-Capability": "@scope/some-functionality;prop1=\"value1\";prop2=123"
 }
 ```
@@ -373,12 +372,11 @@ functionality, but with different details (these are the `prop1` and `prop2` val
 
 #### Required Capabilities
 
-A Bundle can define `1..*` required capabilities which it needs for it to be able to start. These are `string` /
+A Bundle can define `0..*` required capabilities which it needs for it to be able to start. These are `string` /
 `string[]` values.
 
 ```json
 {
-  // ...
   "Require-Capability": "@scope/some-functionality;filter:=\"(prop2>=100)\""
 }
 ```
