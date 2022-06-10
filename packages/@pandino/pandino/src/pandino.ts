@@ -331,11 +331,11 @@ export class Pandino extends BundleImpl implements Framework {
 
       const bci: BundleContextImpl = bundle.getBundleContext() as BundleContextImpl;
       bci.invalidate();
+      bci.closeTrackers();
       bundle.setBundleContext(null);
 
-      // this.registry.unregisterServices(bundle);
-      // this.registry.ungetServices(bundle);
-
+      this.registry.unregisterServices(bundle);
+      this.registry.ungetServices(bundle);
       this.dispatcher.removeListeners(bci);
 
       // Rethrow all other exceptions as a BundleException.
@@ -379,6 +379,7 @@ export class Pandino extends BundleImpl implements Framework {
         bundle.setActivator(null);
         const bci: BundleContextImpl = bundle.getBundleContext() as BundleContextImpl;
         bci.invalidate();
+        bci.closeTrackers();
         bundle.setBundleContext(null);
 
         // Unregister any services offered by this bundle.

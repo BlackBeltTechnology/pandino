@@ -3,6 +3,9 @@ import {
   BundleContext,
   BundleListener,
   BundleManifestHeaders,
+  BundleState,
+  BundleTracker,
+  BundleTrackerCustomizer,
   FilterApi,
   FrameworkListener,
   ServiceEventType,
@@ -11,6 +14,8 @@ import {
   ServiceProperties,
   ServiceReference,
   ServiceRegistration,
+  ServiceTracker,
+  ServiceTrackerCustomizer,
 } from '@pandino/pandino-api';
 
 export class MockBundleContext implements BundleContext {
@@ -136,6 +141,17 @@ export class MockBundleContext implements BundleContext {
   }
 
   getServiceObjects<S>(reference: ServiceReference<S>): ServiceObjects<S> | undefined {
+    return undefined;
+  }
+
+  trackBundle<T>(trackedStates: BundleState[], customizer: Partial<BundleTrackerCustomizer<T>>): BundleTracker<T> {
+    return undefined;
+  }
+
+  trackService<S, T>(
+    identifierOrFilter: string | FilterApi,
+    customizer: Partial<ServiceTrackerCustomizer<S, T>>,
+  ): ServiceTracker<S, T> {
     return undefined;
   }
 }

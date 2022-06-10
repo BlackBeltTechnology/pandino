@@ -23,13 +23,16 @@ export class BundleTrackerImpl<T> implements BundleTracker<T> {
   }
 
   open(): void {
-    let t: Tracked<T>;
     if (isAllPresent(this.tracked)) {
       return;
     }
-    t = new Tracked(this);
+
+    const t: Tracked<T> = new Tracked(this);
+
     this.context.addBundleListener(t);
+
     const bundles = this.context.getBundles();
+
     if (bundles && bundles.length) {
       const length = bundles.length;
       for (let i = 0; i < length; i++) {
@@ -42,24 +45,31 @@ export class BundleTrackerImpl<T> implements BundleTracker<T> {
       /* set tracked with the initial bundles */
       t.setInitial(bundles);
     }
+
     this.tracked = t;
+
     t.trackInitial();
   }
 
   close(): void {
+    const outgoing: Tracked<T> = this.tracked;
     let bundles: Bundle[];
-    let outgoing: Tracked<T> = this.tracked;
+
     if (isAnyMissing(outgoing)) {
       return;
     }
+
     outgoing.close();
     bundles = this.getBundles();
+
     this.tracked = undefined;
+
     try {
       this.context.removeBundleListener(outgoing);
     } catch (_) {
       /* In case the context was stopped. */
     }
+
     if (Array.isArray(bundles)) {
       for (const bundle of bundles) {
         outgoing.untrack(bundle, undefined);

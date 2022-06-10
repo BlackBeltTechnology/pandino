@@ -10,8 +10,6 @@ import {
   BundleEvent,
   BundleImporter,
   BundleManifestHeaders,
-  BundleTracker,
-  BundleTrackerCustomizer,
   LOG_LEVEL_PROP,
   LogLevel,
   PANDINO_BUNDLE_IMPORTER_PROP,
@@ -70,12 +68,11 @@ describe('BundleTrackerImpl', () => {
   });
 
   it('basic tracking', async () => {
-    const customizer: BundleTrackerCustomizer<any> = {
+    const tracker = bundleContext.trackBundle(['ACTIVE', 'STARTING'], {
       addingBundle: mockAddingBundle,
       modifiedBundle: mockModifiedBundle,
       removedBundle: mockRemovedBundle,
-    };
-    const tracker: BundleTracker<Bundle> = new BundleTrackerImpl(bundleContext, ['ACTIVE', 'STARTING'], customizer);
+    });
 
     tracker.open();
 
@@ -90,12 +87,11 @@ describe('BundleTrackerImpl', () => {
   });
 
   it('closed tracker does not record anything', async () => {
-    const customizer: BundleTrackerCustomizer<any> = {
+    const tracker = bundleContext.trackBundle(['ACTIVE', 'STARTING'], {
       addingBundle: mockAddingBundle,
       modifiedBundle: mockModifiedBundle,
       removedBundle: mockRemovedBundle,
-    };
-    const tracker: BundleTracker<Bundle> = new BundleTrackerImpl(bundleContext, ['ACTIVE', 'STARTING'], customizer);
+    });
 
     tracker.open();
     tracker.close();
@@ -105,5 +101,17 @@ describe('BundleTrackerImpl', () => {
     expect(mockAddingBundle).toHaveBeenCalledTimes(0);
     expect(mockModifiedBundle).toHaveBeenCalledTimes(0);
     expect(mockRemovedBundle).toHaveBeenCalledTimes(0);
+  });
+
+  it('partial customizer support', async () => {
+    const tracker = bundleContext.trackBundle(['STARTING'], {
+      addingBundle: mockAddingBundle,
+    });
+
+    tracker.open();
+
+    await bundleContext.installBundle(bundle1Headers);
+
+    expect(mockAddingBundle).toHaveBeenCalledTimes(1);
   });
 });

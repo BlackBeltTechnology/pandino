@@ -14,6 +14,12 @@ import {
   ServiceRegistration,
   ServiceFactory,
   ServiceObjects,
+  BundleState,
+  BundleTrackerCustomizer,
+  BundleTracker,
+  BundleEvent,
+  ServiceTrackerCustomizer,
+  ServiceTracker,
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import Filter from '../filter/filter';
@@ -21,9 +27,13 @@ import { BundleImpl } from './bundle-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { ServiceReferenceImpl } from './service-reference-impl';
 import { ServiceObjectsImpl } from './service-objects-impl';
+import { BundleTrackerImpl } from './bundle-tracker-impl';
+import { ServiceTrackerImpl } from './service-tracker-impl';
 
 export class BundleContextImpl implements BundleContext {
   private valid = true;
+  private bundleTrackers: BundleTracker<any>[] = [];
+  private serviceTrackers: ServiceTracker<any, any>[] = [];
 
   constructor(
     private readonly logger: Logger,
@@ -200,6 +210,90 @@ export class BundleContextImpl implements BundleContext {
       return true;
     }
     return false;
+  }
+
+  trackBundle<T>(trackedStates: BundleState[], customizer: Partial<BundleTrackerCustomizer<T>>): BundleTracker<T> {
+    this.checkValidity();
+
+    const self = this;
+
+    const tracker = new (class extends BundleTrackerImpl<T> {
+      constructor() {
+        super(self, trackedStates);
+      }
+
+      addingBundle(bundle: Bundle, event: BundleEvent): T {
+        return customizer.addingBundle ? customizer.addingBundle(bundle, event) : super.addingBundle(bundle, event);
+      }
+
+      modifiedBundle(bundle: Bundle, event: BundleEvent, object: T) {
+        customizer.modifiedBundle
+          ? customizer.modifiedBundle(bundle, event, object)
+          : super.modifiedBundle(bundle, event, object);
+      }
+
+      removedBundle(bundle: Bundle, event: BundleEvent, object: T) {
+        customizer.removedBundle
+          ? customizer.removedBundle(bundle, event, object)
+          : super.removedBundle(bundle, event, object);
+      }
+    })();
+
+    this.bundleTrackers.push(tracker);
+
+    return tracker;
+  }
+
+  trackService<S, T>(
+    identifierOrFilter: string | FilterApi,
+    customizer: Partial<ServiceTrackerCustomizer<S, T>>,
+  ): ServiceTracker<S, T> {
+    this.checkValidity();
+
+    const self = this;
+
+    const tracker = new (class extends ServiceTrackerImpl<S, T> {
+      constructor() {
+        super(self, identifierOrFilter);
+      }
+
+      addingService(reference: ServiceReference<S>): T {
+        return customizer.addingService ? customizer.addingService(reference) : super.addingService(reference);
+      }
+
+      modifiedService(reference: ServiceReference<S>, service: T) {
+        customizer.modifiedService
+          ? customizer.modifiedService(reference, service)
+          : super.modifiedService(reference, service);
+      }
+
+      removedService(reference: ServiceReference<S>, service: T) {
+        customizer.removedService
+          ? customizer.removedService(reference, service)
+          : super.removedService(reference, service);
+      }
+    })();
+
+    this.serviceTrackers.push(tracker);
+
+    return tracker;
+  }
+
+  closeTrackers(): void {
+    for (const tracker of this.bundleTrackers) {
+      try {
+        tracker.close();
+      } catch (_) {}
+    }
+
+    for (const tracker of this.serviceTrackers) {
+      try {
+        tracker.close();
+      } catch (_) {}
+    }
+
+    this.bundleTrackers = [];
+    this.serviceTrackers = [];
   }
 
   private static getBestServiceReference(refs: ServiceReference<any>[]): ServiceReference<any> | undefined {

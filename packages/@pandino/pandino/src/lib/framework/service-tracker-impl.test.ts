@@ -20,7 +20,6 @@ import {
   SERVICE_SCOPE,
   ServiceProperties,
   ServiceReference,
-  ServiceTrackerCustomizer,
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { ServiceTrackerImpl } from './service-tracker-impl';
@@ -89,7 +88,8 @@ describe('ServiceTrackerImpl', () => {
     const modifyingData: [ServiceProperties?, TestService?] = [];
     const removingData: [ServiceProperties?, TestService?] = [];
     const bundle1 = await installBundle(bundle1Headers);
-    const customizer: ServiceTrackerCustomizer<TestService, TestService> = {
+
+    const tracker = bundle1.getBundleContext().trackService(SERVICE_IDENTIFIER, {
       addingService(reference: ServiceReference<TestService>): TestService {
         addingData.push({ ...reference.getProperties() }, service);
         return service;
@@ -100,12 +100,7 @@ describe('ServiceTrackerImpl', () => {
       removedService(reference: ServiceReference<TestService>, service: TestService) {
         removingData.push({ ...reference.getProperties() }, service);
       },
-    };
-    const tracker = new ServiceTrackerImpl<TestService, TestService>(
-      bundle1.getBundleContext(),
-      SERVICE_IDENTIFIER,
-      customizer,
-    );
+    });
 
     tracker.open();
 
@@ -155,16 +150,11 @@ describe('ServiceTrackerImpl', () => {
     };
     const removingData: [ServiceProperties?, TestService?] = [];
     const bundle1 = await installBundle(bundle1Headers);
-    const tracker = new (class extends ServiceTrackerImpl<TestService, TestService> {
-      constructor() {
-        super(bundle1.getBundleContext(), SERVICE_IDENTIFIER);
-      }
-
+    const tracker = bundle1.getBundleContext().trackService(SERVICE_IDENTIFIER, {
       removedService(reference: ServiceReference<TestService>, service: TestService) {
-        super.removedService(reference, service);
         removingData.push({ ...reference.getProperties() }, service);
-      }
-    })();
+      },
+    });
 
     tracker.open();
 
@@ -192,7 +182,7 @@ describe('ServiceTrackerImpl', () => {
     };
     const addingData: [ServiceProperties?, TestService?] = [];
     const bundle1 = await installBundle(bundle1Headers);
-    const customizer: ServiceTrackerCustomizer<TestService, TestService> = {
+    const tracker = bundle1.getBundleContext().trackService(SERVICE_IDENTIFIER, {
       addingService(reference: ServiceReference<TestService>): TestService {
         const service = super.addingService(reference);
         addingData.push({ ...reference.getProperties() }, service);
@@ -200,12 +190,7 @@ describe('ServiceTrackerImpl', () => {
       },
       modifiedService(reference: ServiceReference<TestService>, service: TestService) {},
       removedService(reference: ServiceReference<TestService>, service: TestService) {},
-    };
-    const tracker = new ServiceTrackerImpl<TestService, TestService>(
-      bundle1.getBundleContext(),
-      SERVICE_IDENTIFIER,
-      customizer,
-    );
+    });
 
     tracker.open();
     tracker.close();
@@ -230,17 +215,13 @@ describe('ServiceTrackerImpl', () => {
     };
     const addingData: [ServiceProperties?, TestService?] = [];
     const bundle1 = await installBundle(bundle1Headers);
-    const tracker = new (class extends ServiceTrackerImpl<TestService, TestService> {
-      constructor() {
-        super(bundle1.getBundleContext(), Filter.parse('(prop1=test)'));
-      }
-
+    const tracker = bundle1.getBundleContext().trackService(Filter.parse('(prop1=test)'), {
       addingService(reference: ServiceReference<TestService>): TestService {
-        const service = super.addingService(reference);
+        const service = bundle1.getBundleContext().getService(reference);
         addingData.push({ ...reference.getProperties() }, service);
         return service;
-      }
-    })();
+      },
+    });
 
     tracker.open();
 

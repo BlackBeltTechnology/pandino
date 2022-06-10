@@ -8,10 +8,15 @@ import {
   ServiceProperties,
   ServiceReference,
   ServiceRegistration,
+  ServiceTracker,
+  ServiceTrackerCustomizer,
 } from '../service';
 import { BundleListener } from './bundle-listener';
 import { FrameworkListener } from '../framework';
 import { FilterApi } from '../filter-api';
+import { BundleTracker } from './bundle-tracker';
+import { BundleState } from './bundle-state';
+import { BundleTrackerCustomizer } from './bundle-tracker-customizer';
 
 /**
  * A bundle's execution context within the Framework. The context is used to grant access to other methods so that this
@@ -431,4 +436,25 @@ export interface BundleContext extends BundleReference {
    *         {@code undefined} if the service is not registered.
    */
   getServiceObjects<S>(reference: ServiceReference<S>): ServiceObjects<S> | undefined;
+
+  /**
+   * Utility method to conveniently create a {@link BundleTracker} instance for the current {@link BundleContext}.
+   *
+   * @param {Array<BundleState>>} trackedStates List of States to track
+   * @param {Partial<BundleTrackerCustomizer<T>>} customizer A full or partial BundleTrackerCustomizer<T>
+   * @return A {@link BundleTracker<T>} for the given tracking parameters
+   */
+  trackBundle<T>(trackedStates: BundleState[], customizer: Partial<BundleTrackerCustomizer<T>>): BundleTracker<T>;
+
+  /**
+   * Utility method to conveniently create a {@link ServiceTracker} instance for the current {@link BundleContext}.
+   *
+   * @param {string | FilterApi} identifierOrFilter
+   * @param {Partial<ServiceTrackerCustomizer<S, T>>} customizer
+   * @return A {@link ServiceTracker<S, T>} for the given tracking parameters
+   */
+  trackService<S, T>(
+    identifierOrFilter: string | FilterApi,
+    customizer: Partial<ServiceTrackerCustomizer<S, T>>,
+  ): ServiceTracker<S, T>;
 }

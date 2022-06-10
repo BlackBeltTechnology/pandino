@@ -64,17 +64,14 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   close(): void {
-    let outgoing: Tracked<S, T>;
+    const outgoing: Tracked<S, T> = this.tracked;
     let references: Array<ServiceReference<S>>;
-
-    outgoing = this.tracked;
 
     if (isAnyMissing(outgoing)) {
       return;
     }
 
     outgoing.close();
-
     references = this.getServiceReferences();
 
     this.tracked = undefined;
@@ -88,8 +85,8 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
     this.modified();
 
     if (isAllPresent(references)) {
-      for (let i = 0; i < references.length; i++) {
-        outgoing.untrack(references[i], undefined);
+      for (const reference of references) {
+        outgoing.untrack(reference, undefined);
       }
     }
   }
