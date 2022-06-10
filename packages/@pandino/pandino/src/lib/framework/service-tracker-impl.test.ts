@@ -8,7 +8,6 @@ import {
   BundleActivator,
   BundleImporter,
   BundleManifestHeaders,
-  DEPLOYMENT_ROOT_PROP,
   FrameworkConfigMap,
   LOG_LEVEL_PROP,
   LogLevel,
@@ -21,7 +20,7 @@ import {
   SERVICE_SCOPE,
   ServiceProperties,
   ServiceReference,
-  ServiceTracker,
+  ServiceTrackerCustomizer,
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { ServiceTrackerImpl } from './service-tracker-impl';
@@ -67,7 +66,6 @@ describe('ServiceTrackerImpl', () => {
     mockStart.mockImplementation(() => {});
     mockStop.mockClear();
     params = {
-      [DEPLOYMENT_ROOT_PROP]: '',
       [PANDINO_MANIFEST_FETCHER_PROP]: jest.fn() as any,
       [PANDINO_BUNDLE_IMPORTER_PROP]: importer,
       [LOG_LEVEL_PROP]: LogLevel.WARN,
@@ -91,27 +89,23 @@ describe('ServiceTrackerImpl', () => {
     const modifyingData: [ServiceProperties?, TestService?] = [];
     const removingData: [ServiceProperties?, TestService?] = [];
     const bundle1 = await installBundle(bundle1Headers);
-    const tracker = new (class extends ServiceTrackerImpl<TestService, TestService> {
-      constructor() {
-        super(bundle1.getBundleContext(), SERVICE_IDENTIFIER);
-      }
-
+    const customizer: ServiceTrackerCustomizer<TestService, TestService> = {
       addingService(reference: ServiceReference<TestService>): TestService {
-        const service = super.addingService(reference);
         addingData.push({ ...reference.getProperties() }, service);
         return service;
-      }
-
+      },
       modifiedService(reference: ServiceReference<TestService>, service: TestService) {
-        super.modifiedService(reference, service);
         modifyingData.push({ ...reference.getProperties() }, service);
-      }
-
+      },
       removedService(reference: ServiceReference<TestService>, service: TestService) {
-        super.removedService(reference, service);
         removingData.push({ ...reference.getProperties() }, service);
-      }
-    })();
+      },
+    };
+    const tracker = new ServiceTrackerImpl<TestService, TestService>(
+      bundle1.getBundleContext(),
+      SERVICE_IDENTIFIER,
+      customizer,
+    );
 
     tracker.open();
 
@@ -198,17 +192,20 @@ describe('ServiceTrackerImpl', () => {
     };
     const addingData: [ServiceProperties?, TestService?] = [];
     const bundle1 = await installBundle(bundle1Headers);
-    const tracker = new (class extends ServiceTrackerImpl<TestService, TestService> {
-      constructor() {
-        super(bundle1.getBundleContext(), SERVICE_IDENTIFIER);
-      }
-
+    const customizer: ServiceTrackerCustomizer<TestService, TestService> = {
       addingService(reference: ServiceReference<TestService>): TestService {
         const service = super.addingService(reference);
         addingData.push({ ...reference.getProperties() }, service);
         return service;
-      }
-    })();
+      },
+      modifiedService(reference: ServiceReference<TestService>, service: TestService) {},
+      removedService(reference: ServiceReference<TestService>, service: TestService) {},
+    };
+    const tracker = new ServiceTrackerImpl<TestService, TestService>(
+      bundle1.getBundleContext(),
+      SERVICE_IDENTIFIER,
+      customizer,
+    );
 
     tracker.open();
     tracker.close();

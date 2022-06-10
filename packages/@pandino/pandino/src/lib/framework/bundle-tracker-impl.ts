@@ -16,10 +16,10 @@ export class BundleTrackerImpl<T> implements BundleTracker<T> {
   private readonly trackedStates: BundleState[] = [];
   private tracked: Tracked<T>;
 
-  constructor(context: BundleContext, trackedStates: BundleState[], customizer: BundleTrackerCustomizer<T>) {
+  constructor(context: BundleContext, trackedStates: BundleState[], customizer?: BundleTrackerCustomizer<T>) {
     this.context = context;
     this.trackedStates = trackedStates;
-    this.customizer = customizer;
+    this.customizer = customizer || this;
   }
 
   open(): void {
@@ -60,9 +60,9 @@ export class BundleTrackerImpl<T> implements BundleTracker<T> {
     } catch (_) {
       /* In case the context was stopped. */
     }
-    if (bundles && bundles.length) {
-      for (let i = 0; i < bundles.length; i++) {
-        outgoing.untrack(bundles[i], undefined);
+    if (Array.isArray(bundles)) {
+      for (const bundle of bundles) {
+        outgoing.untrack(bundle, undefined);
       }
     }
   }
@@ -152,7 +152,7 @@ class Tracked<T> extends AbstractTracked<Bundle, T, BundleEvent> implements Bund
   }
 
   bundleChanged(event: BundleEvent): void {
-    if (closed) {
+    if (this.closed) {
       return;
     }
     const bundle = event.getBundle();

@@ -99,7 +99,6 @@ describe('BundleContextImpl', () => {
     mockUngetService.mockClear();
     logger = new MuteLogger();
     params = {
-      [DEPLOYMENT_ROOT_PROP]: '',
       [PANDINO_MANIFEST_FETCHER_PROP]: jest.fn() as any,
       [PANDINO_BUNDLE_IMPORTER_PROP]: importer,
       [LOG_LEVEL_PROP]: LogLevel.WARN,
