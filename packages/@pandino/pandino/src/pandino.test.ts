@@ -587,6 +587,9 @@ describe('Pandino', () => {
 
   it('stopping bundle unregisters all services', async () => {
     await preparePandino();
+
+
+
     await installBundle(bundle1Headers);
 
     const bundle = pandino.getBundleContext().getBundles()[0];
