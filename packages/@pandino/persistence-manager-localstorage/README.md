@@ -38,14 +38,10 @@ export default class Activator {
     this.persistenceManager = context.getService(this.persistenceManagerReference);
 
     console.log(this.persistenceManager.exists('test.pid'));
-
-    return Promise.resolve();
   }
 
-  stop(context) {
+  async stop(context) {
     context.ungetService(this.persistenceManagerReference);
-
-    return Promise.resolve();
   }
 }
 ```

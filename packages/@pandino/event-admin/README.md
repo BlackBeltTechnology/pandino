@@ -34,15 +34,11 @@ export default class Activator {
     
     // send the Event
     this.eventAdmin.postEvent(event);
-
-    return Promise.resolve();
   }
 
-  stop(context) {
+  async stop(context) {
     context.ungetService(this.eventFactoryReference);
     context.ungetService(this.eventAdminReference);
-
-    return Promise.resolve();
   }
 }
 ```
@@ -66,14 +62,10 @@ export default class BundleActivator {
     this.registration = context.registerService(EVENT_HANDLER_INTERFACE_KEY, new TestTopicEventHandler(), {
       [EVENT_TOPIC]: '@scope/app/TestTopic'
     });
-
-    return Promise.resolve();
   }
 
   async stop(context) {
     context.unregisterService(this.registration);
-
-    return Promise.resolve();
   }
 }
 

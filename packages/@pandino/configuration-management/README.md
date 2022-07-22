@@ -39,14 +39,10 @@ export default class BundleActivator {
     this.registration = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, mst, {
       [SERVICE_PID]: 'test.pid'
     });
-
-    return Promise.resolve();
   }
 
   async stop(context) {
     context.unregisterService(this.registration);
-
-    return Promise.resolve();
   }
 }
 
@@ -108,14 +104,10 @@ export default class Activator {
         prop2: true,
       });
     }
-
-    return Promise.resolve();
   }
 
-  stop(context) {
+  async stop(context) {
     context.ungetService(this.configAdminReference);
-
-    return Promise.resolve();
   }
 }
 ```
@@ -134,14 +126,10 @@ export default class Activator {
     this.listenerRegistration = context.registerService(CONFIGURATION_LISTENER_INTERFACE_KEY, new MyListener(), {
       [SERVICE_PID]: 'test.pid',
     });
-
-    return Promise.resolve();
   }
 
-  stop(context) {
+  async stop(context) {
     this.listenerRegistratio.unregister();
-
-    return Promise.resolve();
   }
 }
 
