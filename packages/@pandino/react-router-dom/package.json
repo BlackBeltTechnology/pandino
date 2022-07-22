@@ -11,8 +11,7 @@
   },
   "private": true,
   "scripts": {
-    "clean": "rimraf dist",
-    "build": "npm run clean && rollup -c"
+    "build": "rollup -c"
   },
   "keywords": [],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
@@ -31,6 +30,7 @@
     "react-router-dom": "^6.3.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.70.1",
+    "rollup-plugin-clear": "^2.0.7",
     "typescript": "^4.6.2",
     "prettier": "^2.6.1",
     "terser": "^5.12.1"

@@ -2,6 +2,7 @@ import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { pandinoExternalizeReact } from '@pandino/rollup-plugin-react-externalize';
+import clear from 'rollup-plugin-clear';
 import { readFileSync } from "fs";
 
 const packageJSON = JSON.parse(readFileSync('package.json').toString('utf8'));
@@ -17,6 +18,9 @@ export default {
     }
   ],
   plugins: [
+    clear({
+      targets: ['dist'],
+    }),
     nodeResolve(),
     commonjs(),
     typescript({ tsconfig: './tsconfig.json' }),

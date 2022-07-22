@@ -1,4 +1,5 @@
 import typescript from '@rollup/plugin-typescript';
+import clear from 'rollup-plugin-clear';
 
 export default {
   input: 'src/index.ts',
@@ -6,5 +7,10 @@ export default {
     dir: 'dist',
     format: 'cjs'
   },
-  plugins: [typescript()]
+  plugins: [
+    clear({
+      targets: ['dist'],
+    }),
+    typescript(),
+  ],
 };
