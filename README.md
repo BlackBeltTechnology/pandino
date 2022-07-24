@@ -488,4 +488,5 @@ common software development problems. Usage is opt-in of course.
 
 ### Bundler Plugins
 
+- [rollup-plugin-generate-manifest](./packages/@pandino/rollup-plugin-generate-manifest)
 - [rollup-plugin-react-externalize](./packages/@pandino/rollup-plugin-react-externalize)
