@@ -4,3 +4,4 @@ dist
 !examples/*/dist
 .idea
 packages/**/coverage
+**/.DS_Store
