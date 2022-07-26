@@ -1,18 +1,7 @@
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "newLine": "lf",
-    "declaration": true,
     "declarationDir": "./dist/",
-    "outDir": "./dist/",
-    "noImplicitAny": true,
-    "target": "es2018",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noEmitOnError": true,
-    "lib": ["es2017"],
-    "strict": true,
-    "esModuleInterop": false,
-    "sourceMap": false
-  },
-  "include": ["./src/**/*.ts"]
+    "outDir": "./dist/"
+  }
 }
