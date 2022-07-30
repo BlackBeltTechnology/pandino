@@ -18,7 +18,7 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
     this.context = context;
     this.fetcherReference = context.getServiceReference<ManifestFetcher>(FRAMEWORK_MANIFEST_FETCHER);
     this.fetcher = context.getService<ManifestFetcher>(this.fetcherReference);
-    this.registerDocumentDefinedManifests();
+    await this.registerDocumentDefinedManifests();
   }
 
   async stop(context: BundleContext): Promise<void> {
