@@ -20,7 +20,7 @@
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "MIT",
   "engines": {
-    "node": ">=14"
+    "node": ">=14.9.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.3.0",

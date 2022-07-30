@@ -8,7 +8,7 @@
   "keywords": [],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "engines": {
-    "node": ">=14"
+    "node": ">=14.9.0"
   },
   "license": "MIT"
 }
