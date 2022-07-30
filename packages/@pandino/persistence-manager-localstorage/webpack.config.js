@@ -1,4 +1,3 @@
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import path from 'path';
 import CopyPlugin from 'copy-webpack-plugin';
 import { fileURLToPath } from 'url';
@@ -35,10 +34,6 @@ export default {
     path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
-      openAnalyzer: false,
-    }),
     new CopyPlugin({
       patterns: [
         { from: "assets", to: "" },
