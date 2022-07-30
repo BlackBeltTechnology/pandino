@@ -31,7 +31,7 @@ const generateManifest = (options = {}) => {
 
         for (const token of tokens) {
           const packageJsonValue = packageJson[getNameFromToken(token)];
-          targetRaw = targetRaw.replaceAll(token, packageJsonValue ? packageJsonValue : extraTokens[getNameFromToken(token)]);
+          targetRaw = targetRaw.replace(new RegExp(token, 'g'), packageJsonValue ? packageJsonValue : extraTokens[getNameFromToken(token)]);
         }
 
         const targetPath = path.resolve(target);
