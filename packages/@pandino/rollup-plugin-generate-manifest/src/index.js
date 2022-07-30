@@ -6,14 +6,11 @@ function getNameFromToken(token) {
 }
 
 const generateManifest = (options = {}) => {
-  const { target, extraTokens = {}, hook = 'buildEnd' } = options
+  const { extraTokens = {} } = options
   return {
     name: 'generate-manifest',
-    [hook]: () => {
-      if (!target) {
-        throw new Error('Missing mandatory configuration attribute: "target"!');
-      }
-
+    writeBundle: (bundleOptions) => {
+      const target = bundleOptions.file.substring(0, bundleOptions.file.lastIndexOf('.')) + '-manifest.json';
       const packageString = fs.readFileSync(path.resolve('package.json')).toString('utf8');
       const packageJson = JSON.parse(packageString);
 

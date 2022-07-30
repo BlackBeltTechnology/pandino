@@ -47,22 +47,12 @@ export default {
   // ...
   plugins: [
     // ...
-    generateManifest({
-      target: 'dist/test-api-manifest.json',
-    }),
+    generateManifest(),
   ],
 };
 ```
 
 ## Configuration options
-
-### target
-
-Type: `string`
-
-Required: `true`
-
-Target to the manifest file we would like to generate.
 
 ### extraTokens
 
@@ -83,7 +73,6 @@ export default {
   plugins: [
     // ...
     generateManifest({
-      target: 'dist/test-api-manifest.json',
       extraTokens: {
         test: '444',
       },
