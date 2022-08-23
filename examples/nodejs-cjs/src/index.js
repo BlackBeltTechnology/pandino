@@ -1,4 +1,4 @@
-const Pandino = require("@pandino/pandino").default;
+const Pandino = require("@pandino/pandino");
 const path = require("path");
 const fs = require("fs");
 

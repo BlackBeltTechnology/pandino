@@ -1,1 +1,0 @@
-export { detailsFeature } from './DetailsFeature';
