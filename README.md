@@ -27,6 +27,11 @@ Most noteworthy differences compared to the OSGi standard are explained in the
 - You don't want to vendor-lock yourself to e.g.: build tools or complete frameworks
 - You want to have complete control over how you manage your functionality
 
+## Supported platforms
+
+Pandino can be used as an [ES Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in browsers
+and NodeJS v14, v16, and v18 as well. To support legacy setups, we export CJS modules as well, where applicable.
+
 ## Beginner's guide
 
 For brevity's sake, we will demonstrate how to add Pandino to a pure and plain JavaScript application. We will also load
