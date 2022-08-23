@@ -59,15 +59,31 @@ default: `true`
 
 Whether the plugin should add the `Bundle-License` entry to the manifest.
 
+### bundleLicenseValue
+
+values: `'relative-path'` | `'inline'` | `'package-license'`
+
+default: `'relative-path'`
+
+**'relative-path':**
+
+This option sets the `Bundle-License` header value to a relative file path, and copies the License file.
+
+**'inline':**
+
+This option inlines the License file contents to the value of the `Bundle-License` header.
+
+**'package-license':**
+
+This option sets the `Bundle-License` header value to whatever you have set in as a `license` value in your
+`package.json` file.
+
 ### licenseFileRegex
 
 default: `'^LICENSE(\\.txt)?$'`
 
 The regex pattern to use to find LICENSE files in our projects.
 
-### copyBundleLicense
+## License
 
-default: `true`
-
-Whether the plugin should copy the license file provided with a relative path added to the manifest's `Bundle-License`
-entry, or inject the file's contents as a string.
+Eclipse Public License - v 2.0

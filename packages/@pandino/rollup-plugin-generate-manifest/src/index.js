@@ -2,7 +2,12 @@ const path = require('path');
 const fs = require('fs');
 
 const generateManifest = (options = {}) => {
-  const { addBundleLicenseEntry = true, copyBundleLicense = true, licenseFileRegex = '^LICENSE(\\.txt)?$' } = options
+  const {
+    addBundleLicenseEntry = true,
+    bundleLicenseValue = 'relative-path',
+    licenseFileRegex = '^LICENSE(\\.txt)?$',
+  } = options;
+
   return {
     name: 'generate-manifest',
     writeBundle: (bundleOptions) => {
@@ -49,11 +54,19 @@ const generateManifest = (options = {}) => {
           .filter(item => item.match(new RegExp(licenseFileRegex)));
 
         if (files.length) {
-          if (copyBundleLicense) {
-            fs.copyFileSync(path.resolve(files[0]), path.join(targetFolder, files[0]));
-            content['Bundle-License'] = './' + files[0];
-          } else {
-            content['Bundle-License'] = fs.readFileSync(path.resolve(files[0]), { encoding: 'utf-8' }).toString();
+          switch (bundleLicenseValue) {
+            case 'relative-path':
+              fs.copyFileSync(path.resolve(files[0]), path.join(targetFolder, files[0]));
+              content['Bundle-License'] = './' + files[0];
+              break;
+            case 'inline':
+              content['Bundle-License'] = fs.readFileSync(path.resolve(files[0]), { encoding: 'utf-8' }).toString();
+              break;
+            case 'package-license':
+              content['Bundle-License'] = packageJson.license;
+              break;
+            default:
+              throw new Error(`Invalid configuration value for 'bundleLicenseValue': ${bundleLicenseValue}!`);
           }
         }
       }
