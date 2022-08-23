@@ -16,7 +16,7 @@ export default {
     },
     {
       sourcemap: ENV === 'PRODUCTION',
-      file: 'dist/cjs/configuration-management.js',
+      file: 'dist/cjs/configuration-management.cjs',
       format: 'cjs',
     },
   ],

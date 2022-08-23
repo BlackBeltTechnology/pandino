@@ -16,7 +16,7 @@ export default {
     },
     {
       sourcemap: ENV === 'PRODUCTION',
-      file: 'dist/cjs/event-admin.js',
+      file: 'dist/cjs/event-admin.cjs',
       format: 'cjs',
     },
   ],

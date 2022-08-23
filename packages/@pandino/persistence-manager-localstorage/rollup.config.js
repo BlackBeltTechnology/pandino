@@ -14,11 +14,6 @@ export default {
       file: 'dist/esm/persistence-manager-localstorage.mjs',
       format: 'esm',
     },
-    {
-      sourcemap: ENV === 'PRODUCTION',
-      file: 'dist/cjs/persistence-manager-localstorage.js',
-      format: 'cjs',
-    },
   ],
   plugins: [
     clear({

@@ -16,7 +16,7 @@ export default {
     },
     {
       sourcemap: ENV === 'PRODUCTION',
-      file: 'dist/cjs/persistence-manager-memory.js',
+      file: 'dist/cjs/persistence-manager-memory.cjs',
       format: 'cjs',
     },
   ],

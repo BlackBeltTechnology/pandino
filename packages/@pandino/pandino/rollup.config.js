@@ -15,7 +15,7 @@ export default {
     },
     {
       sourcemap: ENV === 'PRODUCTION',
-      file: 'dist/cjs/pandino.js',
+      file: 'dist/cjs/pandino.cjs',
       format: 'cjs',
     },
   ],

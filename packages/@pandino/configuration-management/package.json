@@ -2,13 +2,13 @@
   "name": "@pandino/configuration-management",
   "version": "0.1.0",
   "description": "",
-  "main": "./dist/cjs/configuration-management.js",
+  "main": "./dist/cjs/configuration-management.cjs",
   "module": "./dist/esm/configuration-management.mjs",
   "types": "dist/configuration-management.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/configuration-management.js",
+      "require": "./dist/cjs/configuration-management.cjs",
       "default": "./dist/esm/configuration-management.mjs"
     }
   },

@@ -2,13 +2,13 @@
   "name": "@pandino/event-admin",
   "version": "0.1.0",
   "description": "Reference implementation of the Pandino Event Admin API",
-  "main": "./dist/cjs/event-admin.js",
+  "main": "./dist/cjs/event-admin.cjs",
   "module": "./dist/esm/event-admin.mjs",
   "types": "dist/event-admin.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/event-admin.js",
+      "require": "./dist/cjs/event-admin.cjs",
       "default": "./dist/esm/event-admin.mjs"
     }
   },
