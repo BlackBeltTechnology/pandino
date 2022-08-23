@@ -35,10 +35,6 @@ const generateManifest = (options = {}) => {
         content['Bundle-Description'] = packageJson.description;
       }
 
-      if (packageJson.license) {
-        content['License'] = packageJson.license;
-      }
-
       if (packageJson.author) {
         content['Author'] = packageJson.author;
       }
