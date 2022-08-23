@@ -8,7 +8,6 @@ npm i
 
 # Format code:
 npm run format
-npm run format-tsx
 
 # Build all packages (excluding example project):
 npm run build
@@ -41,7 +40,7 @@ Do not export `enum`s, messes up tree-shaking, use `type`s instead!
 In order for IDEs to be able to provide proper breakpoints and debugging support, JEST needs a dedicated
 `tsconfig.test.json` file in every project.
 
-The reason is that in bundle outputs we usually do not provide source-maps, but IDEs rely on them.
+The reason for this is that in bundle outputs we usually do not provide source-maps, but IDEs rely on them.
 
 ## Sources
 
