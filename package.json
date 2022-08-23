@@ -10,7 +10,8 @@
     "format": "prettier --config .prettierrc \"packages/@pandino/*/src/**/*.{ts,tsx}\" --write",
     "format-examples": "prettier --config .prettierrc examples/*/packages/*/src/**/*.{ts,tsx} --write",
     "graph": "nx graph",
-    "version": "lerna version"
+    "version": "lerna version",
+    "prepublish": "npm run build && npm run test"
   },
   "devDependencies": {
     "lerna": "^5.2.0",
