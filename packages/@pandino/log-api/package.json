@@ -12,6 +12,7 @@
       "default": "./dist/esm/log-api.mjs"
     }
   },
+  "private": true,
   "scripts": {
     "build": "rollup -c"
   },
