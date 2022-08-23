@@ -19,7 +19,7 @@ documentation it self.
 Most noteworthy differences compared to the OSGi standard are explained in the
 [docs/osgi-comparison.md](./docs/osgi-comparison.md) document.
 
-## When to use Pandino
+## Recommended use-cases
 
 - There is a need to decouple an application at design time
 - Functionality can come and go at runtime
