@@ -14,3 +14,7 @@ Public APIs for `Bundle` developers and Pandino users.
 - [ServiceListener](./src/service/service-listener.ts)
 - [ServiceReference](./src/service/service-reference.ts)
 - [ServiceRegistration](./src/service/service-registration.ts)
+
+## License
+
+Eclipse Public License - v 2.0

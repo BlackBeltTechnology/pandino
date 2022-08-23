@@ -10,3 +10,7 @@ Specification and APIs for Configuration Management
 - [ConfigurationAdmin](./src/configuration-admin.ts)
 - [ConfigurationListener](./src/configuration-listener.ts)
 - [ManagedService](./src/managed-service.ts)
+
+## License
+
+Eclipse Public License - v 2.0

@@ -93,7 +93,6 @@ However there are two reserved keys which you can use as suffixes to loosen up t
 - `.`: matches for exactly one additional segment, no more, no less
 - `*`: matches for at least one additional segment, no less
 
-
 ### Examples
 
 In the Table below headers represent `topic`s, and the first column the test cases:
@@ -105,3 +104,7 @@ In the Table below headers represent `topic`s, and the first column the test cas
 | @pandino/pandino/Foo$1    | false                | true              | true              |
 | @pandino/pandino/Foo/Test | false                | false             | true              |
 | @pandino/pandino          | false                | false             | false             |
+
+## License
+
+Eclipse Public License - v 2.0

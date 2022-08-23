@@ -27,3 +27,7 @@ let pandino: Bundle;
 
 pandino.getBundleContext().installBundle('./bundle-installer-dom-manifest.json');
 ```
+
+## License
+
+Eclipse Public License - v 2.0

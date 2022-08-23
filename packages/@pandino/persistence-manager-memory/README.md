@@ -45,3 +45,6 @@ export default class Activator {
   }
 }
 ```
+## License
+
+Eclipse Public License - v 2.0

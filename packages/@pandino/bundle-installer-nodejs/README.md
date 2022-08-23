@@ -46,3 +46,7 @@ const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));
 
 Based on the config above, the Bundle Installer will detect changes in the `./deploy` folder, and install / uninstall
 all Bundles placed under it.
+
+## License
+
+Eclipse Public License - v 2.0

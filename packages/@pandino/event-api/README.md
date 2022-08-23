@@ -10,3 +10,7 @@ Specification and APIs for managed Events
 - [EventAdmin](./src/event-admin.ts)
 - [EventFactory](./src/event-factory.ts)
 - [EventHandler](./src/event-handler.ts)
+
+## License
+
+Eclipse Public License - v 2.0

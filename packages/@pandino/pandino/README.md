@@ -92,3 +92,7 @@ const pandino = new Pandino({
   await pandino.getBundleContext().installBundle('some-bundle-manifest.json');
 })();
 ```
+
+## License
+
+Eclipse Public License - v 2.0

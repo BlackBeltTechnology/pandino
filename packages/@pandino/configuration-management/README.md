@@ -141,3 +141,7 @@ class MyListener {
   }
 }
 ```
+
+## License
+
+Eclipse Public License - v 2.0
