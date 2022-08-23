@@ -63,7 +63,7 @@ Install Pandino via `npm install --save @pandino/pandino`.
 Initialize it somewhere close in you applications own init logic, e.g.:
 
 ```javascript
-const Pandino = require("@pandino/pandino").default;
+const Pandino = require("@pandino/pandino");
 const path = require("path");
 const fs = require("fs");
 
