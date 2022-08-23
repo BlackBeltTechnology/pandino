@@ -1,4 +1,3 @@
-import { SemVer } from 'semver';
 import { BUNDLE_SYMBOLICNAME, BUNDLE_VERSION, BundleManifestHeaders, MANDATORY_DIRECTIVE } from '@pandino/pandino-api';
 import { CapabilitySet } from './capability-set';
 import { BundleCapabilityImpl } from '../wiring/bundle-capability-impl';
@@ -9,6 +8,7 @@ import { Pandino } from '../../../pandino';
 import Filter, { FilterComp } from '../../filter/filter';
 import { BundleRevision } from '../bundle-revision';
 import { BundleCapability } from '../wiring/bundle-capability';
+import { SemVerImpl } from '../../utils/semver-impl';
 
 describe('capability-set', () => {
   let capabilitySet: CapabilitySet;
@@ -148,7 +148,7 @@ describe('capability-set', () => {
     });
 
     it('SemVer type', () => {
-      const version1 = new SemVer('1.0.0');
+      const version1 = new SemVerImpl('1.0.0');
       expect(() => {
         CapabilitySet.compare(version1, undefined, FilterComp.EQ);
       }).toThrow();

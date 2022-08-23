@@ -1,8 +1,8 @@
-import { BUNDLE_NAMESPACE, BUNDLE_VERSION_ATTRIBUTE } from '@pandino/pandino-api';
+import { BUNDLE_NAMESPACE, BUNDLE_VERSION_ATTRIBUTE, SemVer } from '@pandino/pandino-api';
 import { BundleCapabilityImpl } from '../framework/wiring/bundle-capability-impl';
 import { isAnyMissing, isAllPresent } from './helpers';
-import { SemVer } from 'semver';
 import { Capability } from '../framework/resource/capability';
+import { SemVerImpl } from './semver-impl';
 
 export function candidateComparator(cap1: Capability, cap2: Capability): number {
   let c = 0;
@@ -26,10 +26,10 @@ export function candidateComparator(cap1: Capability, cap2: Capability): number 
 
     if (c === 0) {
       const v1: SemVer = !cap1.getAttributes().hasOwnProperty(BUNDLE_VERSION_ATTRIBUTE)
-        ? new SemVer('0.0.0')
+        ? new SemVerImpl('0.0.0')
         : (cap1.getAttributes()[BUNDLE_VERSION_ATTRIBUTE] as SemVer);
       const v2: SemVer = !cap2.getAttributes().hasOwnProperty(BUNDLE_VERSION_ATTRIBUTE)
-        ? new SemVer('0.0.0')
+        ? new SemVerImpl('0.0.0')
         : (cap2.getAttributes()[BUNDLE_VERSION_ATTRIBUTE] as SemVer);
       c = v2.compare(v1);
     }

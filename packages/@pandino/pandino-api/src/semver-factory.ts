@@ -1,4 +1,4 @@
-import { SemVer } from 'semver';
+import { SemVer } from './semver';
 
 export interface SemverFactory {
   build(version: string): SemVer;

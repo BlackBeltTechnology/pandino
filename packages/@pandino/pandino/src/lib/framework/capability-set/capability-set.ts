@@ -1,9 +1,10 @@
-import { SemVer, eq as semverEq, lte as semverLte, gte as semverGte, neq as semverNeq } from 'semver';
 import { BundleCapabilityImpl } from '../wiring/bundle-capability-impl';
 import Filter, { FilterComp } from '../../filter/filter';
 import { isAllPresent, isAnyMissing } from '../../utils/helpers';
 import { BundleCapability } from '../wiring/bundle-capability';
 import { Capability } from '../resource/capability';
+import { SemVerImpl } from '../../utils/semver-impl';
+import { equal, gte, lte } from '../../semver-lite/src';
 
 export type CapabilityIndex = Record<any, Set<BundleCapability>>;
 
@@ -136,16 +137,16 @@ export class CapabilitySet {
       }
     }
 
-    if (lhs instanceof SemVer) {
+    if (lhs instanceof SemVerImpl) {
       switch (cmp) {
         case FilterComp.EQ:
-          return semverEq(lhs, rhs as string);
+          return equal(lhs.toString(), rhs.toString());
         case FilterComp.NOT:
-          return semverNeq(lhs, rhs as string);
+          return !equal(lhs.toString(), rhs.toString());
         case FilterComp.GTE:
-          return semverGte(lhs, rhs as string);
+          return gte(lhs.toString(), rhs.toString());
         case FilterComp.LTE:
-          return semverLte(lhs, rhs as string);
+          return lte(lhs.toString(), rhs.toString());
         default:
           throw new Error('Unsupported comparison operator: ' + cmp);
       }

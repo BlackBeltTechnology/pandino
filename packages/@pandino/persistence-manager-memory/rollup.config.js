@@ -8,11 +8,18 @@ const ENV = process.env.PRODUCTION ? 'PRODUCTION' : 'DEVELOPMENT';
 
 export default {
   input: 'src/index.ts',
-  output: {
-    sourcemap: ENV === 'PRODUCTION',
-    file: 'dist/bundle-installer-dom.mjs',
-    format: 'esm',
-  },
+  output: [
+    {
+      sourcemap: ENV === 'PRODUCTION',
+      file: 'dist/esm/persistence-manager-memory.mjs',
+      format: 'esm',
+    },
+    {
+      sourcemap: ENV === 'PRODUCTION',
+      file: 'dist/cjs/persistence-manager-memory.js',
+      format: 'cjs',
+    },
+  ],
   plugins: [
     clear({
       targets: ['dist'],

@@ -2,15 +2,23 @@
   "name": "@pandino/event-api",
   "version": "0.1.0",
   "description": "Pandino Event API",
-  "main": "dist/index.js",
+  "main": "dist/cjs/event-api.js",
+  "module": "dist/esm/event-api.mjs",
+  "types": "dist/event-api.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/event-api.js",
+      "default": "./dist/esm/event-api.mjs"
+    }
+  },
   "private": true,
-  "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c"
   },
-  "keywords": [],
+  "keywords": ["pandino", "event", "management", "admin", "api"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
-  "license": "MIT",
+  "license": "EPL-2.0",
   "engines": {
     "node": ">=14.9.0"
   },

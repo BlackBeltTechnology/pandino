@@ -17,9 +17,9 @@
     "build": "rollup -c --environment=PRODUCTION",
     "build:dev": "rollup -c"
   },
-  "keywords": [],
+  "keywords": ["pandino", "bundle", "installer", "nodejs"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
-  "license": "MIT",
+  "license": "EPL-2.0",
   "engines": {
     "node": ">=14.9.0"
   },
@@ -35,12 +35,6 @@
   },
   "pandino": {
     "manifest": {
-      "Bundle-ManifestVersion": "1",
-      "Bundle-SymbolicName": "${name}",
-      "Bundle-Name": "Bundle Installer NodeJS",
-      "Bundle-Version": "${version}",
-      "Bundle-Description": "${description}",
-      "Bundle-Activator": "./bundle-installer-nodejs.js",
       "Provide-Capability": "@pandino/bundle-installer;type=\"nodejs\""
     }
   }

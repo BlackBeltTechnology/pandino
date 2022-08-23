@@ -1,5 +1,11 @@
-import { Bundle, BundleContext, BundleManifestHeaders, BundleState, ServiceReference } from '@pandino/pandino-api';
-import { SemVer } from 'semver';
+import {
+  Bundle,
+  BundleContext,
+  BundleManifestHeaders,
+  BundleState,
+  SemVer,
+  ServiceReference,
+} from '@pandino/pandino-api';
 import { MockBundleContext } from './mock-bundle-context';
 
 export class MockBundle implements Bundle {

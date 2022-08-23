@@ -1,5 +1,4 @@
-import { SemVer } from 'semver';
-import { ActivationPolicy } from '@pandino/pandino-api';
+import { ActivationPolicy, SemVer } from '@pandino/pandino-api';
 import { BundleCapability } from '../../wiring/bundle-capability';
 import { BundleRequirement } from '../../wiring/bundle-requirement';
 

@@ -2,15 +2,23 @@
   "name": "@pandino/configuration-management-api",
   "version": "0.1.0",
   "description": "Pandino Configuration Management API",
-  "main": "dist/index.js",
+  "main": "dist/cjs/configuration-management-api.js",
+  "module": "dist/esm/configuration-management-api.mjs",
+  "types": "dist/configuration-management-api.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/configuration-management-api.js",
+      "default": "./dist/esm/configuration-management-api.mjs"
+    }
+  },
   "private": true,
-  "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c"
   },
-  "keywords": [],
+  "keywords": ["pandino", "configuration", "management", "api"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
-  "license": "MIT",
+  "license": "EPL-2.0",
   "engines": {
     "node": ">=14.9.0"
   },

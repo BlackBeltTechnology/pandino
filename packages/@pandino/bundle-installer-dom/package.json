@@ -2,12 +2,12 @@
   "name": "@pandino/bundle-installer-dom",
   "version": "0.1.0",
   "description": "Install Bundles defined in a browser's DOM",
-  "module": "./dist/bundle-installer-dom.js",
-  "types": "dist/bundle-installer-dom.d.ts",
+  "module": "./dist/bundle-installer-dom.mjs",
+  "types": "dist/bundle-installer-dom.d.mts",
   "type": "module",
   "exports": {
     ".": {
-      "default": "./dist/bundle-installer-dom.js"
+      "default": "./dist/bundle-installer-dom.mjs"
     }
   },
   "private": true,
@@ -15,9 +15,9 @@
     "build": "rollup -c --environment=PRODUCTION",
     "build:dev": "rollup -c"
   },
-  "keywords": [],
+  "keywords": ["pandino", "bundle", "installer", "dom"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
-  "license": "MIT",
+  "license": "EPL-2.0",
   "engines": {
     "node": ">=14.9.0"
   },
@@ -33,12 +33,6 @@
   },
   "pandino": {
     "manifest": {
-      "Bundle-ManifestVersion": "1",
-      "Bundle-SymbolicName": "${name}",
-      "Bundle-Name": "Bundle Installer DOM",
-      "Bundle-Version": "${version}",
-      "Bundle-Description": "${description}",
-      "Bundle-Activator": "./bundle-installer-dom.js",
       "Provide-Capability": "@pandino/bundle-installer;type=\"DOM\""
     }
   }

@@ -4,35 +4,7 @@ Generates Pandino Manifest JSON files based on `package.json` info.
 
 ## Install
 
-### Set up the pandino section in your package.json file
-
-The `pandino.manifest` section may contain variables in format similar to JavaScript template strings,
-e.g.: `${variable}`.
-
-Variable resolution is firstly based off of every first-level attribute in `package.json`, but you may add additional
-values via plugin config explained below.
-
-```json
-{
-  "name": "@test/test-api",
-  "version": "0.1.0",
-  "description": "Test API",
-  "pandino": {
-    "manifest": {
-      "Bundle-ManifestVersion": "1",
-      "Bundle-SymbolicName": "${name}",
-      "Bundle-Name": "Long name of our Bundle",
-      "Bundle-Version": "${version}",
-      "Bundle-Description": "${description}",
-      "Bundle-Activator": "./test-api-dom.mjs",
-      "Provide-Capability": "${name};type=\"DOM\";test=${test}"
-    }
-  }
-}
-
-```
-
-### Add plugin to your rollup config
+### Add the plugin to your rollup config
 
 ```javascript
 // other imports
@@ -52,31 +24,50 @@ export default {
 };
 ```
 
+### [OPTIONAL] Set up a pandino section in your package.json file
+
+Firstly you need to set up a `pandino.manifest` section in your `package.json` file.
+
+This section may contain Pandino Manifest Header contents. By default the plugin will generate the basics based on the
+info in `package.json`. Any entry in this section overrides the default values, you may use this feature to override
+defaults.
+
+Example: adding a `"Provide-Capability"` section to the generated Manifest file.
+
+```json
+{
+  "name": "@test/test-api",
+  "version": "0.1.0",
+  "description": "Test API",
+  "pandino": {
+    "manifest": {
+      "Provide-Capability": "${name};type=\"DOM\";test=${test}"
+    }
+  }
+}
+
+```
+
+> The `"Bundle-Activator"` part of the Manifest is generated based on the Rollup context, so it should be taken care of
+out-of-box for any number of outputs.
+
 ## Configuration options
 
-### extraTokens
+### addBundleLicenseEntry
 
-Type: `Record<string, string | number | boolean>`
+default: `true`
 
-Target to the manifest file we would like to generate.
+Whether the plugin should add the `Bundle-License` entry to the manifest.
 
-You may add additional key-value pairs here. These values will be picked up besides the root level attributes coming
-from `package.json`.
+### licenseFileRegex
 
-Example:
+default: `'^LICENSE(\\.txt)?$'`
 
-```javascript
-import generateManifest from '@pandino/rollup-plugin-generate-manifest';
+The regex pattern to use to find LICENSE files in our projects.
 
-export default {
-  // ...
-  plugins: [
-    // ...
-    generateManifest({
-      extraTokens: {
-        test: '444',
-      },
-    }),
-  ],
-};
-```
+### copyBundleLicense
+
+default: `true`
+
+Whether the plugin should copy the license file provided with a relative path added to the manifest's `Bundle-License`
+entry, or inject the file's contents as a string.

@@ -1,5 +1,4 @@
-import { BundleReference } from '@pandino/pandino-api';
-import { SemVer } from 'semver';
+import { BundleReference, SemVer } from '@pandino/pandino-api';
 import { BundleRequirement } from './wiring/bundle-requirement';
 import { BundleCapability } from './wiring/bundle-capability';
 import { Requirement } from './resource/requirement';

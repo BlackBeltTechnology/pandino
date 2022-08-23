@@ -1,4 +1,3 @@
-import { SemVer } from 'semver';
 import {
   Bundle,
   BundleContext,
@@ -9,14 +8,15 @@ import {
   ServiceReference,
 } from '@pandino/pandino-api';
 import { ManagedService } from '@pandino/configuration-management-api';
-import { ConfigurationManager } from './configuration-manager';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
 import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
+import { createVersionMock } from './__mocks__/semver';
+import { ConfigurationManager } from './configuration-manager';
 
 describe('ConfigurationManager', function () {
   const semverFactory: SemverFactory = {
-    build: (version) => new SemVer(version),
+    build: (version) => createVersionMock(version),
   };
   let persistenceManager: MockPersistenceManager;
   let context: BundleContext;
@@ -37,7 +37,7 @@ describe('ConfigurationManager', function () {
       context as MockBundleContext,
       'test.bundle.location',
       '@test/my-bundle',
-      new SemVer('0.0.0'),
+      createVersionMock('0.0.0'),
     );
     persistenceManager = new MockPersistenceManager(`{
       "my.component.pid": {
@@ -259,7 +259,7 @@ describe('ConfigurationManager', function () {
         getBundle: () => ({
           getLocation: () => 'some.location',
           getSymbolicName: () => '@scope/component-1',
-          getVersion: () => new SemVer('1.2.3'),
+          getVersion: () => createVersionMock('1.2.3'),
         }),
       };
       const refWithOwnConfig: any = {
@@ -271,7 +271,7 @@ describe('ConfigurationManager', function () {
         getBundle: () => ({
           getLocation: () => 'some.other.location',
           getSymbolicName: () => '@scope/component-2',
-          getVersion: () => new SemVer('1.0.0'),
+          getVersion: () => createVersionMock('1.0.0'),
         }),
       };
       const refWithoutAnyConfig: any = {
@@ -282,7 +282,7 @@ describe('ConfigurationManager', function () {
         getBundle: () => ({
           getLocation: () => 'yet.other.location',
           getSymbolicName: () => '@scope/component-3',
-          getVersion: () => new SemVer('3.2.1'),
+          getVersion: () => createVersionMock('3.2.1'),
         }),
       };
 

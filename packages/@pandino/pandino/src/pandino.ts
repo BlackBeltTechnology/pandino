@@ -36,8 +36,9 @@ import {
   SYSTEM_BUNDLE_LOCATION,
   FRAMEWORK_FILTER_PARSER,
   FrameworkConfigMap,
-  FRAMEWORK_SEMVER_FACTORY,
   ServiceFactory,
+  SemVer,
+  FRAMEWORK_SEMVER_FACTORY,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { EventDispatcher } from './lib/framework/event-dispatcher';
@@ -47,7 +48,6 @@ import { isAllPresent, isAnyMissing } from './lib/utils/helpers';
 import { StatefulResolver } from './lib/framework/stateful-resolver';
 import { ServiceRegistryImpl } from './lib/framework/service-registry-impl';
 import { FrameworkEventImpl } from './lib/framework/framework-event-impl';
-import { SemVer } from 'semver';
 import { ConsoleLogger } from './lib/utils/console-logger';
 import Filter from './lib/filter/filter';
 import { ServiceEventImpl } from './lib/framework/service-event-impl';
@@ -58,6 +58,7 @@ import { Framework } from './lib/framework/framework';
 import { ServiceRegistry } from './lib/framework/service-registry';
 import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
 import { FilterParserImpl } from './lib/filter/filter-parser';
+import { SemVerImpl } from './lib/utils/semver-impl';
 import { SemverFactoryImpl } from './lib/utils/semver-factory';
 
 export class Pandino extends BundleImpl implements Framework {
@@ -135,7 +136,7 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   getVersion(): SemVer {
-    return new SemVer(this.getHeaders()[BUNDLE_VERSION]);
+    return new SemVerImpl(this.getHeaders()[BUNDLE_VERSION]);
   }
 
   async start(): Promise<void> {

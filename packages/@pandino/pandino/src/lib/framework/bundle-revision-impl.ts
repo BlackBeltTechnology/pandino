@@ -1,5 +1,4 @@
-import { SemVer } from 'semver';
-import { ActivationPolicy, Bundle, BundleManifestHeaders } from '@pandino/pandino-api';
+import { ActivationPolicy, Bundle, BundleManifestHeaders, SemVer } from '@pandino/pandino-api';
 import { BundleImpl } from './bundle-impl';
 import { ManifestParserImpl } from './util/manifest-parser/manifest-parser-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';

@@ -1,5 +1,4 @@
-import { SemverFactory, ServiceReference } from '@pandino/pandino-api';
-import { SemVer } from 'semver';
+import { SemVer, SemverFactory, ServiceReference } from '@pandino/pandino-api';
 
 import { Activator } from '../activator';
 

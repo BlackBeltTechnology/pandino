@@ -6,7 +6,7 @@ export default {
   input: 'src/index.ts',
   output: [
     {
-      file: 'dist/esm/pandino-api.js',
+      file: 'dist/esm/pandino-api.mjs',
       format: 'esm',
     },
     {

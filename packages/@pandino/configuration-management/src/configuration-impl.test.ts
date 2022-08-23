@@ -1,4 +1,3 @@
-import { SemVer } from 'semver';
 import {
   Bundle,
   BundleContext,
@@ -21,12 +20,13 @@ import {
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
 import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
+import { createVersionMock } from './__mocks__/semver';
 import { ConfigurationAdminImpl } from './configuration-admin-impl';
 import { ConfigurationManager } from './configuration-manager';
 
 describe('ConfigurationImpl', () => {
   const semverFactory: SemverFactory = {
-    build: (version) => new SemVer(version),
+    build: (version) => createVersionMock(version),
   };
   let context: BundleContext;
   let bundle: Bundle;
@@ -47,7 +47,7 @@ describe('ConfigurationImpl', () => {
       context as MockBundleContext,
       'test.bundle.location',
       '@test/my-bundle',
-      new SemVer('0.0.0'),
+      createVersionMock('0.0.0'),
     );
     cm = new ConfigurationManager(context, logger, mockFilterParser, new MockPersistenceManager('{}'), semverFactory);
     context.addServiceListener(cm);

@@ -8,11 +8,18 @@ const ENV = process.env.PRODUCTION ? 'PRODUCTION' : 'DEVELOPMENT';
 
 export default {
   input: 'src/index.ts',
-  output: {
-    sourcemap: ENV === 'PRODUCTION',
-    file: 'dist/bundle-installer-dom.mjs',
-    format: 'esm',
-  },
+  output: [
+    {
+      sourcemap: ENV === 'PRODUCTION',
+      file: 'dist/esm/event-admin.mjs',
+      format: 'esm',
+    },
+    {
+      sourcemap: ENV === 'PRODUCTION',
+      file: 'dist/cjs/event-admin.js',
+      format: 'cjs',
+    },
+  ],
   plugins: [
     clear({
       targets: ['dist'],

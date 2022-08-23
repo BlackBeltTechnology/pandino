@@ -464,12 +464,6 @@ common software development problems. Usage is opt-in of course.
 - [Bundle Installer - DOM](./packages/@pandino/bundle-installer-dom)
 - [Bundle Installer - NodeJS](./packages/@pandino/bundle-installer-nodejs)
 
-### Persistence Manager
-
-- [API](./packages/@pandino/persistence-manager-api)
-- [Persistence Manager - In Memory](./packages/@pandino/persistence-manager-memory)
-- [Persistence Manager - Localstorage](./packages/@pandino/persistence-manager-localstorage)
-
 ### Configuration Management
 
 - [API](./packages/@pandino/configuration-management-api)
@@ -480,13 +474,16 @@ common software development problems. Usage is opt-in of course.
 - [API](./packages/@pandino/event-api)
 - [Event Admin](./packages/@pandino/event-admin)
 
-### React (DOM)
+### Persistence Manager
 
-- [API](./packages/@pandino/react-dom-api)
-- [React (DOM)](./packages/@pandino/react-dom)
-- [Router (DOM)](./packages/@pandino/react-router-dom)
+- [API](./packages/@pandino/persistence-manager-api)
+- [Persistence Manager - In Memory](./packages/@pandino/persistence-manager-memory)
+- [Persistence Manager - Localstorage](./packages/@pandino/persistence-manager-localstorage)
 
 ### Bundler Plugins
 
 - [rollup-plugin-generate-manifest](./packages/@pandino/rollup-plugin-generate-manifest)
-- [rollup-plugin-react-externalize](./packages/@pandino/rollup-plugin-react-externalize)
+
+## License
+
+Eclipse Public License - v 2.0

@@ -1,26 +1,30 @@
-import { SemVer } from 'semver';
-import { Bundle, SemverFactory, ServiceReference } from '@pandino/pandino-api';
+import { Bundle, SemVer, SemverFactory, ServiceReference } from '@pandino/pandino-api';
 import { MockBundleContext } from '../__mocks__/mock-bundle-context';
 import { MockBundle } from '../__mocks__/mock-bundle';
 import { MockServiceReference } from '../__mocks__/mock-service-reference';
+import { createVersionMock } from '../__mocks__/semver';
 import { TargetedPID } from './targeted-pid';
 
 describe('TargetedPid', () => {
-  const semverFactory: SemverFactory = {
-    build: (version) => new SemVer(version),
-  };
+  let semverFactory: SemverFactory;
+
+  beforeEach(() => {
+    semverFactory = {
+      build: (version) => createVersionMock(version),
+    };
+  });
 
   it('matchesTarget no target', () => {
     const pid = 'a.b.c';
     const symbolicName = 'b1';
-    const version = new SemVer('1.0.0');
+    const version: any = createVersionMock('0.1.0');
     const location = 'loc:' + symbolicName;
 
     const b1 = createBundle(symbolicName, version, location);
     const r1 = createServiceReference(b1, pid);
 
     const rn = createServiceReference(createBundle(symbolicName + '_', version, location), pid);
-    const rv = createServiceReference(createBundle(symbolicName, new SemVer('0.2.0'), location), pid);
+    const rv = createServiceReference(createBundle(symbolicName, createVersionMock('0.2.0'), location), pid);
     const rl = createServiceReference(createBundle(symbolicName, version, location + '_'), pid);
     const rnone = createServiceReference(null, pid);
 
@@ -36,14 +40,14 @@ describe('TargetedPid', () => {
   it('matchesTarget name', () => {
     const pid = 'a.b.c';
     const symbolicName = 'b1';
-    const version = new SemVer('1.0.0');
+    const version = createVersionMock('1.0.0');
     const location = 'loc:' + symbolicName;
 
     const b1 = createBundle(symbolicName, version, location);
     const r1 = createServiceReference(b1, pid);
 
     const rn = createServiceReference(createBundle(symbolicName + '_', version, location), pid);
-    const rv = createServiceReference(createBundle(symbolicName, new SemVer('0.2.0'), location), pid);
+    const rv = createServiceReference(createBundle(symbolicName, createVersionMock('0.2.0'), location), pid);
     const rl = createServiceReference(createBundle(symbolicName, version, location + '_'), pid);
     const rnone = createServiceReference(null, pid);
 
@@ -59,14 +63,14 @@ describe('TargetedPid', () => {
   it('matchesTarget name version', () => {
     const pid = 'a.b.c';
     const symbolicName = 'b1';
-    const version = new SemVer('1.0.0');
+    const version = createVersionMock('1.0.0');
     const location = 'loc:' + symbolicName;
 
     const b1 = createBundle(symbolicName, version, location);
     const r1 = createServiceReference(b1, pid);
 
     const rn = createServiceReference(createBundle(symbolicName + '_', version, location), pid);
-    const rv = createServiceReference(createBundle(symbolicName, new SemVer('0.2.0'), location), pid);
+    const rv = createServiceReference(createBundle(symbolicName, createVersionMock('0.2.0'), location), pid);
     const rl = createServiceReference(createBundle(symbolicName, version, location + '_'), pid);
     const rnone = createServiceReference(null, pid);
 
@@ -82,14 +86,14 @@ describe('TargetedPid', () => {
   it('matchesTarget name version location', () => {
     const pid = 'a.b.c';
     const symbolicName = 'b1';
-    const version = new SemVer('1.0.0');
+    const version = createVersionMock('1.0.0');
     const location = 'loc:' + symbolicName;
 
     const b1 = createBundle(symbolicName, version, location);
     const r1 = createServiceReference(b1, pid);
 
     const rn = createServiceReference(createBundle(symbolicName + '_', version, location), pid);
-    const rv = createServiceReference(createBundle(symbolicName, new SemVer('0.2.0'), location), pid);
+    const rv = createServiceReference(createBundle(symbolicName, createVersionMock('0.2.0'), location), pid);
     const rl = createServiceReference(createBundle(symbolicName, version, location + '_'), pid);
     const rnone = createServiceReference(null, pid);
 

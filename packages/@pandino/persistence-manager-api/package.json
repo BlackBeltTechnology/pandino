@@ -2,15 +2,23 @@
   "name": "@pandino/persistence-manager-api",
   "version": "0.1.0",
   "description": "Pandino Persistence Manager API",
-  "main": "dist/index.js",
+  "main": "dist/cjs/persistence-manager-api.js",
+  "module": "dist/esm/persistence-manager-api.mjs",
+  "types": "dist/persistence-manager-api.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/persistence-manager-api.js",
+      "default": "./dist/esm/persistence-manager-api.mjs"
+    }
+  },
   "private": true,
-  "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c"
   },
-  "keywords": [],
+  "keywords": ["pandino", "persistence", "management", "admin", "api"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
-  "license": "MIT",
+  "license": "EPL-2.0",
   "engines": {
     "node": ">=14.9.0"
   },

@@ -95,6 +95,11 @@ export const PROVIDE_CAPABILITY = 'Provide-Capability';
 export const REQUIRE_CAPABILITY = 'Require-Capability';
 
 /**
+ * Manifest header identifying the path to a LICENSE file (if any).
+ */
+export const BUNDLE_LICENSE = 'Bundle-License';
+
+/**
  * Manifest header directive value identifying an optional resolution type. An optional resolution type indicates that
  * the import, require bundle or require capability is optional and the bundle may be resolved without the import,
  * require bundle or require capability being resolved. If the import, require bundle or require capability is not

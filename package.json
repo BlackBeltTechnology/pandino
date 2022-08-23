@@ -1,8 +1,8 @@
 {
-  "name": "root",
+  "name": "pandino-root",
   "private": true,
-	"license" : "MIT",
-	"author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "EPL-2.0",
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "scripts": {
     "install": "lerna bootstrap",
     "build": "lerna run build",
