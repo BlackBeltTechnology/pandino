@@ -27,6 +27,10 @@
   "engines": {
     "node": ">=14.9.0"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.3.0",
     "rollup-plugin-clear": "^2.0.7",

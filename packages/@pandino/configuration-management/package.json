@@ -29,6 +29,10 @@
   "engines": {
     "node": ">=14.9.0"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "devDependencies": {
     "@pandino/configuration-management-api": "^0.8.0",
     "@pandino/pandino": "^0.8.0",

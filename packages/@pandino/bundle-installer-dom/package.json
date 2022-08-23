@@ -26,6 +26,10 @@
   "engines": {
     "node": ">=14.9.0"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "devDependencies": {
     "@pandino/pandino-api": "^0.8.0",
     "@pandino/rollup-plugin-generate-manifest": "^0.8.0",

@@ -30,6 +30,10 @@
   "engines": {
     "node": ">=14.9.0"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "devDependencies": {
     "@pandino/event-api": "^0.8.0",
     "@pandino/log-api": "^0.8.0",
