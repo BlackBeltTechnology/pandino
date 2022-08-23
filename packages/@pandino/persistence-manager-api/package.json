@@ -1,6 +1,6 @@
 {
   "name": "@pandino/persistence-manager-api",
-  "version": "0.1.0",
+  "version": "0.8.0",
   "description": "Pandino Persistence Manager API",
   "main": "dist/cjs/persistence-manager-api.js",
   "module": "dist/esm/persistence-manager-api.mjs",
@@ -16,14 +16,20 @@
   "scripts": {
     "build": "rollup -c"
   },
-  "keywords": ["pandino", "persistence", "management", "admin", "api"],
+  "keywords": [
+    "pandino",
+    "persistence",
+    "management",
+    "admin",
+    "api"
+  ],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "EPL-2.0",
   "engines": {
     "node": ">=14.9.0"
   },
   "devDependencies": {
-    "@pandino/pandino-api": "^0.1.0",
+    "@pandino/pandino-api": "^0.8.0",
     "@rollup/plugin-typescript": "^8.3.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.70.1",

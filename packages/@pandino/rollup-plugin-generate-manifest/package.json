@@ -1,11 +1,17 @@
 {
   "name": "@pandino/rollup-plugin-generate-manifest",
-  "version": "0.1.0",
+  "version": "0.8.0",
   "description": "Utility plugin to help manage Pandino Manifest file generation / maintenance",
   "main": "src/index.js",
   "private": true,
   "scripts": {},
-  "keywords": ["pandino", "rollup", "plugin", "manifest", "generate"],
+  "keywords": [
+    "pandino",
+    "rollup",
+    "plugin",
+    "manifest",
+    "generate"
+  ],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "engines": {
     "node": ">=14.9.0"

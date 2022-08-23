@@ -1,6 +1,6 @@
 {
   "name": "@pandino/configuration-management",
-  "version": "0.1.0",
+  "version": "0.8.0",
   "description": "",
   "main": "./dist/cjs/configuration-management.cjs",
   "module": "./dist/esm/configuration-management.mjs",
@@ -18,18 +18,23 @@
     "build": "rollup -c --environment=PRODUCTION",
     "build:dev": "rollup -c"
   },
-  "keywords": ["pandino", "bundle", "configuration", "management"],
+  "keywords": [
+    "pandino",
+    "bundle",
+    "configuration",
+    "management"
+  ],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "EPL-2.0",
   "engines": {
     "node": ">=14.9.0"
   },
   "devDependencies": {
-    "@pandino/pandino": "^0.1.0",
-    "@pandino/pandino-api": "^0.1.0",
-    "@pandino/configuration-management-api": "^0.1.0",
-    "@pandino/persistence-manager-api": "^0.1.0",
-    "@pandino/rollup-plugin-generate-manifest": "^0.1.0",
+    "@pandino/configuration-management-api": "^0.8.0",
+    "@pandino/pandino": "^0.8.0",
+    "@pandino/pandino-api": "^0.8.0",
+    "@pandino/persistence-manager-api": "^0.8.0",
+    "@pandino/rollup-plugin-generate-manifest": "^0.8.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@types/jest": "^27.4.0",
     "jest": "^27.4.7",
@@ -42,7 +47,11 @@
   },
   "jest": {
     "collectCoverage": true,
-    "coverageReporters": ["text", "json", "html"],
+    "coverageReporters": [
+      "text",
+      "json",
+      "html"
+    ],
     "coverageThreshold": {
       "global": {
         "statements": 95,

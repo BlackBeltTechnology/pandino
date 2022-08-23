@@ -1,6 +1,6 @@
 {
   "name": "@pandino/pandino-api",
-  "version": "0.1.0",
+  "version": "0.8.0",
   "description": "Pandino public API",
   "main": "dist/cjs/pandino-api.js",
   "module": "dist/esm/pandino-api.mjs",
@@ -16,7 +16,12 @@
   "scripts": {
     "build": "rollup -c"
   },
-  "keywords": ["pandino", "api", "framework", "library"],
+  "keywords": [
+    "pandino",
+    "api",
+    "framework",
+    "library"
+  ],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "EPL-2.0",
   "engines": {
