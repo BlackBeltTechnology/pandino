@@ -5,5 +5,5 @@
   "Bundle-Version": "0.1.0",
   "Bundle-Description": "Yayy, bundle-b!",
   "Bundle-Activator": "./bundle-b.js",
-  "Provide-Capability": "pet.grooming;type:Array=\"dog,cat\";length:number=800;soap=\"organic\";rate:number=\"10\""
+  "Provide-Capability": "inverter;type:Array=\"string,number\";length:number=800"
 }

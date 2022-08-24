@@ -5,5 +5,5 @@
   "Bundle-Version": "0.1.0",
   "Bundle-Description": "Bundle-a!",
   "Bundle-Activator": "./bundle-a.js",
-  "Require-Capability": "pet.grooming;filter:=\"(&(type=cat)(rate<=20))\""
+  "Require-Capability": "inverter;filter:=\"(&(type=string)(length>=5))\""
 }
