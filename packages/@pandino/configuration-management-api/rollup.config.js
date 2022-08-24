@@ -10,7 +10,7 @@ export default {
       format: 'esm',
     },
     {
-      file: 'dist/cjs/configuration-management-api.js',
+      file: 'dist/cjs/configuration-management-api.cjs',
       format: 'cjs',
     },
   ],

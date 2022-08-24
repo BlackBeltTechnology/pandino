@@ -4,7 +4,7 @@
   "description": "In Memory implementation of the Pandino Persistence Manager API",
   "main": "./dist/cjs/persistence-manager-memory.cjs",
   "module": "./dist/esm/persistence-manager-memory.mjs",
-  "types": "dist/persistence-manager-memory.d.ts",
+  "types": "dist/persistence-manager-memory.d.mts",
   "type": "module",
   "exports": {
     ".": {

@@ -2,13 +2,13 @@
   "name": "@pandino/event-api",
   "version": "0.8.0",
   "description": "Pandino Event API",
-  "main": "dist/cjs/event-api.js",
+  "main": "dist/cjs/event-api.cjs",
   "module": "dist/esm/event-api.mjs",
-  "types": "dist/event-api.d.ts",
+  "types": "dist/event-api.d.mts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/event-api.js",
+      "require": "./dist/cjs/event-api.cjs",
       "default": "./dist/esm/event-api.mjs"
     }
   },

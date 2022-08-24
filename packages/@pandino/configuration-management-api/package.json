@@ -2,13 +2,13 @@
   "name": "@pandino/configuration-management-api",
   "version": "0.8.0",
   "description": "Pandino Configuration Management API",
-  "main": "dist/cjs/configuration-management-api.js",
+  "main": "dist/cjs/configuration-management-api.cjs",
   "module": "dist/esm/configuration-management-api.mjs",
-  "types": "dist/configuration-management-api.d.ts",
+  "types": "dist/configuration-management-api.d.mts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/configuration-management-api.js",
+      "require": "./dist/cjs/configuration-management-api.cjs",
       "default": "./dist/esm/configuration-management-api.mjs"
     }
   },

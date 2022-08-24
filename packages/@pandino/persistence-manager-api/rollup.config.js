@@ -10,7 +10,7 @@ export default {
       format: 'esm',
     },
     {
-      file: 'dist/cjs/persistence-manager-api.js',
+      file: 'dist/cjs/persistence-manager-api.cjs',
       format: 'cjs',
     },
   ],

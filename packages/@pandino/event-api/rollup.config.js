@@ -10,7 +10,7 @@ export default {
       format: 'esm',
     },
     {
-      file: 'dist/cjs/event-api.js',
+      file: 'dist/cjs/event-api.cjs',
       format: 'cjs',
     },
   ],

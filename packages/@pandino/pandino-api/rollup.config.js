@@ -10,7 +10,7 @@ export default {
       format: 'esm',
     },
     {
-      file: 'dist/cjs/pandino-api.js',
+      file: 'dist/cjs/pandino-api.cjs',
       format: 'cjs',
     },
   ],

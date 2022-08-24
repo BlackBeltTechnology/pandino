@@ -2,13 +2,13 @@
   "name": "@pandino/pandino-api",
   "version": "0.8.0",
   "description": "Pandino public API",
-  "main": "dist/cjs/pandino-api.js",
+  "main": "dist/cjs/pandino-api.cjs",
   "module": "dist/esm/pandino-api.mjs",
-  "types": "dist/pandino-api.d.ts",
+  "types": "dist/pandino-api.d.mts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/pandino-api.js",
+      "require": "./dist/cjs/pandino-api.cjs",
       "default": "./dist/esm/pandino-api.mjs"
     }
   },

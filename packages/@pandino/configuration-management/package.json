@@ -4,7 +4,7 @@
   "description": "",
   "main": "./dist/cjs/configuration-management.cjs",
   "module": "./dist/esm/configuration-management.mjs",
-  "types": "dist/configuration-management.d.ts",
+  "types": "dist/configuration-management.d.mts",
   "type": "module",
   "exports": {
     ".": {

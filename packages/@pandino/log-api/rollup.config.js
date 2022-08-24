@@ -10,7 +10,7 @@ export default {
       format: 'esm',
     },
     {
-      file: 'dist/cjs/log-api.js',
+      file: 'dist/cjs/log-api.cjs',
       format: 'cjs',
     },
   ],

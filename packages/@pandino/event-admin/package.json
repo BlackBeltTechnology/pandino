@@ -4,7 +4,7 @@
   "description": "Reference implementation of the Pandino Event Admin API",
   "main": "./dist/cjs/event-admin.cjs",
   "module": "./dist/esm/event-admin.mjs",
-  "types": "dist/event-admin.d.ts",
+  "types": "dist/event-admin.d.mts",
   "type": "module",
   "exports": {
     ".": {

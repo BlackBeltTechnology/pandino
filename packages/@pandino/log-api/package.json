@@ -2,13 +2,13 @@
   "name": "@pandino/log-api",
   "version": "0.8.0",
   "description": "Pandino Log API",
-  "main": "dist/cjs/log-api.js",
+  "main": "dist/cjs/log-api.cjs",
   "module": "dist/esm/log-api.mjs",
-  "types": "dist/log-api.d.ts",
+  "types": "dist/log-api.d.mts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/log-api.js",
+      "require": "./dist/cjs/log-api.cjs",
       "default": "./dist/esm/log-api.mjs"
     }
   },
