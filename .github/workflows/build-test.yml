@@ -20,6 +20,8 @@ jobs:
         node-version: [14.15, 16.x, 18.x]
 
     steps:
+    - env:
+        NPM_TOKEN: ${{ secrets.PANDINO_NPM_TOKEN }}
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -30,3 +32,4 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
+    - run: npm run lerna publish patch
