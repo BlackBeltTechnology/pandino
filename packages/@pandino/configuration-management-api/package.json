@@ -1,6 +1,6 @@
 {
   "name": "@pandino/configuration-management-api",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "Pandino Configuration Management API",
   "main": "dist/cjs/configuration-management-api.cjs",
   "module": "dist/esm/configuration-management-api.mjs",
@@ -32,8 +32,8 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.3",
-    "@pandino/persistence-manager-api": "^0.8.3",
+    "@pandino/pandino-api": "^0.8.4",
+    "@pandino/persistence-manager-api": "^0.8.4",
     "@rollup/plugin-typescript": "^8.3.1",
     "rollup": "^2.70.1",
     "rollup-plugin-clear": "^2.0.7",
