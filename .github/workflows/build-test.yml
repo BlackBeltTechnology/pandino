@@ -36,4 +36,4 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
-    - run: npm run lerna publish patch -- --yes
+    - run: npm run lerna publish patch -- --yes --no-private
