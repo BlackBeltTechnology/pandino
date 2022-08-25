@@ -1,8 +1,8 @@
-const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+import path from 'path';
+import CopyPlugin from 'copy-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 
-module.exports = {
+export default {
   experiments: {
     outputModule: true,
   },
@@ -11,6 +11,12 @@ module.exports = {
   },
   mode: 'development',
   devtool: 'inline-source-map',
+  devServer: {
+    port: 8080,
+    static: {
+      directory: path.join('assets'),
+    },
+  },
   module: {
     rules: [
       {
@@ -29,7 +35,7 @@ module.exports = {
       type: 'module',
     },
     umdNamedDefine: true,
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve('dist'),
   },
   plugins: [
     new CopyPlugin({
@@ -39,7 +45,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       title: 'Pandino - Event Admin DOM TS',
-      template: path.resolve(__dirname, 'src', 'index.ejs'),
+      template: path.resolve('src', 'index.ejs'),
       scriptLoading: 'module',
     }),
   ],

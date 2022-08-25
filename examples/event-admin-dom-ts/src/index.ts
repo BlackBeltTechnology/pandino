@@ -3,14 +3,12 @@ import {
   PANDINO_MANIFEST_FETCHER_PROP,
   PANDINO_BUNDLE_IMPORTER_PROP,
   DEPLOYMENT_ROOT_PROP,
-  LOG_LEVEL_PROP,
-  LogLevel,
 } from '@pandino/pandino-api';
-import {App} from "./components/app";
+import {App} from './components/app';
 
 window.addEventListener('DOMContentLoaded', async () => {
   const pandino = new Pandino({
-    [DEPLOYMENT_ROOT_PROP]: location.href + 'assets/deploy',
+    [DEPLOYMENT_ROOT_PROP]: location.href + 'assets',
     [PANDINO_MANIFEST_FETCHER_PROP]: {
       fetch: async (uri: string, deploymentRoot?: string) => (await fetch(deploymentRoot + '/' + uri)).json(),
     },
@@ -18,7 +16,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       import: (activatorLocation: string, manifestLocation: string, deploymentRoot?: string) =>
         import(/* webpackIgnore: true */ deploymentRoot + '/' + activatorLocation),
     },
-    [LOG_LEVEL_PROP]: LogLevel.DEBUG,
   });
 
   await pandino.init();

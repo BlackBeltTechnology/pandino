@@ -1,5 +1,6 @@
 import {BundleContext, ServiceReference, ServiceRegistration} from "@pandino/pandino-api";
 import {
+  Event,
   EVENT_ADMIN_INTERFACE_KEY,
   EVENT_HANDLER_INTERFACE_KEY,
   EventAdmin,
@@ -49,7 +50,7 @@ export class Content extends HTMLElement {
     this.eventAdminReference = this.bundleContext.getServiceReference(EVENT_ADMIN_INTERFACE_KEY);
     this.eventAdmin = this.bundleContext.getService(this.eventAdminReference);
     this.handler = {
-      handleEvent: async (event) => {
+      handleEvent: async (event: Event) => {
         this.locale = event.getProperty('configuration');
         this.draw();
       },

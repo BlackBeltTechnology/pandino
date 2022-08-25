@@ -1,4 +1,4 @@
-import {BundleContext} from "@pandino/pandino-api";
+import {BundleContext} from '@pandino/pandino-api';
 import {Content} from "./content";
 import {Configuration} from "./configuration";
 
