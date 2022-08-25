@@ -12,6 +12,8 @@ on:
 
 jobs:
   build:
+    env:
+      NPM_TOKEN: ${{ secrets.PANDINO_NPM_TOKEN }}
 
     runs-on: ubuntu-latest
 
@@ -20,8 +22,6 @@ jobs:
         node-version: [16.x]
 
     steps:
-    - env:
-        NPM_TOKEN: ${{ secrets.PANDINO_NPM_TOKEN }}
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
