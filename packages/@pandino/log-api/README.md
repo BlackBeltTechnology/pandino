@@ -1,6 +1,6 @@
 # Log API
 
-Work In Progress...
+Experimental!
 
 ## License
 
