@@ -1,6 +1,6 @@
 {
   "name": "@pandino/configuration-management",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "",
   "main": "./dist/cjs/configuration-management.cjs",
   "module": "./dist/esm/configuration-management.mjs",
@@ -35,7 +35,7 @@
   ],
   "devDependencies": {
     "@pandino/configuration-management-api": "^0.8.4",
-    "@pandino/pandino": "^0.8.4",
+    "@pandino/pandino": "^0.8.5",
     "@pandino/pandino-api": "^0.8.4",
     "@pandino/persistence-manager-api": "^0.8.4",
     "@pandino/rollup-plugin-generate-manifest": "^0.8.4",

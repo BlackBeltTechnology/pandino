@@ -1,6 +1,6 @@
 {
   "name": "@pandino/pandino",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "The reference implementation of the Pandino API specification",
   "main": "./dist/cjs/pandino.cjs",
   "module": "./dist/esm/pandino.mjs",
