@@ -7,7 +7,7 @@ The Reference implementation for the Pandino Framework.
 ```html
 <script type="module">
   window.addEventListener('DOMContentLoaded', async () => {
-    const Pandino = (await import('./pandino.js')).default;
+    const Pandino = (await import('./pandino.mjs')).default;
     const pandino = new Pandino({
       'pandino.deployment.root': location.href,
       'pandino.bundle.importer': {
