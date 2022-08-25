@@ -11,7 +11,7 @@
     "format-examples": "prettier --config .prettierrc examples/*/packages/*/src/**/*.{ts,tsx} --write",
     "graph": "nx graph",
     "version": "lerna version",
-    "prepublish": "npm run build && npm run test"
+    "lerna": "lerna"
   },
   "devDependencies": {
     "lerna": "^5.2.0",
