@@ -1,6 +1,6 @@
 {
   "name": "@pandino/pandino",
-  "version": "0.8.1",
+  "version": "0.8.3",
   "description": "The reference implementation of the Pandino API specification",
   "main": "./dist/cjs/pandino.cjs",
   "module": "./dist/esm/pandino.mjs",
@@ -37,7 +37,7 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.1",
+    "@pandino/pandino-api": "^0.8.3",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@types/jest": "^27.4.0",
     "jest": "^27.4.7",

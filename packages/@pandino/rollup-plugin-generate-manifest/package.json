@@ -1,6 +1,6 @@
 {
   "name": "@pandino/rollup-plugin-generate-manifest",
-  "version": "0.8.1",
+  "version": "0.8.3",
   "description": "Utility plugin to help manage Pandino Manifest file generation / maintenance",
   "main": "src/index.js",
   "private": true,
