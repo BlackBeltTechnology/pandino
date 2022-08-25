@@ -46,5 +46,8 @@
     "manifest": {
       "Provide-Capability": "@pandino/bundle-installer;type=\"nodejs\""
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

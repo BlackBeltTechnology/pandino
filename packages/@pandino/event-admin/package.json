@@ -87,5 +87,8 @@
     "manifest": {
       "Provide-Capability": "@pandino/event-admin;objectClass=\"@pandino/event-admin/EventAdmin\""
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

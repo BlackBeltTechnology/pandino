@@ -83,5 +83,8 @@
       "src/lib/framework/util/fetcher.ts",
       "src/lib/utils/console-logger.ts"
     ]
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

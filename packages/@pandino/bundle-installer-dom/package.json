@@ -44,5 +44,8 @@
     "manifest": {
       "Provide-Capability": "@pandino/bundle-installer;type=\"DOM\""
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

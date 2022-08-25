@@ -82,5 +82,8 @@
     "manifest": {
       "Provide-Capability": "@pandino/persistence-manager;type=\"dom-localstorage\";objectClass=\"@pandino/persistence-manager/PersistenceManager\""
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
