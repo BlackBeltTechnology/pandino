@@ -12,6 +12,15 @@
     "generate"
   ],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "homepage": "https://github.com/BlackBeltTechnology/pandino",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlackBeltTechnology/pandino.git",
+    "directory": "packages/@pandino/rollup-plugin-generate-manifest"
+  },
+  "bugs": {
+    "url": "https://github.com/BlackBeltTechnology/pandino/issues"
+  },
   "engines": {
     "node": ">=14.9.0"
   },

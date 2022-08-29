@@ -25,6 +25,15 @@
   ],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "EPL-2.0",
+  "homepage": "https://github.com/BlackBeltTechnology/pandino",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlackBeltTechnology/pandino.git",
+    "directory": "packages/@pandino/persistence-manager-localstorage"
+  },
+  "bugs": {
+    "url": "https://github.com/BlackBeltTechnology/pandino/issues"
+  },
   "engines": {
     "node": ">=14.9.0"
   },
