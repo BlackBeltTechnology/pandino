@@ -15,5 +15,8 @@
   "engines": {
     "node": ">=14.9.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "EPL-2.0"
 }
