@@ -12,7 +12,6 @@
       "default": "./dist/esm/bundle-installer-nodejs.js"
     }
   },
-  "private": true,
   "scripts": {
     "build": "rollup -c --environment=PRODUCTION",
     "build:dev": "rollup -c"
@@ -46,8 +45,5 @@
     "manifest": {
       "Provide-Capability": "@pandino/bundle-installer;type=\"nodejs\""
     }
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

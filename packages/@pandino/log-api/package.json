@@ -12,7 +12,6 @@
       "default": "./dist/esm/log-api.mjs"
     }
   },
-  "private": true,
   "scripts": {
     "build": "rollup -c"
   },
@@ -38,8 +37,5 @@
     "rollup": "^2.70.1",
     "rollup-plugin-clear": "^2.0.7",
     "typescript": "^4.7.4"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

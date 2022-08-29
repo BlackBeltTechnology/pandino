@@ -12,7 +12,6 @@
       "default": "./dist/esm/event-admin.mjs"
     }
   },
-  "private": true,
   "scripts": {
     "test": "jest",
     "build": "rollup -c --environment=PRODUCTION",
@@ -87,8 +86,5 @@
     "manifest": {
       "Provide-Capability": "@pandino/event-admin;objectClass=\"@pandino/event-admin/EventAdmin\""
     }
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

@@ -12,7 +12,6 @@
       "default": "./dist/esm/persistence-manager-memory.mjs"
     }
   },
-  "private": true,
   "scripts": {
     "test": "jest",
     "build": "rollup -c --environment=PRODUCTION",
@@ -85,8 +84,5 @@
     "manifest": {
       "Provide-Capability": "@pandino/persistence-manager;type=\"in-memory\";objectClass=\"@pandino/persistence-manager/PersistenceManager\""
     }
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

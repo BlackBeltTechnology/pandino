@@ -13,7 +13,7 @@ npm run format
 npm run build
 
 # Build single package, e.g.:
-npm run build -- --scope @pandino/pandino
+npm run build --workspace @pandino/pandino
 ```
 
 ## Key Architectural Decisions

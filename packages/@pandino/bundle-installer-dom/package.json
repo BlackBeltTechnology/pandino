@@ -10,7 +10,6 @@
       "default": "./dist/bundle-installer-dom.mjs"
     }
   },
-  "private": true,
   "scripts": {
     "build": "rollup -c --environment=PRODUCTION",
     "build:dev": "rollup -c"
@@ -44,8 +43,5 @@
     "manifest": {
       "Provide-Capability": "@pandino/bundle-installer;type=\"DOM\""
     }
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

@@ -12,7 +12,6 @@
       "default": "./dist/esm/pandino.mjs"
     }
   },
-  "private": true,
   "scripts": {
     "test": "jest",
     "build": "rollup -c --environment=PRODUCTION",
@@ -83,8 +82,5 @@
       "src/lib/framework/util/fetcher.ts",
       "src/lib/utils/console-logger.ts"
     ]
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

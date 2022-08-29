@@ -3,7 +3,6 @@
   "version": "0.8.6",
   "description": "Utility plugin to help manage Pandino Manifest file generation / maintenance",
   "main": "src/index.js",
-  "private": true,
   "scripts": {},
   "keywords": [
     "pandino",
@@ -16,8 +15,5 @@
   "engines": {
     "node": ">=14.9.0"
   },
-  "license": "EPL-2.0",
-  "publishConfig": {
-    "access": "public"
-  }
+  "license": "EPL-2.0"
 }

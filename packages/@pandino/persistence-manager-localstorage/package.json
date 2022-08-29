@@ -10,7 +10,6 @@
       "default": "./dist/esm/persistence-manager-localstorage.mjs"
     }
   },
-  "private": true,
   "scripts": {
     "test": "jest",
     "build": "rollup -c --environment=PRODUCTION",
@@ -82,8 +81,5 @@
     "manifest": {
       "Provide-Capability": "@pandino/persistence-manager;type=\"dom-localstorage\";objectClass=\"@pandino/persistence-manager/PersistenceManager\""
     }
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }
