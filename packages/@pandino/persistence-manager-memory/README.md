@@ -1,6 +1,12 @@
 # persistence-manager-memory
 
-In Memory implementation of the Pandino Persistence Manager API
+In Memory implementation of the [Persistence Manager API](../persistence-manager-api).
+
+## Context
+
+This package is part of the [pandino-root](https://github.com/BlackBeltTechnology/pandino) monorepo. For detailed
+information about what is Pandino / how this package fits into the ecosystem, please consult with the related
+documentation(s).
 
 ## Installation
 

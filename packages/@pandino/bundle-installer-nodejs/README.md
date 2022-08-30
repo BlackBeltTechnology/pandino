@@ -2,6 +2,12 @@
 
 A Pandino Bundle which can load external Bundles defined in the file-system.
 
+## Context
+
+This package is part of the [pandino-root](https://github.com/BlackBeltTechnology/pandino) monorepo. For detailed
+information about what is Pandino / how this package fits into the ecosystem, please consult with the related
+documentation(s).
+
 ## Usage
 
 ### Install dependencies

@@ -1,6 +1,12 @@
 # configuration-management
 
-Pandino reference implementation for Configuration Management.
+This is the reference implementation of the [Configuration Management API](../configuration-management-api).
+
+## Context
+
+This package is part of the [pandino-root](https://github.com/BlackBeltTechnology/pandino) monorepo. For detailed
+information about what is Pandino / how this package fits into the ecosystem, please consult with the related
+documentation(s).
 
 ## Requirements
 

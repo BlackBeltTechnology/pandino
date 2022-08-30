@@ -1,6 +1,12 @@
 # Pandino
 
-The Reference implementation for the Pandino Framework.
+This is the reference implementation of the [Pandino Framework API](../pandino-api).
+
+## Context
+
+This package is part of the [pandino-root](https://github.com/BlackBeltTechnology/pandino) monorepo. For detailed
+information about what is Pandino / how this package fits into the ecosystem, please consult with the related
+documentation(s).
 
 ## Adding Pandino to a plain JavaScript project
 

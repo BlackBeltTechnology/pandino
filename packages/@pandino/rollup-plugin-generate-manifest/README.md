@@ -2,6 +2,12 @@
 
 Generates Pandino Manifest JSON files based on `package.json` info.
 
+## Context
+
+This package is part of the [pandino-root](https://github.com/BlackBeltTechnology/pandino) monorepo. For detailed
+information about what is Pandino / how this package fits into the ecosystem, please consult with the related
+documentation(s).
+
 ## Install
 
 ### Add the plugin to your rollup config

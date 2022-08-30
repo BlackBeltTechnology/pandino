@@ -4,6 +4,12 @@ Public APIs for `Bundle` developers and Pandino users.
 
 > Please check resources under the `src` folder for detailed descriptions.
 
+## Context
+
+This package is part of the [pandino-root](https://github.com/BlackBeltTechnology/pandino) monorepo. For detailed
+information about what is Pandino / how this package fits into the ecosystem, please consult with the related
+documentation(s).
+
 ## Most Common APIs
 
 - [Bundle](./src/bundle/bundle.ts)
