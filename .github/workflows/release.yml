@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       type:
-        description: 'Release Type'
+        description: 'Release Type (not yet used, can be anything)'
         required: true
         default: 'patch'
 
