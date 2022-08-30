@@ -15,6 +15,7 @@
     "format-examples": "prettier --config .prettierrc examples/*/packages/*/src/**/*.{ts,tsx} --write",
     "new-version": "lerna version --conventional-commits --yes",
     "new-publish": "lerna publish",
+    "new-publish:ci": "lerna publish --yes",
     "lerna": "lerna"
   },
   "devDependencies": {
