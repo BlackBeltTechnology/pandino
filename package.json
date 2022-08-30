@@ -5,6 +5,9 @@
   "workspaces": [
     "./packages/@pandino/*"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "scripts": {
     "build": "lerna run build",
     "test": "lerna run test --stream",
@@ -16,19 +19,6 @@
   "devDependencies": {
     "@lerna-lite/cli": "^1.11.1",
     "@lerna-lite/run": "^1.11.1",
-    "@pandino/bundle-installer-dom": "workspace:*",
-    "@pandino/bundle-installer-nodejs": "workspace:*",
-    "@pandino/configuration-management": "workspace:*",
-    "@pandino/configuration-management-api": "workspace:*",
-    "@pandino/event-admin": "workspace:*",
-    "@pandino/event-api": "workspace:*",
-    "@pandino/log-api": "workspace:*",
-    "@pandino/pandino": "workspace:*",
-    "@pandino/pandino-api": "workspace:*",
-    "@pandino/persistence-manager-api": "workspace:*",
-    "@pandino/persistence-manager-localstorage": "workspace:*",
-    "@pandino/persistence-manager-memory": "workspace:*",
-    "@pandino/rollup-plugin-generate-manifest": "workspace:*",
     "prettier": "^2.7.1"
   },
   "engines": {
