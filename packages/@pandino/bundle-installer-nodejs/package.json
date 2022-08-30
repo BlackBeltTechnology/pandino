@@ -1,6 +1,6 @@
 {
   "name": "@pandino/bundle-installer-nodejs",
-  "version": "0.8.11",
+  "version": "0.8.12",
   "description": "Install Bundles defined in the filesystem",
   "main": "dist/cjs/bundle-installer-nodejs.js",
   "module": "dist/esm/bundle-installer-nodejs.js",
@@ -44,8 +44,8 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.11",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.11",
+    "@pandino/pandino-api": "^0.8.12",
+    "@pandino/rollup-plugin-generate-manifest": "^0.8.12",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "rollup": "^2.70.1",
     "rollup-plugin-clear": "^2.0.7",
