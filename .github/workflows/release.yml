@@ -9,7 +9,7 @@ on:
         default: 'patch'
 
 jobs:
-  build:
+  release:
     env:
       NODE_AUTH_TOKEN: ${{ secrets.PANDINO_NPM_TOKEN }}
       GH_TOKEN: ${{ secrets.OSS_PAT }}
@@ -36,4 +36,4 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
-      - run: npm run new-publish
+      - run: npm run new-publish --yes
