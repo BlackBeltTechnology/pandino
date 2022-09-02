@@ -579,7 +579,7 @@ export class Pandino extends BundleImpl implements Framework {
       let activatorInstance: any;
       try {
         activatorInstance = (
-          await this.importer.import(activatorDefinition, this.getLocation(), this.getDeploymentRoot())
+          await this.importer.import(activatorDefinition, impl.getLocation(), impl.getDeploymentRoot())
         ).default;
       } catch (ex) {
         throw new Error('Not found: ' + activatorDefinition + ': ' + ex);
