@@ -1,0 +1,53 @@
+{
+  "name": "@pandino/loader-configuration-dom",
+  "version": "0.8.9",
+  "description": "Bundle loading configuration for the DOM",
+  "module": "./dist/loader-configuration-dom.mjs",
+  "types": "dist/loader-configuration-dom.d.mts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/loader-configuration-dom.mjs"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c --environment=PRODUCTION",
+    "build:dev": "rollup -c"
+  },
+  "keywords": [
+    "pandino",
+    "loader",
+    "configuration",
+    "dom"
+  ],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "EPL-2.0",
+  "homepage": "https://github.com/BlackBeltTechnology/pandino",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlackBeltTechnology/pandino.git",
+    "directory": "packages/@pandino/loader-configuration-dom"
+  },
+  "bugs": {
+    "url": "https://github.com/BlackBeltTechnology/pandino/issues"
+  },
+  "engines": {
+    "node": ">=14.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "devDependencies": {
+    "@pandino/pandino-api": "^0.8.9",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "rollup": "^2.70.1",
+    "rollup-plugin-clear": "^2.0.7",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-ts": "^3.0.2",
+    "typescript": "^4.7.4"
+  }
+}
