@@ -20,7 +20,3 @@ Please read every example project's `README.md` carefully, since almost _- if no
 ## Custom Elements showcase
 
 - [custom-elements-web-js](./custom-elements-web-js)
-
-## Complex, decoupled, highly dynamic, and configurable app showcase
-
-- [pokedex-react-dom](./pokedex-react-dom)

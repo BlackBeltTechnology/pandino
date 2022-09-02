@@ -216,6 +216,11 @@ folders.
 This repository contains extra packages, e.g.: specifications, corresponding reference-implementations solving
 common software development problems. Usage is opt-in of course.
 
+### Default Configurations
+
+- [Loader Configuration - DOM](./packages/@pandino/loader-configuration-dom)
+- [Loader Configuration - NodeJS](./packages/@pandino/loader-configuration-nodejs)
+
 ### Bundle Installer
 
 - [Bundle Installer - DOM](./packages/@pandino/bundle-installer-dom)
