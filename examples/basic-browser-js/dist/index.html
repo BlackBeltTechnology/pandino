@@ -16,24 +16,19 @@
       ]
     </script>
     <script type="module">
-      window.addEventListener('DOMContentLoaded', async () => {
-        const Pandino = (await import('./pandino.mjs')).default;
-        const pandino = new Pandino({
-          'pandino.bundle.importer': {
-            import: (activatorLocation) => import(activatorLocation),
-          },
-          'pandino.manifest.fetcher': {
-            fetch: async (uri) => (await fetch(uri)).json(),
-          },
-        });
+      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@0.8.14/dist/loader-configuration-dom.mjs';
+      import Pandino from 'https://unpkg.com/@pandino/pandino@0.8.14/dist/esm/pandino.mjs';
 
-        await pandino.init();
-        await pandino.start();
-
-        window.setTimeout(() => {
-          pandino.getBundleContext().installBundle('./bundle-installer-dom-manifest.json');
-        }, 1000);
+      const pandino = new Pandino({
+        ...loaderConfiguration,
       });
+
+      await pandino.init();
+      await pandino.start();
+
+      window.setTimeout(() => {
+        pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom@0.8.14/dist/bundle-installer-dom-manifest.json');
+      }, 1000);
     </script>
   </body>
 </html>

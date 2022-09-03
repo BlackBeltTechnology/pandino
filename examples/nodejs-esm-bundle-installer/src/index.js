@@ -2,8 +2,8 @@ import express from 'express';
 import {fileURLToPath} from 'url';
 import path from 'path';
 import Pandino from '@pandino/pandino';
+import loaderConfiguration from '@pandino/loader-configuration-nodejs';
 import bundleInstallerHeaders from '@pandino/bundle-installer-nodejs';
-import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,18 +13,8 @@ const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));
   const app = express();
   const port = 3000;
   const pandino = new Pandino({
+    ...loaderConfiguration,
     'pandino.deployment.root': deploymentRoot,
-    'pandino.bundle.importer': {
-      import: (activatorLocation, manifestLocation, deploymentRoot) => {
-        return import(path.normalize(`file://${path.join(deploymentRoot, activatorLocation)}`));
-      },
-    },
-    'pandino.manifest.fetcher': {
-      fetch: async (uri, deploymentRoot) => {
-        const data = fs.readFileSync(path.normalize(path.join(deploymentRoot, uri)), { encoding: 'utf8' });
-        return JSON.parse(data);
-      },
-    },
   });
 
   await pandino.init();
