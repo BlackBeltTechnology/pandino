@@ -8,8 +8,8 @@ Obtain the library from a CDN or NPM (`@pandino/loader-configuration-dom`). Impo
 constructor argument.
 
 ```javascript
-import loaderConfiguration from './loader-configuration-dom.mjs';
-import Pandino from './pandino.mjs';
+import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@0.8.14/dist/loader-configuration-dom.mjs';
+import Pandino from 'https://unpkg.com/@pandino/pandino@0.8.14/dist/esm/pandino.mjs';
 
 const pandino = new Pandino({
     ...loaderConfiguration,
@@ -33,16 +33,16 @@ and lastly append whatever path is set in the manifest's `Bundle-Activator` prop
 
 **Example:**
 
-| index.html URL         | base-href  | Manifest file fetch() URL          | Activator path in Manifest | Calculated JS URL                       |
-|------------------------|------------|------------------------------------|----------------------------|-----------------------------------------|
-| http://host.com        | -          | http://lib.to/bundle-manifest.json | `./bundle.mjs`             | http://lib.to/bundle.js                 |
-| http://host.com/my-app | -          | http://lib.to/bundle-manifest.json | `./bundle.mjs`             | http://lib.to/bundle.js                 |
-| http://host.com        | -          | ./bundle-manifest.json             | `./bundle.mjs`             | http://host.com/bundle.js               |
-| http://host.com/my-app | -          | ./bundle-manifest.json             | `./bundle.mjs`             | http://host.com/bundle.js               |
-| http://host.com        | `/`        | ./bundle-manifest.json             | `./bundle.mjs`             | http://host.com/bundle.js               |
-| http://host.com/my-app | `/my-app/` | ./bundle-manifest.json             | `./bundle.mjs`             | http://host.com/my-app/bundle.js        |
-| http://host.com        | `/`        | ./deploy/bundle-manifest.json      | `./bundle.mjs`             | http://host.com/deploy/bundle.js        |
-| http://host.com        | `/my-app/` | ./deploy/bundle-manifest.json      | `./bundle.mjs`             | http://host.com/my-app/deploy/bundle.js |
+| index.html URL         | base-href  | Manifest file fetch() URL          | Activator path in Manifest | Calculated JS URL                        |
+|------------------------|------------|------------------------------------|----------------------------|------------------------------------------|
+| http://host.com        | -          | http://lib.to/bundle-manifest.json | `./bundle.mjs`             | http://lib.to/bundle.mjs                 |
+| http://host.com/my-app | -          | http://lib.to/bundle-manifest.json | `./bundle.mjs`             | http://lib.to/bundle.mjs                 |
+| http://host.com        | -          | ./bundle-manifest.json             | `./bundle.mjs`             | http://host.com/bundle.mjs               |
+| http://host.com/my-app | -          | ./bundle-manifest.json             | `./bundle.mjs`             | http://host.com/bundle.mjs               |
+| http://host.com        | `/`        | ./bundle-manifest.json             | `./bundle.mjs`             | http://host.com/bundle.mjs               |
+| http://host.com/my-app | `/my-app/` | ./bundle-manifest.json             | `./bundle.mjs`             | http://host.com/my-app/bundle.mjs        |
+| http://host.com        | `/`        | ./deploy/bundle-manifest.json      | `./bundle.mjs`             | http://host.com/deploy/bundle.mjs        |
+| http://host.com        | `/my-app/` | ./deploy/bundle-manifest.json      | `./bundle.mjs`             | http://host.com/my-app/deploy/bundle.mjs |
 
 
 ## License
