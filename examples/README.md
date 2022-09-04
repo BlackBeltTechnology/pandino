@@ -2,6 +2,10 @@
 
 Please read every example project's `README.md` carefully, since almost _- if not all -_ projects work differently!
 
+> **Warning:** You may see CDN links for bundle installation at certain sections of each documentation.
+You should look at these as examples/feature show-offs! You are free to store your bundles on your server as well,
+or in certain cases install them via NPM! Using CDNs is not mandatory.
+
 ## Bare Pandino showcase
 
 - [basic-browser-js](./basic-browser-js)

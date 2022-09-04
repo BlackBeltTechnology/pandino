@@ -22,10 +22,10 @@ documentation(s).
 ### Setup Pandino and the Bundle Installer Bundle
 
 ```javascript
-const Pandino = require("@pandino/pandino").default;
-const bundleInstallerHeaders = require('@pandino/bundle-installer-nodejs').default;
+import Pandino from '@pandino/pandino';
+import loaderConfiguration from '@pandino/loader-configuration-nodejs';
+import bundleInstallerHeaders from '@pandino/bundle-installer-nodejs';
 const path = require("path");
-const fs = require("fs");
 
 const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));
 
@@ -33,18 +33,8 @@ const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));
     const app = express();
     const port = 3000;
     const pandino = new Pandino({
+        ...loaderConfiguration,
         'pandino.deployment.root': deploymentRoot,
-        'pandino.bundle.importer': {
-            import: (deploymentRoot, activatorLocation) => {
-                return require(path.normalize(path.join(deploymentRoot, activatorLocation)));
-            },
-        },
-        'pandino.manifest.fetcher': {
-            fetch: async (deploymentRoot, uri) => {
-                const data = fs.readFileSync(path.normalize(path.join(deploymentRoot, uri)), {encoding: 'utf8'});
-                return JSON.parse(data);
-            },
-        },
     });
 
     await pandino.init();

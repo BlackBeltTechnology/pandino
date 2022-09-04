@@ -1,5 +1,5 @@
-const Pandino = require("@pandino/pandino");
 const path = require("path");
+const Pandino = require("@pandino/pandino");
 const loaderConfiguration = require("@pandino/loader-configuration-nodejs");
 
 const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));

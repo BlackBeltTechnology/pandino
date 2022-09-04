@@ -23,7 +23,7 @@ documentation(s).
 <script type="pandino-manifests">
   [
     ...,
-    "./persistence-manager-localstorage-manifest.json"
+    "https://unpkg.com/@pandino/persistence-manager-localstorage/dist/esm/persistence-manager-localstorage-manifest.json"
   ]
 </script>
 ```
@@ -37,7 +37,7 @@ const pandino: Bundle;
 
 // ...
 
-pandino.getBundleContext().installBundle('./persistence-manager-localstorage-manifest.json');
+pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/persistence-manager-localstorage/dist/esm/persistence-manager-localstorage-manifest.json');
 ```
 
 ## Usage

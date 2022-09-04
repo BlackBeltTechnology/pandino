@@ -32,11 +32,17 @@ Define a `<script type="pandino-manifests" />` tag in your `index.html`, e.g.:
 E.g.: directly via the Pandino instance.
 
 ```javascript
-let pandino: Bundle;
+import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom/dist/loader-configuration-dom.mjs';
+import Pandino from 'https://unpkg.com/@pandino/pandino/dist/esm/pandino.mjs';
 
-// ...
+const pandino = new Pandino({
+    ...loaderConfiguration,
+});
 
-pandino.getBundleContext().installBundle('./bundle-installer-dom-manifest.json');
+await pandino.init();
+await pandino.start();
+
+await pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom/dist/bundle-installer-dom-manifest.json');
 ```
 
 ## License

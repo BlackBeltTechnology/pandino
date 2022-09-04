@@ -8,8 +8,8 @@ Obtain the library from a CDN or NPM (`@pandino/loader-configuration-dom`). Impo
 constructor argument.
 
 ```javascript
-import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@0.8.14/dist/loader-configuration-dom.mjs';
-import Pandino from 'https://unpkg.com/@pandino/pandino@0.8.14/dist/esm/pandino.mjs';
+import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom/dist/loader-configuration-dom.mjs';
+import Pandino from 'https://unpkg.com/@pandino/pandino/dist/esm/pandino.mjs';
 
 const pandino = new Pandino({
     ...loaderConfiguration,

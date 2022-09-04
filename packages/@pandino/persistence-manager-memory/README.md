@@ -23,7 +23,7 @@ documentation(s).
 <script type="pandino-manifests">
   [
     ...,
-    "./persistence-manager-memory-manifest.json"
+    "https://unpkg.com/@pandino/persistence-manager-memory@0.8.14/dist/esm/persistence-manager-memory-manifest.json"
   ]
 </script>
 ```
@@ -37,7 +37,7 @@ const pandino: Bundle;
 
 // ...
 
-pandino.getBundleContext().installBundle('./persistence-manager-memory-manifest.json');
+pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/persistence-manager-memory@0.8.14/dist/esm/persistence-manager-memory-manifest.json');
 ```
 
 ## Usage
