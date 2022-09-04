@@ -12,12 +12,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@pandino/pandino": "file:../../packages/@pandino/pandino"
+    "@pandino/pandino": "file:../../packages/@pandino/pandino",
+    "@pandino/loader-configuration-dom": "file:../../packages/@pandino/loader-configuration-dom"
   },
   "devDependencies": {
     "@pandino/pandino-api": "file:../../packages/@pandino/pandino-api",
     "@pandino/event-api": "file:../../packages/@pandino/event-api",
-    "copy-webpack-plugin": "^11.0.0",
     "html-webpack-plugin": "^5.5.0",
     "ts-loader": "^9.2.6",
     "typescript": "^4.7.4",

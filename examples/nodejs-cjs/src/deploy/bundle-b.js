@@ -22,6 +22,4 @@ class BundleBActivator {
   }
 }
 
-module.exports = {
-  default: BundleBActivator,
-};
+module.exports = BundleBActivator;

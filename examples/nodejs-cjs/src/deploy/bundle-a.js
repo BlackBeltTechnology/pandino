@@ -19,6 +19,4 @@ class BundleAActivator {
   }
 }
 
-module.exports = {
-  default: BundleAActivator,
-};
+module.exports = BundleAActivator;
