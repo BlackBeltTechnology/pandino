@@ -32,7 +32,7 @@ const loaderConfig: LoaderConfig = {
 
       const activatorEnd = activatorLocation.includes('/') ? activatorLocation.split('/').pop() : activatorLocation;
 
-      return import(root + '/' + activatorEnd);
+      return import(/* webpackIgnore: true */ root + '/' + activatorEnd);
     },
   },
 };

@@ -18,6 +18,15 @@ export default {
     }),
     nodeResolve(),
     ts(),
-    ...[ENV === 'PRODUCTION' ? terser() : undefined],
+    ...[ENV === 'PRODUCTION' ? terser({
+      // All of this is so that we can keep the webpack ignore comment in source so that webpack does not
+      // error out for runtime imports...
+      format: {
+        comments: function (node, comment) {
+          const text = comment.value;
+          return /webpackIgnore/i.test(text);
+        },
+      },
+    }) : undefined],
   ],
 };
