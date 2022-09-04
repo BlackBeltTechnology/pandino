@@ -4,7 +4,7 @@
     "packages/@pandino/*"
   ],
   "npmClient": "npm",
-  "version": "0.8.14",
+  "version": "0.8.15",
   "command": {
     "version": {
       "conventionalCommits": true,

@@ -1,6 +1,6 @@
 {
   "name": "@pandino/persistence-manager-api",
-  "version": "0.8.14",
+  "version": "0.8.15",
   "description": "Pandino Persistence Manager API",
   "main": "dist/cjs/persistence-manager-api.cjs",
   "module": "dist/esm/persistence-manager-api.mjs",
@@ -44,7 +44,7 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.14",
+    "@pandino/pandino-api": "^0.8.15",
     "@rollup/plugin-typescript": "^8.3.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.70.1",
