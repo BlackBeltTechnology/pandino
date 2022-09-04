@@ -21,19 +21,13 @@
     await pandino.init();
     await pandino.start();
 
-    // Pandino should be up and running, which should be visible by looking at the console
-    // window of your browser's dev-tools
-
-    // 1. Install our new bundle via it's manifest:
     const context = pandino.getBundleContext();
 
     await context.installBundle('./string-inverter-manifest.json');
 
-    // 2. Obtain a Service Object
     const inverterReference = context.getServiceReference('@example/string-inverter/StringInverter');
     const inverterService = context.getService(inverterReference);
 
-    // 3. Use our Service to invert some text in our DOM
     const paragraphToInvert = document.getElementById('text-to-invert');
     paragraphToInvert.textContent = inverterService.invert(paragraphToInvert.textContent);
 </script>

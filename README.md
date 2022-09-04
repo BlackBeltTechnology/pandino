@@ -60,35 +60,32 @@ a custom service which will alter the application it self.
     <p id="text-to-invert">This text should be inverted!</p>
 
     <script type="module">
-      window.addEventListener('DOMContentLoaded', async () => {
-        // 0. Import Pandino it self. Since we are running in the browsers with modules, we need
-        // the .mjs version.
-        const Pandino = (await import('./pandino.mjs')).default;
-        const pandino = new Pandino({
-          'pandino.manifest.fetcher': {
-            fetch: async (uri) => (await fetch(uri)).json(),
-          },
-          'pandino.bundle.importer': {
-            import: (activatorLocation) => import(activatorLocation),
-          },
-        });
+      // 0. Import Pandino, and a bundle loader config preset.
+      import Pandino from 'https://unpkg.com/@pandino/pandino/dist/esm/pandino.mjs';
+      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom/dist/loader-configuration-dom.mjs';
 
-        await pandino.init();
-        await pandino.start();
-
-        // Pandino should be up and running, which should be visible by looking at the console
-        // window of your browser's dev-tools
+      const pandino = new Pandino({
+        ...loaderConfiguration,
       });
+
+      await pandino.init();
+      await pandino.start();
+
+      // Pandino should be up and running, which should be visible by looking at the console
+      // window of your browser's dev-tools
     </script>
   </body>
 </html>
 ```
 
-Pandino has 2 mandatory init parameters:
+In this example we are importing a `loaderConfiguration`. This is only for our convenience, you can implement
+your own loader if for some reason the default is not sufficient!
+
+Pandino has 2 mandatory init parameters (which the `loaderConfiguration` also implement):
 - `pandino.manifest.fetcher`: an object with a `fetch()` method where we implement the [Manifest](./docs/basics.md) loading mechanism
 - `pandino.bundle.importer`: an object with an `import()` method where we implement the [Activator](./docs/basics.md) loading mechanism
 
-The reason for why we need to manually define `pandino.manifest.fetcher` and `pandino.bundle.importer` is that 
+The reason for why we would want to manually define `pandino.manifest.fetcher` and `pandino.bundle.importer` is that 
 Pandino it self is platform agnostic, which means that the "file loading" mechanism will be different in e.g. a Browser
 compared to NodeJS.
 
@@ -106,6 +103,25 @@ Every Bundle consists of at least 2 artifacts:
 - One JSON file containing Manifest info necessary for Pandino to manage the Bundle and it's dependencies / features
 - One Activator JavaScript file with or without the source code bundled into it
   - the Activator it self **MUST** be default exported!
+
+**string-inverter-manifest.json**
+```json
+{
+  "Bundle-ManifestVersion": "1",
+  "Bundle-SymbolicName": "@example/string-inverter",
+  "Bundle-Name": "String Inverter",
+  "Bundle-Version": "0.1.0",
+  "Bundle-Activator": "./string-inverter.js"
+}
+```
+
+The `Bundle-SymbolicName` property should be considered to be similar to the `name` property in a `package.json` file.
+
+The `Bundle-SymbolicName` and `Bundle-Version` properties together serve as "composite keys" (make the bundle uniquely
+identifiable)!
+
+A complete list of Bundle Manifest Header properties can be found in the corresponding source code:
+[bundle-manifest-headers.ts](packages/@pandino/pandino-api/src/bundle/bundle-manifest-headers.ts)
 
 **string-inverter.js**
 ```javascript
@@ -131,25 +147,6 @@ export default class Activator {
 }
 ```
 
-**string-inverter-manifest.json**
-```json
-{
-  "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@example/string-inverter",
-  "Bundle-Name": "String Inverter",
-  "Bundle-Version": "0.1.0",
-  "Bundle-Activator": "./string-inverter.js"
-}
-```
-
-The `Bundle-SymbolicName` property should be considered to be similar to the `name` property in a `package.json` file.
-
-The `Bundle-SymbolicName` and `Bundle-Version` properties together serve as "composite keys" (make the bundle uniquely
-identifiable)!
-
-A complete list of Bundle Manifest Header properties can be found in the corresponding source code:
-[bundle-manifest-headers.ts](packages/@pandino/pandino-api/src/bundle/bundle-manifest-headers.ts)
-
 ### 3) Wire the Bundle into our application
 
 **index.html**
@@ -167,33 +164,28 @@ A complete list of Bundle Manifest Header properties can be found in the corresp
     <p id="text-to-invert">This text should be inverted!</p>
 
     <script type="module">
-      window.addEventListener('DOMContentLoaded', async () => {
-        const Pandino = (await import('./pandino.mjs')).default;
-        const pandino = new Pandino({
-          'pandino.manifest.fetcher': {
-            fetch: async (uri) => (await fetch(uri)).json(),
-          },
-          'pandino.bundle.importer': {
-            import: (activatorLocation) => import(activatorLocation),
-          },
-        });
+      import Pandino from 'https://unpkg.com/@pandino/pandino/dist/esm/pandino.mjs';
+      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom/dist/loader-configuration-dom.mjs';
 
-        await pandino.init();
-        await pandino.start();
-        
-        // 1. Install our new bundle via it's manifest:
-        const context = pandino.getBundleContext();
-        
-        await context.installBundle('./string-inverter-manifest.json');
-        
-        // 2. Obtain a Service Object
-        const inverterReference = context.getServiceReference('@example/string-inverter/StringInverter');
-        const inverterService = context.getService(inverterReference);
-        
-        // 3. Use our Service to invert some text in our DOM
-        const paragraphToInvert = document.getElementById('text-to-invert');
-        paragraphToInvert.textContent = inverterService.invert(paragraphToInvert.textContent);
+      const pandino = new Pandino({
+        ...loaderConfiguration,
       });
+
+      await pandino.init();
+      await pandino.start();
+        
+      // 1. Install our new bundle via it's manifest:
+      const context = pandino.getBundleContext();
+      
+      await context.installBundle('./string-inverter-manifest.json');
+      
+      // 2. Obtain a Service Object
+      const inverterReference = context.getServiceReference('@example/string-inverter/StringInverter');
+      const inverterService = context.getService(inverterReference);
+      
+      // 3. Use our Service to invert some text in our DOM
+      const paragraphToInvert = document.getElementById('text-to-invert');
+      paragraphToInvert.textContent = inverterService.invert(paragraphToInvert.textContent);
     </script>
   </body>
 </html>
@@ -216,7 +208,7 @@ folders.
 This repository contains extra packages, e.g.: specifications, corresponding reference-implementations solving
 common software development problems. Usage is opt-in of course.
 
-### Default Configurations
+### Default Loader Configurations
 
 - [Loader Configuration - DOM](./packages/@pandino/loader-configuration-dom)
 - [Loader Configuration - NodeJS](./packages/@pandino/loader-configuration-nodejs)
@@ -245,6 +237,36 @@ common software development problems. Usage is opt-in of course.
 ### Bundler Plugins
 
 - [rollup-plugin-generate-manifest](./packages/@pandino/rollup-plugin-generate-manifest)
+
+## Roadmap
+
+### v0.8.x
+
+**Context:** This version range is the first public version published.
+
+**Goal:** Gather community feedback, improve stability and APIs, introduce missing key features.
+
+Users should expect breaking changes somewhat often.
+
+There is no official end of life, a couple of months should pass at least until
+we will bump the version.
+
+### v0.9.x
+
+**Context:** This version range is a Release Candidate.
+
+**Goal:** Fix bugs, improve stability.
+
+No API breaking changes are allowed.
+
+Similarly to `v0.8.x`, this range will have a lifetime of at least a couple of months.
+
+### v1.0.x
+
+**Context:** This version range is considered to be production-ready.
+
+From this point onwards, we only plan to maintain a single version line. Based on our community and user-base growth, we
+may consider LTS branches in the future.
 
 ## License
 

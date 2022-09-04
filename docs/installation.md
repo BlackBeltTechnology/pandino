@@ -6,22 +6,17 @@ In the sections below, we will showcase different use-cases in which you can ins
 
 ```html
 <script type="module">
-  window.addEventListener('DOMContentLoaded', async () => {
-    const Pandino = (await import('./pandino.js')).default;
+    import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom/dist/loader-configuration-dom.mjs';
+    import Pandino from 'https://unpkg.com/@pandino/pandino/dist/esm/pandino.mjs';
+
     const pandino = new Pandino({
-      'pandino.bundle.importer': {
-        import: (activatorLocation) => import(activatorLocation),
-      },
-      'pandino.manifest.fetcher': {
-        fetch: async (uri) => (await fetch(uri)).json(),
-      },
+        ...loaderConfiguration,
     });
 
     await pandino.init();
     await pandino.start();
 
     console.log(pandino.getBundleContext());
-  });
 </script>
 ```
 
@@ -33,21 +28,10 @@ Initialize it somewhere close in you applications own init logic, e.g.:
 
 ```typescript
 import Pandino from '@pandino/pandino';
-import {
-  PANDINO_MANIFEST_FETCHER_PROP,
-  PANDINO_BUNDLE_IMPORTER_PROP,
-  DEPLOYMENT_ROOT_PROP,
-} from '@pandino/pandino-api';
+import loaderConfiguration from '@pandino/loader-configuration-dom';
 
 const pandino = new Pandino({
-  [DEPLOYMENT_ROOT_PROP]: location.href + 'deploy',
-  [PANDINO_MANIFEST_FETCHER_PROP]: {
-    fetch: async (uri: string, deploymentRoot?: string) => (await fetch(uri)).json(),
-  },
-  [PANDINO_BUNDLE_IMPORTER_PROP]: {
-    import: (activatorLocation: string, manifestLocation: string, deploymentRoot?: string) =>
-      import(/* webpackIgnore: true */ activatorLocation),
-  },
+    ...loaderConfiguration,
 });
 
 await pandino.init();
@@ -65,29 +49,19 @@ Initialize it somewhere close in you applications own init logic, e.g.:
 ```javascript
 const Pandino = require("@pandino/pandino");
 const path = require("path");
-const fs = require("fs");
+const loaderConfiguration = require("@pandino/loader-configuration-nodejs");
 
 const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));
 
 const pandino = new Pandino({
-  'pandino.deployment.root': deploymentRoot,
-  'pandino.bundle.importer': {
-    import: (activatorLocation, manifestLocation, deploymentRoot) => {
-      return require(path.normalize(path.join(deploymentRoot, activatorLocation)));
-    },
-  },
-  'pandino.manifest.fetcher': {
-    fetch: async (uri, deploymentRoot) => {
-      const data = fs.readFileSync(path.normalize(path.join(deploymentRoot, uri)), { encoding: 'utf8' });
-      return JSON.parse(data);
-    },
-  },
+    ...loaderConfiguration,
+    'pandino.deployment.root': deploymentRoot,
 });
 
 (async () => {
-  await pandino.init();
-  await pandino.start();
+    await pandino.init();
+    await pandino.start();
 
-  await pandino.getBundleContext().installBundle('some-bundle-manifest.json');
+    await pandino.getBundleContext().installBundle('some-bundle-manifest.json');
 })();
 ```
