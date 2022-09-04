@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "workspaces": [
+    "./packages/*"
+  ],
   "scripts": {
-    "install": "lerna bootstrap",
     "build": "lerna run build",
     "start": "lerna run --scope app start --stream"
   },
@@ -12,6 +14,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "@lerna-lite/cli": "^1.11.1",
+    "@lerna-lite/run": "^1.11.1"
   }
 }

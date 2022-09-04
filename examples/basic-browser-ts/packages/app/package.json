@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@pandino/pandino": "file:../../../../packages/@pandino/pandino",
-    "bundle-b": "^0.1.0"
+    "@pandino/loader-configuration-dom": "file:../../../../packages/@pandino/loader-configuration-dom"
   },
   "devDependencies": {
     "@pandino/pandino-api": "file:../../../../packages/@pandino/pandino-api",

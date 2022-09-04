@@ -16,8 +16,8 @@
       ]
     </script>
     <script type="module">
-      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@0.8.14/dist/loader-configuration-dom.mjs';
-      import Pandino from 'https://unpkg.com/@pandino/pandino@0.8.14/dist/esm/pandino.mjs';
+      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom/dist/loader-configuration-dom.mjs';
+      import Pandino from 'https://unpkg.com/@pandino/pandino/dist/esm/pandino.mjs';
 
       const pandino = new Pandino({
         ...loaderConfiguration,
@@ -27,7 +27,7 @@
       await pandino.start();
 
       window.setTimeout(() => {
-        pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom@0.8.14/dist/bundle-installer-dom-manifest.json');
+        pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom/dist/bundle-installer-dom-manifest.json');
       }, 1000);
     </script>
   </body>

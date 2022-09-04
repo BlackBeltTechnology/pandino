@@ -1,7 +1,1 @@
-dist/*.json
-dist/*.js
-dist/*.mjs
-!dist/config-admin-manager.js
-!dist/config-admin-manager-manifest.json
-!dist/configuration-consumer.js
-!dist/configuration-consumer-manifest.json
+**/*.log

@@ -1,18 +1,9 @@
 import Pandino from '@pandino/pandino';
-import {
-  PANDINO_MANIFEST_FETCHER_PROP,
-  PANDINO_BUNDLE_IMPORTER_PROP,
-} from '@pandino/pandino-api';
+import loaderConfiguration from '@pandino/loader-configuration-dom';
 
 window.addEventListener('DOMContentLoaded', async () => {
   const pandino = new Pandino({
-    [PANDINO_MANIFEST_FETCHER_PROP]: {
-      fetch: async (uri: string) => (await fetch(uri)).json(),
-    },
-    [PANDINO_BUNDLE_IMPORTER_PROP]: {
-      import: (activatorLocation: string) =>
-        import(/* webpackIgnore: true */ activatorLocation),
-    },
+    ...loaderConfiguration,
   });
 
   await pandino.init();
@@ -21,6 +12,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   await pandino.getBundleContext().installBundle('bundle-a-manifest.json');
 
   window.setTimeout(() => {
-    pandino.getBundleContext().installBundle('bundle-installer-dom-manifest.json');
+    pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom/dist/bundle-installer-dom-manifest.json');
   }, 2000);
 });

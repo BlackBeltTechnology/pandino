@@ -2,10 +2,6 @@
 
 A simple example showcasing the ConfigAdmin capabilities with a `Localstorage` Persistence Manager implementation.
 
-## Setup
-- Run `npm run build` in the Git Repository root
-- Run `./cp-extra-manifests.sh` in this folder to obtain dependencies
-
 ## Running the example
 Run `npm start` in this folder to start a web server
 
