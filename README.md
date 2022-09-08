@@ -237,6 +237,7 @@ common software development problems. Usage is opt-in of course.
 ### Bundler Plugins
 
 - [rollup-plugin-generate-manifest](./packages/@pandino/rollup-plugin-generate-manifest)
+- [webpack-plugin-generate-manifest](./packages/@pandino/webpack-plugin-generate-manifest)
 
 ## Roadmap
 

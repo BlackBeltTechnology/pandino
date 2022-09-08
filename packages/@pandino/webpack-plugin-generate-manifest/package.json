@@ -1,12 +1,14 @@
 {
-  "name": "@pandino/rollup-plugin-generate-manifest",
+  "name": "@pandino/webpack-plugin-generate-manifest",
   "version": "0.8.15",
   "description": "Utility plugin to help manage Pandino Manifest file generation / maintenance",
   "main": "src/index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "webpack"
+  },
   "keywords": [
     "pandino",
-    "rollup",
+    "webpack",
     "plugin",
     "manifest",
     "generate"
@@ -16,7 +18,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/BlackBeltTechnology/pandino.git",
-    "directory": "packages/@pandino/rollup-plugin-generate-manifest"
+    "directory": "packages/@pandino/webpack-plugin-generate-manifest"
   },
   "bugs": {
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
@@ -30,5 +32,9 @@
   "license": "EPL-2.0",
   "dependencies": {
     "@pandino/manifest-generator": "^0.8.15"
+  },
+  "devDependencies": {
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
   }
 }
