@@ -1,6 +1,6 @@
 {
   "name": "@pandino/loader-configuration-dom",
-  "version": "0.8.15",
+  "version": "0.8.16",
   "description": "Bundle loading configuration for the DOM",
   "module": "./dist/loader-configuration-dom.mjs",
   "types": "dist/loader-configuration-dom.d.mts",
@@ -42,7 +42,7 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.15",
+    "@pandino/pandino-api": "^0.8.16",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "rollup": "^2.70.1",
     "rollup-plugin-clear": "^2.0.7",
