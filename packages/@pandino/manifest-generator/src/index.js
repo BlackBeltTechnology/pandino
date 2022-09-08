@@ -8,9 +8,12 @@ const defaultOptions = {
 };
 
 const generateManifest = (options = defaultOptions, targetFile) => {
-  const addBundleLicenseEntry = typeof options.addBundleLicenseEntry === 'boolean' ? options.addBundleLicenseEntry : true;
-  const bundleLicenseValue = typeof options.bundleLicenseValue === 'string' ? options.bundleLicenseValue : 'relative-path';
-  const licenseFileRegex = typeof options.licenseFileRegex === 'string' ? options.licenseFileRegex : '^LICENSE(\\.txt)?$';
+  const addBundleLicenseEntry =
+    typeof options.addBundleLicenseEntry === 'boolean' ? options.addBundleLicenseEntry : true;
+  const bundleLicenseValue =
+    typeof options.bundleLicenseValue === 'string' ? options.bundleLicenseValue : 'relative-path';
+  const licenseFileRegex =
+    typeof options.licenseFileRegex === 'string' ? options.licenseFileRegex : '^LICENSE(\\.txt)?$';
   const defaultActivator = './' + targetFile.substring(targetFile.lastIndexOf(path.sep) + 1);
   const packageString = fs.readFileSync(path.resolve('package.json')).toString('utf8');
   const packageJson = JSON.parse(packageString);
@@ -43,10 +46,11 @@ const generateManifest = (options = defaultOptions, targetFile) => {
   }
 
   if (addBundleLicenseEntry) {
-    const files = fs.readdirSync(path.resolve(), { withFileTypes: true })
-      .filter(item => !item.isDirectory())
-      .map(item => item.name)
-      .filter(item => item.match(new RegExp(licenseFileRegex)));
+    const files = fs
+      .readdirSync(path.resolve(), { withFileTypes: true })
+      .filter((item) => !item.isDirectory())
+      .map((item) => item.name)
+      .filter((item) => item.match(new RegExp(licenseFileRegex)));
 
     if (files.length) {
       switch (bundleLicenseValue) {
@@ -74,7 +78,7 @@ const generateManifest = (options = defaultOptions, targetFile) => {
   fs.mkdirSync(targetFolder, { recursive: true }); // ensure folder is created
 
   fs.writeFileSync(targetPath, JSON.stringify(finalContent, null, 4), { encoding: 'utf8' });
-}
+};
 
 module.exports = {
   generateManifest,

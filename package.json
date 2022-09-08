@@ -11,11 +11,11 @@
   "scripts": {
     "build": "lerna run build",
     "test": "lerna run test --stream",
-    "format": "prettier --config .prettierrc \"packages/@pandino/*/src/**/*.{ts,tsx}\" --write",
+    "format": "prettier --config .prettierrc \"packages/@pandino/*/src/**/*.{js,ts,tsx}\" --write",
     "format-examples": "prettier --config .prettierrc examples/*/packages/*/src/**/*.{ts,tsx} --write",
     "new-version": "lerna version --conventional-commits --yes",
-    "new-publish": "lerna publish",
-    "new-publish:ci": "lerna publish --yes",
+    "new-publish": "lerna publish --conventional-commits",
+    "new-publish:ci": "lerna publish --conventional-commits --yes",
     "lerna": "lerna"
   },
   "devDependencies": {
