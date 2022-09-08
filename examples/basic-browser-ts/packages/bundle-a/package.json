@@ -17,11 +17,16 @@
   },
   "devDependencies": {
     "@pandino/pandino-api": "file:../../../../packages/@pandino/pandino-api",
-    "copy-webpack-plugin": "^10.1.0",
+    "@pandino/webpack-plugin-generate-manifest": "file:../../../../packages/@pandino/webpack-plugin-generate-manifest",
     "rimraf": "^3.0.2",
     "ts-loader": "^9.2.6",
     "typescript": "^4.7.4",
     "webpack": "^5.58.1",
     "webpack-cli": "^4.9.0"
+  },
+  "pandino": {
+    "manifest": {
+      "Require-Capability": "inverter;filter:=\"(&(type=string)(length>=5))\""
+    }
   }
 }

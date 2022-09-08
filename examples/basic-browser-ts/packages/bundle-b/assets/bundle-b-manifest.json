@@ -1,9 +1,0 @@
-{
-  "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/examples/basic-browser-ts/bundle-b",
-  "Bundle-Name": "Bundle B",
-  "Bundle-Version": "0.1.0",
-  "Bundle-Description": "Yayy, bundle-b!",
-  "Bundle-Activator": "./bundle-b.js",
-  "Provide-Capability": "inverter;type:Array=\"string,number\";length:number=800"
-}

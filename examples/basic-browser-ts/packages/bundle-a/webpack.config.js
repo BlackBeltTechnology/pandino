@@ -1,5 +1,5 @@
 const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
+const GenerateManifestPlugin = require('@pandino/webpack-plugin-generate-manifest');
 
 module.exports = {
   experiments: {
@@ -31,10 +31,6 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
-    new CopyPlugin({
-      patterns: [
-        { from: "assets", to: "" },
-      ],
-    }),
+    new GenerateManifestPlugin(),
   ],
 };
