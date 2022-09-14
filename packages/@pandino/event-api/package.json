@@ -1,6 +1,6 @@
 {
   "name": "@pandino/event-api",
-  "version": "0.8.16",
+  "version": "0.8.17",
   "description": "Pandino Event API",
   "main": "dist/cjs/event-api.cjs",
   "module": "dist/esm/event-api.mjs",
@@ -44,7 +44,7 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.16",
+    "@pandino/pandino-api": "^0.8.17",
     "@rollup/plugin-typescript": "^8.3.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.70.1",
