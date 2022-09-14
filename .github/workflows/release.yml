@@ -11,7 +11,7 @@ on:
 jobs:
   release:
     env:
-      NODE_AUTH_TOKEN: ${{ secrets.PANDINO_NPM_AUTOMATION_TOKEN }}
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_OSS_AUTOMATION_TOKEN }}
       GH_TOKEN: ${{ secrets.OSS_PAT }}
 
     runs-on: ubuntu-latest
