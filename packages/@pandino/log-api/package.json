@@ -43,11 +43,6 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.17",
-    "@rollup/plugin-typescript": "^8.3.1",
-    "rimraf": "^3.0.2",
-    "rollup": "^2.70.1",
-    "rollup-plugin-clear": "^2.0.7",
-    "typescript": "^4.7.4"
+    "@pandino/pandino-api": "^0.8.17"
   }
 }

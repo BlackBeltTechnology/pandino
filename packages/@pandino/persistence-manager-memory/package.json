@@ -50,16 +50,7 @@
   "devDependencies": {
     "@pandino/pandino-api": "^0.8.17",
     "@pandino/persistence-manager-api": "^0.8.17",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.17",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@types/jest": "^27.4.0",
-    "jest": "^27.4.7",
-    "rollup": "^2.70.1",
-    "rollup-plugin-clear": "^2.0.7",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-ts": "^3.0.2",
-    "ts-jest": "^27.1.2",
-    "typescript": "^4.7.4"
+    "@pandino/rollup-plugin-generate-manifest": "^0.8.17"
   },
   "jest": {
     "collectCoverage": true,
