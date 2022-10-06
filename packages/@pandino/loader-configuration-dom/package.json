@@ -1,6 +1,6 @@
 {
   "name": "@pandino/loader-configuration-dom",
-  "version": "0.8.18",
+  "version": "0.8.19",
   "description": "Bundle loading configuration for the DOM",
   "module": "./dist/loader-configuration-dom.mjs",
   "types": "dist/loader-configuration-dom.d.mts",
@@ -42,6 +42,6 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.18"
+    "@pandino/pandino-api": "^0.8.19"
   }
 }

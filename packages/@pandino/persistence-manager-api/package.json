@@ -1,6 +1,6 @@
 {
   "name": "@pandino/persistence-manager-api",
-  "version": "0.8.18",
+  "version": "0.8.19",
   "description": "Pandino Persistence Manager API",
   "main": "dist/cjs/persistence-manager-api.cjs",
   "module": "dist/esm/persistence-manager-api.mjs",
@@ -44,6 +44,6 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.18"
+    "@pandino/pandino-api": "^0.8.19"
   }
 }
