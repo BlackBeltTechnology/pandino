@@ -33,6 +33,27 @@ await pandino.init();
 await pandino.start();
 ```
 
+### Fill additional Manifest Headers for UMD Bundles
+
+Every UMD Bundle **MUST** provide the following Manifest Headers:
+- Bundle-Type: `'umd'`
+- Bundle-UMD-Name: `string`
+
+**Example:**
+
+```json
+{
+    "Bundle-SymbolicName": "@scope/my-umd-bundle",
+    "Bundle-Version": "1.0.0",
+    "Bundle-Activator": "./my-umd-bundle.js",
+    "Bundle-Type": "umd",
+    "Bundle-UMD-Name": "MyUMDBundle"
+}
+```
+
+> The `Bundle-UMD-Name` must be the library name which the bundle registers it self on e.g. the `window` object in
+browsers. It can be different compared to the file name.
+
 ## License
 
 Eclipse Public License - v 2.0
