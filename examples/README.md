@@ -24,3 +24,7 @@ or in certain cases install them via NPM! Using CDNs is not mandatory.
 ## Custom Elements showcase
 
 - [custom-elements-web-js](./custom-elements-web-js)
+
+## Activator Resolvers
+
+- [umd-bundle-ts](./umd-bundle-ts)

@@ -63,6 +63,11 @@ Bundle won't ever start.
 
 The only state a Bundle can transition from `Uninstalled` to is `Installed`, via programmatically re-installing it.
 
+#### 1.2. Bundle Types
+
+By default Pandino supports ESM Bundles. Support for additional `BundleType`s can be registered with the framework.
+A detailed description can be found in the [Activator Resolvers](./advanced/activator-resolvers.md) covering this topic.
+
 ### 2. Service
 
 Bundles are built around a set of cooperating Services available from a shared Service Registry. Such a Pandino service

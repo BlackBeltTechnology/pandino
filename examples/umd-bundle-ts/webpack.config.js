@@ -1,15 +1,11 @@
 const path = require('path');
+const { CleanWebpackPlugin  } = require('clean-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 const GenerateManifestPlugin = require('@pandino/webpack-plugin-generate-manifest');
 
 module.exports = {
-  experiments: {
-    outputModule: true,
-  },
-  entry: {
-    'bundle-a': './src/index.ts',
-  },
+  entry: './src/index.ts',
   mode: 'production',
-  devtool: false,
   module: {
     rules: [
       {
@@ -20,17 +16,23 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: ['.ts'],
   },
   output: {
+    filename: 'umd-bundle-ts.js',
     library: {
-      name: 'umd-bundle-ts',
       type: 'umd',
-      umdNamedDefine: true,
+      name: 'umd-bundle-ts',
     },
     path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new GenerateManifestPlugin(),
+    new CopyPlugin({
+      patterns: [
+        { from: "public/" },
+      ],
+    }),
   ],
 };

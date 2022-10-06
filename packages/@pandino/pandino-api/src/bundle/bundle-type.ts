@@ -1,1 +1,1 @@
-export type BundleType = 'esm' | 'umd';
+export type BundleType = 'esm' | 'umd' | string;

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Pandino - UMD Bundle TS</title>
+  </head>
+  <body>
+    <h1 id="root">Hello!</h1>
+    <p>Please check the console for demo content!</p>
+    <script type="pandino-manifests">
+      [
+        "./umd-bundle-ts-manifest.json"
+      ]
+    </script>
+    <script type="module">
+      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom/dist/loader-configuration-dom.mjs';
+      import umdActivatorResolver from 'https://unpkg.com/@pandino/umd-activator-resolver-dom/dist/umd-activator-resolver-dom.mjs';
+      import Pandino from 'https://unpkg.com/@pandino/pandino/dist/esm/pandino.mjs';
+
+      const pandino = new Pandino({
+        ...loaderConfiguration,
+        'pandino.activator.resolvers': {
+          'umd': umdActivatorResolver,
+        },
+      });
+
+      await pandino.init();
+      await pandino.start();
+      pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom/dist/bundle-installer-dom-manifest.json');
+    </script>
+  </body>
+</html>

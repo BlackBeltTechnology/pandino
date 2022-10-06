@@ -239,6 +239,10 @@ common software development problems. Usage is opt-in of course.
 - [rollup-plugin-generate-manifest](./packages/@pandino/rollup-plugin-generate-manifest)
 - [webpack-plugin-generate-manifest](./packages/@pandino/webpack-plugin-generate-manifest)
 
+### Activator Resolvers
+
+- [umd-activator-resolver-dom](./packages/@pandino/umd-activator-resolver-dom)
+
 ## Roadmap
 
 ### v0.8.x
