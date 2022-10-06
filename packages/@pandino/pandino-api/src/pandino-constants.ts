@@ -6,6 +6,7 @@ export const LOG_LEVEL_PROP = 'pandino.log.level';
 export const LOG_LOGGER_PROP = 'pandino.log.logger';
 export const PANDINO_BUNDLE_IMPORTER_PROP = 'pandino.bundle.importer';
 export const PANDINO_MANIFEST_FETCHER_PROP = 'pandino.manifest.fetcher';
+export const PANDINO_ACTIVATOR_RESOLVERS = 'pandino.activator.resolvers';
 export const BUNDLE_NAMESPACE = 'pandino.wiring.bundle';
 export const IDENTITY_NAMESPACE = 'pandino.identity';
 export const TYPE_BUNDLE = 'pandino.bundle';
@@ -41,6 +42,28 @@ export const BUNDLE_VENDOR = 'Bundle-Vendor';
  * (Required attribute)
  */
 export const BUNDLE_VERSION = 'Bundle-Version';
+
+/**
+ * Manifest header identifying the bundle's type.
+ *
+ * Valid options are:
+ * - esm
+ * - umd
+ *
+ * Default: esm
+ *
+ * Warning! Given that UMD modules are loaded onto the `window`, Pandino cannot guarantee that they cannot be tempered
+ * with. Re-loading the same bundle multiple times may cause issues.
+ */
+export const BUNDLE_TYPE = 'Bundle-Type';
+
+/**
+ * Manifest header identifying the bundle's UMD name.
+ *
+ * If the Bundle's type is `umd` then this header MUST be present, and should refer to whatever name the module has been
+ * exported on.
+ */
+export const BUNDLE_UMD_NAME = 'Bundle-UMD-Name';
 
 /**
  * If the corresponding value is a path string, then the value <b>MUST</b> be a relative path calculated from the

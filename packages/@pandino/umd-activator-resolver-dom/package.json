@@ -1,0 +1,48 @@
+{
+  "name": "@pandino/umd-activator-resolver-dom",
+  "version": "0.8.17",
+  "description": "Resolver supporting UMD modules for browsers",
+  "module": "./dist/umd-activator-resolver-dom.mjs",
+  "types": "dist/umd-activator-resolver-dom.d.mts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/umd-activator-resolver-dom.mjs"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c --environment=PRODUCTION",
+    "build:dev": "rollup -c"
+  },
+  "keywords": [
+    "pandino",
+    "activator",
+    "resolver",
+    "umd",
+    "dom"
+  ],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "EPL-2.0",
+  "homepage": "https://github.com/BlackBeltTechnology/pandino",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlackBeltTechnology/pandino.git",
+    "directory": "packages/@pandino/umd-activator-resolver-dom"
+  },
+  "bugs": {
+    "url": "https://github.com/BlackBeltTechnology/pandino/issues"
+  },
+  "engines": {
+    "node": ">=14.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "devDependencies": {
+    "@pandino/pandino-api": "^0.8.17"
+  }
+}

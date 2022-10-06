@@ -1,44 +1,48 @@
 import {
+  ActivatorResolver,
   Bundle,
-  BundleImporter,
-  FrameworkEventType,
-  FrameworkListener,
-  BundleActivator,
-  BundleContext,
-  BundleEventType,
-  BundleListener,
-  BundleManifestHeaders,
-  ServiceEvent,
-  ServiceProperties,
-  BundleState,
-  Logger,
-  ManifestFetcher,
   BUNDLE_ACTIVATOR,
   BUNDLE_NAME,
   BUNDLE_SYMBOLICNAME,
+  BUNDLE_TYPE,
   BUNDLE_VERSION,
-  SYSTEMBUNDLE_ACTIVATORS_PROP,
-  LOG_LOGGER_PROP,
-  LOG_LEVEL_PROP,
-  LogLevel,
-  ServiceListener,
+  BundleActivator,
+  BundleContext,
+  BundleEventType,
+  BundleImporter,
+  BundleListener,
+  BundleManifestHeaders,
+  BundleState,
+  BundleType,
+  DEPLOYMENT_ROOT_PROP,
   FilterApi,
-  ServiceReference,
-  ServiceRegistration,
+  FRAMEWORK_BUNDLE_IMPORTER,
+  FRAMEWORK_FILTER_PARSER,
+  FRAMEWORK_LOGGER,
+  FRAMEWORK_MANIFEST_FETCHER,
+  FRAMEWORK_SEMVER_FACTORY,
+  FrameworkConfigMap,
+  FrameworkEventType,
+  FrameworkListener,
+  LOG_LEVEL_PROP,
+  LOG_LOGGER_PROP,
+  Logger,
+  LogLevel,
+  ManifestFetcher,
   OBJECTCLASS,
-  SYSTEM_BUNDLE_SYMBOLICNAME,
+  PANDINO_ACTIVATOR_RESOLVERS,
   PANDINO_BUNDLE_IMPORTER_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
-  FRAMEWORK_LOGGER,
-  DEPLOYMENT_ROOT_PROP,
-  FRAMEWORK_MANIFEST_FETCHER,
-  FRAMEWORK_BUNDLE_IMPORTER,
-  SYSTEM_BUNDLE_LOCATION,
-  FRAMEWORK_FILTER_PARSER,
-  FrameworkConfigMap,
-  ServiceFactory,
   SemVer,
-  FRAMEWORK_SEMVER_FACTORY,
+  ServiceEvent,
+  ServiceFactory,
+  ServiceListener,
+  ServiceProperties,
+  ServiceReference,
+  ServiceRegistration,
+  SYSTEM_BUNDLE_LOCATION,
+  SYSTEM_BUNDLE_SYMBOLICNAME,
+  SYSTEMBUNDLE_ACTIVATORS_PROP,
 } from '@pandino/pandino-api';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { EventDispatcher } from './lib/framework/event-dispatcher';
@@ -60,6 +64,7 @@ import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callb
 import { FilterParserImpl } from './lib/filter/filter-parser';
 import { SemVerImpl } from './lib/utils/semver-impl';
 import { SemverFactoryImpl } from './lib/utils/semver-factory';
+import { EsmActivatorResolver } from './lib/framework/esm-activator-resolver';
 
 export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;
@@ -82,6 +87,17 @@ export class Pandino extends BundleImpl implements Framework {
       ? configMap[PANDINO_BUNDLE_IMPORTER_PROP]
       : new VoidImporter();
     logger.setLogLevel(configMap[LOG_LEVEL_PROP] || LogLevel.LOG);
+
+    if (!configMap[PANDINO_ACTIVATOR_RESOLVERS]) {
+      // @ts-ignore
+      configMap[PANDINO_ACTIVATOR_RESOLVERS] = {
+        esm: new EsmActivatorResolver(),
+      };
+    }
+
+    if (!configMap[PANDINO_ACTIVATOR_RESOLVERS].esm) {
+      configMap[PANDINO_ACTIVATOR_RESOLVERS].esm = new EsmActivatorResolver();
+    }
 
     super(
       logger,
@@ -572,18 +588,35 @@ export class Pandino extends BundleImpl implements Framework {
     let activator: BundleActivator = null;
     let headerMap: BundleManifestHeaders = impl.getHeaders();
     let activatorDefinition = headerMap[BUNDLE_ACTIVATOR];
+
     if (isAnyMissing(activatorDefinition)) {
       throw new Error('Missing mandatory Bundle Activator!');
     } else if (typeof activatorDefinition === 'string') {
       this.logger.debug(`Attempting to load Activator from: ${activatorDefinition}`);
+
       let activatorInstance: any;
-      try {
-        activatorInstance = (
-          await this.importer.import(activatorDefinition, impl.getLocation(), impl.getDeploymentRoot())
-        ).default;
-      } catch (ex) {
-        throw new Error('Not found: ' + activatorDefinition + ': ' + ex);
+      const activatorModule = await this.importer.import(
+        activatorDefinition,
+        impl.getLocation(),
+        impl.getDeploymentRoot(),
+      );
+      const bundleType: BundleType = impl.getHeaders()[BUNDLE_TYPE] || 'esm';
+      const activatorResolver: ActivatorResolver = this.configMap.get(PANDINO_ACTIVATOR_RESOLVERS)[bundleType];
+
+      if (!activatorResolver) {
+        throw new Error(`No ActivatorResolver can be found in configuration for BundleType: ${bundleType}!`);
       }
+
+      activatorInstance = activatorResolver.resolve(activatorModule, impl.getHeaders());
+
+      if (!activatorInstance) {
+        throw new Error(
+          `Activator for ${impl
+            .getCurrentRevision()
+            .getSymbolicName()} could not be loaded! Resolver probably returned undefined. Please check corresponding ActivatorResolver!`,
+        );
+      }
+
       activator =
         typeof activatorInstance === 'function' ? (new activatorInstance() as BundleActivator) : activatorInstance;
     } else {

@@ -9,14 +9,19 @@ import {
   BUNDLE_VERSION,
   REQUIRE_CAPABILITY,
   PROVIDE_CAPABILITY,
+  BUNDLE_TYPE,
+  BUNDLE_UMD_NAME,
 } from '../pandino-constants';
 import { BundleActivator } from './bundle-activator';
 import { ActivationPolicy } from './activation-policy';
+import { BundleType } from './bundle-type';
 
 export interface BundleManifestHeaders {
   [BUNDLE_MANIFESTVERSION]?: string;
   [BUNDLE_SYMBOLICNAME]: string;
   [BUNDLE_VERSION]?: string;
+  [BUNDLE_TYPE]?: BundleType;
+  [BUNDLE_UMD_NAME]?: string;
   [BUNDLE_ACTIVATOR]?: string | BundleActivator;
   [BUNDLE_ACTIVATIONPOLICY]?: ActivationPolicy;
   [BUNDLE_NAME]?: string;

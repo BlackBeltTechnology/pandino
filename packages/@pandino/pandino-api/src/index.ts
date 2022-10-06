@@ -1,3 +1,4 @@
+export * from './activator-resolver';
 export * from './bundle';
 export * from './filter-api';
 export * from './filter-parser';
