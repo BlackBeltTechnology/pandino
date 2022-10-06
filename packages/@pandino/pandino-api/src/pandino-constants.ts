@@ -46,11 +46,9 @@ export const BUNDLE_VERSION = 'Bundle-Version';
 /**
  * Manifest header identifying the bundle's type.
  *
- * Valid options are:
- * - esm
- * - umd
+ * It can be any string, and {@code ActivatorResolver}s can be registered for it.
  *
- * Default: esm
+ * Pandino comes with `esm` support built-in.
  *
  * Warning! Given that UMD modules are loaded onto the `window`, Pandino cannot guarantee that they cannot be tempered
  * with. Re-loading the same bundle multiple times may cause issues.
