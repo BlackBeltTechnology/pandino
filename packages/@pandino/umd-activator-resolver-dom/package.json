@@ -1,7 +1,7 @@
 {
   "name": "@pandino/umd-activator-resolver-dom",
   "version": "0.8.18",
-  "description": "Resolver supporting UMD modules for browsers",
+  "description": "Activator Resolver supporting UMD modules for browsers",
   "module": "./dist/umd-activator-resolver-dom.mjs",
   "types": "dist/umd-activator-resolver-dom.d.mts",
   "type": "module",
