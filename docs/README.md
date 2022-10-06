@@ -7,4 +7,6 @@ understand the inner workings of it.
 
 * [Installation](./installation.md)
 * [Basics](./basics.md)
+* Advanced
+  * [Activator Resolvers](./advanced/activator-resolvers.md)
 * [OSGi Comparison](./osgi-comparison.md)
