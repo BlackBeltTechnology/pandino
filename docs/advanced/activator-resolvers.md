@@ -65,11 +65,14 @@ await pandino.start();
 // ...
 ```
 
-## Providing necessary Bundle Manifest Headers for UMD Bundles
+## Providing necessary Bundle Manifest Headers for Bundles
 
-Every UMD Bundle **MUST** provide the following Manifest Headers:
-- Bundle-Type: `string`
-- Bundle-UMD-Name: `string`
+Every Bundle which is not an ESM Bundle **MUST** provide the following Manifest Headers:
+- Bundle-Type: `string` ()
+
+and any number of additional Headers, based on the corresponding `ActivatorResolver` implementation.
+
+E.g. in case of the Pandino UMD Activator Resolver:
 
 ```json
 {
@@ -77,12 +80,9 @@ Every UMD Bundle **MUST** provide the following Manifest Headers:
     "Bundle-Version": "1.0.0",
     "Bundle-Activator": "./my-umd-bundle.js",
     "Bundle-Type": "umd",
-    "Bundle-UMD-Name": "my-umd-bundle"
+    "Bundle-UMD-Name": "MyUMDBundle"
 }
 ```
-
-> The `Bundle-UMD-Name` must be the library name which the bundle registers it self on e.g. the `window` object in 
-  browsers. It can be different compared to the file name.
 
 If any bundle is loaded to Pandino which has a `Bundle-Type` without a registered `ActivatorResolver`, then the
 framework will throw an Error.
