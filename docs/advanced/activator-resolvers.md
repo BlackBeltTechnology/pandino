@@ -68,7 +68,7 @@ await pandino.start();
 ## Providing necessary Bundle Manifest Headers for Bundles
 
 Every Bundle which is not an ESM Bundle **MUST** provide the following Manifest Headers:
-- Bundle-Type: `string` ()
+- Bundle-Type: `string`
 
 and any number of additional Headers, based on the corresponding `ActivatorResolver` implementation.
 
