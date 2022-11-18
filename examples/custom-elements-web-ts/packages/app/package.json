@@ -1,0 +1,30 @@
+{
+  "name": "@custom-elements-web-ts/app",
+  "version": "1.0.0",
+  "module": "./dist/app.mjs",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/app.mjs"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c --environment=PRODUCTION",
+    "build:dev": "rollup -c"
+  },
+  "dependencies": {
+    "@pandino/pandino": "^0.8.19",
+    "@pandino/loader-configuration-dom": "^0.8.19"
+  },
+  "devDependencies": {
+    "@pandino/pandino-api": "^0.8.19",
+    "@custom-elements-web-ts/contract": "^1.0.0",
+    "rollup-plugin-copy": "^3.4.0"
+  },
+  "pandino": {
+    "manifest": {
+      "Provide-Capability": "@custom-elements-web-ts/contract/Page;menu:=false"
+    }
+  }
+}

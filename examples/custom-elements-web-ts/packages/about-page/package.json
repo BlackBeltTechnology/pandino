@@ -1,0 +1,26 @@
+{
+  "name": "@custom-elements-web-ts/about-page",
+  "version": "1.0.0",
+  "module": "./dist/about-page.mjs",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/about-page.mjs"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c --environment=PRODUCTION",
+    "build:dev": "rollup -c"
+  },
+  "devDependencies": {
+    "@pandino/pandino-api": "^0.8.19",
+    "@pandino/rollup-plugin-generate-manifest": "^0.8.19",
+    "@custom-elements-web-ts/contract": "^1.0.0"
+  },
+  "pandino": {
+    "manifest": {
+      "Provide-Capability": "@custom-elements-web-ts/contract/Page;menu:=true"
+    }
+  }
+}

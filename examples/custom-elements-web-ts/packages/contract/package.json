@@ -1,0 +1,16 @@
+{
+  "name": "@custom-elements-web-ts/contract",
+  "version": "1.0.0",
+  "module": "./dist/contract.mjs",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/contract.mjs"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c --environment=PRODUCTION",
+    "build:dev": "rollup -c"
+  }
+}
