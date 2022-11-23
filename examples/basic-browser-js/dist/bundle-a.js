@@ -8,13 +8,10 @@ export default class Activator {
     this.logger.log('Bundle A - Activator');
 
     this.logger.log(`Testing inverter: ${this.inverter('Please invert this!')}`);
-
-    return Promise.resolve();
   }
 
   stop(context) {
     context.ungetService(this.loggerReference);
     context.ungetService(this.inverterReference);
-    return Promise.resolve();
   }
 }

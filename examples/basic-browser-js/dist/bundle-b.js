@@ -6,14 +6,10 @@ export default class BundleActivator {
     this.logger.log('Bundle B - Activator');
 
     context.registerService('@pandino/bundle-b/StringInverter', stringInverterImpl);
-
-    return Promise.resolve();
   }
 
   async stop(context) {
     context.ungetService(this.loggerReference);
-
-    return Promise.resolve();
   }
 }
 

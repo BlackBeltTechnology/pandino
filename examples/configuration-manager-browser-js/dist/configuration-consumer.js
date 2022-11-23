@@ -9,15 +9,11 @@ export default class BundleActivator {
     this.registration = context.registerService('@pandino/configuration-management/ManagedService', mst, {
       'service.pid': 'test.pid'
     });
-
-    return Promise.resolve();
   }
 
   async stop(context) {
     context.ungetService(this.loggerReference);
     context.unregisterService(this.registration);
-
-    return Promise.resolve();
   }
 }
 

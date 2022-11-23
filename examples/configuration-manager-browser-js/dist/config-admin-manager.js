@@ -21,13 +21,10 @@ export default class Activator {
         prop2: true,
       });
     }, 5000);
-
-    return Promise.resolve();
   }
 
-  stop(context) {
+  async stop(context) {
     context.ungetService(this.loggerReference);
     context.ungetService(this.configAdminReference);
-    return Promise.resolve();
   }
 }
