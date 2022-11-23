@@ -11,6 +11,9 @@ or in certain cases install them via NPM! Using CDNs is not mandatory.
 - [basic-browser-js](./basic-browser-js)
 - [basic-browser-ts](./basic-browser-ts)
 
+## Services, overrides
+- [browser-clicky-js](./browser-clicky-js)
+
 ## NodeJS integration
 
 - [nodejs-cjs](./nodejs-cjs)
