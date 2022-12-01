@@ -1,6 +1,6 @@
 import clear from 'rollup-plugin-clear';
-import { terser } from 'rollup-plugin-terser';
-import ts from 'rollup-plugin-ts';
+import terser from '@rollup/plugin-terser';
+import typescript from '@rollup/plugin-typescript';
 import nodeResolve from '@rollup/plugin-node-resolve';
 
 const ENV = process.env.PRODUCTION ? 'PRODUCTION' : 'DEVELOPMENT';
@@ -17,7 +17,7 @@ export default {
       targets: ['dist'],
     }),
     nodeResolve(),
-    ts(),
+    typescript(),
     ...[ENV === 'PRODUCTION' ? terser({
       // All of this is so that we can keep the webpack ignore comment in source so that webpack does not
       // error out for runtime imports...

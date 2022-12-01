@@ -1,5 +1,5 @@
 import clear from 'rollup-plugin-clear';
-import ts from 'rollup-plugin-ts';
+import typescript from '@rollup/plugin-typescript';
 import nodeResolve from "@rollup/plugin-node-resolve";
 
 export default {
@@ -19,6 +19,6 @@ export default {
       targets: ['dist'],
     }),
     nodeResolve(),
-    ts(),
+    typescript(),
   ],
 };

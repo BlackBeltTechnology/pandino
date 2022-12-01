@@ -1,6 +1,6 @@
 import clear from 'rollup-plugin-clear';
-import { terser } from 'rollup-plugin-terser';
-import ts from 'rollup-plugin-ts';
+import terser from '@rollup/plugin-terser';
+import typescript from '@rollup/plugin-typescript';
 import generateManifest from '@pandino/rollup-plugin-generate-manifest';
 import nodeResolve from '@rollup/plugin-node-resolve';
 
@@ -18,7 +18,7 @@ export default {
       targets: ['dist'],
     }),
     nodeResolve(),
-    ts(),
+    typescript(),
     ...[ENV === 'PRODUCTION' ? terser() : undefined],
     generateManifest(),
   ],
