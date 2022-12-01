@@ -53,8 +53,7 @@ export class StatefulResolver {
   }
 
   async resolveRemaining(): Promise<void> {
-    const unresolvedRevs = this.revisions.filter((r) => isAnyMissing(r.getWiring()));
-    const revsToReRun = unresolvedRevs.filter((r) => {
+    const revsToReRun = this.revisions.filter((r) => {
       const wires = StatefulResolver.getResolvableWires(r, this.getEligibleCapabilities());
       return r.getSymbolicName() !== SYSTEM_BUNDLE_SYMBOLICNAME && StatefulResolver.canBundleBeResolved(r, wires);
     });

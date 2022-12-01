@@ -288,7 +288,8 @@ export class Pandino extends BundleImpl implements Framework {
 
     try {
       const revision = bundle.getCurrentRevision();
-      if (isAllPresent(revision.getWiring()) || this.resolver.createWiringForRevision(revision)) {
+      const wiring = revision.getWiring() || this.resolver.createWiringForRevision(revision);
+      if (isAllPresent(wiring) && wiring.allWireProvidersInAnyState(['ACTIVE'])) {
         await this.activateBundle(bundle, false);
       }
     } catch (ex) {
@@ -407,9 +408,6 @@ export class Pandino extends BundleImpl implements Framework {
 
         // The spec says that we must remove all event listeners for a bundle when it is stopped.
         this.dispatcher.removeListeners(bci);
-
-        // tear down wires where bundle was a requirement for others
-        bundle.getCurrentRevision().resolve(undefined);
 
         bundle.setState('INSTALLED');
       }

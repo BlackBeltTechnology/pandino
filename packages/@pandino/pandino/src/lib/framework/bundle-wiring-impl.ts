@@ -1,5 +1,6 @@
 import {
   Bundle,
+  BundleState,
   EFFECTIVE_DIRECTIVE,
   EFFECTIVE_RESOLVE,
   HOST_NAMESPACE,
@@ -153,6 +154,10 @@ export class BundleWiringImpl implements BundleWiring {
 
   getRevision(): BundleRevision {
     return this.revision;
+  }
+
+  allWireProvidersInAnyState(states: BundleState[] = []): boolean {
+    return this.wires.every((w) => states.includes(w.getProvider().getBundle().getState()));
   }
 
   toString(): string {

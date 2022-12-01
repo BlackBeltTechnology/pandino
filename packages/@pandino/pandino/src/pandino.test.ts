@@ -16,7 +16,6 @@ import {
   LOG_LEVEL_PROP,
   LogLevel,
   FrameworkConfigMap,
-  DEPLOYMENT_ROOT_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
   ServiceRegistration,
   OBJECTCLASS,
@@ -497,6 +496,7 @@ describe('Pandino', () => {
     });
 
     const [requirerBundle, requiredBundle] = pandino.getBundleContext().getBundles();
+    const wiring = (requiredBundle as BundleImpl).getCurrentRevision().getWiring();
 
     expect(pandino.getBundleContext().getBundles().length).toEqual(2);
     expect(requiredBundle.getState()).toEqual('ACTIVE');
@@ -504,7 +504,7 @@ describe('Pandino', () => {
 
     await requiredBundle.uninstall();
 
-    expect((requiredBundle as BundleImpl).getCurrentRevision().getWiring()).toEqual(undefined);
+    expect((requiredBundle as BundleImpl).getCurrentRevision().getWiring()).toEqual(wiring);
     expect(pandino.getBundleContext().getBundles().length).toEqual(2);
     expect(requiredBundle.getState()).toEqual('UNINSTALLED');
     expect(requirerBundle.getState()).toEqual('INSTALLED');
@@ -682,6 +682,66 @@ describe('Pandino', () => {
 
     expect(b1.getState()).toEqual('UNINSTALLED');
     expect(b2.getState()).toEqual('INSTALLED');
+  });
+
+  it('intermediate bundle restarts after dependency restarts', async () => {
+    await preparePandino();
+
+    const bundle1 = {
+      [BUNDLE_SYMBOLICNAME]: '@scope/b1',
+      [BUNDLE_VERSION]: '1.0.0',
+      [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
+      [BUNDLE_NAME]: 'B1',
+      [PROVIDE_CAPABILITY]: '@scope/feature1',
+    };
+    const bundle2 = {
+      [BUNDLE_SYMBOLICNAME]: '@scope/b2',
+      [BUNDLE_VERSION]: '1.0.0',
+      [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
+      [BUNDLE_NAME]: 'B2',
+      [PROVIDE_CAPABILITY]: '@scope/feature2',
+      [REQUIRE_CAPABILITY]: '@scope/feature1',
+    };
+    const bundle3 = {
+      [BUNDLE_SYMBOLICNAME]: '@scope/b3',
+      [BUNDLE_VERSION]: '1.0.0',
+      [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
+      [BUNDLE_NAME]: 'B3',
+      [PROVIDE_CAPABILITY]: '@scope/feature3',
+      [REQUIRE_CAPABILITY]: '@scope/feature2',
+    };
+
+    const b1 = await installBundle(bundle1);
+    const b2 = await installBundle(bundle2);
+    const b3 = await installBundle(bundle3);
+
+    expect(b1.getState()).toEqual('ACTIVE');
+    expect(b2.getState()).toEqual('ACTIVE');
+    expect(b3.getState()).toEqual('ACTIVE');
+
+    await b2.stop();
+
+    expect(b1.getState()).toEqual('ACTIVE');
+    expect(b2.getState()).toEqual('INSTALLED');
+    expect(b3.getState()).toEqual('INSTALLED');
+
+    await b2.start();
+
+    expect(b1.getState()).toEqual('ACTIVE');
+    expect(b2.getState()).toEqual('ACTIVE');
+    expect(b3.getState()).toEqual('ACTIVE');
+
+    await b1.stop();
+
+    expect(b1.getState()).toEqual('INSTALLED');
+    expect(b2.getState()).toEqual('INSTALLED');
+    expect(b3.getState()).toEqual('INSTALLED');
+
+    await b1.start();
+
+    expect(b1.getState()).toEqual('ACTIVE');
+    expect(b2.getState()).toEqual('ACTIVE');
+    expect(b3.getState()).toEqual('ACTIVE');
   });
 
   async function preparePandino() {

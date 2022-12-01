@@ -1,3 +1,4 @@
+import { BundleState } from '@pandino/pandino-api';
 import { BundleCapability } from './wiring/bundle-capability';
 import { BundleRequirement } from './wiring/bundle-requirement';
 import { BundleWire } from './wiring/bundle-wire';
@@ -22,4 +23,5 @@ export interface BundleWiring {
   getProvidedWires(namespace: string): BundleWire[];
   getRequiredWires(namespace: string): BundleWire[];
   getRevision(): BundleRevision;
+  allWireProvidersInAnyState(states: BundleState[]): boolean;
 }

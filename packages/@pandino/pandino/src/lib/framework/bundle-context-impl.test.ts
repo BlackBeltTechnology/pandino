@@ -19,7 +19,6 @@ import {
   ServiceListener,
   ServiceReference,
   FrameworkConfigMap,
-  DEPLOYMENT_ROOT_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
   SERVICE_RANKING,
   SERVICE_SCOPE,
