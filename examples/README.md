@@ -10,6 +10,7 @@ or in certain cases install them via NPM! Using CDNs is not mandatory.
 
 - [basic-browser-js](./basic-browser-js)
 - [basic-browser-ts](./basic-browser-ts)
+- [string-inverter](./string-inverter)
 
 ## Services, overrides
 - [browser-clicky-js](./browser-clicky-js)

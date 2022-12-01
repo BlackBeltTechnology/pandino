@@ -3,6 +3,6 @@
 A simple example showcasing service runtime override functionality using Pandino.
 
 ## Running the example
-Run `npm start` in this folder to start a web server
+Run `npx serve dist` in this folder to start a web server
 
-> Server will start at: http://localhost:5002
+> Server will start at: http://localhost:3000

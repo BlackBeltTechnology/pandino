@@ -14,7 +14,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@lerna-lite/cli": "^1.11.1",
-    "@lerna-lite/run": "^1.11.1"
+    "@lerna-lite/cli": "^1.13.0",
+    "@lerna-lite/run": "^1.13.0"
   }
 }
