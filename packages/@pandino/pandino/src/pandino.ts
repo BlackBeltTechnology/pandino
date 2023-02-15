@@ -53,7 +53,6 @@ import { StatefulResolver } from './lib/framework/stateful-resolver';
 import { ServiceRegistryImpl } from './lib/framework/service-registry-impl';
 import { FrameworkEventImpl } from './lib/framework/framework-event-impl';
 import { ConsoleLogger } from './lib/utils/console-logger';
-import Filter from './lib/filter/filter';
 import { ServiceEventImpl } from './lib/framework/service-event-impl';
 import { BundleRevisionImpl } from './lib/framework/bundle-revision-impl';
 import { VoidFetcher } from './lib/utils/void-fetcher';
@@ -65,6 +64,7 @@ import { FilterParserImpl } from './lib/filter/filter-parser';
 import { SemVerImpl } from './lib/utils/semver-impl';
 import { SemverFactoryImpl } from './lib/utils/semver-factory';
 import { EsmActivatorResolver } from './lib/framework/esm-activator-resolver';
+import { parse } from './lib/filter';
 
 export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;
@@ -459,7 +459,7 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   addServiceListener(bundle: BundleImpl, listener: ServiceListener, filter?: string): void {
-    const newFilter: FilterApi = isAnyMissing(filter) ? null : Filter.parse(filter);
+    const newFilter: FilterApi = isAnyMissing(filter) ? null : parse(filter);
 
     this.dispatcher.addListener(bundle.getBundleContext(), 'SERVICE', listener, newFilter);
   }
@@ -555,7 +555,7 @@ export class Pandino extends BundleImpl implements Framework {
   ): ServiceReference<any>[] {
     let filter: FilterApi = null;
     if (isAllPresent(expr)) {
-      filter = Filter.parse(expr);
+      filter = parse(expr);
     }
 
     const refList = this.registry.getServiceReferences(className, filter) as unknown as ServiceReference<any>[];

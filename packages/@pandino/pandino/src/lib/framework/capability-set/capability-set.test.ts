@@ -5,10 +5,11 @@ import { BundleRevisionImpl } from '../bundle-revision-impl';
 import { BundleImpl } from '../bundle-impl';
 import { MuteLogger } from '../../../__mocks__/mute-logger';
 import { Pandino } from '../../../pandino';
-import Filter, { FilterComp } from '../../filter/filter';
+import { FilterComp } from '../../filter';
 import { BundleRevision } from '../bundle-revision';
 import { BundleCapability } from '../wiring/bundle-capability';
 import { SemVerImpl } from '../../utils/semver-impl';
+import { parse } from '../../filter';
 
 describe('capability-set', () => {
   let capabilitySet: CapabilitySet;
@@ -35,11 +36,11 @@ describe('capability-set', () => {
   });
 
   it('static matches with filter', () => {
-    expect(CapabilitySet.matches(cap1, Filter.parse('(*)'))).toEqual(true);
-    expect(CapabilitySet.matches(cap1, Filter.parse('(&(attr1=val1)(attr2>=3))'))).toEqual(false);
-    expect(CapabilitySet.matches(cap1, Filter.parse('(&(attr1=val1)(attr2<=2))'))).toEqual(true);
-    expect(CapabilitySet.matches(cap1, Filter.parse('(|(attr1=val2)(attr2<=2))'))).toEqual(true);
-    expect(CapabilitySet.matches(cap1, Filter.parse('(!(attr1=val2))'))).toEqual(true);
+    expect(CapabilitySet.matches(cap1, parse('(*)'))).toEqual(true);
+    expect(CapabilitySet.matches(cap1, parse('(&(attr1=val1)(attr2>=3))'))).toEqual(false);
+    expect(CapabilitySet.matches(cap1, parse('(&(attr1=val1)(attr2<=2))'))).toEqual(true);
+    expect(CapabilitySet.matches(cap1, parse('(|(attr1=val2)(attr2<=2))'))).toEqual(true);
+    expect(CapabilitySet.matches(cap1, parse('(!(attr1=val2))'))).toEqual(true);
   });
 
   it('static matches mandatory attribute', () => {
@@ -55,14 +56,14 @@ describe('capability-set', () => {
       },
     );
 
-    expect(CapabilitySet.matches(cap1, Filter.parse('(&(attr2>=0)(attr2<=3))'))).toEqual(true);
+    expect(CapabilitySet.matches(cap1, parse('(&(attr2>=0)(attr2<=3))'))).toEqual(true);
     expect(CapabilitySet.matchMandatory(cap1)).toEqual(false);
   });
 
   it('static matchMandatoryAttribute', () => {
     expect(CapabilitySet.matchMandatoryAttribute('attr2')).toEqual(false);
-    expect(CapabilitySet.matchMandatoryAttribute('attr2', Filter.parse('(attr2="yayy")'))).toEqual(true);
-    expect(CapabilitySet.matchMandatoryAttribute('attr2', Filter.parse('(|(attr1="yayy")(nope=true))'))).toEqual(false);
+    expect(CapabilitySet.matchMandatoryAttribute('attr2', parse('(attr2="yayy")'))).toEqual(true);
+    expect(CapabilitySet.matchMandatoryAttribute('attr2', parse('(|(attr1="yayy")(nope=true))'))).toEqual(false);
   });
 
   it('instance matches with filter (add and remove)', () => {
@@ -79,15 +80,15 @@ describe('capability-set', () => {
     capabilitySet.addCapability(cap1);
     capabilitySet.addCapability(cap2);
 
-    expect(capabilitySet.match(Filter.parse('(*)'), false)).toEqual(new Set([cap1, cap2]));
-    expect(capabilitySet.match(Filter.parse('(|(attr1=val1)(attr1=val2))'), true)).toEqual(new Set([cap1, cap2]));
-    expect(capabilitySet.match(Filter.parse('(&(attr1=val1)(attr2<=3))'), true)).toEqual(new Set([cap1]));
-    expect(capabilitySet.match(Filter.parse('(&(attr2<=3)(!(attr1=val1)))'), true)).toEqual(new Set([cap2]));
-    expect(capabilitySet.match(Filter.parse('attr2<=3'), true)).toEqual(new Set([cap1, cap2]));
+    expect(capabilitySet.match(parse('(*)'), false)).toEqual(new Set([cap1, cap2]));
+    expect(capabilitySet.match(parse('(|(attr1=val1)(attr1=val2))'), true)).toEqual(new Set([cap1, cap2]));
+    expect(capabilitySet.match(parse('(&(attr1=val1)(attr2<=3))'), true)).toEqual(new Set([cap1]));
+    expect(capabilitySet.match(parse('(&(attr2<=3)(!(attr1=val1)))'), true)).toEqual(new Set([cap2]));
+    expect(capabilitySet.match(parse('attr2<=3'), true)).toEqual(new Set([cap1, cap2]));
 
     capabilitySet.removeCapability(cap1);
 
-    expect(capabilitySet.match(Filter.parse('attr2<=3'), true)).toEqual(new Set([cap2]));
+    expect(capabilitySet.match(parse('attr2<=3'), true)).toEqual(new Set([cap2]));
   });
 
   describe('compare()', () => {

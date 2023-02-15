@@ -3,7 +3,7 @@
   "version": "0.8.20",
   "description": "Install Bundles defined in a browser's DOM",
   "module": "./dist/bundle-installer-dom.mjs",
-  "types": "dist/index.d.ts",
+  "types": "dist/dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {

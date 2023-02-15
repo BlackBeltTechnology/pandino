@@ -1,4 +1,4 @@
-import { Event, EVENT_TOPIC, EventProperties } from '../../event-api';
+import { Event, EVENT_TOPIC, EventProperties } from '@pandino/event-api';
 import { FilterApi } from '@pandino/pandino-api';
 
 export class EventImpl implements Event {

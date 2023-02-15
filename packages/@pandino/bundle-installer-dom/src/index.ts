@@ -1,4 +1,5 @@
 import {
+  Bundle,
   BundleActivator,
   BundleContext,
   DEPLOYMENT_ROOT_PROP,
@@ -74,7 +75,7 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
   }
 
   async uninstall(path: string): Promise<void> {
-    const bundle = this.context.getBundles().find((bundle) => path === bundle.getLocation());
+    const bundle = this.context.getBundles().find((bundle: Bundle) => path === bundle.getLocation());
     if (bundle) {
       await bundle.uninstall();
     }

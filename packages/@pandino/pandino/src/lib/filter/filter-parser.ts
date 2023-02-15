@@ -1,9 +1,8 @@
 import { FilterApi, FilterParser } from '@pandino/pandino-api';
-
-import Filter from './filter';
+import { parse } from './parser';
 
 export class FilterParserImpl implements FilterParser {
   parse(filter: string): FilterApi {
-    return Filter.parse(filter);
+    return parse(filter);
   }
 }

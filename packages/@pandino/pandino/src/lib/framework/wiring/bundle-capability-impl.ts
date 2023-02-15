@@ -1,8 +1,26 @@
-import { MANDATORY_DIRECTIVE, USES_DIRECTIVE } from '@pandino/pandino-api';
-import { ManifestParserImpl } from '../util/manifest-parser/manifest-parser-impl';
+import {
+  BUNDLE_COPYRIGHT,
+  BUNDLE_DESCRIPTION,
+  BUNDLE_NAMESPACE,
+  BUNDLE_VERSION_ATTRIBUTE,
+  BundleConfigMap,
+  CAPABILITY_COPYRIGHT_ATTRIBUTE,
+  CAPABILITY_DESCRIPTION_ATTRIBUTE,
+  CAPABILITY_SINGLETON_DIRECTIVE,
+  CAPABILITY_TYPE_ATTRIBUTE,
+  CAPABILITY_VERSION_ATTRIBUTE,
+  FRAGMENT_HOST,
+  IDENTITY_NAMESPACE,
+  MANDATORY_DIRECTIVE,
+  SINGLETON_DIRECTIVE,
+  TYPE_BUNDLE,
+  TYPE_FRAGMENT,
+  USES_DIRECTIVE,
+} from '@pandino/pandino-api';
 import { isAnyMissing } from '../../utils/helpers';
 import { BundleCapability } from './bundle-capability';
 import { BundleRevision } from '../bundle-revision';
+import { parseDelimitedString } from '../util/manifest-parser/utils';
 
 export class BundleCapabilityImpl implements BundleCapability {
   private readonly revision: BundleRevision;
@@ -34,7 +52,7 @@ export class BundleCapabilityImpl implements BundleCapability {
     let mandatory: Set<string> = new Set<string>();
     value = this.dirs[MANDATORY_DIRECTIVE];
     if (value !== null && value !== undefined) {
-      const names = ManifestParserImpl.parseDelimitedString(value, ',');
+      const names = parseDelimitedString(value, ',');
       for (let name of names) {
         if (this.attrs.hasOwnProperty(name)) {
           mandatory.add(name);
@@ -50,13 +68,11 @@ export class BundleCapabilityImpl implements BundleCapability {
     if (isAnyMissing(other) || !(other instanceof BundleCapabilityImpl)) {
       return false;
     }
-    if (
+
+    return (
       this.revision.getVersion().compare(other.revision.getVersion()) === 0 &&
       this.getNamespace() === other.getNamespace()
-    ) {
-      return true;
-    }
-    return false;
+    );
   }
 
   getAttributes(): Record<string, any> {
@@ -97,5 +113,33 @@ export class BundleCapabilityImpl implements BundleCapability {
   private stringifyAttributes(): string {
     const list: string[] = Object.keys(this.attrs).map((key) => `${key}=${this.attrs[key]}`);
     return `${list.join('; ')}`;
+  }
+
+  public static addIdentityCapability(
+    owner: BundleRevision,
+    headerMap: BundleConfigMap,
+    bundleCap: BundleCapability,
+  ): BundleCapability {
+    const attrs: BundleConfigMap = { ...bundleCap.getAttributes() };
+
+    attrs[IDENTITY_NAMESPACE] = bundleCap.getAttributes()[BUNDLE_NAMESPACE];
+    attrs[CAPABILITY_TYPE_ATTRIBUTE] = !headerMap[FRAGMENT_HOST] ? TYPE_BUNDLE : TYPE_FRAGMENT;
+    attrs[CAPABILITY_VERSION_ATTRIBUTE] = bundleCap.getAttributes()[BUNDLE_VERSION_ATTRIBUTE];
+
+    if (headerMap[BUNDLE_COPYRIGHT]) {
+      attrs[CAPABILITY_COPYRIGHT_ATTRIBUTE] = headerMap[BUNDLE_COPYRIGHT];
+    }
+
+    if (headerMap[BUNDLE_DESCRIPTION]) {
+      attrs[CAPABILITY_DESCRIPTION_ATTRIBUTE] = headerMap[BUNDLE_DESCRIPTION];
+    }
+
+    let dirs: Record<string, any>;
+    if (bundleCap.getDirectives()[SINGLETON_DIRECTIVE]) {
+      dirs = { [CAPABILITY_SINGLETON_DIRECTIVE]: bundleCap.getDirectives()[SINGLETON_DIRECTIVE] };
+    } else {
+      dirs = {};
+    }
+    return new BundleCapabilityImpl(owner, IDENTITY_NAMESPACE, dirs, attrs);
   }
 }

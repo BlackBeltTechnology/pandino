@@ -23,7 +23,7 @@ import {
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { ServiceTrackerImpl } from './service-tracker-impl';
-import Filter from '../filter/filter';
+import { parse } from '../filter';
 
 interface TestService {
   sayHello(): string;
@@ -215,7 +215,7 @@ describe('ServiceTrackerImpl', () => {
     };
     const addingData: [ServiceProperties?, TestService?] = [];
     const bundle1 = await installBundle(bundle1Headers);
-    const tracker = bundle1.getBundleContext().trackService(Filter.parse('(prop1=test)'), {
+    const tracker = bundle1.getBundleContext().trackService(parse('(prop1=test)'), {
       addingService(reference: ServiceReference<TestService>): TestService {
         const service = bundle1.getBundleContext().getService(reference);
         addingData.push({ ...reference.getProperties() }, service);

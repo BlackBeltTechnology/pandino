@@ -1,4 +1,5 @@
 import Filter, { FilterComp } from './filter';
+import { parse } from './parser';
 
 describe('Filter', () => {
   describe('Building filters', () => {
@@ -103,7 +104,7 @@ describe('Filter', () => {
       expect(filter.match({ sn: 'jones' })).toEqual(true);
       expect(filter.match({ gn: 'jim' })).toEqual(false);
 
-      filter = Filter.parse('(sn=*)');
+      filter = parse('(sn=*)');
       expect(filter.match({ sn: 'smith' })).toEqual(true);
       expect(filter.match({ sn: 'jones' })).toEqual(true);
       expect(filter.match({ gn: 'jim' })).toEqual(false);
@@ -237,7 +238,7 @@ describe('Filter', () => {
   describe('Parsing', () => {
     it('replacer works for multiple inputs', () => {
       const filter = '(|(service.id=test)(service.id=test-other))';
-      const parsed = Filter.parse(filter);
+      const parsed = parse(filter);
       expect(parsed).toEqual({
         attrib: null,
         comp: '|',
@@ -253,25 +254,25 @@ describe('Filter', () => {
 
     it('parse small filter', () => {
       const filter = '(sn=smith)';
-      const parsed = Filter.parse(filter);
+      const parsed = parse(filter);
       expect(parsed.toString()).toEqual(filter);
     });
 
     it('parses a funny character value', () => {
       const filter = '(orgUnit=%)';
-      const parsed = Filter.parse(filter);
+      const parsed = parse(filter);
       expect(parsed.toString()).toEqual(filter);
     });
 
     it('parse more complex filter', () => {
       const filter = '(&(sn=smith)(gn=john)(!(age=5)))';
-      const parsed = Filter.parse(filter);
+      const parsed = parse(filter);
       expect(parsed.toString()).toEqual(filter);
     });
 
     it('matching against parsed filter', () => {
       const filter = '(&(sn=jensen)(gn=jenny))';
-      const parsed = Filter.parse(filter);
+      const parsed = parse(filter);
       let data: any = { sn: 'Jensen', gn: 'Jenny' };
       expect(parsed.match(data)).toEqual(true);
 
@@ -281,11 +282,11 @@ describe('Filter', () => {
 
     it('fails on incorrectly formed filter', () => {
       const filter = '(sn=smith';
-      expect(() => Filter.parse(filter)).toThrow();
+      expect(() => parse(filter)).toThrow();
     });
 
     it('parses match all', () => {
-      const parsed = Filter.parse('(*)');
+      const parsed = parse('(*)');
       expect(parsed.type).toEqual('filter');
       expect(parsed.comp).toEqual(FilterComp.MATCH_ALL);
       expect(parsed.attrib).toEqual(undefined);
@@ -294,7 +295,7 @@ describe('Filter', () => {
 
     it('parses substring matches beginning with asterisk', () => {
       const filter = '(sn=*smith*)';
-      const parsed = Filter.parse(filter);
+      const parsed = parse(filter);
       expect(parsed.type).toEqual('filter');
       expect(parsed.attrib).toEqual('sn');
       expect(parsed.comp).toEqual(FilterComp.EQ);
@@ -303,43 +304,43 @@ describe('Filter', () => {
 
     it('fails on incorrect format past first correct filter parse', () => {
       const filter = '(&(sn=smith))\n(uuid=3) f';
-      expect(() => Filter.parse(filter)).toThrow();
+      expect(() => parse(filter)).toThrow();
     });
 
     it('allows whitespace', () => {
       const filter = ' (&  (sn=smith) \n )  ';
-      expect(Filter.parse(filter).toString()).toEqual('(&(sn=smith))');
+      expect(parse(filter).toString()).toEqual('(&(sn=smith))');
     });
 
     it('parses a single filter without parenthesis', () => {
       const filter = 'sn=smith';
-      expect(Filter.parse(filter).toString()).toEqual('(sn=smith)');
+      expect(parse(filter).toString()).toEqual('(sn=smith)');
     });
 
     it('allows whitespace on single filter without parenthesis', () => {
       const filter = '\n sn=smith ';
-      expect(Filter.parse(filter).toString()).toEqual('(sn=smith)');
+      expect(parse(filter).toString()).toEqual('(sn=smith)');
     });
   });
 
   describe('Simplify', () => {
     it("does not simplify what it shouldn't", () => {
       const input = '(&(givenName=jenny)(sn=jensen)(|(c=us)(st=ontario)))';
-      const parsed = Filter.parse(input);
+      const parsed = parse(input);
       expect(parsed.toString()).toEqual(input);
     });
 
     it('does simplify what it should', () => {
       const input = '(&(givenName=jenny)(sn=jensen)(|(!(c=us))(st=ontario)))';
       const complex = '(&(|(givenName=jenny))(&(sn=jensen))(|(!(c=us))(st=ontario)))';
-      const parsed = Filter.parse(complex);
+      const parsed = parse(complex);
       expect(parsed.simplify().toString()).toEqual(input);
     });
   });
 
   describe('Output', () => {
     const input = '(&(givenName=jenny)(sn=jensen)(|(c=us)(st=ontario)))';
-    const parsed = Filter.parse(input);
+    const parsed = parse(input);
 
     it('basic output toString()', () => {
       expect(parsed.toString()).toEqual('(&(givenName=jenny)(sn=jensen)(|(c=us)(st=ontario)))');
@@ -382,7 +383,7 @@ describe('Filter', () => {
     });
 
     it('values that require escaping', () => {
-      const parsed = Filter.parse('(service.id=4)');
+      const parsed = parse('(service.id=4)');
       expect(parsed.type).toEqual('filter');
       expect(parsed.attrib).toEqual('service.id');
       expect(parsed.comp).toEqual(FilterComp.EQ);
@@ -390,7 +391,7 @@ describe('Filter', () => {
     });
 
     it('values that require escaping (recursive)', () => {
-      const parsed = Filter.parse('(|(service.id=4)(test=test)(service.description=test description))');
+      const parsed = parse('(|(service.id=4)(test=test)(service.description=test description))');
       expect(parsed.type).toEqual('group');
       expect(parsed.filters[0].attrib).toEqual('service.id');
       expect(parsed.filters[0].comp).toEqual(FilterComp.EQ);

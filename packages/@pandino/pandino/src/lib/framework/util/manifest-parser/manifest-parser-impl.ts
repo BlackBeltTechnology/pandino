@@ -3,29 +3,18 @@ import {
   BundleConfigMap,
   ACTIVATION_LAZY,
   BUNDLE_ACTIVATIONPOLICY,
-  BUNDLE_COPYRIGHT,
-  BUNDLE_DESCRIPTION,
   BUNDLE_MANIFESTVERSION,
   BUNDLE_NAMESPACE,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
   BUNDLE_VERSION_ATTRIBUTE,
-  CAPABILITY_COPYRIGHT_ATTRIBUTE,
-  CAPABILITY_DESCRIPTION_ATTRIBUTE,
-  CAPABILITY_SINGLETON_DIRECTIVE,
-  CAPABILITY_TYPE_ATTRIBUTE,
-  CAPABILITY_VERSION_ATTRIBUTE,
   EXCLUDE_DIRECTIVE,
   FILTER_DIRECTIVE,
   FRAGMENT_HOST,
-  IDENTITY_NAMESPACE,
   INCLUDE_DIRECTIVE,
   PROVIDE_CAPABILITY,
   REQUIRE_BUNDLE,
   REQUIRE_CAPABILITY,
-  SINGLETON_DIRECTIVE,
-  TYPE_BUNDLE,
-  TYPE_FRAGMENT,
   BundleManifestHeaders,
   SemVer,
 } from '@pandino/pandino-api';
@@ -33,12 +22,14 @@ import { BundleCapabilityImpl } from '../../wiring/bundle-capability-impl';
 import { ParsedHeaderClause } from './parsed-header-clause';
 import { BundleRequirementImpl } from '../../wiring/bundle-requirement-impl';
 import Filter, { FilterComp } from '../../../filter/filter';
+import { convert, parse } from '../../../filter';
 import { isAnyMissing } from '../../../utils/helpers';
 import { ManifestParser } from './manifest-parser';
 import { BundleRequirement } from '../../wiring/bundle-requirement';
 import { BundleCapability } from '../../wiring/bundle-capability';
 import { BundleRevision } from '../../bundle-revision';
 import { SemVerImpl } from '../../../utils/semver-impl';
+import { parseDelimitedString } from './utils';
 
 export class ManifestParserImpl implements ManifestParser {
   private readonly configMap: BundleConfigMap;
@@ -57,7 +48,7 @@ export class ManifestParserImpl implements ManifestParser {
     this.configMap = configMap;
     this.headerMap = headerMap;
 
-    const capList: Array<BundleCapabilityImpl> = [];
+    const capList: Array<BundleCapability> = [];
 
     // Parse bundle version.
     this.bundleVersion = ManifestParserImpl.EMPTY_VERSION;
@@ -73,7 +64,7 @@ export class ManifestParserImpl implements ManifestParser {
     }
 
     // Parse bundle symbolic name.
-    const bundleCap: BundleCapabilityImpl = ManifestParserImpl.parseBundleSymbolicName(owner, this.headerMap);
+    const bundleCap: BundleCapability = ManifestParserImpl.parseBundleSymbolicName(owner, this.headerMap);
     if (bundleCap) {
       this.bundleSymbolicName = bundleCap.getAttributes()[BUNDLE_NAMESPACE];
 
@@ -81,7 +72,7 @@ export class ManifestParserImpl implements ManifestParser {
         capList.push(bundleCap);
       }
 
-      capList.push(ManifestParserImpl.addIdentityCapability(owner, headerMap, bundleCap));
+      capList.push(BundleCapabilityImpl.addIdentityCapability(owner, headerMap, bundleCap));
     }
 
     // Verify that bundle symbolic name is specified.
@@ -176,69 +167,6 @@ export class ManifestParserImpl implements ManifestParser {
     return this.requirements;
   }
 
-  static parseDelimitedString(value: string, delim: string, trim = true): string[] {
-    if (isAnyMissing(value)) {
-      value = '';
-    }
-
-    const list: string[] = [];
-
-    const CHAR = 1;
-    const DELIMITER = 2;
-    const STARTQUOTE = 4;
-    const ENDQUOTE = 8;
-
-    let sb = '';
-
-    let expecting = CHAR | DELIMITER | STARTQUOTE;
-
-    let isEscaped = false;
-    for (let i = 0; i < value.length; i++) {
-      const c = value.charAt(i);
-
-      const isDelimiter = delim.indexOf(c) >= 0;
-
-      if (!isEscaped && c == '\\') {
-        isEscaped = true;
-        continue;
-      }
-
-      if (isEscaped) {
-        sb += c;
-      } else if (isDelimiter && (expecting & DELIMITER) > 0) {
-        if (trim) {
-          list.push(sb.toString().trim());
-        } else {
-          list.push(sb.toString());
-        }
-        sb = '';
-        expecting = CHAR | DELIMITER | STARTQUOTE;
-      } else if (c == '"' && (expecting & STARTQUOTE) > 0) {
-        sb += c;
-        expecting = CHAR | ENDQUOTE;
-      } else if (c == '"' && (expecting & ENDQUOTE) > 0) {
-        sb += c;
-        expecting = CHAR | STARTQUOTE | DELIMITER;
-      } else if ((expecting & CHAR) > 0) {
-        sb += c;
-      } else {
-        throw new Error('Invalid delimited string: ' + value);
-      }
-
-      isEscaped = false;
-    }
-
-    if (sb.length > 0) {
-      if (trim) {
-        list.push(sb.toString().trim());
-      } else {
-        list.push(sb.toString());
-      }
-    }
-
-    return list;
-  }
-
   getManifestVersion(): string {
     const manifestVersion = ManifestParserImpl.getManifestVersion(this.headerMap);
     return isAnyMissing(manifestVersion) ? '1' : manifestVersion;
@@ -280,8 +208,7 @@ export class ManifestParserImpl implements ManifestParser {
       }
 
       // Create a require capability and return it.
-      const symName: string = clauses[0].paths[0];
-      clauses[0].attrs[BUNDLE_NAMESPACE] = symName;
+      clauses[0].attrs[BUNDLE_NAMESPACE] = clauses[0].paths[0];
       clauses[0].attrs[BUNDLE_VERSION_ATTRIBUTE] = bundleVersion;
       return new BundleCapabilityImpl(owner, BUNDLE_NAMESPACE, clauses[0].dirs, clauses[0].attrs);
     }
@@ -375,11 +302,7 @@ export class ManifestParserImpl implements ManifestParser {
               listType = type.substring(startIdx + 1, endIdx).trim();
             }
 
-            const tokens: Array<string> = ManifestParserImpl.parseDelimitedString(
-              clause.attrs[key].toString().trim(),
-              ',',
-              false,
-            );
+            const tokens: Array<string> = parseDelimitedString(clause.attrs[key].toString().trim(), ',', false);
             const values: Array<any> = [];
             for (let token of tokens) {
               if (listType === 'string') {
@@ -401,34 +324,6 @@ export class ManifestParserImpl implements ManifestParser {
     }
 
     return clauses;
-  }
-
-  private static addIdentityCapability(
-    owner: BundleRevision,
-    headerMap: BundleConfigMap,
-    bundleCap: BundleCapabilityImpl,
-  ): BundleCapabilityImpl {
-    const attrs: BundleConfigMap = { ...bundleCap.getAttributes() };
-
-    attrs[IDENTITY_NAMESPACE] = bundleCap.getAttributes()[BUNDLE_NAMESPACE];
-    attrs[CAPABILITY_TYPE_ATTRIBUTE] = !headerMap[FRAGMENT_HOST] ? TYPE_BUNDLE : TYPE_FRAGMENT;
-    attrs[CAPABILITY_VERSION_ATTRIBUTE] = bundleCap.getAttributes()[BUNDLE_VERSION_ATTRIBUTE];
-
-    if (headerMap[BUNDLE_COPYRIGHT]) {
-      attrs[CAPABILITY_COPYRIGHT_ATTRIBUTE] = headerMap[BUNDLE_COPYRIGHT];
-    }
-
-    if (headerMap[BUNDLE_DESCRIPTION]) {
-      attrs[CAPABILITY_DESCRIPTION_ATTRIBUTE] = headerMap[BUNDLE_DESCRIPTION];
-    }
-
-    let dirs: Record<string, any>;
-    if (bundleCap.getDirectives()[SINGLETON_DIRECTIVE]) {
-      dirs = { [CAPABILITY_SINGLETON_DIRECTIVE]: bundleCap.getDirectives()[SINGLETON_DIRECTIVE] };
-    } else {
-      dirs = {};
-    }
-    return new BundleCapabilityImpl(owner, IDENTITY_NAMESPACE, dirs, attrs);
   }
 
   private static normalizeRequireClauses(clauses: ParsedHeaderClause[], mv: string): ParsedHeaderClause[] {
@@ -456,7 +351,7 @@ export class ManifestParserImpl implements ManifestParser {
           ...attrs,
           [BUNDLE_NAMESPACE]: path, // ensure it's not overwritten
         };
-        const sf: Filter = Filter.convert(newAttrs);
+        const sf: Filter = convert(newAttrs);
         const dirs: Record<string, string> = clause.dirs;
         const newDirs: Record<string, string> = {
           ...dirs,
@@ -476,7 +371,7 @@ export class ManifestParserImpl implements ManifestParser {
       try {
         let filterStr: string = clause.dirs[FILTER_DIRECTIVE];
         const sf: Filter = !!filterStr
-          ? Filter.parse(filterStr.trim().replace(/"|\\"/g, '').toString())
+          ? parse(filterStr.trim().replace(/"|\\"/g, '').toString())
           : new Filter(null, FilterComp.MATCH_ALL, null, []);
         for (const path of clause.paths) {
           if (path.startsWith('pandino.wiring.')) {

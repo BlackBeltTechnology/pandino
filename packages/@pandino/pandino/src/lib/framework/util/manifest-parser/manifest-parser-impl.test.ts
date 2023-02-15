@@ -22,6 +22,7 @@ import Filter from '../../../filter/filter';
 import { BundleCapability } from '../../wiring/bundle-capability';
 import { BundleRequirement } from '../../wiring/bundle-requirement';
 import { SemVerImpl } from '../../../utils/semver-impl';
+import { parse } from '../../../filter';
 
 describe('ManifestParserImp', () => {
   it('single attribute', () => {
@@ -131,7 +132,7 @@ describe('ManifestParserImp', () => {
     const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
     const expected = Filter.AND([Filter.attribute('type').equalTo('cat'), Filter.attribute('rate').lte(20)]);
 
-    expect(Filter.parse(rc1.getDirectives()['filter']).toString()).toEqual(expected.toString());
+    expect(parse(rc1.getDirectives()['filter']).toString()).toEqual(expected.toString());
   });
 
   it('only namespace, no attributes', () => {
@@ -172,9 +173,9 @@ describe('ManifestParserImp', () => {
     const pc2: BundleCapability = findCapability(mp.getCapabilities(), 'some.other.cap');
     const expected2 = Filter.AND([Filter.attribute('attr1').equalTo(1), Filter.attribute('attr2').lte(500)]);
 
-    expect(Filter.parse(rc1.getDirectives()['filter']).toString()).toEqual(expected1.toString());
+    expect(parse(rc1.getDirectives()['filter']).toString()).toEqual(expected1.toString());
     expect(rc2.getAttributes()['test']).toEqual('value');
-    expect(Filter.parse(pc1.getDirectives()['filter']).toString()).toEqual(expected2.toString());
+    expect(parse(pc1.getDirectives()['filter']).toString()).toEqual(expected2.toString());
     expect(pc2.getAttributes()['fine']).toEqual(1);
   });
 });

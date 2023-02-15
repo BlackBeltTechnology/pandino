@@ -22,13 +22,13 @@ import {
   ServiceTracker,
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
-import Filter from '../filter/filter';
 import { BundleImpl } from './bundle-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { ServiceReferenceImpl } from './service-reference-impl';
 import { ServiceObjectsImpl } from './service-objects-impl';
 import { BundleTrackerImpl } from './bundle-tracker-impl';
 import { ServiceTrackerImpl } from './service-tracker-impl';
+import { parse } from '../filter';
 
 export class BundleContextImpl implements BundleContext {
   private valid = true;
@@ -68,7 +68,7 @@ export class BundleContextImpl implements BundleContext {
   createFilter(filter: string): FilterApi {
     this.checkValidity();
 
-    return Filter.parse(filter);
+    return parse(filter);
   }
 
   getBundle(id?: number): Bundle {

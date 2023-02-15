@@ -4,6 +4,7 @@ import Filter from '../../filter/filter';
 import { BundleRevision } from '../bundle-revision';
 import { BundleCapability } from './bundle-capability';
 import { BundleRequirement } from './bundle-requirement';
+import { convert } from '../../filter';
 
 export class BundleRequirementImpl implements BundleRequirement {
   private readonly revision: BundleRevision;
@@ -24,7 +25,7 @@ export class BundleRequirementImpl implements BundleRequirement {
     this.namespace = namespace;
     this.dirs = dirs;
     this.attrs = attrs;
-    this.filter = filter || Filter.convert(this.attrs);
+    this.filter = filter || convert(this.attrs);
     this.optional =
       this.dirs.hasOwnProperty(RESOLUTION_DIRECTIVE) && this.dirs[RESOLUTION_DIRECTIVE] === RESOLUTION_OPTIONAL;
   }
