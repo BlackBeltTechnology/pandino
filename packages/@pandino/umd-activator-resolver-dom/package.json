@@ -3,7 +3,7 @@
   "version": "0.8.20",
   "description": "Activator Resolver supporting UMD modules for browsers",
   "module": "./dist/umd-activator-resolver-dom.mjs",
-  "types": "dist/index.d.ts",
+  "types": "dist/dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {

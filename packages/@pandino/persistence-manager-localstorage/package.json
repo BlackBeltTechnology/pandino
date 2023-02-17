@@ -3,7 +3,7 @@
   "version": "0.8.20",
   "description": "Localstorage implementation of the Pandino Persistence Manager API",
   "module": "./dist/esm/persistence-manager-localstorage.mjs",
-  "types": "dist/esm/index.d.ts",
+  "types": "dist/esm/dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
@@ -64,13 +64,10 @@
         "lines": 85
       }
     },
-    "globals": {
-      "ts-jest": {
-        "tsconfig": "tsconfig.test.json"
-      }
-    },
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": ["ts-jest", {
+        "tsconfig": "tsconfig.test.json"
+      }]
     },
     "moduleFileExtensions": [
       "ts",

@@ -3,7 +3,6 @@ import { Pandino } from '../../pandino';
 import { CapabilitySet } from './capability-set/capability-set';
 import { BundleRevisionImpl } from './bundle-revision-impl';
 import { BundleRequirementImpl } from './wiring/bundle-requirement-impl';
-import { isAnyMissing } from '../utils/helpers';
 import { BundleWireImpl } from './wiring/bundle-wire-impl';
 import { BundleWiringImpl } from './bundle-wiring-impl';
 import { BundleImpl } from './bundle-impl';
@@ -101,7 +100,7 @@ export class StatefulResolver {
   }
 
   private static canBundleBeResolved(rev: BundleRevision, wires: Array<BundleWire>): boolean {
-    const validStates: BundleState[] = ['INSTALLED', 'STARTING'];
+    const validStates: BundleState[] = ['INSTALLED', 'STARTING', 'ACTIVE'];
     if (!validStates.includes(rev.getBundle().getState())) {
       return false;
     }

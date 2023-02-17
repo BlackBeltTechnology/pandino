@@ -4,7 +4,7 @@
   "description": "The reference implementation of the Pandino API specification",
   "main": "./dist/cjs/pandino.cjs",
   "module": "./dist/esm/pandino.mjs",
-  "types": "dist/esm/index.d.ts",
+  "types": "dist/esm/dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
@@ -65,13 +65,10 @@
         "lines": 80
       }
     },
-    "globals": {
-      "ts-jest": {
-        "tsconfig": "tsconfig.test.json"
-      }
-    },
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": ["ts-jest", {
+        "tsconfig": "tsconfig.test.json"
+      }]
     },
     "moduleFileExtensions": [
       "ts",

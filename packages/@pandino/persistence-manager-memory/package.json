@@ -4,7 +4,7 @@
   "description": "In Memory implementation of the Pandino Persistence Manager API",
   "main": "./dist/cjs/persistence-manager-memory.cjs",
   "module": "./dist/esm/persistence-manager-memory.mjs",
-  "types": "dist/esm/index.d.ts",
+  "types": "dist/esm/dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
@@ -67,13 +67,10 @@
         "lines": 95
       }
     },
-    "globals": {
-      "ts-jest": {
-        "tsconfig": "tsconfig.test.json"
-      }
-    },
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": ["ts-jest", {
+        "tsconfig": "tsconfig.test.json"
+      }]
     },
     "moduleFileExtensions": [
       "ts",

@@ -19,7 +19,7 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
     this.context = context;
     this.fetcherReference = context.getServiceReference<ManifestFetcher>(FRAMEWORK_MANIFEST_FETCHER);
     this.fetcher = context.getService<ManifestFetcher>(this.fetcherReference);
-    await this.registerDocumentDefinedManifests();
+    this.registerDocumentDefinedManifests();
   }
 
   async stop(context: BundleContext): Promise<void> {
@@ -64,7 +64,7 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
       this.installedManifestList = [...locations];
     };
 
-    await callback();
+    callback();
 
     this.observer = new MutationObserver(callback);
     this.observer.observe(documentDefinedManifest.childNodes[0], config);
