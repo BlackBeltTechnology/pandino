@@ -1,6 +1,6 @@
 {
   "name": "@pandino/configuration-management",
-  "version": "0.8.20",
+  "version": "0.8.21",
   "description": "",
   "main": "./dist/cjs/configuration-management.cjs",
   "module": "./dist/esm/configuration-management.mjs",
@@ -45,10 +45,10 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/configuration-management-api": "^0.8.20",
-    "@pandino/pandino": "^0.8.20",
-    "@pandino/pandino-api": "^0.8.20",
-    "@pandino/persistence-manager-api": "^0.8.20",
+    "@pandino/configuration-management-api": "^0.8.21",
+    "@pandino/pandino": "^0.8.21",
+    "@pandino/pandino-api": "^0.8.21",
+    "@pandino/persistence-manager-api": "^0.8.21",
     "@pandino/rollup-plugin-generate-manifest": "^0.8.20"
   },
   "jest": {
@@ -67,9 +67,12 @@
       }
     },
     "transform": {
-      "^.+\\.tsx?$": ["ts-jest", {
-        "tsconfig": "tsconfig.test.json"
-      }]
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "tsconfig.test.json"
+        }
+      ]
     },
     "moduleFileExtensions": [
       "ts",

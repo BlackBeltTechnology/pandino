@@ -1,6 +1,6 @@
 {
   "name": "@pandino/persistence-manager-memory",
-  "version": "0.8.20",
+  "version": "0.8.21",
   "description": "In Memory implementation of the Pandino Persistence Manager API",
   "main": "./dist/cjs/persistence-manager-memory.cjs",
   "module": "./dist/esm/persistence-manager-memory.mjs",
@@ -48,8 +48,8 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.20",
-    "@pandino/persistence-manager-api": "^0.8.20",
+    "@pandino/pandino-api": "^0.8.21",
+    "@pandino/persistence-manager-api": "^0.8.21",
     "@pandino/rollup-plugin-generate-manifest": "^0.8.20"
   },
   "jest": {
@@ -68,9 +68,12 @@
       }
     },
     "transform": {
-      "^.+\\.tsx?$": ["ts-jest", {
-        "tsconfig": "tsconfig.test.json"
-      }]
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "tsconfig.test.json"
+        }
+      ]
     },
     "moduleFileExtensions": [
       "ts",

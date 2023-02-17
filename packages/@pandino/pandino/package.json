@@ -1,6 +1,6 @@
 {
   "name": "@pandino/pandino",
-  "version": "0.8.20",
+  "version": "0.8.21",
   "description": "The reference implementation of the Pandino API specification",
   "main": "./dist/cjs/pandino.cjs",
   "module": "./dist/esm/pandino.mjs",
@@ -48,7 +48,7 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.20"
+    "@pandino/pandino-api": "^0.8.21"
   },
   "jest": {
     "collectCoverage": true,
@@ -66,9 +66,12 @@
       }
     },
     "transform": {
-      "^.+\\.tsx?$": ["ts-jest", {
-        "tsconfig": "tsconfig.test.json"
-      }]
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "tsconfig.test.json"
+        }
+      ]
     },
     "moduleFileExtensions": [
       "ts",
