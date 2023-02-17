@@ -29,8 +29,8 @@
     </div>
 
     <script type="module">
-      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom/dist/loader-configuration-dom.mjs';
-      import Pandino from 'https://unpkg.com/@pandino/pandino/dist/esm/pandino.mjs';
+      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@latest/dist/loader-configuration-dom.mjs';
+      import Pandino from 'https://unpkg.com/@pandino/pandino@latest/dist/esm/pandino.mjs';
 
       const pandino = new Pandino({
         ...loaderConfiguration,
@@ -66,7 +66,7 @@
         clickAction(form.elements['test'].value)
       });
 
-      pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom/dist/bundle-installer-dom-manifest.json');
+      pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom@latest/dist/bundle-installer-dom-manifest.json');
     </script>
   </body>
 </html>
