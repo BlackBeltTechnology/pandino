@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/@lerna-lite/cli/schemas/lerna-schema.json",
+  "packages": [
+    "packages/*"
+  ],
+  "npmClient": "npm",
+  "version": "1.0.0",
+  "ignoreChanges": [
+    "**/__fixtures__/**",
+    "**/__tests__/**",
+    "**/helpers/**",
+    "**/*.md"
+  ]
+}

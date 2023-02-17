@@ -1,0 +1,22 @@
+{
+  "name": "@react-esm/component-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "cross-env NODE_ENV=production rollup -c && npm run build:types",
+    "build:types": "tsc --emitDeclarationOnly --declaration --project tsconfig.json",
+    "build:dev": "rollup -c"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "@types/react": "^18.0.26"
+  }
+}
