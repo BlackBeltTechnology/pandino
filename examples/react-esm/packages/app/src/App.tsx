@@ -1,41 +1,48 @@
-import {FC, useEffect, useState} from 'react';
-import {BundleContext, ServiceReference} from "@pandino/pandino-api";
-import {CustomComponent} from "@react-esm/component-api";
-import {CUSTOM_COMPONENT_INTERFACE_KEY} from "@react-esm/component-api";
+import { FC, useEffect, useState } from 'react';
+import type { BundleContext, ServiceReference } from '@pandino/pandino-api';
+import type { CustomComponent } from '@react-esm/component-api';
+import { CUSTOM_COMPONENT_INTERFACE_KEY } from '@react-esm/component-api';
 
 export interface AppProps {
-    bundleContext: BundleContext;
+  bundleContext: BundleContext;
+}
+
+export interface ComponentProvider<T> {
+  getComponent: () => T | undefined;
 }
 
 export const App: FC<AppProps> = ({ bundleContext }) => {
-  const [hello, setHello] = useState<string>('Greetings!');
   const [firstName, setFirstName] = useState<string>('John');
-  const [ExternalComponent, setExternalComponent] = useState<CustomComponent | undefined>(undefined);
+  const [externalComponentProvider, setExternalComponentProvider] = useState<ComponentProvider<CustomComponent>>({
+    getComponent: () => undefined,
+  });
 
   useEffect(() => {
-      const tracker = bundleContext.trackService(CUSTOM_COMPONENT_INTERFACE_KEY, {
-          addingService(reference: ServiceReference<CustomComponent>): CustomComponent {
-              const component = bundleContext.getService<CustomComponent>(reference);
-              setExternalComponent(component);
+    const tracker = bundleContext.trackService(CUSTOM_COMPONENT_INTERFACE_KEY, {
+      addingService(reference: ServiceReference<CustomComponent>): CustomComponent {
+        const CustomComponentFunction = bundleContext.getService<CustomComponent>(reference);
+        setExternalComponentProvider({ getComponent: () => CustomComponentFunction });
 
-              console.log(component);
+        return CustomComponentFunction;
+      },
+      removedService(_: ServiceReference<CustomComponent>, __: CustomComponent) {
+        setExternalComponentProvider({ getComponent: () => undefined });
+      },
+    });
 
-              return  component;
-          },
-      });
+    tracker.open();
 
-      tracker.open();
-
-      return () => {
-          tracker.close();
-      };
+    return () => {
+      tracker.close();
+    };
   }, []);
+
+  const ExternalComponent = externalComponentProvider.getComponent();
 
   return (
     <>
       <h1>React + Pandino</h1>
-      <p>{hello}</p>
-        {ExternalComponent && <ExternalComponent firstName={firstName} />}
+      {ExternalComponent && <ExternalComponent firstName={firstName} />}
     </>
   );
 };

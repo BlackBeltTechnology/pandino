@@ -13,8 +13,8 @@ export default [
     {
         input: 'src/index.tsx',
         output: {
-            file: 'dist/component-one.mjs',
-            format: 'esm',
+            file: 'dist/component-one.system.js',
+            format: 'system',
             sourcemap: ENV === 'production',
         },
         plugins: [

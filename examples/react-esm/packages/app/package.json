@@ -17,7 +17,8 @@
     "@pandino/loader-configuration-dom": "file:../../../../packages/@pandino/loader-configuration-dom",
     "@pandino/pandino": "file:../../../../packages/@pandino/pandino",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "systemjs": "^6.13.0"
   },
   "devDependencies": {
     "@pandino/pandino-api": "file:../../../../packages/@pandino/pandino-api",

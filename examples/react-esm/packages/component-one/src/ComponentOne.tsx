@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { CustomComponent } from '@react-esm/component-api';
+import type { CustomComponent } from '@react-esm/component-api';
 
 export const ComponentOne: CustomComponent = (props) => {
   const [data, setData] = useState<{ firstName: string; lastName?: string }>({ ...props });
 
   return (
-    <>
-      <h3>Component One:</h3>
+    <div className="component-one" style={{ border: '1px solid black', padding: '1rem' }}>
+      <h3>Component One</h3>
       <p>FirstName: {data.firstName}</p>
       <p>LastName: {data.lastName}</p>
-    </>
+    </div>
   );
 };

@@ -1,5 +1,3 @@
-import { EOL } from 'node:os';
-import { readFileSync } from 'node:fs';
 import * as dotenv from 'dotenv';
 import replace from '@rollup/plugin-replace';
 import clear from 'rollup-plugin-clear';
@@ -8,59 +6,26 @@ import esbuild from 'rollup-plugin-esbuild';
 import html from '@rollup/plugin-html';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import {customTemplate} from "./rollup/helpers.mjs";
 
 dotenv.config();
 
-const pkg = JSON.parse(readFileSync('package.json').toString());
 const ENV = process.env.NODE_ENV;
 
-const makeHtmlAttributes = (attributes) => {
-    if (!attributes) {
-        return '';
-    }
-    const keys = Object.keys(attributes);
-    return keys.reduce((result, key) => (result += ` ${key}="${attributes[key]}"`), '');
-};
-
-const customTemplate = ({ attributes, files, meta, publicPath, title }) => {
-    const scripts = (files.js || [])
-        .map(({ fileName }) => {
-            const attrs = makeHtmlAttributes(attributes.script);
-            return `<script src="${publicPath}${fileName}"${attrs}></script>`;
-        })
-        .join(EOL);
-
-    const links = (files.css || [])
-        .map(({ fileName }) => {
-            const attrs = makeHtmlAttributes(attributes.link);
-            return `<link href="${publicPath}${fileName}" rel="stylesheet"${attrs}>`;
-        })
-        .join(EOL);
-
-    const metas = meta
-        .map((input) => {
-            const attrs = makeHtmlAttributes(input);
-            return `<meta${attrs}>`;
-        })
-        .join(EOL);
-
-    return `
-<!doctype html>
-<html${makeHtmlAttributes(attributes.html)}>
-  <head>
-    ${metas}
-    <title>${title}</title>
-    ${links}
-    <script type="pandino-manifests">
-      [
-        ${pkg.pandino['bundle-installer-dom'].bundles.map(b => `"${b}"`).join(', ')}
-      ]
-  </script>
-  </head>
-  <body>
-    ${scripts}
-  </body>
-</html>`;
+const repackagedConfig = {
+    plugins: [
+        replace({
+            preventAssignment: false,
+            values: {
+                'process.env.NODE_ENV': JSON.stringify('production'),
+            },
+        }),
+        nodeResolve(),
+        commonjs(),
+        esbuild({
+            minify: ENV === 'production',
+        }),
+    ],
 };
 
 export default [
@@ -68,9 +33,10 @@ export default [
         input: 'src/main.tsx',
         output: {
             dir: 'dist',
-            format: 'esm',
+            format: 'system',
             sourcemap: ENV === 'production',
         },
+        external: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime', '@pandino/pandino'],
         plugins: [
             clear({
                 targets: ['dist'],
@@ -88,7 +54,11 @@ export default [
             }),
             copy({
                 targets: [
-                    { src: '../component-one/dist/*', dest: 'dist' },
+                    {src: '../component-one/dist/*', dest: 'dist'},
+                    {src: '../../node_modules/systemjs/dist/*', dest: 'dist/systemjs'},
+                    {src: '../../node_modules/@pandino/bundle-installer-dom/dist/*.*', dest: 'dist'},
+                    {src: '../../node_modules/react/umd/*', dest: 'dist/react'},
+                    {src: '../../node_modules/@pandino/pandino/dist/system/*.*', dest: 'dist/pandino'},
                 ],
             }),
             html({
@@ -96,5 +66,35 @@ export default [
                 template: customTemplate,
             }),
         ],
+    },
+    {
+        input: 'repackaged/react-jsx-runtime.tsx',
+        output: {
+            file: 'dist/react/react-jsx-runtime.system.js',
+            format: 'system',
+            sourcemap: ENV === 'production',
+        },
+        external: ['react'],
+        ...repackagedConfig,
+    },
+    {
+        input: 'repackaged/react-is.tsx',
+        output: {
+            file: 'dist/react/react-is.system.js',
+            format: 'system',
+            sourcemap: ENV === 'production',
+        },
+        external: ['react'],
+        ...repackagedConfig,
+    },
+    {
+        input: 'repackaged/react-dom-client.tsx',
+        output: {
+            file: 'dist/react/react-dom-client.system.js',
+            format: 'system',
+            sourcemap: ENV === 'production',
+        },
+        external: ['react'],
+        ...repackagedConfig,
     },
 ];

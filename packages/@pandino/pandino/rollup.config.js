@@ -18,6 +18,11 @@ export default {
       file: 'dist/cjs/pandino.cjs',
       format: 'cjs',
     },
+    {
+      sourcemap: ENV === 'PRODUCTION',
+      file: 'dist/system/pandino.js',
+      format: 'system',
+    },
   ],
   plugins: [
     clear({
