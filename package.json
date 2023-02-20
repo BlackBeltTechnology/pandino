@@ -14,8 +14,6 @@
     "format": "prettier --config .prettierrc \"packages/@pandino/*/src/**/*.{js,ts,tsx}\" --write",
     "format-examples": "prettier --config .prettierrc examples/*/packages/*/src/**/*.{ts,tsx} --write",
     "new-version": "lerna version --yes",
-    "new-publish": "lerna publish",
-    "new-publish:ci": "lerna publish --yes",
     "conventional-changelog": "conventional-changelog",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "lerna": "lerna"
