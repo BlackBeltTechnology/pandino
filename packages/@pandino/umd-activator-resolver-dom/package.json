@@ -1,6 +1,6 @@
 {
   "name": "@pandino/umd-activator-resolver-dom",
-  "version": "0.8.21",
+  "version": "0.8.22",
   "description": "Activator Resolver supporting UMD modules for browsers",
   "module": "./dist/umd-activator-resolver-dom.mjs",
   "types": "dist/dist/index.d.ts",
@@ -43,6 +43,6 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.21"
+    "@pandino/pandino-api": "^0.8.22"
   }
 }

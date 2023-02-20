@@ -1,6 +1,6 @@
 {
   "name": "@pandino/bundle-installer-dom",
-  "version": "0.8.21",
+  "version": "0.8.22",
   "description": "Install Bundles defined in a browser's DOM",
   "module": "./dist/bundle-installer-dom.mjs",
   "types": "dist/dist/index.d.ts",
@@ -42,8 +42,8 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.21",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.20"
+    "@pandino/pandino-api": "^0.8.22",
+    "@pandino/rollup-plugin-generate-manifest": "^0.8.22"
   },
   "pandino": {
     "manifest": {

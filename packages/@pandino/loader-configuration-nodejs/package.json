@@ -1,6 +1,6 @@
 {
   "name": "@pandino/loader-configuration-nodejs",
-  "version": "0.8.21",
+  "version": "0.8.22",
   "description": "Bundle loading configuration for NodeJS",
   "main": "./dist/cjs/loader-configuration-nodejs.cjs",
   "module": "./dist/esm/loader-configuration-nodejs.mjs",
@@ -44,6 +44,6 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.21"
+    "@pandino/pandino-api": "^0.8.22"
   }
 }
