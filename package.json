@@ -14,13 +14,15 @@
     "format": "prettier --config .prettierrc \"packages/@pandino/*/src/**/*.{js,ts,tsx}\" --write",
     "format-examples": "prettier --config .prettierrc examples/*/packages/*/src/**/*.{ts,tsx} --write",
     "new-version": "lerna version --yes",
+    "new-publish": "lerna publish",
+    "new-publish:ci": "lerna publish --yes",
     "conventional-changelog": "conventional-changelog",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "lerna": "lerna"
   },
   "devDependencies": {
-    "@lerna-lite/cli": "1.13.0",
-    "@lerna-lite/run": "1.13.0",
+    "@lerna-lite/cli": "^1.15.1",
+    "@lerna-lite/run": "^1.15.1",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-terser": "^0.4.0",
     "@rollup/plugin-typescript": "^11.0.0",

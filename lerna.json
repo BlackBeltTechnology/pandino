@@ -3,6 +3,14 @@
   "packages": [
     "packages/@pandino/*"
   ],
+  "command": {
+    "version": {
+      "conventionalCommits": false,
+      "createRelease": "github",
+      "syncWorkspaceLock": true,
+      "message": "chore(release): publish new version %v"
+    }
+  },
   "npmClient": "npm",
   "version": "0.8.21",
   "ignoreChanges": [
