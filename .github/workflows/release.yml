@@ -2,6 +2,8 @@ name: release
 
 on:
   workflow_dispatch:
+    branches:
+      - master
     inputs:
       type:
         description: 'Release Type (not yet used, can be anything)'
