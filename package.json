@@ -21,8 +21,8 @@
     "lerna": "lerna"
   },
   "devDependencies": {
-    "@lerna-lite/cli": "^1.13.0",
-    "@lerna-lite/run": "^1.13.0",
+    "@lerna-lite/cli": "1.13.0",
+    "@lerna-lite/run": "1.13.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-terser": "^0.4.0",
     "@rollup/plugin-typescript": "^11.0.0",
