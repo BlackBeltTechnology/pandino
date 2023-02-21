@@ -9,7 +9,7 @@ export const App: FC = () => {
 
   return (
     <ComponentProxy filter={`(${OBJECTCLASS}=${CUSTOM_COMPONENT_INTERFACE_KEY})`} firstName={firstName}>
-      <div className={'fallback'}>fallback</div>
+      <div className={'fallback'}>fallback for: {firstName}</div>
     </ComponentProxy>
   );
 };
