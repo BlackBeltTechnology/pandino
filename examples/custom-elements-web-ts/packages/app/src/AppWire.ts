@@ -44,7 +44,11 @@ export class AppWire extends HTMLElement {
     const svc = this.context.getService<Page>(ref);
     const serviceId = ref.getProperty(SERVICE_ID);
     if (typeof svc.getMenuInfo === 'function') {
-      this.addMenu(serviceId, svc.getMenuInfo());
+      const menuInfo = svc.getMenuInfo();
+
+      if (menuInfo) {
+        this.addMenu(serviceId, menuInfo);
+      }
     }
     this.addRoute(serviceId, svc.getRoutePath(), svc.getPageComponent());
   }

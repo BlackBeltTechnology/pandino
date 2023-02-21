@@ -14,7 +14,7 @@ await pandino.start();
 
 await pandino
   .getBundleContext()
-  .installBundle('https://unpkg.com/@pandino/bundle-installer-dom/dist/bundle-installer-dom-manifest.json');
+  .installBundle('./bundle-installer-dom-manifest.json');
 
 pandino.getBundleContext().registerService<Page>(PAGE_INTERFACE_KEY, new DashboardService());
 

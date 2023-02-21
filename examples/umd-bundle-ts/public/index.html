@@ -15,9 +15,9 @@
       ]
     </script>
     <script type="module">
-      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom/dist/loader-configuration-dom.mjs';
-      import umdActivatorResolver from 'https://unpkg.com/@pandino/umd-activator-resolver-dom/dist/umd-activator-resolver-dom.mjs';
-      import Pandino from 'https://unpkg.com/@pandino/pandino/dist/esm/pandino.mjs';
+      import loaderConfiguration from './loader-configuration-dom.mjs';
+      import umdActivatorResolver from './umd-activator-resolver-dom.mjs';
+      import Pandino from './pandino.mjs';
 
       const pandino = new Pandino({
         ...loaderConfiguration,
@@ -28,7 +28,7 @@
 
       await pandino.init();
       await pandino.start();
-      pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom/dist/bundle-installer-dom-manifest.json');
+      pandino.getBundleContext().installBundle('./bundle-installer-dom-manifest.json');
     </script>
   </body>
 </html>

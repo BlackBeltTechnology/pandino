@@ -14,8 +14,8 @@
     "build:dev": "rollup -c"
   },
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.19",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.19",
+    "@pandino/pandino-api": "file:../../../../packages/@pandino/pandino-api",
+    "@pandino/rollup-plugin-generate-manifest": "file:../../../../packages/@pandino/rollup-plugin-generate-manifest",
     "@custom-elements-web-ts/contract": "^1.0.0"
   },
   "pandino": {
