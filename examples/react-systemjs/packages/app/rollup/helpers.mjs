@@ -61,7 +61,6 @@ export const customTemplate = ({attributes, files, meta, publicPath, title}) => 
     </script>
     <script type="pandino-manifests">
       [
-        "./component-one.system-manifest.json"
       ]
     </script>
   </head>
