@@ -1,5 +1,10 @@
 # React SystemJS
 
+## Scripts
+
+- `npm run build`
+- `npm run preview`
+
 ## packages
 
 - app: application project

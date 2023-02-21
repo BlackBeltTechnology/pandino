@@ -12,7 +12,9 @@ const pandino = new Pandino({
 await pandino.init();
 await pandino.start();
 
-pandino.getBundleContext().installBundle('./@pandino/bundle-installer-dom/system/bundle-installer-dom.min-manifest.json');
+pandino
+  .getBundleContext()
+  .installBundle('./@pandino/bundle-installer-dom/system/bundle-installer-dom.min-manifest.json');
 
 // (async () => {
 //   const componentOneBundle = await pandino.getBundleContext().installBundle('./component-one.system-manifest.json');

@@ -8,6 +8,7 @@ export interface AppProps {
   bundleContext: BundleContext;
 }
 
+// React crashes when we are trying to load components, unless the component is wrapped in a function call
 export interface ComponentProvider<T> {
   getComponent: () => T | undefined;
 }
