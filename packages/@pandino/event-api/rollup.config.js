@@ -1,18 +1,12 @@
 import clear from 'rollup-plugin-clear';
 import typescript from '@rollup/plugin-typescript';
 import nodeResolve from "@rollup/plugin-node-resolve";
+import {generateOutputs} from "../../../rollup/rollup-utils.mjs";
 
 export default {
   input: 'src/index.ts',
   output: [
-    {
-      file: 'dist/esm/event-api.mjs',
-      format: 'esm',
-    },
-    {
-      file: 'dist/cjs/event-api.cjs',
-      format: 'cjs',
-    },
+    ...generateOutputs('event-api', ['esm', 'cjs', 'system']),
   ],
   plugins: [
     clear({

@@ -6,27 +6,11 @@ import esbuild from 'rollup-plugin-esbuild';
 import html from '@rollup/plugin-html';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import {customTemplate} from "./rollup/helpers.mjs";
+import {customTemplate, generateRepackagedOutput} from "./rollup/helpers.mjs";
 
 dotenv.config();
 
 const ENV = process.env.NODE_ENV;
-
-const repackagedConfig = {
-    plugins: [
-        replace({
-            preventAssignment: false,
-            values: {
-                'process.env.NODE_ENV': JSON.stringify('production'),
-            },
-        }),
-        nodeResolve(),
-        commonjs(),
-        esbuild({
-            minify: ENV === 'production',
-        }),
-    ],
-};
 
 export default [
     {
@@ -56,9 +40,12 @@ export default [
                 targets: [
                     {src: '../component-one/dist/*', dest: 'dist'},
                     {src: '../../node_modules/systemjs/dist/*', dest: 'dist/systemjs'},
-                    {src: '../../node_modules/@pandino/bundle-installer-dom/dist/*.*', dest: 'dist'},
                     {src: '../../node_modules/react/umd/*', dest: 'dist/react'},
-                    {src: '../../node_modules/@pandino/pandino/dist/system/*.*', dest: 'dist/pandino'},
+                    {src: '../../node_modules/@pandino/pandino/dist/system/*.*', dest: 'dist/@pandino/pandino/system'},
+                    {
+                        src: '../../node_modules/@pandino/bundle-installer-dom/dist/system/*.*',
+                        dest: 'dist/@pandino/bundle-installer-dom/system'
+                    },
                 ],
             }),
             html({
@@ -67,34 +54,7 @@ export default [
             }),
         ],
     },
-    {
-        input: 'repackaged/react-jsx-runtime.tsx',
-        output: {
-            file: 'dist/react/react-jsx-runtime.system.js',
-            format: 'system',
-            sourcemap: ENV === 'production',
-        },
-        external: ['react'],
-        ...repackagedConfig,
-    },
-    {
-        input: 'repackaged/react-is.tsx',
-        output: {
-            file: 'dist/react/react-is.system.js',
-            format: 'system',
-            sourcemap: ENV === 'production',
-        },
-        external: ['react'],
-        ...repackagedConfig,
-    },
-    {
-        input: 'repackaged/react-dom-client.tsx',
-        output: {
-            file: 'dist/react/react-dom-client.system.js',
-            format: 'system',
-            sourcemap: ENV === 'production',
-        },
-        external: ['react'],
-        ...repackagedConfig,
-    },
+    generateRepackagedOutput('react-jsx-runtime', 'react/react-jsx-runtime'),
+    generateRepackagedOutput('react-is', 'react/react-is'),
+    generateRepackagedOutput('react-dom-client', 'react/react-dom-client'),
 ];

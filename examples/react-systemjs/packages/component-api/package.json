@@ -1,5 +1,5 @@
 {
-  "name": "@react-esm/component-api",
+  "name": "@react-systemjs/component-api",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -11,9 +11,10 @@
     }
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production rollup -c && npm run build:types",
     "build:types": "tsc --emitDeclarationOnly --declaration --project tsconfig.json",
-    "build:dev": "rollup -c"
+    "build": "cross-env NODE_ENV=production rollup -c && npm run build:types",
+    "build:ci": "cross-env NODE_ENV=production tsc && npm run build",
+    "build:dev": "rollup -c && npm run build:types"
   },
   "keywords": [],
   "devDependencies": {

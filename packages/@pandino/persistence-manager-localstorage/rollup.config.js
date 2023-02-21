@@ -1,19 +1,13 @@
 import clear from 'rollup-plugin-clear';
-import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import generateManifest from '@pandino/rollup-plugin-generate-manifest';
 import nodeResolve from '@rollup/plugin-node-resolve';
-
-const ENV = process.env.PRODUCTION ? 'PRODUCTION' : 'DEVELOPMENT';
+import {generateOutputs} from "../../../rollup/rollup-utils.mjs";
 
 export default {
   input: 'src/index.ts',
   output: [
-    {
-      sourcemap: ENV === 'PRODUCTION',
-      file: 'dist/esm/persistence-manager-localstorage.mjs',
-      format: 'esm',
-    },
+    ...generateOutputs('persistence-manager-localstorage', ['esm', 'cjs', 'system']),
   ],
   plugins: [
     clear({
@@ -21,7 +15,6 @@ export default {
     }),
     nodeResolve(),
     typescript(),
-    ...[ENV === 'PRODUCTION' ? terser() : undefined],
     generateManifest(),
   ],
 };

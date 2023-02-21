@@ -1,7 +1,8 @@
 import { FC, useEffect, useState } from 'react';
 import type { BundleContext, ServiceReference } from '@pandino/pandino-api';
-import type { CustomComponent } from '@react-esm/component-api';
-import { CUSTOM_COMPONENT_INTERFACE_KEY } from '@react-esm/component-api';
+import { OBJECTCLASS } from '@pandino/pandino-api';
+import type { CustomComponent } from '@react-systemjs/component-api';
+import { CUSTOM_COMPONENT_INTERFACE_KEY } from '@react-systemjs/component-api';
 
 export interface AppProps {
   bundleContext: BundleContext;
@@ -18,7 +19,7 @@ export const App: FC<AppProps> = ({ bundleContext }) => {
   });
 
   useEffect(() => {
-    const tracker = bundleContext.trackService(CUSTOM_COMPONENT_INTERFACE_KEY, {
+    const tracker = bundleContext.trackService(`(${OBJECTCLASS}=${CUSTOM_COMPONENT_INTERFACE_KEY})`, {
       addingService(reference: ServiceReference<CustomComponent>): CustomComponent {
         const CustomComponentFunction = bundleContext.getService<CustomComponent>(reference);
         setExternalComponentProvider({ getComponent: () => CustomComponentFunction });

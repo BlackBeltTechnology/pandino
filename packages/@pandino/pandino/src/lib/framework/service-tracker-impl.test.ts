@@ -34,6 +34,7 @@ describe('ServiceTrackerImpl', () => {
   let pandino: Pandino;
 
   const SERVICE_IDENTIFIER = '@scope/test-service';
+  const SERVICE_FILTER = `(${OBJECTCLASS}=${SERVICE_IDENTIFIER})`;
   const expectedBaseProps: ServiceProperties = {
     [OBJECTCLASS]: SERVICE_IDENTIFIER,
     [SERVICE_BUNDLEID]: 1,
@@ -89,7 +90,7 @@ describe('ServiceTrackerImpl', () => {
     const removingData: [ServiceProperties?, TestService?] = [];
     const bundle1 = await installBundle(bundle1Headers);
 
-    const tracker = bundle1.getBundleContext().trackService(SERVICE_IDENTIFIER, {
+    const tracker = bundle1.getBundleContext().trackService(SERVICE_FILTER, {
       addingService(reference: ServiceReference<TestService>): TestService {
         addingData.push({ ...reference.getProperties() }, service);
         return service;
@@ -150,7 +151,7 @@ describe('ServiceTrackerImpl', () => {
     };
     const removingData: [ServiceProperties?, TestService?] = [];
     const bundle1 = await installBundle(bundle1Headers);
-    const tracker = bundle1.getBundleContext().trackService(SERVICE_IDENTIFIER, {
+    const tracker = bundle1.getBundleContext().trackService(SERVICE_FILTER, {
       removedService(reference: ServiceReference<TestService>, service: TestService) {
         removingData.push({ ...reference.getProperties() }, service);
       },
@@ -182,7 +183,7 @@ describe('ServiceTrackerImpl', () => {
     };
     const addingData: [ServiceProperties?, TestService?] = [];
     const bundle1 = await installBundle(bundle1Headers);
-    const tracker = bundle1.getBundleContext().trackService(SERVICE_IDENTIFIER, {
+    const tracker = bundle1.getBundleContext().trackService(SERVICE_FILTER, {
       addingService(reference: ServiceReference<TestService>): TestService {
         const service = super.addingService(reference);
         addingData.push({ ...reference.getProperties() }, service);
@@ -252,7 +253,7 @@ describe('ServiceTrackerImpl', () => {
       test: () => true,
     };
     const bundle1 = await installBundle(bundle1Headers);
-    const tracker = new ServiceTrackerImpl(bundle1.getBundleContext(), SERVICE_IDENTIFIER);
+    const tracker = new ServiceTrackerImpl(bundle1.getBundleContext(), SERVICE_FILTER);
 
     tracker.open();
     tracker.open(); // second call skips open init logic

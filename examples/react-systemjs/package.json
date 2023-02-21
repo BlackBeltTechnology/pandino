@@ -1,5 +1,5 @@
 {
-  "name": "@react-esm/root",
+  "name": "@react-systemjs/root",
   "version": "1.0.0",
   "description": "",
   "type": "module",
@@ -9,8 +9,9 @@
   "scripts": {
     "build": "lerna run build --stream",
     "build:dev": "lerna run build:dev --stream",
+    "build:ci": "lerna run build:ci --stream",
     "format": "prettier --config .prettierrc \"packages/*/src/**/*.{js,ts,tsx}\" --write",
-    "start": "lerna run --scope app start --stream"
+    "preview": "lerna run --scope @react-systemjs/app preview --stream"
   },
   "keywords": [],
   "author": "",

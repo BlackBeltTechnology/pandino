@@ -1,4 +1,13 @@
 import {EOL} from 'node:os';
+import * as dotenv from 'dotenv';
+import replace from '@rollup/plugin-replace';
+import nodeResolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import esbuild from 'rollup-plugin-esbuild';
+
+dotenv.config();
+
+const ENV = process.env.NODE_ENV;
 
 const makeHtmlAttributes = (attributes) => {
     if (!attributes) {
@@ -46,9 +55,14 @@ export const customTemplate = ({attributes, files, meta, publicPath, title}) => 
           "react-is": "./react/react-is.system.js",
           "react-dom/client": "./react/react-dom-client.system.js",
           "react/jsx-runtime": "./react/react-jsx-runtime.system.js",
-          "@pandino/pandino": "./pandino/pandino.js"
+          "@pandino/pandino": "./@pandino/pandino/system/pandino.min.js"
         }
       }
+    </script>
+    <script type="pandino-manifests">
+      [
+        "./component-one.system-manifest.json"
+      ]
     </script>
   </head>
   <body>
@@ -56,4 +70,33 @@ export const customTemplate = ({attributes, files, meta, publicPath, title}) => 
     <script type="systemjs-module" src="./main.js"></script>
   </body>
 </html>`;
+};
+
+const repackagedConfig = {
+    plugins: [
+        replace({
+            preventAssignment: false,
+            values: {
+                'process.env.NODE_ENV': JSON.stringify('production'),
+            },
+        }),
+        nodeResolve(),
+        commonjs(),
+        esbuild({
+            minify: ENV === 'production',
+        }),
+    ],
+};
+
+export const generateRepackagedOutput = (inputName, targetName) => {
+    return {
+        input: `repackaged/${inputName}.tsx`,
+        output: {
+            file: `dist/${targetName}.system.js`,
+            format: 'system',
+            sourcemap: ENV === 'production',
+        },
+        external: ['react'],
+        ...repackagedConfig,
+    };
 };

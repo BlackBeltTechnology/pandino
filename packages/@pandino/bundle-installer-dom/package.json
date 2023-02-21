@@ -2,12 +2,12 @@
   "name": "@pandino/bundle-installer-dom",
   "version": "0.8.22",
   "description": "Install Bundles defined in a browser's DOM",
-  "module": "./dist/bundle-installer-dom.mjs",
-  "types": "dist/dist/index.d.ts",
+  "module": "./dist/esm/bundle-installer-dom.mjs",
+  "types": "dist/esm/dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "default": "./dist/bundle-installer-dom.mjs"
+      "default": "./dist/esm/bundle-installer-dom.mjs"
     }
   },
   "scripts": {

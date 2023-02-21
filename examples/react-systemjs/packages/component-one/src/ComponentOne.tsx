@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { CustomComponent } from '@react-esm/component-api';
+import type { CustomComponent } from '@react-systemjs/component-api';
 
 export const ComponentOne: CustomComponent = (props) => {
   const [data, setData] = useState<{ firstName: string; lastName?: string }>({ ...props });

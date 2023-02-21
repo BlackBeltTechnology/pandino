@@ -12,12 +12,14 @@ const pandino = new Pandino({
 await pandino.init();
 await pandino.start();
 
-(async () => {
-  const componentOneBundle = await pandino.getBundleContext().installBundle('./component-one.system-manifest.json');
+pandino.getBundleContext().installBundle('./@pandino/bundle-installer-dom/system/bundle-installer-dom.min-manifest.json');
 
-  // window.setTimeout(() => {
-  //   pandino.uninstallBundle(componentOneBundle as any);
-  // }, 3000);
-})();
+// (async () => {
+//   const componentOneBundle = await pandino.getBundleContext().installBundle('./component-one.system-manifest.json');
+//
+//   // window.setTimeout(() => {
+//   //   pandino.uninstallBundle(componentOneBundle as any);
+//   // }, 3000);
+// })();
 
 root.render(<App bundleContext={pandino.getBundleContext()} />);
