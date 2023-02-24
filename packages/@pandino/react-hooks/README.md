@@ -15,8 +15,9 @@ documentation(s).
 
 ## Usage
 
-### Add PandinoProvider to your app
+### PandinoProvider
 
+In order for hooks provided by this library to work, as a first step we must initialize the `PandinoProvider`:
 
 ```typescript jsx
 import { createRoot } from 'react-dom/client';
@@ -39,12 +40,9 @@ root.render(
     <YourAppHere />
   </PandinoProvider>,
 );
-
 ```
 
-### Hooks
-
-#### useBundleContext
+### useBundleContext
 
 Use this hook to obtain the `BundleContext` reference registered with `PandinoProvider`
 
@@ -61,12 +59,14 @@ export const MyComponent: FC = () => {
 };
 ```
 
-#### useTrackService
+### useTrackService
 
-This is a simple hook which expects a `filter` parameter and return a Service or `undefined`.
+This is a simple hook which expects a `filter` parameter and returns a Service or `undefined`.
 
 When a service is removed from the system or if is not present to begin with, the hook will trigger the component and
 the returned value will be `undefined`.
+
+Developers **MUST** handle the undefined scenarios explicitly.
 
 ```typescript jsx
 import type { FC } from 'react';
@@ -82,13 +82,14 @@ export const MyComponent: FC = () => {
 };
 ```
 
-#### useTrackComponent
+### useTrackComponent
 
 This hook works similarly to `useTrackService`, the only difference is that it handles React components. 
 
-**component contract:**
+Component contract:
 
 ```typescript jsx
+import type { FC } from 'react';
 export const CUSTOM_COMPONENT_INTERFACE_KEY = '@some-scope/component-api/CustomComponent';
 
 export interface CustomComponent extends FC<ComponentProps> {}
@@ -99,7 +100,7 @@ export interface ComponentProps {
 }
 ```
 
-**component implementation:**
+Component implementation:
 
 ```typescript jsx
 import { useState } from 'react';
@@ -123,7 +124,8 @@ export const ComponentOne: CustomComponent = (props) => {
 ```typescript jsx
 import type { BundleActivator, BundleContext, ServiceRegistration } from '@pandino/pandino-api';
 import type { CustomComponent } from '@some-scope/component-api';
-import { CUSTOM_COMPONENT_INTERFACE_KEY } from './contract';
+import { CUSTOM_COMPONENT_INTERFACE_KEY } from '@some-scope/component-api';
+import { ComponentOne } from './ComponentOne';
 
 export default class SomeActivator implements BundleActivator {
   private reg?: ServiceRegistration<CustomComponent>;
@@ -142,11 +144,13 @@ export default class SomeActivator implements BundleActivator {
 
 ```typescript jsx
 import type { FC } from 'react';
+import { OBJECTCLASS } from '@pandino/pandino-api';
 import { useTrackComponent } from '@pandino/react-hooks';
 import type { CustomComponent } from '@some-scope/component-api';
+import { CUSTOM_COMPONENT_INTERFACE_KEY } from '@some-scope/component-api';
 
 export const MyComponent: FC = () => {
-    const ExternalComponent = useTrackComponent<CustomComponent>(COMPONENT_FILTER_HERE);
+    const ExternalComponent = useTrackComponent<CustomComponent>(`(${OBJECTCLASS}=${CUSTOM_COMPONENT_INTERFACE_KEY})`);
 
     if (ExternalComponent) {
         return <ExternalComponent {...someProps} />;
@@ -155,6 +159,37 @@ export const MyComponent: FC = () => {
     return <>fallback content</>;
 };
 ```
+
+### ComponentProxy
+
+The `ComponentProxy` component can be used as a wrapper which has a `filter` prop, and renders the corresponding
+component if found. Otherwise it renders it's children.
+
+> In essence it is a shorthand / syntax sugar for `useTrackComponent`
+
+```typescript jsx
+import type { FC } from 'react';
+import { useState } from 'react';
+import { OBJECTCLASS } from '@pandino/pandino-api';
+import { ComponentProxy } from '@pandino/react-hooks';
+import { CUSTOM_COMPONENT_INTERFACE_KEY } from '@some-scope/component-api';
+
+export const App: FC = () => {
+  const [firstName] = useState<string>('John');
+
+  return (
+    <ComponentProxy filter={`(${OBJECTCLASS}=${CUSTOM_COMPONENT_INTERFACE_KEY})`} firstName={firstName}>
+      <div className={'fallback'}>fallback for: {firstName}</div>
+    </ComponentProxy>
+  );
+};
+```
+
+All props are passed to the found component except `filter`.
+
+Prop matching between desired component props and children are not ensured.
+
+> This component (currently) cannot validate props!
 
 ## License
 
