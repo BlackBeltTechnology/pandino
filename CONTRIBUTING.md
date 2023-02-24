@@ -47,3 +47,9 @@ The reason for this is that in bundle outputs we usually do not provide source-m
 - https://docs.osgi.org/specification/osgi.core/8.0.0/framework.lifecycle.html
 - https://docs.osgi.org/specification/osgi.core/8.0.0/framework.service.html
 - https://docs.osgi.org/specification/osgi.core/8.0.0/framework.api.html
+
+## Temporary scripts
+
+```
+npx conventional-changelog-cli -p angular -i CHANGELOG.md -s -r 0
+```
