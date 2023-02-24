@@ -243,7 +243,7 @@ common software development problems. Usage is opt-in of course.
 
 - [umd-activator-resolver-dom](./packages/@pandino/umd-activator-resolver-dom)
 
-## React integration
+### React integration
 
 - [react-systemjs](./packages/@pandino/react-hooks)
 
