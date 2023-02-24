@@ -33,3 +33,7 @@ or in certain cases install them via NPM! Using CDNs is not mandatory.
 ## Activator Resolvers
 
 - [umd-bundle-ts](./umd-bundle-ts)
+
+## React integration
+
+- [react-systemjs](./react-systemjs)

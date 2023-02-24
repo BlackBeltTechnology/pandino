@@ -1,0 +1,23 @@
+{
+  "name": "@react-systemjs/component-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build:types": "tsc --emitDeclarationOnly --declaration --project tsconfig.json",
+    "build": "cross-env NODE_ENV=production rollup -c && npm run build:types",
+    "build:ci": "cross-env NODE_ENV=production tsc && npm run build",
+    "build:dev": "rollup -c && npm run build:types"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "@types/react": "^18.0.26"
+  }
+}

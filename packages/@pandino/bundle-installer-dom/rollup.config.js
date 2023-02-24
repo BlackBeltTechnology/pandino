@@ -1,25 +1,20 @@
 import clear from 'rollup-plugin-clear';
-import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import generateManifest from '@pandino/rollup-plugin-generate-manifest';
 import nodeResolve from '@rollup/plugin-node-resolve';
-
-const ENV = process.env.PRODUCTION ? 'PRODUCTION' : 'DEVELOPMENT';
+import {generateOutputs} from "../../../rollup/rollup-utils.mjs";
 
 export default {
   input: 'src/index.ts',
-  output: {
-    sourcemap: ENV === 'PRODUCTION',
-    file: 'dist/bundle-installer-dom.mjs',
-    format: 'esm',
-  },
+  output: [
+    ...generateOutputs('bundle-installer-dom', ['esm', 'system']),
+  ],
   plugins: [
     clear({
       targets: ['dist'],
     }),
     nodeResolve(),
     typescript(),
-    ...[ENV === 'PRODUCTION' ? terser() : undefined],
     generateManifest(),
   ],
 };

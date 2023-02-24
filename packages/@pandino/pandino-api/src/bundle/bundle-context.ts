@@ -449,12 +449,12 @@ export interface BundleContext extends BundleReference {
   /**
    * Utility method to conveniently create a {@link ServiceTracker} instance for the current {@link BundleContext}.
    *
-   * @param {string | FilterApi} identifierOrFilter
+   * @param {string | FilterApi} filter
    * @param {Partial<ServiceTrackerCustomizer<S, T>>} customizer
    * @return A {@link ServiceTracker<S, T>} for the given tracking parameters
    */
   trackService<S, T>(
-    identifierOrFilter: string | FilterApi,
+    filter: string | FilterApi,
     customizer: Partial<ServiceTrackerCustomizer<S, T>>,
   ): ServiceTracker<S, T>;
 }

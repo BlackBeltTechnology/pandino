@@ -9,8 +9,7 @@
   "scripts": {
     "build": "lerna run build",
     "build:dev": "lerna run build:dev",
-    "format": "prettier --config .prettierrc \"packages/*/src/**/*.{js,ts,tsx}\" --write",
-    "start": "lerna run --scope app start --stream"
+    "format": "prettier --config .prettierrc \"packages/*/src/**/*.{js,ts,tsx}\" --write"
   },
   "keywords": [],
   "author": "",

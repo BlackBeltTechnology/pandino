@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@pandino/pandino-api": "file:../../../packages/@pandino/pandino-api",
+    "@pandino/pandino-api": "file:../../packages/@pandino/pandino-api",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "ts-loader": "^9.4.1",

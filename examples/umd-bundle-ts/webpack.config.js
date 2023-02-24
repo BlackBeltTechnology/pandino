@@ -32,6 +32,11 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: "public/" },
+        { from: '../../node_modules/@pandino/pandino/dist/esm/pandino.mjs' },
+        { from: '../../node_modules/@pandino/loader-configuration-dom/dist/esm/loader-configuration-dom.mjs' },
+        { from: '../../node_modules/@pandino/umd-activator-resolver-dom/dist/esm/umd-activator-resolver-dom.mjs' },
+        { from: '../../node_modules/@pandino/bundle-installer-dom/dist/esm/bundle-installer-dom.mjs' },
+        { from: '../../node_modules/@pandino/bundle-installer-dom/dist/esm/bundle-installer-dom-manifest.json' },
       ],
     }),
   ],

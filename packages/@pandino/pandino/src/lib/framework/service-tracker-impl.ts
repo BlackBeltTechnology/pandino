@@ -1,7 +1,6 @@
 import {
   BundleContext,
   FilterApi,
-  OBJECTCLASS,
   SERVICE_ID,
   SERVICE_RANKING,
   ServiceEvent,
@@ -18,23 +17,15 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   protected readonly context: BundleContext;
   protected readonly filter: FilterApi;
   private readonly listenerFilter: string;
-  private readonly identifier?: string;
   private tracked: Tracked<S, T>;
   private cachedReference: ServiceReference<S>;
   private cachedService: T;
 
-  constructor(
-    context: BundleContext,
-    identifierOrFilter: string | FilterApi,
-    customizer?: ServiceTrackerCustomizer<S, T>,
-  ) {
+  constructor(context: BundleContext, filter: string | FilterApi, customizer?: ServiceTrackerCustomizer<S, T>) {
     this.context = context;
     this.customizer = customizer || this;
-    this.listenerFilter =
-      typeof identifierOrFilter === 'string' ? `(${OBJECTCLASS}=${identifierOrFilter})` : identifierOrFilter.toString();
-    this.identifier = typeof identifierOrFilter === 'string' ? identifierOrFilter : undefined;
-    this.filter =
-      typeof identifierOrFilter === 'string' ? context.createFilter(this.listenerFilter) : identifierOrFilter;
+    this.listenerFilter = typeof filter === 'string' ? filter : filter.toString();
+    this.filter = typeof filter === 'string' ? context.createFilter(this.listenerFilter) : filter;
   }
 
   open(): void {
@@ -50,11 +41,7 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
 
     let references: Array<ServiceReference<S>> = [];
 
-    if (isAllPresent(this.identifier)) {
-      references = this.getInitialReferences(this.identifier);
-    } else {
-      references = this.getInitialReferences(undefined, this.listenerFilter);
-    }
+    references = this.getInitialReferences(undefined, this.listenerFilter);
 
     t.setInitial(references);
 

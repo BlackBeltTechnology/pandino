@@ -23,6 +23,9 @@ export default {
     copy({
       targets: [
         { src: 'assets/*', dest: 'dist' },
+        { src: '../../node_modules/@pandino/bundle-installer-dom/dist/esm/*.*', dest: 'dist' },
+        { src: '../hidden-page/dist/*.(json|mjs)', dest: 'dist' },
+        { src: '../about-page/dist/*.(json|mjs)', dest: 'dist' },
       ]
     }),
   ],

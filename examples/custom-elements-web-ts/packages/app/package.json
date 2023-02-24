@@ -14,11 +14,12 @@
     "build:dev": "rollup -c"
   },
   "dependencies": {
-    "@pandino/pandino": "^0.8.19",
-    "@pandino/loader-configuration-dom": "^0.8.19"
+    "@pandino/pandino": "file:../../../../packages/@pandino/pandino",
+    "@pandino/loader-configuration-dom": "file:../../../../packages/@pandino/loader-configuration-dom",
+    "@pandino/bundle-installer-dom": "file:../../../../packages/@pandino/bundle-installer-dom"
   },
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.19",
+    "@pandino/pandino-api": "file:../../../../packages/@pandino/pandino-api",
     "@custom-elements-web-ts/contract": "^1.0.0",
     "rollup-plugin-copy": "^3.4.0"
   },
