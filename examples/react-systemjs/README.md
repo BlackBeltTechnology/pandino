@@ -20,7 +20,7 @@ Due to this nature, we need a module system which is capable to handle "static"
 imports. Our choice is [SystemJS](https://github.com/systemjs/systemjs).
 
 The other reason why we need this is because we are building standalone packages, and are not "splitting" code
-from a central source-code folder.
+from a central source-code folder therefore again, we need a more sophisticated module manager.
 
 > Fun fact: we wouldn't need SystemJS if all browsers would support [import-maps](https://github.com/WICG/import-maps).
 

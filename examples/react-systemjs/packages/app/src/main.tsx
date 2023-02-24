@@ -1,8 +1,8 @@
 import { createRoot } from 'react-dom/client';
 import Pandino from '@pandino/pandino';
 import loaderConfiguration from '@pandino/loader-configuration-dom';
+import { PandinoProvider } from '@pandino/react-hooks';
 import { App } from './App';
-import { PandinoProvider } from './PandinoContext';
 
 const root = createRoot(document.querySelector('#root')!);
 

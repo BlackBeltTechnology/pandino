@@ -16,6 +16,7 @@
     "@pandino/bundle-installer-dom": "file:../../../../packages/@pandino/bundle-installer-dom",
     "@pandino/loader-configuration-dom": "file:../../../../packages/@pandino/loader-configuration-dom",
     "@pandino/pandino": "file:../../../../packages/@pandino/pandino",
+    "@pandino/react-hooks": "file:../../../../packages/@pandino/react-hooks",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "systemjs": "^6.13.0"

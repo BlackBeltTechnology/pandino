@@ -1,0 +1,49 @@
+{
+  "name": "@pandino/react-hooks",
+  "version": "0.8.22",
+  "description": "React helpers and hooks for applications using Pandino",
+  "module": "./dist/esm/react-hooks.mjs",
+  "types": "dist/esm/dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/esm/react-hooks.mjs"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c --environment=PRODUCTION",
+    "build:dev": "rollup -c"
+  },
+  "keywords": [
+    "pandino",
+    "react",
+    "helper",
+    "hook"
+  ],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "EPL-2.0",
+  "homepage": "https://github.com/BlackBeltTechnology/pandino",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlackBeltTechnology/pandino.git",
+    "directory": "packages/@pandino/react-hooks"
+  },
+  "bugs": {
+    "url": "https://github.com/BlackBeltTechnology/pandino/issues"
+  },
+  "engines": {
+    "node": ">=14.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "devDependencies": {
+    "@pandino/pandino-api": "^0.8.22",
+    "@types/react": "^18.0.26",
+    "react": "^18.2.0"
+  }
+}

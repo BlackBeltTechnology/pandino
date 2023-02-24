@@ -7,9 +7,9 @@ export interface ComponentProvider<T> {
 }
 export type TrackComponentHook = <T>(filter: string) => T | undefined;
 
-export const useTrackComponent: TrackComponentHook = (filter: string) => {
-  const tracker = useTrackService<any>(filter);
-  const [componentProvider, setComponentProvider] = useState<ComponentProvider<any>>({
+export const useTrackComponent: TrackComponentHook = <T>(filter: string) => {
+  const tracker = useTrackService<T>(filter);
+  const [componentProvider, setComponentProvider] = useState<ComponentProvider<T>>({
     getComponent: () => undefined,
   });
 
