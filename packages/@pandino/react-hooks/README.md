@@ -119,7 +119,7 @@ export const ComponentOne: CustomComponent = (props) => {
 };
 ```
 
-**component registration:**
+Component registration:
 
 ```typescript jsx
 import type { BundleActivator, BundleContext, ServiceRegistration } from '@pandino/pandino-api';
@@ -140,7 +140,7 @@ export default class SomeActivator implements BundleActivator {
 }
 ```
 
-**consumer app:**
+Consumer app:
 
 ```typescript jsx
 import type { FC } from 'react';
