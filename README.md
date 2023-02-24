@@ -245,7 +245,7 @@ common software development problems. Usage is opt-in of course.
 
 ### React integration
 
-- [react-systemjs](./packages/@pandino/react-hooks)
+- [react-hooks](./packages/@pandino/react-hooks)
 
 ## Roadmap
 
