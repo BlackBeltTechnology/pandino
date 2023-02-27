@@ -1,6 +1,6 @@
 {
   "name": "@pandino/manifest-generator",
-  "version": "0.8.23",
+  "version": "0.8.24",
   "description": "manifest generator utility to help manage Pandino Manifest file generation / maintenance",
   "main": "src/index.js",
   "scripts": {},
