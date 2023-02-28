@@ -1,9 +1,9 @@
-#  (2023-02-27)
+#  (2023-02-28)
 
 
 ### Bug Fixes
 
-* **react-hooks:** fix service tracker initial service detection ([154f0d6](https://github.com/BlackBeltTechnology/pandino/commit/154f0d6584f6fd3c25a66ec8b4389f034b431f9e))
+* **pandino:** fix root cause of initial service tracking issues ([7e2248d](https://github.com/BlackBeltTechnology/pandino/commit/7e2248d4eb3f1f1b77af0ced1a53db5e6dfcc465))
 
 
 
@@ -11,6 +11,12 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## 0.8.25 (2023-02-28)
+
+### Bug Fixes
+
+* **pandino:** fix root cause of initial service tracking issues ([7e2248d](https://github.com/BlackBeltTechnology/pandino/commit/7e2248d4eb3f1f1b77af0ced1a53db5e6dfcc465))
 
 ## 0.8.24 (2023-02-27)
 

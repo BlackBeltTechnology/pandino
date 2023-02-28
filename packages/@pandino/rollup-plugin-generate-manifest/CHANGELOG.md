@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.8.25 (2023-02-28)
+
+### Bug Fixes
+
+* **pandino:** fix root cause of initial service tracking issues ([7e2248d](https://github.com/BlackBeltTechnology/pandino/commit/7e2248d4eb3f1f1b77af0ced1a53db5e6dfcc465))
+
 ## 0.8.24 (2023-02-27)
 
 ### Bug Fixes

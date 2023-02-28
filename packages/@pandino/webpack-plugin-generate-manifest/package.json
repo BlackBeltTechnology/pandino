@@ -1,6 +1,6 @@
 {
   "name": "@pandino/webpack-plugin-generate-manifest",
-  "version": "0.8.24",
+  "version": "0.8.25",
   "description": "Utility plugin to help manage Pandino Manifest file generation / maintenance",
   "main": "src/index.js",
   "scripts": {
@@ -31,7 +31,7 @@
   },
   "license": "EPL-2.0",
   "dependencies": {
-    "@pandino/manifest-generator": "^0.8.24"
+    "@pandino/manifest-generator": "^0.8.25"
   },
   "devDependencies": {
     "webpack": "^5.75.0",
