@@ -38,7 +38,7 @@ describe('ServiceTrackerImpl', () => {
   const expectedBaseProps: ServiceProperties = {
     [OBJECTCLASS]: SERVICE_IDENTIFIER,
     [SERVICE_BUNDLEID]: 1,
-    [SERVICE_ID]: 6,
+    [SERVICE_ID]: 7,
     [SERVICE_SCOPE]: 'singleton',
   };
   const mockStart = jest.fn().mockReturnValue(Promise.resolve());
