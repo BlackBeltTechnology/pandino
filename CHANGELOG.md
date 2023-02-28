@@ -24,52 +24,50 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **react-hooks:** fix service tracker initial service detection ([154f0d6](https://github.com/BlackBeltTechnology/pandino/commit/154f0d6584f6fd3c25a66ec8b4389f034b431f9e))
 
-# [](https://github.com/BlackBeltTechnology/pandino/compare/v0.8.23...v) (2023-02-24)
-
-## [0.8.23](https://github.com/BlackBeltTechnology/pandino/compare/v0.8.22...v0.8.23) (2023-02-24)
+## 0.8.23 (2023-02-24)
 
 ### Features
 
 * **react-hooks:** introduce react hooks ([#54](https://github.com/BlackBeltTechnology/pandino/issues/54)) ([6e01203](https://github.com/BlackBeltTechnology/pandino/commit/6e012037ff1083fbffd32d983c5ead6208d9ecc1))
 
-## [0.8.21](https://github.com/BlackBeltTechnology/pandino/compare/v0.8.20...v0.8.21) (2023-02-17)
+## 0.8.21 (2023-02-17)
 
 ### Bug Fixes
 
 * improve bundle loading stability, fix type exports ([41a9508](https://github.com/BlackBeltTechnology/pandino/commit/41a9508d31920297acb84c4229a4d89ed99eaf3b))
 
-## [0.8.20](https://github.com/BlackBeltTechnology/pandino/compare/v0.8.19...v0.8.20) (2023-02-15)
+## 0.8.20 (2023-02-15)
 
 ### Bug Fixes
 
 * **pandino:** fix bundle lifecycle issues for bundle chains ([be046a2](https://github.com/BlackBeltTechnology/pandino/commit/be046a278b71722350046537c6775d64addaef7d))
 
-## [0.8.18](https://github.com/BlackBeltTechnology/pandino/compare/v0.8.17...v0.8.18) (2022-10-06)
+## 0.8.18 (2022-10-06)
 
 ### Features
 
 * **pandino:** Add support for ActivatorResolvers ([c6b81e3](https://github.com/BlackBeltTechnology/pandino/commit/c6b81e3e996debe823791dc5843989a2b29cc298))
 
-## [0.8.16](https://github.com/BlackBeltTechnology/pandino/compare/v0.8.15...v0.8.16) (2022-09-08)
+## 0.8.16 (2022-09-08)
 
 ### Features
 
 * **webpack-plugin-generate-manifest:** add manifest generator for Webpack ([3fe7dc8](https://github.com/BlackBeltTechnology/pandino/commit/3fe7dc894a3e07aff27f5a3279c22d21a4c84afb))
 
-## [0.8.13](https://github.com/BlackBeltTechnology/pandino/compare/v0.8.12...v0.8.13) (2022-09-02)
+## 0.8.13 (2022-09-02)
 
 ### Features
 
 * **loader-configuration-dom:** introduce default DOM-based bundler loader ([ad6756d](https://github.com/BlackBeltTechnology/pandino/commit/ad6756d206b42cbc947ca56cdacd9ac60520afb9))
 * **loader-configuration-nodejs:** introduce default NodeJS-based bundler loader ([7e7ded7](https://github.com/BlackBeltTechnology/pandino/commit/7e7ded759207839e50419e417748e619c7c4b5bf))
 
-## [0.8.1](https://github.com/BlackBeltTechnology/pandino/compare/v0.8.0...v0.8.1) (2022-08-25)
+## 0.8.1 (2022-08-25)
 
 ### Bug Fixes
 
 * fix types section of package.json files ([8c7fd71](https://github.com/BlackBeltTechnology/pandino/commit/8c7fd71c7245789bcb0702e2085be186d1313fe7))
 
-# [0.8.0](https://github.com/BlackBeltTechnology/pandino/compare/389ce0a47202453768f36d48dba9b0a5137f4f7b...v0.8.0) (2022-08-23)
+# 0.8.0 (2022-08-23)
 
 ### Bug Fixes
 
