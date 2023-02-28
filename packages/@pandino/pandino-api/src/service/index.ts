@@ -9,3 +9,4 @@ export * from './service-reference';
 export * from './service-registration';
 export * from './service-tracker';
 export * from './service-tracker-customizer';
+export * from './service-utils';

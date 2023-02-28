@@ -1,6 +1,7 @@
 import { useBundleContext } from './PandinoContext';
-import { useEffect, useState } from 'react';
-import type { ServiceReference } from '@pandino/pandino-api';
+import { useCallback, useEffect, useState } from 'react';
+import type { ServiceEvent, ServiceListener, ServiceUtils } from '@pandino/pandino-api';
+import { FRAMEWORK_SERVICE_UTILS } from '@pandino/pandino-api';
 
 export interface SimpleTracker<T> {
   service?: T;
@@ -10,33 +11,53 @@ export type ServiceTrackerHook = <T>(filter: string) => SimpleTracker<T>;
 
 export const useTrackService: ServiceTrackerHook = <T>(filter: string) => {
   const { bundleContext } = useBundleContext();
+  const serviceUtilsRef = bundleContext.getServiceReference<ServiceUtils>(FRAMEWORK_SERVICE_UTILS);
+  const serviceUtils = bundleContext.getService(serviceUtilsRef);
+  const getService = useCallback<(filter: string) => T | undefined>(
+    (filter: string) => {
+      const refs = bundleContext.getServiceReferences(undefined, filter);
+      const ref = serviceUtils.getBestServiceReference(refs);
+      if (ref) {
+        return bundleContext.getService(ref);
+      }
+    },
+    [filter],
+  );
   const [tracker, setTracker] = useState<SimpleTracker<T>>({
-    service: undefined,
+    service: getService(filter),
   });
+  const createListener = useCallback(() => {
+    return {
+      serviceChanged: (event: ServiceEvent) => {
+        if (event.getType() === 'REGISTERED') {
+          setTracker({
+            service: bundleContext.getService(event.getServiceReference()),
+          });
+        } else if (event.getType() === 'UNREGISTERING') {
+          setTracker({
+            service: undefined,
+          });
+        }
+      },
+    };
+  }, [filter]);
+  const [listener, setListener] = useState<ServiceListener | undefined>();
 
   useEffect(() => {
-    const serviceTracker = bundleContext.trackService(filter, {
-      addingService(reference: ServiceReference<T>): T {
-        const service = bundleContext.getService<T>(reference);
-        setTracker({
-          service,
-        });
+    if (listener) {
+      bundleContext.removeServiceListener(listener);
+    }
 
-        return service;
-      },
-      removedService(_: ServiceReference<T>, __: T) {
-        setTracker({
-          service: undefined,
-        });
-      },
+    const newListener = createListener();
+
+    setListener(newListener);
+
+    bundleContext.addServiceListener(newListener, filter);
+
+    setTracker({
+      service: getService(filter),
     });
-
-    serviceTracker.open();
-
-    return () => {
-      serviceTracker.close();
-    };
-  }, [bundleContext]);
+  }, [filter]);
 
   return tracker;
 };

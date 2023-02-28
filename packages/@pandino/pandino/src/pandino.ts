@@ -21,6 +21,7 @@ import {
   FRAMEWORK_LOGGER,
   FRAMEWORK_MANIFEST_FETCHER,
   FRAMEWORK_SEMVER_FACTORY,
+  FRAMEWORK_SERVICE_UTILS,
   FrameworkConfigMap,
   FrameworkEventType,
   FrameworkListener,
@@ -65,6 +66,7 @@ import { SemVerImpl } from './lib/utils/semver-impl';
 import { SemverFactoryImpl } from './lib/utils/semver-factory';
 import { EsmActivatorResolver } from './lib/framework/esm-activator-resolver';
 import { parse } from './lib/filter';
+import { serviceUtilsImpl } from './lib/utils/service-utils';
 
 export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;
@@ -166,6 +168,7 @@ export class Pandino extends BundleImpl implements Framework {
         this.getBundleContext().registerService(FRAMEWORK_BUNDLE_IMPORTER, this.importer);
         this.getBundleContext().registerService(FRAMEWORK_FILTER_PARSER, new FilterParserImpl());
         this.getBundleContext().registerService(FRAMEWORK_SEMVER_FACTORY, new SemverFactoryImpl());
+        this.getBundleContext().registerService(FRAMEWORK_SERVICE_UTILS, serviceUtilsImpl);
         this.setBundleStateAndNotify(this, 'ACTIVE');
       }
     } catch (err) {

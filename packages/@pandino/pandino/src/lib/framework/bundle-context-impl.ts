@@ -29,6 +29,7 @@ import { ServiceObjectsImpl } from './service-objects-impl';
 import { BundleTrackerImpl } from './bundle-tracker-impl';
 import { ServiceTrackerImpl } from './service-tracker-impl';
 import { parse } from '../filter';
+import { serviceUtilsImpl } from '../utils/service-utils';
 
 export class BundleContextImpl implements BundleContext {
   private valid = true;
@@ -125,7 +126,7 @@ export class BundleContextImpl implements BundleContext {
     this.checkValidity();
     try {
       const refs = this.getServiceReferences(identifier, null);
-      return BundleContextImpl.getBestServiceReference(refs);
+      return serviceUtilsImpl.getBestServiceReference(refs);
     } catch (ex) {
       this.logger.error('BundleContextImpl: ' + ex);
     }
@@ -294,24 +295,5 @@ export class BundleContextImpl implements BundleContext {
 
     this.bundleTrackers = [];
     this.serviceTrackers = [];
-  }
-
-  private static getBestServiceReference(refs: ServiceReference<any>[]): ServiceReference<any> | undefined {
-    if (isAnyMissing(refs)) {
-      return undefined;
-    }
-
-    if (refs.length === 1) {
-      return refs[0];
-    }
-
-    let bestRef: ServiceReference<any> = refs[0];
-    for (let i = 1; i < refs.length; i++) {
-      if (bestRef.compareTo(refs[i]) < 0) {
-        bestRef = refs[i];
-      }
-    }
-
-    return bestRef;
   }
 }
