@@ -26,13 +26,13 @@
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-terser": "^0.4.0",
     "@rollup/plugin-typescript": "^11.0.0",
-    "@types/jest": "^29.2.3",
+    "@types/jest": "^29.4.0",
     "conventional-changelog-cli": "^2.2.2",
-    "jest": "^29.3.1",
+    "jest": "^29.4.3",
     "prettier": "^2.8.4",
-    "rollup": "^3.15.0",
+    "rollup": "^3.17.3",
     "rollup-plugin-clear": "^2.0.7",
-    "ts-jest": "^29.0.3",
+    "ts-jest": "^29.0.5",
     "typescript": "^4.9.5"
   },
   "engines": {

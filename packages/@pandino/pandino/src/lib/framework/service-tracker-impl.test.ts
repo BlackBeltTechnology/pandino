@@ -241,6 +241,40 @@ describe('ServiceTrackerImpl', () => {
     expect(addServ).toEqual(service);
   });
 
+  it('track pre-registered service', async () => {
+    await preparePandino();
+
+    const service: TestService = {
+      sayHello(): string {
+        return 'Hello!';
+      },
+    };
+    const addingData: [ServiceProperties?, TestService?] = [];
+    const bundle1 = await installBundle(bundle1Headers);
+    bundle1.getBundleContext().registerService<TestService>(SERVICE_IDENTIFIER, service, {
+      prop1: 'test',
+    });
+    const tracker = bundle1.getBundleContext().trackService(parse('(prop1=test)'), {
+      addingService(reference: ServiceReference<TestService>): TestService {
+        const service = bundle1.getBundleContext().getService(reference);
+        addingData.push({ ...reference.getProperties() }, service);
+        return service;
+      },
+    });
+
+    tracker.open();
+
+    const [addProps, addServ] = addingData;
+
+    expect(addProps).toEqual({
+      ...expectedBaseProps,
+      prop1: 'test',
+    });
+    expect(addServ).toEqual(service);
+
+    tracker.close();
+  });
+
   it('tracker methods', async () => {
     await preparePandino();
 

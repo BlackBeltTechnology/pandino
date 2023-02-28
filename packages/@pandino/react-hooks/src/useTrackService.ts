@@ -15,15 +15,6 @@ export const useTrackService: ServiceTrackerHook = <T>(filter: string) => {
   });
 
   useEffect(() => {
-    const refs = bundleContext.getServiceReferences<T>(undefined, filter);
-
-    if (refs && refs.length) {
-      const svc = bundleContext.getService<T>(refs[0]);
-      setTracker({
-        service: svc,
-      });
-    }
-
     const serviceTracker = bundleContext.trackService(filter, {
       addingService(reference: ServiceReference<T>): T {
         const service = bundleContext.getService<T>(reference);

@@ -567,6 +567,8 @@ export class Pandino extends BundleImpl implements Framework {
           effectiveRefList.push(ref);
         }
       }
+    } else {
+      effectiveRefList.push(...refList);
     }
 
     if (effectiveRefList.length > 0) {
