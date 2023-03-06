@@ -64,6 +64,10 @@ export const useTrackService: ServiceTrackerHook = <T>(filter: string) => {
         service: getService(filter),
       });
     }
+
+    return () => {
+      bundleContext.removeServiceListener(listener);
+    };
   }, [filter]);
 
   return tracker;
