@@ -1,9 +1,9 @@
-#  (2023-03-01)
+#  (2023-03-06)
 
 
 ### Bug Fixes
 
-* **react-hooks:** improve service and bundle lifecycle handling ([a722ed9](https://github.com/BlackBeltTechnology/pandino/commit/a722ed9c24394e8f7369ea785c4e40b4f9a7b5fd))
+* **react-hooks:** add missing service listener cleanup ([4783a4c](https://github.com/BlackBeltTechnology/pandino/commit/4783a4c4e10211ab06f606744b3bd8b075b6a0ed))
 
 
 
@@ -11,6 +11,12 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## 0.8.27 (2023-03-06)
+
+### Bug Fixes
+
+* **react-hooks:** add missing service listener cleanup ([4783a4c](https://github.com/BlackBeltTechnology/pandino/commit/4783a4c4e10211ab06f606744b3bd8b075b6a0ed))
 
 ## 0.8.26 (2023-03-01)
 

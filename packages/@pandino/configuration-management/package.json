@@ -1,6 +1,6 @@
 {
   "name": "@pandino/configuration-management",
-  "version": "0.8.26",
+  "version": "0.8.27",
   "description": "",
   "main": "./dist/cjs/configuration-management.cjs",
   "module": "./dist/esm/configuration-management.mjs",
@@ -45,11 +45,11 @@
     "src"
   ],
   "devDependencies": {
-    "@pandino/configuration-management-api": "^0.8.26",
-    "@pandino/pandino": "^0.8.26",
-    "@pandino/pandino-api": "^0.8.26",
-    "@pandino/persistence-manager-api": "^0.8.26",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.26"
+    "@pandino/configuration-management-api": "^0.8.27",
+    "@pandino/pandino": "^0.8.27",
+    "@pandino/pandino-api": "^0.8.27",
+    "@pandino/persistence-manager-api": "^0.8.27",
+    "@pandino/rollup-plugin-generate-manifest": "^0.8.27"
   },
   "jest": {
     "collectCoverage": true,
