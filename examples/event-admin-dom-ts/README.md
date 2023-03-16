@@ -10,4 +10,4 @@ We should be able to see two different Web Components communicating with each ot
 ## Running the actual app
 Run `npm start` to start a Webpack Dev Server
 
-> Server will start at: http://localhost:8080
+> Server will start at: http://localhost:3000
