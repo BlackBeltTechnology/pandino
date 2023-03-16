@@ -5,7 +5,7 @@ A TypeScript example showcasing Pandino loading an UMD Bundle instead of standar
 ## Setup
 - `npm i`
 - `npm run build`
-- `npx serve dist` to start a dev server
+- `npm run preview` to start a dev server
 
 ## Explanation
 
