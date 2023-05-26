@@ -1,4 +1,4 @@
-# Basic Browser JS
+# Browser Clicky JS
 
 A simple example showcasing service runtime override functionality using Pandino.
 
