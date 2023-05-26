@@ -9,6 +9,25 @@
 
 An OSGi - lite framework for JavaScript runtimes.
 
+## What is Pandino
+
+Pandino was designed to build on top of the **L** and **D** sections of the [SOLID principles](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design).
+
+It helps build software in a way where certain functionalities are "interfaced" and concrete implementation(s) are provided at runtime or potentially by different teams.
+
+Other tools provide dependency injection capabilities but Pandino is more. Pandino gives us the ability to wire in implementation in a way where it can come and **go** at runtime.
+It is also worth noting that Pandino does not require you to install specialized tooling to work compared to other micro-frontend frameworks / tools.
+
+Pandino is also extendable, some of the functionalities defined in the [OSGi Compendium](https://osgi.github.io/osgi/cmpn/) are already provided out of the box, such as:
+
+- [Configuration Management](https://github.com/BlackBeltTechnology/pandino/tree/develop/packages/@pandino/configuration-management)
+- [Event Admin](https://github.com/BlackBeltTechnology/pandino/tree/develop/packages/@pandino/event-admin)
+
+## Supported platforms
+
+Pandino can be used as an [ES Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in browsers
+and NodeJS v16, and v18 as well. To support legacy setups, we export CJS modules as well, where applicable.
+
 ## Inspiration
 
 Pandino is inspired by the [OSGi](https://www.osgi.org/resources/what-is-osgi/) framework originally created for Java.
@@ -22,19 +41,6 @@ documentation it self.
 
 Most noteworthy differences compared to the OSGi standard are explained in the
 [docs/osgi-comparison.md](./docs/osgi-comparison.md) document.
-
-## Recommended use-cases
-
-- There is a need to decouple an application at design time
-- Functionality can come and go at runtime
-- Parts of an application need to be customized without rebuilding the complete application
-- You don't want to vendor-lock yourself to e.g.: build tools or complete frameworks
-- You want to have complete control over how you manage your functionality
-
-## Supported platforms
-
-Pandino can be used as an [ES Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in browsers
-and NodeJS v14, v16, and v18 as well. To support legacy setups, we export CJS modules as well, where applicable.
 
 ## Beginner's guide
 
