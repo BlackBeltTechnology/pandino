@@ -15,9 +15,8 @@ import {
   BundleState,
   BundleType,
   DEPLOYMENT_ROOT_PROP,
-  FilterApi,
   FRAMEWORK_BUNDLE_IMPORTER,
-  FRAMEWORK_FILTER_PARSER,
+  FRAMEWORK_EVALUATE_FILTER,
   FRAMEWORK_LOGGER,
   FRAMEWORK_MANIFEST_FETCHER,
   FRAMEWORK_SEMVER_FACTORY,
@@ -61,12 +60,11 @@ import { VoidImporter } from './lib/utils/void-importer';
 import { Framework } from './lib/framework/framework';
 import { ServiceRegistry } from './lib/framework/service-registry';
 import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
-import { FilterParserImpl } from './lib/filter/filter-parser';
 import { SemVerImpl } from './lib/utils/semver-impl';
 import { SemverFactoryImpl } from './lib/utils/semver-factory';
 import { EsmActivatorResolver } from './lib/framework/esm-activator-resolver';
-import { parse } from './lib/filter';
 import { serviceUtilsImpl } from './lib/utils/service-utils';
+import { evaluateFilter } from './lib/filter';
 
 export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;
@@ -166,7 +164,7 @@ export class Pandino extends BundleImpl implements Framework {
         this.getBundleContext().registerService(FRAMEWORK_LOGGER, this.logger);
         this.getBundleContext().registerService(FRAMEWORK_MANIFEST_FETCHER, this.fetcher);
         this.getBundleContext().registerService(FRAMEWORK_BUNDLE_IMPORTER, this.importer);
-        this.getBundleContext().registerService(FRAMEWORK_FILTER_PARSER, new FilterParserImpl());
+        this.getBundleContext().registerService(FRAMEWORK_EVALUATE_FILTER, evaluateFilter);
         this.getBundleContext().registerService(FRAMEWORK_SEMVER_FACTORY, new SemverFactoryImpl());
         this.getBundleContext().registerService(FRAMEWORK_SERVICE_UTILS, serviceUtilsImpl);
         this.setBundleStateAndNotify(this, 'ACTIVE');
@@ -462,9 +460,7 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   addServiceListener(bundle: BundleImpl, listener: ServiceListener, filter?: string): void {
-    const newFilter: FilterApi = isAnyMissing(filter) ? null : parse(filter);
-
-    this.dispatcher.addListener(bundle.getBundleContext(), 'SERVICE', listener, newFilter);
+    this.dispatcher.addListener(bundle.getBundleContext(), 'SERVICE', listener, filter);
   }
 
   removeServiceListener(bundle: BundleImpl, l: ServiceListener): void {
@@ -556,12 +552,7 @@ export class Pandino extends BundleImpl implements Framework {
     expr?: string,
     checkAssignable = false,
   ): ServiceReference<any>[] {
-    let filter: FilterApi = null;
-    if (isAllPresent(expr)) {
-      filter = parse(expr);
-    }
-
-    const refList = this.registry.getServiceReferences(className, filter) as unknown as ServiceReference<any>[];
+    const refList = this.registry.getServiceReferences(className, expr) as unknown as ServiceReference<any>[];
     const effectiveRefList: ServiceReference<any>[] = [];
 
     if (checkAssignable) {

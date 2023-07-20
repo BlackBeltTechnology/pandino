@@ -158,7 +158,7 @@ export const FRAMEWORK_MANIFEST_FETCHER = '@pandino/pandino/ManifestFetcher';
 
 export const FRAMEWORK_BUNDLE_IMPORTER = '@pandino/pandino/BundleImporter';
 
-export const FRAMEWORK_FILTER_PARSER = '@pandino/pandino/FilterParser';
+export const FRAMEWORK_EVALUATE_FILTER = '@pandino/pandino/evaluateFilter';
 
 export const FRAMEWORK_SEMVER_FACTORY = '@pandino/pandino/SemVerFactory';
 

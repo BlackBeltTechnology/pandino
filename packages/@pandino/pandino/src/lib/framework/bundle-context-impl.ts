@@ -4,7 +4,6 @@ import {
   BundleListener,
   BundleManifestHeaders,
   FrameworkListener,
-  FilterApi,
   Logger,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
@@ -20,6 +19,7 @@ import {
   BundleEvent,
   ServiceTrackerCustomizer,
   ServiceTracker,
+  FilterNode,
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { BundleImpl } from './bundle-impl';
@@ -28,8 +28,8 @@ import { ServiceReferenceImpl } from './service-reference-impl';
 import { ServiceObjectsImpl } from './service-objects-impl';
 import { BundleTrackerImpl } from './bundle-tracker-impl';
 import { ServiceTrackerImpl } from './service-tracker-impl';
-import { parse } from '../filter';
 import { serviceUtilsImpl } from '../utils/service-utils';
+import { parseFilter } from '../filter';
 
 export class BundleContextImpl implements BundleContext {
   private valid = true;
@@ -66,10 +66,10 @@ export class BundleContextImpl implements BundleContext {
     this.pandino.removeFrameworkListener(this.bundle, listener);
   }
 
-  createFilter(filter: string): FilterApi {
+  createFilter(filter: string): FilterNode {
     this.checkValidity();
 
-    return parse(filter);
+    return parseFilter(filter);
   }
 
   getBundle(id?: number): Bundle {
@@ -246,7 +246,7 @@ export class BundleContextImpl implements BundleContext {
   }
 
   trackService<S, T>(
-    identifierOrFilter: string | FilterApi,
+    identifierOrFilter: string | FilterNode,
     customizer: Partial<ServiceTrackerCustomizer<S, T>>,
   ): ServiceTracker<S, T> {
     this.checkValidity();

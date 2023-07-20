@@ -3,22 +3,21 @@ import {
   BundleContext,
   BundleListener,
   ServiceListener,
-  FilterApi,
-  FrameworkListener,
+  FrameworkListener, FilterNode,
 } from '@pandino/pandino-api';
 
 export class ListenerInfo {
   private readonly bundle: Bundle;
   private readonly context: BundleContext;
   private readonly listener: ServiceListener | BundleListener | FrameworkListener;
-  private readonly filter: FilterApi;
+  private readonly filter: FilterNode;
 
   constructor(
     info?: ListenerInfo,
     bundle?: Bundle,
     context?: BundleContext,
     listener?: ServiceListener | BundleListener | FrameworkListener,
-    filter?: FilterApi,
+    filter?: FilterNode,
   ) {
     if (info) {
       this.bundle = info.bundle;
@@ -45,7 +44,7 @@ export class ListenerInfo {
     return this.listener;
   }
 
-  public getParsedFilter(): FilterApi {
+  public getParsedFilter(): FilterNode {
     return this.filter;
   }
 

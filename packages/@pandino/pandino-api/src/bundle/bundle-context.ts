@@ -13,10 +13,10 @@ import {
 } from '../service';
 import { BundleListener } from './bundle-listener';
 import { FrameworkListener } from '../framework';
-import { FilterApi } from '../filter-api';
 import { BundleTracker } from './bundle-tracker';
 import { BundleState } from './bundle-state';
 import { BundleTrackerCustomizer } from './bundle-tracker-customizer';
+import { FilterNode } from '../filter-api';
 
 /**
  * A bundle's execution context within the Framework. The context is used to grant access to other methods so that this
@@ -392,7 +392,7 @@ export interface BundleContext extends BundleReference {
   ungetService<S>(reference: ServiceReference<S>): boolean;
 
   /**
-   * Creates a {@code FilterApi} object. This {@code FilterApi} object may be used to match a {@code ServiceReference}
+   * Creates a {@code FilterNode} object. This {@code FilterNode} object may be used to match a {@code ServiceReference}
    * object or a {@code ServiceProperties} object.
    *
    * <p>
@@ -400,9 +400,9 @@ export interface BundleContext extends BundleReference {
    * became unparsable.
    *
    * @param {string} filter The filter string.
-   * @returns {FilterApi} A {@code FilterApi} object encapsulating the filter string.
+   * @returns {FilterNode} A {@code FilterNode} object encapsulating the filter string.
    */
-  createFilter(filter: string): FilterApi;
+  createFilter(filter: string): FilterNode;
 
   /**
    * An utility method abstracting the comparison functionality.
@@ -453,8 +453,5 @@ export interface BundleContext extends BundleReference {
    * @param {Partial<ServiceTrackerCustomizer<S, T>>} customizer
    * @return A {@link ServiceTracker<S, T>} for the given tracking parameters
    */
-  trackService<S, T>(
-    filter: string | FilterApi,
-    customizer: Partial<ServiceTrackerCustomizer<S, T>>,
-  ): ServiceTracker<S, T>;
+  trackService<S, T>(filter: string, customizer: Partial<ServiceTrackerCustomizer<S, T>>): ServiceTracker<S, T>;
 }

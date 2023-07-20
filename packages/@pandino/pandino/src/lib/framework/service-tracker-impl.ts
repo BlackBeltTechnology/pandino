@@ -1,6 +1,6 @@
 import {
   BundleContext,
-  FilterApi,
+  FilterNode,
   SERVICE_ID,
   SERVICE_RANKING,
   ServiceEvent,
@@ -15,13 +15,13 @@ import { AbstractTracked } from './abstract-tracked';
 export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   readonly customizer: ServiceTrackerCustomizer<S, T>;
   protected readonly context: BundleContext;
-  protected readonly filter: FilterApi;
+  protected readonly filter: FilterNode;
   private readonly listenerFilter: string;
   private tracked: Tracked<S, T>;
   private cachedReference: ServiceReference<S>;
   private cachedService: T;
 
-  constructor(context: BundleContext, filter: string | FilterApi, customizer?: ServiceTrackerCustomizer<S, T>) {
+  constructor(context: BundleContext, filter: string | FilterNode, customizer?: ServiceTrackerCustomizer<S, T>) {
     this.context = context;
     this.customizer = customizer || this;
     this.listenerFilter = typeof filter === 'string' ? filter : filter.toString();

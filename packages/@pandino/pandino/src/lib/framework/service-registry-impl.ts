@@ -1,6 +1,6 @@
 import {
   Bundle,
-  FilterApi,
+  FilterNode,
   Logger,
   OBJECTCLASS,
   SCOPE_PROTOTYPE,
@@ -14,7 +14,6 @@ import { ServiceRegistrationImpl } from './service-registration-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { ServiceEventImpl } from './service-event-impl';
 import { ServiceReferenceImpl } from './service-reference-impl';
-import Filter, { FilterComp } from '../filter/filter';
 import { CapabilitySet } from './capability-set/capability-set';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
 import { UsageCountImpl } from './usage-count-impl';
@@ -106,17 +105,17 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     }
   }
 
-  getServiceReferences(identifier?: string, filter?: FilterApi): Array<Capability> {
-    let filterEffective: Filter = filter as Filter;
+  getServiceReferences(identifier?: string, filter?: FilterNode): Array<Capability> {
+    let filterEffective: FilterNode = filter as FilterNode;
     if (isAnyMissing(identifier) && isAnyMissing(filter)) {
-      filterEffective = new Filter(null, FilterComp.MATCH_ALL, null);
+      filterEffective = { attribute: null, operator: 'eq', value: '*' };
     } else if (isAllPresent(identifier) && isAnyMissing(filter)) {
-      filterEffective = new Filter(OBJECTCLASS, FilterComp.EQ, identifier);
+      filterEffective = { attribute: OBJECTCLASS, operator: 'eq', value: identifier };
     } else if (isAllPresent(identifier) && isAllPresent(filter)) {
-      const filters: Array<Filter> = [];
-      filters.push(new Filter(OBJECTCLASS, FilterComp.EQ, identifier));
-      filters.push(filter as Filter);
-      filterEffective = new Filter(null, FilterComp.AND, null, filters);
+      const filters: Array<FilterNode> = [];
+      filters.push({ attribute: OBJECTCLASS, operator: 'eq', value: identifier });
+      filters.push(filter as FilterNode);
+      filterEffective = { operator: 'and', children: filters };
     }
 
     return Array.from(this.regCapSet.match(filterEffective, false));

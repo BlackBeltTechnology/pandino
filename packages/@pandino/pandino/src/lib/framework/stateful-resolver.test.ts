@@ -6,7 +6,7 @@ import { BundleRequirement } from './wiring/bundle-requirement';
 import { BundleRequirementImpl } from './wiring/bundle-requirement-impl';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
 import { FILTER_DIRECTIVE } from '@pandino/pandino-api';
-import { parse } from '../filter';
+import { parseFilter } from '../filter';
 
 describe('StatefulResolver', () => {
   describe('static getResolvableWires()', () => {
@@ -17,7 +17,7 @@ describe('StatefulResolver', () => {
         getDirectives: () => ({
           [FILTER_DIRECTIVE]: filter,
         }),
-        getFilter: () => parse(filter),
+        getFilter: () => parseFilter(filter),
         getResource: () => undefined,
       };
       const requirements: BundleRequirement[] = [requirement1 as BundleRequirement];
