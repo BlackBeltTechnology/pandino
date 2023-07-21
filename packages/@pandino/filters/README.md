@@ -15,6 +15,15 @@ This package is part of the [pandino-root](https://github.com/BlackBeltTechnolog
 information about what is Pandino / how this package fits into the ecosystem, please consult with the related
 documentation(s).
 
+## Intro
+
+This library only supports a simplified version of the LDAP Query syntax, and is not intended to cover the whole spec.
+
+**Key differences:**
+
+- The `evaluateFilter()` API is case sensitive
+- A simplified [semver](https://semver.org/) matcher has been baked in
+
 ## API
 
 ### evaluateFilter()
@@ -22,7 +31,10 @@ documentation(s).
 Evaluates the data provided against the filter and returns `true` if it matches.
 
 ```typescript
+import { evaluateFilter } from '@pandino/filters';
+
 const filter = '(&(gn=Jenny)(sn=Jensen*))';
+
 expect(evaluateFilter({ gn: 'Jenny', sn: 'Jensen-Smith' }, filter)).toEqual(true);
 ```
 
@@ -31,7 +43,10 @@ expect(evaluateFilter({ gn: 'Jenny', sn: 'Jensen-Smith' }, filter)).toEqual(true
 Parses the given filter string and returns the data model of `FilterNode` or `undefined`.
 
 ```typescript
+import { parseFilter } from '@pandino/filters';
+
 const filter = '(&(gn=Jenny)(sn=Jensen))';
+
 expect(parseFilter(filter)).toEqual({
   operator: 'and',
   children: [
@@ -46,6 +61,8 @@ expect(parseFilter(filter)).toEqual({
 Serializes the provided `FilterNode` instance.
 
 ```typescript
+import { serializeFilter, FilterNode } from '@pandino/filters';
+
 const node: FilterNode = {
     operator: 'and',
     children: [
@@ -53,6 +70,7 @@ const node: FilterNode = {
         { attribute: 'sn', operator: 'eq', value: 'Jensen' },
     ],
 };
+
 expect(serializeFilter(node)).toEqual('(&(gn=Jenny)(sn=Jensen))');
 ```
 
