@@ -8,8 +8,9 @@ import {
   FrameworkEvent,
   FrameworkListener,
   Bundle,
-  BundleState, FilterNode,
+  BundleState,
 } from '@pandino/pandino-api';
+import { evaluateFilter, FilterNode } from '@pandino/filters';
 import { ListenerInfo } from './util/listener-info';
 import { BundleImpl } from './bundle-impl';
 import { BundleEventImpl } from './bundle-event-impl';
@@ -18,7 +19,6 @@ import { ServiceEventImpl } from './service-event-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { CapabilitySet } from './capability-set/capability-set';
 import { Capability } from './resource/capability';
-import {evaluateFilter} from "../filter";
 
 export type ListenerType = 'BUNDLE' | 'FRAMEWORK' | 'SERVICE';
 
@@ -98,8 +98,7 @@ export class EventDispatcher {
     }
 
     let matched =
-      isAnyMissing(filter) ||
-      CapabilitySet.matches(event.getServiceReference() as unknown as Capability, filter);
+      isAnyMissing(filter) || CapabilitySet.matches(event.getServiceReference() as unknown as Capability, filter);
 
     if (matched) {
       listener.serviceChanged(event);
@@ -141,7 +140,7 @@ export class EventDispatcher {
     }
   }
 
-  addListener?(bc: BundleContext, type: ListenerType, listener: any, filter?: FilterNode): FilterNode | undefined {
+  addListener?(bc: BundleContext, type: ListenerType, listener: any, filter?: string): FilterNode | undefined {
     if (!listener) {
       throw new Error('Listener is missing');
     }
@@ -264,7 +263,7 @@ export class EventDispatcher {
     return listeners;
   }
 
-  updateListener(bc: BundleContext, type: ListenerType, listener: any, filter?: FilterNode): FilterNode | undefined {
+  updateListener(bc: BundleContext, type: ListenerType, listener: any, filter?: string): FilterNode | undefined {
     if (type === 'SERVICE') {
       // Verify that the bundle context is still valid.
       try {

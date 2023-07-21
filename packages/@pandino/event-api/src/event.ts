@@ -1,5 +1,3 @@
-import { FilterApi } from '@pandino/pandino-api';
-
 /**
  * An event. Event objects are delivered to EventHandler services which subscribe to the topic of the event.
  */
@@ -31,9 +29,9 @@ export interface Event {
   /**
    * Tests this event's properties against the given filter using a case sensitive match.
    *
-   * @param {FilterApi} filter
+   * @param {string} filter
    */
-  matches(filter: FilterApi): boolean;
+  matches(filter: string): boolean;
 
   /**
    * Compares this Event object to another object.

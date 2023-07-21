@@ -19,7 +19,6 @@ import {
   BundleEvent,
   ServiceTrackerCustomizer,
   ServiceTracker,
-  FilterNode,
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { BundleImpl } from './bundle-impl';
@@ -29,7 +28,7 @@ import { ServiceObjectsImpl } from './service-objects-impl';
 import { BundleTrackerImpl } from './bundle-tracker-impl';
 import { ServiceTrackerImpl } from './service-tracker-impl';
 import { serviceUtilsImpl } from '../utils/service-utils';
-import { parseFilter } from '../filter';
+import { FilterNode, parseFilter } from '@pandino/filters';
 
 export class BundleContextImpl implements BundleContext {
   private valid = true;

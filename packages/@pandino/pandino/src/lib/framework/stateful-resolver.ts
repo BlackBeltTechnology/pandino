@@ -117,7 +117,7 @@ export class StatefulResolver {
     for (const req of requirements) {
       const filter = (req as BundleRequirementImpl).getFilter();
       const providedCap = allProvidedCapabilities.find(
-        (p) => p.getNamespace() === req.getNamespace() && CapabilitySet.matches(p, filter),
+        (p) => p.getNamespace() === req.getNamespace() && (filter ? CapabilitySet.matches(p, filter) : true),
       );
       if (providedCap) {
         const wire = new BundleWireImpl(req.getResource(), req, providedCap?.getResource(), providedCap);

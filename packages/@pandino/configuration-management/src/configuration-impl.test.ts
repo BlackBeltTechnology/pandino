@@ -1,7 +1,6 @@
 import {
   Bundle,
   BundleContext,
-  FilterParser,
   Logger,
   SemverFactory,
   SERVICE_PID,
@@ -17,6 +16,7 @@ import {
   CONFIGURATION_LISTENER_INTERFACE_KEY,
   MANAGED_SERVICE_INTERFACE_KEY,
 } from '@pandino/configuration-management-api';
+import { evaluateFilter } from '@pandino/filters';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
 import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
@@ -32,9 +32,6 @@ describe('ConfigurationImpl', () => {
   let bundle: Bundle;
   let configAdmin: ConfigurationAdminImpl;
   let cm: ConfigurationManager;
-  let mockFilterParser: FilterParser = {
-    parse: jest.fn(),
-  };
   let mockDebug = jest.fn();
   let logger: Logger = {
     debug: mockDebug,
@@ -49,7 +46,7 @@ describe('ConfigurationImpl', () => {
       '@test/my-bundle',
       createVersionMock('0.0.0'),
     );
-    cm = new ConfigurationManager(context, logger, mockFilterParser, new MockPersistenceManager('{}'), semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, new MockPersistenceManager('{}'), semverFactory);
     context.addServiceListener(cm);
     configAdmin = new ConfigurationAdminImpl(cm, bundle, logger);
   });

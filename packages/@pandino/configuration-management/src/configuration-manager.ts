@@ -1,6 +1,5 @@
 import {
   BundleContext,
-  FilterParser,
   Logger,
   SemverFactory,
   SERVICE_PID,
@@ -16,6 +15,7 @@ import {
   MANAGED_SERVICE_INTERFACE_KEY,
   ManagedService,
 } from '@pandino/configuration-management-api';
+import type { FilterEvaluator } from '@pandino/filters';
 import { PersistenceManager } from '@pandino/persistence-manager-api';
 import { ConfigurationImpl } from './configuration-impl';
 import { TargetedPID } from './helper/targeted-pid';
@@ -25,7 +25,7 @@ export class ConfigurationManager implements ServiceListener {
   isSync: boolean = true;
   private readonly context: BundleContext;
   private readonly logger: Logger;
-  private readonly filterParser: FilterParser;
+  private readonly evaluateFilter: FilterEvaluator;
   private readonly managedReferences: Map<string, Array<ServiceReference<ManagedService>>> = new Map<
     string,
     Array<ServiceReference<ManagedService>>
@@ -37,13 +37,13 @@ export class ConfigurationManager implements ServiceListener {
   constructor(
     context: BundleContext,
     logger: Logger,
-    filterParser: FilterParser,
+    evaluateFilter: FilterEvaluator,
     pm: PersistenceManager,
     semVerFactory: SemverFactory,
   ) {
     this.context = context;
     this.logger = logger;
-    this.filterParser = filterParser;
+    this.evaluateFilter = evaluateFilter;
     this.configurationCache = new ConfigurationCache(context, pm, this, this.semVerFactory);
     this.semVerFactory = semVerFactory;
   }
@@ -209,10 +209,11 @@ export class ConfigurationManager implements ServiceListener {
 
   listConfigurations(filterString?: string): ConfigurationImpl[] {
     if (filterString) {
-      const filter = this.filterParser.parse(filterString);
       this.logger.debug(`Listing configurations matching ${filterString}`);
 
-      return Array.from(this.configurationCache.values()).filter((config) => filter.match(config.getProperties()));
+      return Array.from(this.configurationCache.values()).filter((config) =>
+        this.evaluateFilter(config.getProperties(), filterString),
+      );
     }
 
     return [...this.configurationCache.values()];

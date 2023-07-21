@@ -17,8 +17,9 @@ import {
   REQUIRE_CAPABILITY,
   BundleManifestHeaders,
   SemVer,
-  FilterNode,
 } from '@pandino/pandino-api';
+import type { FilterNode } from '@pandino/filters';
+import { convert, parseFilter } from '@pandino/filters';
 import { BundleCapabilityImpl } from '../../wiring/bundle-capability-impl';
 import { ParsedHeaderClause } from './parsed-header-clause';
 import { BundleRequirementImpl } from '../../wiring/bundle-requirement-impl';
@@ -29,7 +30,6 @@ import { BundleCapability } from '../../wiring/bundle-capability';
 import { BundleRevision } from '../../bundle-revision';
 import { SemVerImpl } from '../../../utils/semver-impl';
 import { parseDelimitedString } from './utils';
-import { convert, parseFilter } from '../../../filter';
 
 export class ManifestParserImpl implements ManifestParser {
   private readonly configMap: BundleConfigMap;

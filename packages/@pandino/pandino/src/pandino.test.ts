@@ -673,6 +673,9 @@ describe('Pandino', () => {
     const b1 = await installBundle(bundle1);
     const b2 = await installBundle(bundle2);
 
+    expect(b1.getState()).toEqual('ACTIVE');
+    expect(b2.getState()).toEqual('ACTIVE');
+
     await b1.uninstall();
 
     expect(b1.getState()).toEqual('UNINSTALLED');

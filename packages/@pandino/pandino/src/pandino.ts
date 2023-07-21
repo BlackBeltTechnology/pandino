@@ -34,16 +34,19 @@ import {
   PANDINO_BUNDLE_IMPORTER_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
   SemVer,
+  SemverFactory,
   ServiceEvent,
   ServiceFactory,
   ServiceListener,
   ServiceProperties,
   ServiceReference,
   ServiceRegistration,
+  ServiceUtils,
   SYSTEM_BUNDLE_LOCATION,
   SYSTEM_BUNDLE_SYMBOLICNAME,
   SYSTEMBUNDLE_ACTIVATORS_PROP,
 } from '@pandino/pandino-api';
+import { evaluateFilter, FilterEvaluator } from '@pandino/filters';
 import { BundleImpl } from './lib/framework/bundle-impl';
 import { EventDispatcher } from './lib/framework/event-dispatcher';
 import { BundleContextImpl } from './lib/framework/bundle-context-impl';
@@ -64,7 +67,6 @@ import { SemVerImpl } from './lib/utils/semver-impl';
 import { SemverFactoryImpl } from './lib/utils/semver-factory';
 import { EsmActivatorResolver } from './lib/framework/esm-activator-resolver';
 import { serviceUtilsImpl } from './lib/utils/service-utils';
-import { evaluateFilter } from './lib/filter';
 
 export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;
@@ -161,12 +163,12 @@ export class Pandino extends BundleImpl implements Framework {
         await this.init();
       }
       if (this.getState() === 'STARTING') {
-        this.getBundleContext().registerService(FRAMEWORK_LOGGER, this.logger);
-        this.getBundleContext().registerService(FRAMEWORK_MANIFEST_FETCHER, this.fetcher);
-        this.getBundleContext().registerService(FRAMEWORK_BUNDLE_IMPORTER, this.importer);
-        this.getBundleContext().registerService(FRAMEWORK_EVALUATE_FILTER, evaluateFilter);
-        this.getBundleContext().registerService(FRAMEWORK_SEMVER_FACTORY, new SemverFactoryImpl());
-        this.getBundleContext().registerService(FRAMEWORK_SERVICE_UTILS, serviceUtilsImpl);
+        this.getBundleContext().registerService<Logger>(FRAMEWORK_LOGGER, this.logger);
+        this.getBundleContext().registerService<ManifestFetcher>(FRAMEWORK_MANIFEST_FETCHER, this.fetcher);
+        this.getBundleContext().registerService<BundleImporter>(FRAMEWORK_BUNDLE_IMPORTER, this.importer);
+        this.getBundleContext().registerService<FilterEvaluator>(FRAMEWORK_EVALUATE_FILTER, evaluateFilter);
+        this.getBundleContext().registerService<SemverFactory>(FRAMEWORK_SEMVER_FACTORY, new SemverFactoryImpl());
+        this.getBundleContext().registerService<ServiceUtils>(FRAMEWORK_SERVICE_UTILS, serviceUtilsImpl);
         this.setBundleStateAndNotify(this, 'ACTIVE');
       }
     } catch (err) {
@@ -538,10 +540,10 @@ export class Pandino extends BundleImpl implements Framework {
   getAllowedServiceReferences(
     bundle: BundleImpl,
     className?: string,
-    expr?: string,
+    filter?: string,
     checkAssignable = false,
   ): ServiceReference<any>[] {
-    const refs: ServiceReference<any>[] = this.getServiceReferences(bundle, className, expr, checkAssignable);
+    const refs: ServiceReference<any>[] = this.getServiceReferences(bundle, className, filter, checkAssignable);
 
     return isAnyMissing(refs) ? [] : [...refs];
   }
@@ -549,10 +551,10 @@ export class Pandino extends BundleImpl implements Framework {
   private getServiceReferences(
     bundle: BundleImpl,
     className?: string,
-    expr?: string,
+    filter?: string,
     checkAssignable = false,
   ): ServiceReference<any>[] {
-    const refList = this.registry.getServiceReferences(className, expr) as unknown as ServiceReference<any>[];
+    const refList = this.registry.getServiceReferences(className, filter) as unknown as ServiceReference<any>[];
     const effectiveRefList: ServiceReference<any>[] = [];
 
     if (checkAssignable) {

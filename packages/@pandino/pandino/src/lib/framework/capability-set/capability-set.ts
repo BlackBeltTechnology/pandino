@@ -4,8 +4,8 @@ import { BundleCapability } from '../wiring/bundle-capability';
 import { Capability } from '../resource/capability';
 import { SemVerImpl } from '../../utils/semver-impl';
 import { equal, gte, lte } from '../../semver-lite/src';
-import { FilterNode, FilterOperator } from '@pandino/pandino-api';
-import {parseFilter} from "../../filter";
+import type { FilterNode, FilterOperator } from '@pandino/filters';
+import { parseFilter } from '@pandino/filters';
 
 export type CapabilityIndex = Record<any, Set<BundleCapability>>;
 
@@ -67,7 +67,8 @@ export class CapabilitySet {
   }
 
   static matches(cap: Capability, sf?: string): boolean {
-    return CapabilitySet.matchesInternal(cap, parseFilter(sf)) && CapabilitySet.matchMandatory(cap, parseFilter(sf));
+    const node = parseFilter(sf);
+    return CapabilitySet.matchesInternal(cap, node) && CapabilitySet.matchMandatory(cap, node);
   }
 
   static matchMandatory(cap: Capability, sf?: FilterNode): boolean {
@@ -94,7 +95,7 @@ export class CapabilitySet {
       let list: any[] = sf.children;
       for (let i = 0; i < list.length; i++) {
         let sf2 = list[i] as FilterNode;
-        if (sf2.attribute !== null && sf.attribute !== undefined && sf2.attribute === attrName) {
+        if (sf2.attribute !== null && sf2.attribute !== undefined && sf2.attribute === attrName) {
           return true;
         }
       }
@@ -212,7 +213,9 @@ export class CapabilitySet {
   private matchCapSet(caps: Set<Capability>, sf: FilterNode): Set<Capability> {
     let matches: Set<Capability> = new Set<Capability>();
 
-    if (sf.operator === 'eq' && sf.value === '*') {
+    if (sf.expression === '*') {
+      caps.forEach((c) => matches.add(c));
+    } else if (sf.operator === 'eq' && sf.value === '*') {
       caps.forEach((c) => matches.add(c));
     } else if (sf.operator === 'and') {
       const sfs: Array<FilterNode> = sf.children;
@@ -266,7 +269,7 @@ export class CapabilitySet {
 
     if (isAnyMissing(sf)) {
       matched = false;
-    } else if (sf.operator === 'eq' && sf.value === '*') {
+    } else if ((sf.operator === 'eq' && sf.value === '*') || sf.expression === '*') {
       matched = true;
     } else if (sf.operator === 'and') {
       const sfs = sf.children as FilterNode[];

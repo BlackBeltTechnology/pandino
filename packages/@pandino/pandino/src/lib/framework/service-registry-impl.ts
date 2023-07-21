@@ -1,6 +1,5 @@
 import {
   Bundle,
-  FilterNode,
   Logger,
   OBJECTCLASS,
   SCOPE_PROTOTYPE,
@@ -10,6 +9,7 @@ import {
   ServiceReference,
   ServiceRegistration,
 } from '@pandino/pandino-api';
+import { FilterNode, parseFilter } from '@pandino/filters';
 import { ServiceRegistrationImpl } from './service-registration-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { ServiceEventImpl } from './service-event-impl';
@@ -105,16 +105,16 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     }
   }
 
-  getServiceReferences(identifier?: string, filter?: FilterNode): Array<Capability> {
-    let filterEffective: FilterNode = filter as FilterNode;
-    if (isAnyMissing(identifier) && isAnyMissing(filter)) {
+  getServiceReferences(identifier?: string, filter?: string): Array<Capability> {
+    let filterEffective = parseFilter(filter);
+    if (isAnyMissing(identifier) && isAnyMissing(filterEffective)) {
       filterEffective = { attribute: null, operator: 'eq', value: '*' };
-    } else if (isAllPresent(identifier) && isAnyMissing(filter)) {
+    } else if (isAllPresent(identifier) && isAnyMissing(filterEffective)) {
       filterEffective = { attribute: OBJECTCLASS, operator: 'eq', value: identifier };
-    } else if (isAllPresent(identifier) && isAllPresent(filter)) {
+    } else if (isAllPresent(identifier) && isAllPresent(filterEffective)) {
       const filters: Array<FilterNode> = [];
       filters.push({ attribute: OBJECTCLASS, operator: 'eq', value: identifier });
-      filters.push(filter as FilterNode);
+      filters.push(filterEffective);
       filterEffective = { operator: 'and', children: filters };
     }
 

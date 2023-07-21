@@ -1,9 +1,10 @@
-import { FilterNode, RESOLUTION_DIRECTIVE, RESOLUTION_OPTIONAL } from '@pandino/pandino-api';
+import { RESOLUTION_DIRECTIVE, RESOLUTION_OPTIONAL } from '@pandino/pandino-api';
+import type { FilterNode } from '@pandino/filters';
+import { convert, serializeFilter } from '@pandino/filters';
 import { CapabilitySet } from '../capability-set/capability-set';
 import { BundleRevision } from '../bundle-revision';
 import { BundleCapability } from './bundle-capability';
 import { BundleRequirement } from './bundle-requirement';
-import { convert } from '../../filter';
 
 export class BundleRequirementImpl implements BundleRequirement {
   private readonly revision: BundleRevision;
@@ -24,7 +25,7 @@ export class BundleRequirementImpl implements BundleRequirement {
     this.namespace = namespace;
     this.dirs = dirs;
     this.attrs = attrs;
-    this.filter = filter || convert(this.attrs);
+    this.filter = filter ? serializeFilter(filter) : serializeFilter(convert(this.attrs));
     this.optional =
       this.dirs.hasOwnProperty(RESOLUTION_DIRECTIVE) && this.dirs[RESOLUTION_DIRECTIVE] === RESOLUTION_OPTIONAL;
   }

@@ -1,10 +1,9 @@
 import { ListenerInfo } from './listener-info';
 import { BundleImpl } from '../bundle-impl';
 import { BundleContextImpl } from '../bundle-context-impl';
-import { FilterApi, ServiceListener } from '@pandino/pandino-api';
+import { ServiceListener } from '@pandino/pandino-api';
 import { Pandino } from '../../../pandino';
 import { MuteLogger } from '../../../__mocks__/mute-logger';
-import { parse } from '../../filter';
 
 describe('ListenerInfo', () => {
   let info: ListenerInfo;
@@ -26,7 +25,7 @@ describe('ListenerInfo', () => {
   });
 
   it('instantiation via attributes', () => {
-    const filter: FilterApi = parse('(age>=40)');
+    const filter = '(age>=40)';
     const serviceListener: ServiceListener = {
       serviceChanged: jest.fn(),
     };
@@ -38,6 +37,6 @@ describe('ListenerInfo', () => {
     expect(info.getBundleContext()).toEqual(bundleContext);
     expect(info.getFilter()).toEqual('(age>=40)');
     expect(info.getListener()).toEqual(serviceListener);
-    expect(info.getParsedFilter()).toEqual(filter);
+    expect(info.getParsedFilter()).toEqual({ attribute: 'age', operator: 'gte', value: '40' });
   });
 });

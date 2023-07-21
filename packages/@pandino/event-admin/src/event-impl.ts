@@ -1,14 +1,16 @@
 import { Event, EVENT_TOPIC, EventProperties } from '@pandino/event-api';
-import { FilterApi } from '@pandino/pandino-api';
+import type { FilterEvaluator } from '@pandino/filters';
 
 export class EventImpl implements Event {
   private readonly topic: string;
   private readonly properties: EventProperties;
+  private readonly filterEvaluator: FilterEvaluator;
 
-  constructor(topic: string, properties: EventProperties) {
+  constructor(topic: string, properties: EventProperties, filterEvaluator: FilterEvaluator) {
     EventImpl.validateTopicName(topic);
     this.topic = topic;
     this.properties = properties;
+    this.filterEvaluator = filterEvaluator;
   }
 
   containsProperty(name: string): boolean {
@@ -45,11 +47,14 @@ export class EventImpl implements Event {
     return this.topic;
   }
 
-  matches(filter: FilterApi): boolean {
-    return filter.match({
-      ...this.properties,
-      [EVENT_TOPIC]: this.topic,
-    });
+  matches(filter: string): boolean {
+    return this.filterEvaluator(
+      {
+        ...this.properties,
+        [EVENT_TOPIC]: this.topic,
+      },
+      filter,
+    );
   }
 
   private static validateTopicName(topic: string): void {

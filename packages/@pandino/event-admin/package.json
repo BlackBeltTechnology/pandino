@@ -47,6 +47,7 @@
   ],
   "devDependencies": {
     "@pandino/event-api": "^0.8.27",
+    "@pandino/filters": "^0.8.27",
     "@pandino/log-api": "^0.8.27",
     "@pandino/pandino-api": "^0.8.27",
     "@pandino/rollup-plugin-generate-manifest": "^0.8.27"

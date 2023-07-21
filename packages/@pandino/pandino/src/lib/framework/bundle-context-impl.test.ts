@@ -30,7 +30,6 @@ import { MuteLogger } from '../../__mocks__/mute-logger';
 import { BundleContextImpl } from './bundle-context-impl';
 import { BundleImpl } from './bundle-impl';
 import { BundleEventImpl } from './bundle-event-impl';
-import Filter from '../filter/filter';
 import { ServiceEventImpl } from './service-event-impl';
 
 interface MockService {
@@ -212,7 +211,7 @@ describe('BundleContextImpl', () => {
     const filter = bundleContext.createFilter('(&(sn=jensen)(gn=jenny))');
 
     expect(filter).toBeDefined();
-    expect(filter instanceof Filter).toEqual(true);
+    expect(filter.operator).toEqual('and');
   });
 
   it('addServiceListener() fails for invalid Context', () => {

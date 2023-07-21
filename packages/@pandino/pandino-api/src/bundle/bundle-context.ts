@@ -16,7 +16,6 @@ import { FrameworkListener } from '../framework';
 import { BundleTracker } from './bundle-tracker';
 import { BundleState } from './bundle-state';
 import { BundleTrackerCustomizer } from './bundle-tracker-customizer';
-import { FilterNode } from '../filter-api';
 
 /**
  * A bundle's execution context within the Framework. The context is used to grant access to other methods so that this
@@ -390,19 +389,6 @@ export interface BundleContext extends BundleReference {
    *          unregistered; {@code true} otherwise.
    */
   ungetService<S>(reference: ServiceReference<S>): boolean;
-
-  /**
-   * Creates a {@code FilterNode} object. This {@code FilterNode} object may be used to match a {@code ServiceReference}
-   * object or a {@code ServiceProperties} object.
-   *
-   * <p>
-   * If the filter cannot be parsed, an {@link Error} will be thrown with a human readable message where the filter
-   * became unparsable.
-   *
-   * @param {string} filter The filter string.
-   * @returns {FilterNode} A {@code FilterNode} object encapsulating the filter string.
-   */
-  createFilter(filter: string): FilterNode;
 
   /**
    * An utility method abstracting the comparison functionality.

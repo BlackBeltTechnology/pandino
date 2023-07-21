@@ -6,7 +6,6 @@ import {
   BundleState,
   BundleTracker,
   BundleTrackerCustomizer,
-  FilterApi,
   FrameworkListener,
   ServiceEventType,
   ServiceListener,
@@ -47,10 +46,6 @@ export class MockBundleContext implements BundleContext {
 
   addServiceListener(listener: ServiceListener, filter?: string): void {
     this.serviceListeners.push(listener);
-  }
-
-  createFilter(filter: string): FilterApi {
-    return undefined;
   }
 
   equals(other: any): boolean {
@@ -149,7 +144,7 @@ export class MockBundleContext implements BundleContext {
   }
 
   trackService<S, T>(
-    identifierOrFilter: string | FilterApi,
+    identifierOrFilter: string,
     customizer: Partial<ServiceTrackerCustomizer<S, T>>,
   ): ServiceTracker<S, T> {
     return undefined;

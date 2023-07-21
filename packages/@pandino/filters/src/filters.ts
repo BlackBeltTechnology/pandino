@@ -1,4 +1,5 @@
-import { FilterNode, FilterOperator } from '@pandino/pandino-api';
+import type { FilterEvaluator, FilterNode, FilterOperator } from './types';
+import { FilterOperatorSymbolMapping } from './types';
 
 export const convert = (attrs: Record<string, any>): FilterNode => {
   const filters: FilterNode[] = [];
@@ -20,33 +21,57 @@ export const convert = (attrs: Record<string, any>): FilterNode => {
   return filter;
 };
 
-export function evaluateFilter(data: any, query: string): boolean {
+export const evaluateFilter: FilterEvaluator = (data: any, query: string): boolean => {
   const node = parseFilter(query);
-  return evaluateExpression(node, data);
-}
+  return evaluateFilterNode(node, data);
+};
 
-export function evaluateExpression(node: FilterNode, data: any): boolean {
+export function evaluateFilterNode(node: FilterNode, data: any): boolean {
   if (!node.operator) {
-    return evaluateExpression(node.children[0], data);
+    return evaluateFilterNode(node.children[0], data);
   }
 
   switch (node.operator) {
     case 'and':
       return node.children.every(function (child) {
-        return evaluateExpression(child, data);
+        return evaluateFilterNode(child, data);
       });
     case 'or':
       return node.children.some(function (child) {
-        return evaluateExpression(child, data);
+        return evaluateFilterNode(child, data);
       });
     case 'not':
-      return !evaluateExpression(node.children[0], data);
+      return !evaluateFilterNode(node.children[0], data);
     default:
       return evaluateComparison(node, data);
   }
 }
 
-export function parseFilter(filter: string): FilterNode {
+export function serializeFilter(node?: FilterNode): string | undefined {
+  if (!node) {
+    return undefined;
+  }
+
+  if (node.operator && node.attribute && node.value !== undefined) {
+    return `(${node.attribute}${FilterOperatorSymbolMapping[node.operator]}${node.value})`;
+  }
+
+  if (node.operator && node.children && node.children.length > 0) {
+    const childFilters = node.children.map(serializeFilter).join('');
+    return `(${FilterOperatorSymbolMapping[node.operator]}${childFilters})`;
+  }
+
+  if (node.expression) {
+    return `(${node.expression})`;
+  }
+
+  return undefined;
+}
+
+export function parseFilter(filter?: string): FilterNode | undefined {
+  if (filter === null || filter === undefined) {
+    return undefined;
+  }
   const filtered = filter.replace(/\s/g, '');
   const stack = [];
   let current: FilterNode = {};
@@ -80,6 +105,17 @@ export function parseFilter(filter: string): FilterNode {
   }
 
   splitNodeExpression(current);
+
+  if (
+    current &&
+    current.operator === undefined &&
+    current.value === undefined &&
+    current.expression === undefined &&
+    current.children &&
+    current.children.length === 1
+  ) {
+    return current.children[0];
+  }
 
   return current;
 }

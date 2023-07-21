@@ -21,7 +21,6 @@ import { BundleRevisionImpl } from '../../bundle-revision-impl';
 import { BundleCapability } from '../../wiring/bundle-capability';
 import { BundleRequirement } from '../../wiring/bundle-requirement';
 import { SemVerImpl } from '../../../utils/semver-impl';
-import { parseFilter } from '../../../filter';
 
 describe('ManifestParserImp', () => {
   it('single attribute', () => {
@@ -130,7 +129,7 @@ describe('ManifestParserImp', () => {
     const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
     const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
 
-    expect(parseFilter(rc1.getDirectives()['filter']).toString()).toEqual('(&(type=cat)(rate<=20))');
+    expect(rc1.getDirectives()['filter']).toEqual('(&(type=cat)(rate<=20))');
   });
 
   it('only namespace, no attributes', () => {
@@ -169,9 +168,9 @@ describe('ManifestParserImp', () => {
     const pc1: BundleCapability = findCapability(mp.getCapabilities(), 'some.cap.with.filter');
     const pc2: BundleCapability = findCapability(mp.getCapabilities(), 'some.other.cap');
 
-    expect(parseFilter(rc1.getDirectives()['filter']).toString()).toEqual('(&(type=cat)(rate<=20))');
+    expect(rc1.getDirectives()['filter']).toEqual('(&(type=cat)(rate<=20))');
     expect(rc2.getAttributes()['test']).toEqual('value');
-    expect(parseFilter(pc1.getDirectives()['filter']).toString()).toEqual('(&(attr1=1)(attr2<=500))');
+    expect(pc1.getDirectives()['filter']).toEqual('(&(attr1=1)(attr2<=500))');
     expect(pc2.getAttributes()['fine']).toEqual(1);
   });
 });

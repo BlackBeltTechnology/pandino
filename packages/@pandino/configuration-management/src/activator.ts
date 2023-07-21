@@ -2,8 +2,7 @@ import {
   Bundle,
   BundleActivator,
   BundleContext,
-  FilterParser,
-  FRAMEWORK_FILTER_PARSER,
+  FRAMEWORK_EVALUATE_FILTER,
   FRAMEWORK_LOGGER,
   FRAMEWORK_SEMVER_FACTORY,
   Logger,
@@ -14,6 +13,7 @@ import {
   ServiceReference,
   ServiceRegistration,
 } from '@pandino/pandino-api';
+import type { FilterEvaluator } from '@pandino/filters';
 import { ConfigurationAdmin, CONFIG_ADMIN_INTERFACE_KEY } from '@pandino/configuration-management-api';
 import { INTERFACE_KEY, PersistenceManager } from '@pandino/persistence-manager-api';
 import { ConfigurationAdminImpl } from './configuration-admin-impl';
@@ -27,8 +27,8 @@ export class Activator implements BundleActivator {
   private configManager: ConfigurationManager;
   private configAdmin: ConfigurationAdmin;
   private configAdminRegistration: ServiceRegistration<ConfigurationAdmin>;
-  private filterParser: FilterParser;
-  private filterParserReference: ServiceReference<FilterParser>;
+  private evaluateFilter: FilterEvaluator;
+  private filterParserReference: ServiceReference<FilterEvaluator>;
   private persistenceManagerReference?: ServiceReference<PersistenceManager>;
   private persistenceManager: PersistenceManager;
   private semVerFactoryReference?: ServiceReference<SemverFactory>;
@@ -40,8 +40,8 @@ export class Activator implements BundleActivator {
     this.context = context;
     this.loggerReference = context.getServiceReference<Logger>(FRAMEWORK_LOGGER);
     this.logger = context.getService<Logger>(this.loggerReference);
-    this.filterParserReference = context.getServiceReference<FilterParser>(FRAMEWORK_FILTER_PARSER);
-    this.filterParser = context.getService(this.filterParserReference);
+    this.filterParserReference = context.getServiceReference<FilterEvaluator>(FRAMEWORK_EVALUATE_FILTER);
+    this.evaluateFilter = context.getService(this.filterParserReference);
     this.semVerFactoryReference = context.getServiceReference<SemverFactory>(FRAMEWORK_SEMVER_FACTORY);
     this.semVerFactory = context.getService(this.semVerFactoryReference);
 
@@ -102,7 +102,7 @@ export class Activator implements BundleActivator {
       this.configManager = new ConfigurationManager(
         this.context,
         this.logger,
-        this.filterParser,
+        this.evaluateFilter,
         pm,
         this.semVerFactory,
       );

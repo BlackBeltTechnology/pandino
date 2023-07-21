@@ -1,0 +1,65 @@
+{
+  "name": "@pandino/filters",
+  "version": "0.8.27",
+  "description": "filter parser and evaluator utility for Pandino",
+  "main": "./dist/cjs/filters.cjs",
+  "module": "./dist/esm/filters.mjs",
+  "types": "dist/esm/dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/filters.cjs",
+      "default": "./dist/esm/filters.mjs"
+    }
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "rollup -c --environment=PRODUCTION",
+    "build:dev": "rollup -c"
+  },
+  "keywords": [
+    "pandino",
+    "filters",
+    "filter",
+    "parser",
+    "evaluator"
+  ],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "EPL-2.0",
+  "homepage": "https://github.com/BlackBeltTechnology/pandino",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlackBeltTechnology/pandino.git",
+    "directory": "packages/@pandino/filter-parser"
+  },
+  "bugs": {
+    "url": "https://github.com/BlackBeltTechnology/pandino/issues"
+  },
+  "engines": {
+    "node": ">=14.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "tsconfig.test.json"
+        }
+      ]
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
+  }
+}
