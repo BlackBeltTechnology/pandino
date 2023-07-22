@@ -1,4 +1,4 @@
-import { SemVer, SemverFactory, ServiceReference } from '@pandino/pandino-api';
+import { ServiceReference } from '@pandino/pandino-api';
 
 import { Activator } from '../activator';
 
@@ -6,11 +6,11 @@ export class TargetedPID {
   private readonly rawPid: string;
   private readonly servicePid: string;
   private readonly symbolicName?: string;
-  private readonly version?: SemVer;
+  private readonly version?: string;
   private readonly location?: string;
   private readonly bindingLevel: number;
 
-  constructor(rawPid: string, semVerFactory: SemverFactory) {
+  constructor(rawPid: string) {
     this.rawPid = rawPid;
 
     if (rawPid.indexOf('|') < 0) {
@@ -28,11 +28,11 @@ export class TargetedPID {
         start = end + 1;
         end = rawPid.indexOf('|', start);
         if (end >= 0) {
-          this.version = semVerFactory.build(rawPid.substring(start, end));
+          this.version = rawPid.substring(start, end);
           this.location = rawPid.substring(end + 1);
           this.bindingLevel = 3;
         } else {
-          this.version = semVerFactory.build(rawPid.substring(start));
+          this.version = rawPid.substring(start);
           this.bindingLevel = 2;
         }
       } else {
@@ -60,7 +60,7 @@ export class TargetedPID {
       return true;
     }
 
-    if (serviceBundle.getVersion().compare(this.version) !== 0) {
+    if (serviceBundle.getVersion() != this.version) {
       return false;
     }
 

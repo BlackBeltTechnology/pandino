@@ -2,10 +2,8 @@ import { BundleCapabilityImpl } from '../wiring/bundle-capability-impl';
 import { isAllPresent, isAnyMissing } from '../../utils/helpers';
 import { BundleCapability } from '../wiring/bundle-capability';
 import { Capability } from '../resource/capability';
-import { SemVerImpl } from '../../utils/semver-impl';
-import { equal, gte, lte } from '../../semver-lite/src';
 import type { FilterNode, FilterOperator } from '@pandino/filters';
-import { parseFilter } from '@pandino/filters';
+import { evaluateSemver, isSemVer, parseFilter } from '@pandino/filters';
 
 export type CapabilityIndex = Record<any, Set<BundleCapability>>;
 
@@ -139,16 +137,16 @@ export class CapabilitySet {
       }
     }
 
-    if (lhs instanceof SemVerImpl) {
+    if (isSemVer(lhs)) {
       switch (cmp) {
         case 'eq':
-          return equal(lhs.toString(), rhs.toString());
+          return evaluateSemver(lhs, 'eq', rhs);
         case 'not':
-          return !equal(lhs.toString(), rhs.toString());
+          return !evaluateSemver(lhs, 'eq', rhs);
         case 'gte':
-          return gte(lhs.toString(), rhs.toString());
+          return evaluateSemver(lhs, 'gte', rhs);
         case 'lte':
-          return lte(lhs.toString(), rhs.toString());
+          return evaluateSemver(lhs, 'lte', rhs);
         default:
           throw new Error('Unsupported comparison operator: ' + cmp);
       }

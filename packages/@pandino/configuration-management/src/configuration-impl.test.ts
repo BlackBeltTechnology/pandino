@@ -1,12 +1,4 @@
-import {
-  Bundle,
-  BundleContext,
-  Logger,
-  SemverFactory,
-  SERVICE_PID,
-  ServiceProperties,
-  ServiceReference,
-} from '@pandino/pandino-api';
+import { Bundle, BundleContext, Logger, SERVICE_PID, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 import {
   Configuration,
   ConfigurationEvent,
@@ -25,9 +17,6 @@ import { ConfigurationAdminImpl } from './configuration-admin-impl';
 import { ConfigurationManager } from './configuration-manager';
 
 describe('ConfigurationImpl', () => {
-  const semverFactory: SemverFactory = {
-    build: (version) => createVersionMock(version),
-  };
   let context: BundleContext;
   let bundle: Bundle;
   let configAdmin: ConfigurationAdminImpl;
@@ -46,7 +35,7 @@ describe('ConfigurationImpl', () => {
       '@test/my-bundle',
       createVersionMock('0.0.0'),
     );
-    cm = new ConfigurationManager(context, logger, evaluateFilter, new MockPersistenceManager('{}'), semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, new MockPersistenceManager('{}'));
     context.addServiceListener(cm);
     configAdmin = new ConfigurationAdminImpl(cm, bundle, logger);
   });

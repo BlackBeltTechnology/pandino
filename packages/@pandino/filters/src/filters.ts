@@ -1,4 +1,4 @@
-import type { FilterEvaluator, FilterNode, FilterOperator } from './types';
+import type { FilterEvaluator, FilterNode, FilterOperator, SemVerOperator } from './types';
 import { FilterOperatorSymbolMapping } from './types';
 
 export const convert = (attrs: Record<string, any>): FilterNode => {
@@ -144,7 +144,7 @@ function evaluateComparison(comparison: FilterNode, data: any): boolean {
     } else if (typeof current === 'boolean') {
       typedValue = value === 'true';
     } else if (isSemVer(current)) {
-      return evaluateSemver(current, operator, value);
+      return evaluateSemver(current, operator as SemVerOperator, value);
     }
   }
 
@@ -216,13 +216,13 @@ function splitNodeExpression(node: FilterNode): void {
   }
 }
 
-function isSemVer(version: string): boolean {
+export function isSemVer(version: string): boolean {
   const semverRegex =
     /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
   return semverRegex.test(version);
 }
 
-function evaluateSemver(version: string, operator: string, targetVersion: string) {
+export function evaluateSemver(version: string, operator: SemVerOperator, targetVersion: string) {
   // Split the version strings into major, minor, and patch components
   const [vMajor, vMinor, vPatch] = version.split('.').map(Number);
   const [tMajor, tMinor, tPatch] = targetVersion.split('.').map(Number);
@@ -271,8 +271,6 @@ function evaluateSemver(version: string, operator: string, targetVersion: string
         : vPatch > tPatch;
     case 'eq':
       return vMajor === tMajor && vMinor === tMinor && vPatch === tPatch;
-    case 'neq':
-      return vMajor !== tMajor || vMinor !== tMinor || vPatch !== tPatch;
     default:
       throw new Error(`Invalid operator: ${operator}`);
   }

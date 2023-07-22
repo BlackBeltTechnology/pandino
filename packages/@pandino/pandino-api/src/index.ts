@@ -5,6 +5,4 @@ export * from './bundle-importer';
 export * from './logger';
 export * from './manifest-fetcher';
 export * from './pandino-constants';
-export * from './semver';
-export * from './semver-factory';
 export * from './service';

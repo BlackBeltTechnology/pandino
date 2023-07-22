@@ -2,7 +2,6 @@ import { BundleState } from './bundle-state';
 import { BundleManifestHeaders } from './bundle-manifest-headers';
 import { ServiceReference } from '../service';
 import { BundleContext } from './bundle-context';
-import { SemVer } from '../semver';
 
 /**
  * An installed bundle in the Framework.
@@ -157,14 +156,14 @@ export interface Bundle {
 
   /**
    * Returns the version of this bundle as specified by its {@code Bundle-Version} manifest header. If this bundle does
-   * not have a specified version then a {SemVer} created from "0.0.0" is returned.
+   * not have a specified version then "0.0.0" is returned.
    *
    * <p>
    * This method must continue to return this bundle's version while this bundle is in the "UNINSTALLED" state.
    *
-   * @returns {SemVer}
+   * @returns {string}
    */
-  getVersion(): SemVer;
+  getVersion(): string;
 
   /**
    * Returns this bundle's unique identifier. This bundle is assigned a unique identifier by the Framework when it was

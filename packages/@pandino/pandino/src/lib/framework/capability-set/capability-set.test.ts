@@ -8,7 +8,6 @@ import { MuteLogger } from '../../../__mocks__/mute-logger';
 import { Pandino } from '../../../pandino';
 import { BundleRevision } from '../bundle-revision';
 import { BundleCapability } from '../wiring/bundle-capability';
-import { SemVerImpl } from '../../utils/semver-impl';
 
 describe('capability-set', () => {
   let capabilitySet: CapabilitySet;
@@ -148,7 +147,7 @@ describe('capability-set', () => {
     });
 
     it('SemVer type', () => {
-      const version1 = new SemVerImpl('1.0.0');
+      const version1 = '1.0.0';
       expect(() => {
         CapabilitySet.compare(version1, undefined, 'eq');
       }).toThrow();

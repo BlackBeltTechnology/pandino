@@ -55,10 +55,6 @@
   },
   "jest": {
     "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!src/lib/semver-lite/**"
-    ],
     "coverageReporters": [
       "text",
       "json",
@@ -89,9 +85,7 @@
     ],
     "testPathIgnorePatterns": [
       "src/lib/framework/util/fetcher.ts",
-      "src/lib/utils/console-logger.ts",
-      "src/lib/semver-lite/src/index.ts",
-      "src/lib/semver-lite/src/semver.ts"
+      "src/lib/utils/console-logger.ts"
     ]
   }
 }

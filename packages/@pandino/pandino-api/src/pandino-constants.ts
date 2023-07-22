@@ -160,8 +160,6 @@ export const FRAMEWORK_BUNDLE_IMPORTER = '@pandino/pandino/BundleImporter';
 
 export const FRAMEWORK_EVALUATE_FILTER = '@pandino/pandino/evaluateFilter';
 
-export const FRAMEWORK_SEMVER_FACTORY = '@pandino/pandino/SemVerFactory';
-
 export const FRAMEWORK_SERVICE_UTILS = '@pandino/pandino/ServiceUtils';
 
 export const FRAMEWORK_UUID = '@pandino/pandino/uuid';
@@ -275,8 +273,8 @@ export const BUNDLE_VERSION_ATTRIBUTE = 'bundle-version';
 export const VERSION_ATTRIBUTE = 'version';
 
 /**
- * The capability attribute identifying the {@code SemVer} of the resource if one is specified or {@code 0.0.0} if not
- * specified. The value of this attribute must be of type {@code SemVer}.
+ * The capability attribute identifying the {@code string} of the resource if one is specified or {@code 0.0.0} if not
+ * specified. The value of this attribute must be of type {@code string}.
  */
 export const CAPABILITY_VERSION_ATTRIBUTE = 'version';
 

@@ -19,7 +19,6 @@ import {
   FRAMEWORK_EVALUATE_FILTER,
   FRAMEWORK_LOGGER,
   FRAMEWORK_MANIFEST_FETCHER,
-  FRAMEWORK_SEMVER_FACTORY,
   FRAMEWORK_SERVICE_UTILS,
   FrameworkConfigMap,
   FrameworkEventType,
@@ -33,8 +32,6 @@ import {
   PANDINO_ACTIVATOR_RESOLVERS,
   PANDINO_BUNDLE_IMPORTER_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
-  SemVer,
-  SemverFactory,
   ServiceEvent,
   ServiceFactory,
   ServiceListener,
@@ -63,8 +60,6 @@ import { VoidImporter } from './lib/utils/void-importer';
 import { Framework } from './lib/framework/framework';
 import { ServiceRegistry } from './lib/framework/service-registry';
 import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
-import { SemVerImpl } from './lib/utils/semver-impl';
-import { SemverFactoryImpl } from './lib/utils/semver-factory';
 import { EsmActivatorResolver } from './lib/framework/esm-activator-resolver';
 import { serviceUtilsImpl } from './lib/utils/service-utils';
 
@@ -153,8 +148,8 @@ export class Pandino extends BundleImpl implements Framework {
     return this.getHeaders()[BUNDLE_SYMBOLICNAME];
   }
 
-  getVersion(): SemVer {
-    return new SemVerImpl(this.getHeaders()[BUNDLE_VERSION]);
+  getVersion(): string {
+    return this.getHeaders()[BUNDLE_VERSION];
   }
 
   async start(): Promise<void> {
@@ -167,7 +162,6 @@ export class Pandino extends BundleImpl implements Framework {
         this.getBundleContext().registerService<ManifestFetcher>(FRAMEWORK_MANIFEST_FETCHER, this.fetcher);
         this.getBundleContext().registerService<BundleImporter>(FRAMEWORK_BUNDLE_IMPORTER, this.importer);
         this.getBundleContext().registerService<FilterEvaluator>(FRAMEWORK_EVALUATE_FILTER, evaluateFilter);
-        this.getBundleContext().registerService<SemverFactory>(FRAMEWORK_SEMVER_FACTORY, new SemverFactoryImpl());
         this.getBundleContext().registerService<ServiceUtils>(FRAMEWORK_SERVICE_UTILS, serviceUtilsImpl);
         this.setBundleStateAndNotify(this, 'ACTIVE');
       }

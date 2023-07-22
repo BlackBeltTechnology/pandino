@@ -1,12 +1,4 @@
-import {
-  Bundle,
-  BundleContext,
-  Logger,
-  SemverFactory,
-  SERVICE_PID,
-  ServiceEvent,
-  ServiceReference,
-} from '@pandino/pandino-api';
+import { Bundle, BundleContext, Logger, SERVICE_PID, ServiceEvent, ServiceReference } from '@pandino/pandino-api';
 import { evaluateFilter } from '@pandino/filters';
 import { ManagedService } from '@pandino/configuration-management-api';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
@@ -16,9 +8,6 @@ import { createVersionMock } from './__mocks__/semver';
 import { ConfigurationManager } from './configuration-manager';
 
 describe('ConfigurationManager', function () {
-  const semverFactory: SemverFactory = {
-    build: (version) => createVersionMock(version),
-  };
   let persistenceManager: MockPersistenceManager;
   let context: BundleContext;
   let bundle: Bundle;
@@ -43,7 +32,7 @@ describe('ConfigurationManager', function () {
         "port" : 300
       }
     }`);
-    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
   });
 
   it('listConfigurations()', () => {
@@ -62,7 +51,7 @@ describe('ConfigurationManager', function () {
         "key": "value"
       }
     }`);
-    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     expect(cm.listConfigurations().length).toEqual(2);
 
@@ -96,7 +85,7 @@ describe('ConfigurationManager', function () {
         "key": "value"
       }
     }`);
-    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
     const configurations = cm.listConfigurations('(key=value)');
 
     expect(configurations.length).toEqual(1);
@@ -108,7 +97,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('getConfiguration()', () => {
-    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     const config = cm.getConfiguration('my.component.pid');
 
@@ -118,7 +107,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('configuration update()', () => {
-    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     const config = cm.getConfiguration('my.component.pid');
 
@@ -133,7 +122,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('configuration delete()', () => {
-    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     const config = cm.getConfiguration('my.component.pid');
 
@@ -146,7 +135,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('serviceChanged for configuration event', () => {
-    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     expect((cm as any).eventListeners.size).toEqual(0);
 
@@ -186,7 +175,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('serviceChanged for managed service event', () => {
-    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     expect((cm as any).managedReferences.size).toEqual(0);
 
@@ -291,7 +280,7 @@ describe('ConfigurationManager', function () {
         [refWithoutAnyConfig, serviceToSkip],
       ]);
       (context as any).getService = (ref: any) => allServices.get(ref);
-      cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager, semverFactory);
+      cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
       expect((cm as any).managedReferences.size).toEqual(0);
 

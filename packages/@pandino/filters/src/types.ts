@@ -1,6 +1,12 @@
-export type FilterOperator = 'or' | 'and' | 'not' | 'eq' | 'gt' | 'gte' | 'lt' | 'lte';
+export type GroupOperator = 'or' | 'and' | 'not';
+
+export type ComparisonOperator = 'eq' | 'gt' | 'gte' | 'lt' | 'lte';
+
+export type FilterOperator = GroupOperator | ComparisonOperator;
 
 export type FilterOperatorSymbols = '|' | '&' | '!' | '=' | '>' | '>=' | '<' | '<=';
+
+export type SemVerOperator = ComparisonOperator;
 
 export type FilterEvaluator = (data: any, query: string) => boolean;
 
