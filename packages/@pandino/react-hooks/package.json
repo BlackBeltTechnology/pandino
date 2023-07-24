@@ -1,6 +1,6 @@
 {
   "name": "@pandino/react-hooks",
-  "version": "0.8.28",
+  "version": "0.8.29",
   "description": "React helpers and hooks for applications using Pandino",
   "module": "./dist/esm/react-hooks.mjs",
   "types": "dist/esm/dist/index.d.ts",
@@ -41,7 +41,7 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.28",
+    "@pandino/pandino-api": "^0.8.29",
     "@types/react": "^18.0.26",
     "react": "^18.2.0"
   }

@@ -1,6 +1,6 @@
 {
   "name": "@pandino/pandino",
-  "version": "0.8.28",
+  "version": "0.8.29",
   "description": "The reference implementation of the Pandino API specification",
   "main": "./dist/cjs/pandino.cjs",
   "module": "./dist/esm/pandino.mjs",
@@ -47,10 +47,10 @@
     "dist"
   ],
   "dependencies": {
-    "@pandino/filters": "^0.8.28"
+    "@pandino/filters": "^0.8.29"
   },
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.28"
+    "@pandino/pandino-api": "^0.8.29"
   },
   "jest": {
     "collectCoverage": true,

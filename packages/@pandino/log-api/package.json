@@ -1,6 +1,6 @@
 {
   "name": "@pandino/log-api",
-  "version": "0.8.28",
+  "version": "0.8.29",
   "description": "Pandino Log API",
   "main": "dist/cjs/log-api.cjs",
   "module": "dist/esm/log-api.mjs",
@@ -42,6 +42,6 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.28"
+    "@pandino/pandino-api": "^0.8.29"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@pandino/event-api",
-  "version": "0.8.28",
+  "version": "0.8.29",
   "description": "Pandino Event API",
   "main": "dist/cjs/event-api.cjs",
   "module": "dist/esm/event-api.mjs",
@@ -43,6 +43,6 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.28"
+    "@pandino/pandino-api": "^0.8.29"
   }
 }
