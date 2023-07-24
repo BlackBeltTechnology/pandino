@@ -42,8 +42,7 @@
     "access": "public"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "devDependencies": {
     "@pandino/event-api": "^0.8.28",

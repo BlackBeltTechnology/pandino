@@ -44,8 +44,7 @@
     "access": "public"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "dependencies": {
     "@pandino/filters": "^0.8.28"

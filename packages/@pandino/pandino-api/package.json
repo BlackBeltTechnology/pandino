@@ -39,7 +39,6 @@
     "access": "public"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ]
 }
