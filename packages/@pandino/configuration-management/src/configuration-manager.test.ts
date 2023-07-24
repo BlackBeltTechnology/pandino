@@ -4,7 +4,6 @@ import { ManagedService } from '@pandino/configuration-management-api';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
 import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
-import { createVersionMock } from './__mocks__/semver';
 import { ConfigurationManager } from './configuration-manager';
 
 describe('ConfigurationManager', function () {
@@ -20,12 +19,7 @@ describe('ConfigurationManager', function () {
   beforeEach(() => {
     mockDebug.mockClear();
     context = new MockBundleContext();
-    bundle = new MockBundle(
-      context as MockBundleContext,
-      'test.bundle.location',
-      '@test/my-bundle',
-      createVersionMock('0.0.0'),
-    );
+    bundle = new MockBundle(context as MockBundleContext, 'test.bundle.location', '@test/my-bundle', '0.0.0');
     persistenceManager = new MockPersistenceManager(`{
       "my.component.pid": {
         "service.pid": "my.component.pid",
@@ -234,7 +228,7 @@ describe('ConfigurationManager', function () {
         getBundle: () => ({
           getLocation: () => 'some.location',
           getSymbolicName: () => '@scope/component-1',
-          getVersion: () => createVersionMock('1.2.3'),
+          getVersion: () => '1.2.3',
         }),
       };
       const refWithOwnConfig: any = {
@@ -246,7 +240,7 @@ describe('ConfigurationManager', function () {
         getBundle: () => ({
           getLocation: () => 'some.other.location',
           getSymbolicName: () => '@scope/component-2',
-          getVersion: () => createVersionMock('1.0.0'),
+          getVersion: () => '1.0.0',
         }),
       };
       const refWithoutAnyConfig: any = {
@@ -257,7 +251,7 @@ describe('ConfigurationManager', function () {
         getBundle: () => ({
           getLocation: () => 'yet.other.location',
           getSymbolicName: () => '@scope/component-3',
-          getVersion: () => createVersionMock('3.2.1'),
+          getVersion: () => '3.2.1',
         }),
       };
 

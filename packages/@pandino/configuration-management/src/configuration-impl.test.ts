@@ -12,7 +12,6 @@ import { evaluateFilter } from '@pandino/filters';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
 import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
-import { createVersionMock } from './__mocks__/semver';
 import { ConfigurationAdminImpl } from './configuration-admin-impl';
 import { ConfigurationManager } from './configuration-manager';
 
@@ -29,12 +28,7 @@ describe('ConfigurationImpl', () => {
   beforeEach(() => {
     mockDebug.mockClear();
     context = new MockBundleContext();
-    bundle = new MockBundle(
-      context as MockBundleContext,
-      'test.bundle.location',
-      '@test/my-bundle',
-      createVersionMock('0.0.0'),
-    );
+    bundle = new MockBundle(context as MockBundleContext, 'test.bundle.location', '@test/my-bundle', '0.0.0');
     cm = new ConfigurationManager(context, logger, evaluateFilter, new MockPersistenceManager('{}'));
     context.addServiceListener(cm);
     configAdmin = new ConfigurationAdminImpl(cm, bundle, logger);
