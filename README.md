@@ -68,7 +68,7 @@ a custom service which will alter the application it self.
     <script type="module">
       // 0. Import Pandino, and a bundle loader config preset.
       import Pandino from 'https://unpkg.com/@pandino/pandino@latest/dist/esm/pandino.mjs';
-      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@latest/dist/loader-configuration-dom.mjs';
+      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@latest/dist/esm/loader-configuration-dom.mjs';
 
       const pandino = new Pandino({
         ...loaderConfiguration,
@@ -171,7 +171,7 @@ export default class Activator {
 
     <script type="module">
       import Pandino from 'https://unpkg.com/@pandino/pandino@latest/dist/esm/pandino.mjs';
-      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@latest/dist/loader-configuration-dom.mjs';
+      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@latest/dist/esm/loader-configuration-dom.mjs';
 
       const pandino = new Pandino({
         ...loaderConfiguration,

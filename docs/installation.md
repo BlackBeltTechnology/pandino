@@ -6,7 +6,7 @@ In the sections below, we will showcase different use-cases in which you can ins
 
 ```html
 <script type="module">
-    import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@latest/dist/loader-configuration-dom.mjs';
+    import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@latest/dist/esm/loader-configuration-dom.mjs';
     import Pandino from 'https://unpkg.com/@pandino/pandino@latest/dist/esm/pandino.mjs';
 
     const pandino = new Pandino({
