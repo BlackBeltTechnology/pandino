@@ -25,7 +25,7 @@ export class StatefulResolver {
   }
 
   async resolveOne(revision: BundleRevision): Promise<void> {
-    if (['ACTIVE'].includes(revision.getBundle().getState())) {
+    if (['ACTIVE', 'STARTING'].includes(revision.getBundle().getState())) {
       return;
     }
 
