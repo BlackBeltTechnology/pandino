@@ -16,19 +16,17 @@ import {
   REQUIRE_BUNDLE,
   REQUIRE_CAPABILITY,
   BundleManifestHeaders,
-  SemVer,
 } from '@pandino/pandino-api';
+import type { FilterNode } from '@pandino/filters';
+import { convert, parseFilter } from '@pandino/filters';
 import { BundleCapabilityImpl } from '../../wiring/bundle-capability-impl';
 import { ParsedHeaderClause } from './parsed-header-clause';
 import { BundleRequirementImpl } from '../../wiring/bundle-requirement-impl';
-import Filter, { FilterComp } from '../../../filter/filter';
-import { convert, parse } from '../../../filter';
 import { isAnyMissing } from '../../../utils/helpers';
 import { ManifestParser } from './manifest-parser';
 import { BundleRequirement } from '../../wiring/bundle-requirement';
 import { BundleCapability } from '../../wiring/bundle-capability';
 import { BundleRevision } from '../../bundle-revision';
-import { SemVerImpl } from '../../../utils/semver-impl';
 import { parseDelimitedString } from './utils';
 
 export class ManifestParserImpl implements ManifestParser {
@@ -37,12 +35,12 @@ export class ManifestParserImpl implements ManifestParser {
   private readonly requirements: BundleRequirement[] = [];
   private readonly capabilities: BundleCapability[] = [];
   private readonly bundleSymbolicName: string;
-  private readonly bundleVersion: SemVer;
+  private readonly bundleVersion: string;
   private activationIncludeDir: string;
   private activationExcludeDir: string;
   private activationPolicy: ActivationPolicy = 'EAGER_ACTIVATION';
 
-  static readonly EMPTY_VERSION = new SemVerImpl('0.0.0');
+  static readonly EMPTY_VERSION = '0.0.0';
 
   constructor(configMap: BundleConfigMap, owner: BundleRevision, headerMap: BundleManifestHeaders) {
     this.configMap = configMap;
@@ -54,7 +52,7 @@ export class ManifestParserImpl implements ManifestParser {
     this.bundleVersion = ManifestParserImpl.EMPTY_VERSION;
     if (headerMap[BUNDLE_VERSION] !== null && headerMap[BUNDLE_VERSION] !== undefined) {
       try {
-        this.bundleVersion = new SemVerImpl(headerMap[BUNDLE_VERSION]);
+        this.bundleVersion = headerMap[BUNDLE_VERSION];
       } catch (ex) {
         if (this.getManifestVersion() === '2') {
           throw ex;
@@ -150,7 +148,7 @@ export class ManifestParserImpl implements ManifestParser {
     return this.bundleSymbolicName;
   }
 
-  getBundleVersion(): SemVer {
+  getBundleVersion(): string {
     return this.bundleVersion;
   }
 
@@ -197,7 +195,7 @@ export class ManifestParserImpl implements ManifestParser {
       let bundleVersion = this.EMPTY_VERSION;
       if (headerMap[BUNDLE_VERSION] !== null && headerMap[BUNDLE_VERSION] !== undefined) {
         try {
-          bundleVersion = new SemVerImpl(headerMap[BUNDLE_VERSION]);
+          bundleVersion = headerMap[BUNDLE_VERSION];
         } catch (ex) {
           let mv: string = this.getManifestVersion(headerMap);
           if (mv !== null && mv !== undefined) {
@@ -267,7 +265,7 @@ export class ManifestParserImpl implements ManifestParser {
           } else if (attrType === 'boolean') {
             attrs[attrKeyTyped] = valueEscaped === 'true';
           } else if (attrType === 'SemVer') {
-            attrs[attrKeyTyped] = new SemVerImpl(valueEscaped);
+            attrs[attrKeyTyped] = valueEscaped;
           } else if (attrType.startsWith('Array')) {
             attrs[attrKeyTyped] = valueEscaped;
           } else {
@@ -289,7 +287,7 @@ export class ManifestParserImpl implements ManifestParser {
           if (type === 'number') {
             clause.attrs[key] = Number(clause.attrs[key].toString().trim());
           } else if (type === 'SemVer') {
-            clause.attrs[key] = new SemVerImpl(clause.attrs[key].toString().trim());
+            clause.attrs[key] = clause.attrs[key].toString().trim();
           } else if (type.startsWith('Array')) {
             let startIdx = type.indexOf('<');
             let endIdx = type.indexOf('>');
@@ -310,7 +308,7 @@ export class ManifestParserImpl implements ManifestParser {
               } else if (listType === 'number') {
                 values.push(Number(token.trim()));
               } else if (listType === 'SemVer') {
-                values.push(new SemVerImpl(token.trim()));
+                values.push(token.trim());
               } else {
                 throw new Error("Unknown Provide-Capability attribute list type for '" + key + "' : " + type);
               }
@@ -333,7 +331,7 @@ export class ManifestParserImpl implements ManifestParser {
       for (const clause of clauses) {
         let value = clause.attrs[BUNDLE_VERSION_ATTRIBUTE];
         if (value !== null && value !== undefined) {
-          clause.attrs[BUNDLE_VERSION_ATTRIBUTE] = new SemVerImpl(value.toString());
+          clause.attrs[BUNDLE_VERSION_ATTRIBUTE] = value.toString();
         }
       }
     }
@@ -351,7 +349,7 @@ export class ManifestParserImpl implements ManifestParser {
           ...attrs,
           [BUNDLE_NAMESPACE]: path, // ensure it's not overwritten
         };
-        const sf: Filter = convert(newAttrs);
+        const sf: FilterNode = convert(newAttrs);
         const dirs: Record<string, string> = clause.dirs;
         const newDirs: Record<string, string> = {
           ...dirs,
@@ -370,9 +368,9 @@ export class ManifestParserImpl implements ManifestParser {
     for (const clause of clauses) {
       try {
         let filterStr: string = clause.dirs[FILTER_DIRECTIVE];
-        const sf: Filter = !!filterStr
-          ? parse(filterStr.trim().replace(/"|\\"/g, '').toString())
-          : new Filter(null, FilterComp.MATCH_ALL, null, []);
+        const sf: FilterNode = !!filterStr
+          ? parseFilter(filterStr.trim().replace(/"|\\"/g, '').toString())
+          : { attribute: null, operator: 'eq', value: '*', children: [] };
         for (const path of clause.paths) {
           if (path.startsWith('pandino.wiring.')) {
             throw new Error("Manifest cannot use Require-Capability for '" + path + "' namespace.");

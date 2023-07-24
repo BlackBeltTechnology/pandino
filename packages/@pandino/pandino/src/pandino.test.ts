@@ -656,10 +656,10 @@ describe('Pandino', () => {
 
     const bundle1 = {
       [BUNDLE_SYMBOLICNAME]: '@scope/prov',
-      [BUNDLE_VERSION]: '1.0.0',
+      [BUNDLE_VERSION]: '1.2.0',
       [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
       [BUNDLE_NAME]: 'Provider1',
-      [PROVIDE_CAPABILITY]: '@scope/feature1;type:Array="test,bundle"',
+      [PROVIDE_CAPABILITY]: '@scope/feature1;type:Array="test,bundle";version=1.2.0',
     };
 
     const bundle2 = {
@@ -667,11 +667,14 @@ describe('Pandino', () => {
       [BUNDLE_VERSION]: '1.0.0',
       [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
       [BUNDLE_NAME]: 'Consumer1',
-      [REQUIRE_CAPABILITY]: '@scope/feature1;filter:=(type=test)',
+      [REQUIRE_CAPABILITY]: '@scope/feature1;filter:=(&(type=test)(version>=1.0.0))',
     };
 
     const b1 = await installBundle(bundle1);
     const b2 = await installBundle(bundle2);
+
+    expect(b1.getState()).toEqual('ACTIVE');
+    expect(b2.getState()).toEqual('ACTIVE');
 
     await b1.uninstall();
 

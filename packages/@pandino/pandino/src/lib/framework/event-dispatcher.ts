@@ -5,12 +5,12 @@ import {
   ServiceEvent,
   ServiceListener,
   Logger,
-  FilterApi,
   FrameworkEvent,
   FrameworkListener,
   Bundle,
   BundleState,
 } from '@pandino/pandino-api';
+import { evaluateFilter, FilterNode } from '@pandino/filters';
 import { ListenerInfo } from './util/listener-info';
 import { BundleImpl } from './bundle-impl';
 import { BundleEventImpl } from './bundle-event-impl';
@@ -19,7 +19,6 @@ import { ServiceEventImpl } from './service-event-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { CapabilitySet } from './capability-set/capability-set';
 import { Capability } from './resource/capability';
-import Filter from '../filter/filter';
 
 export type ListenerType = 'BUNDLE' | 'FRAMEWORK' | 'SERVICE';
 
@@ -67,7 +66,7 @@ export class EventDispatcher {
       for (let info of lstnrs) {
         const bundle = info.getBundle();
         const listener = info.getListener();
-        const filter: FilterApi = info.getParsedFilter();
+        const filter = info.getFilter();
 
         switch (type) {
           case 'FRAMEWORK':
@@ -90,7 +89,7 @@ export class EventDispatcher {
     bundle: Bundle,
     listener: ServiceListener,
     event: ServiceEventImpl,
-    filter?: FilterApi,
+    filter?: string,
     oldProps?: Record<string, any>,
   ): void {
     const validBundleStateTypes: BundleState[] = ['STARTING', 'STOPPING', 'ACTIVE'];
@@ -99,13 +98,12 @@ export class EventDispatcher {
     }
 
     let matched =
-      isAnyMissing(filter) ||
-      CapabilitySet.matches(event.getServiceReference() as unknown as Capability, filter as Filter);
+      isAnyMissing(filter) || CapabilitySet.matches(event.getServiceReference() as unknown as Capability, filter);
 
     if (matched) {
       listener.serviceChanged(event);
     } else if (event.getType() == 'MODIFIED') {
-      if (!!filter && filter.match(oldProps)) {
+      if (!!filter && evaluateFilter(oldProps, filter)) {
         let se = new ServiceEventImpl('MODIFIED_ENDMATCH', event.getServiceReference());
         if (listener.isSync) {
           listener.serviceChanged(se);
@@ -142,7 +140,7 @@ export class EventDispatcher {
     }
   }
 
-  addListener?(bc: BundleContext, type: ListenerType, listener: any, filter?: FilterApi): FilterApi | undefined {
+  addListener?(bc: BundleContext, type: ListenerType, listener: any, filter?: string): FilterNode | undefined {
     if (!listener) {
       throw new Error('Listener is missing');
     }
@@ -265,7 +263,7 @@ export class EventDispatcher {
     return listeners;
   }
 
-  updateListener(bc: BundleContext, type: ListenerType, listener: any, filter?: FilterApi): FilterApi | undefined {
+  updateListener(bc: BundleContext, type: ListenerType, listener: any, filter?: string): FilterNode | undefined {
     if (type === 'SERVICE') {
       // Verify that the bundle context is still valid.
       try {

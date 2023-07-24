@@ -1,6 +1,5 @@
 import {
   Bundle,
-  FilterApi,
   Logger,
   OBJECTCLASS,
   SCOPE_PROTOTYPE,
@@ -10,11 +9,11 @@ import {
   ServiceReference,
   ServiceRegistration,
 } from '@pandino/pandino-api';
+import { FilterNode, parseFilter } from '@pandino/filters';
 import { ServiceRegistrationImpl } from './service-registration-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { ServiceEventImpl } from './service-event-impl';
 import { ServiceReferenceImpl } from './service-reference-impl';
-import Filter, { FilterComp } from '../filter/filter';
 import { CapabilitySet } from './capability-set/capability-set';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
 import { UsageCountImpl } from './usage-count-impl';
@@ -106,17 +105,17 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     }
   }
 
-  getServiceReferences(identifier?: string, filter?: FilterApi): Array<Capability> {
-    let filterEffective: Filter = filter as Filter;
-    if (isAnyMissing(identifier) && isAnyMissing(filter)) {
-      filterEffective = new Filter(null, FilterComp.MATCH_ALL, null);
-    } else if (isAllPresent(identifier) && isAnyMissing(filter)) {
-      filterEffective = new Filter(OBJECTCLASS, FilterComp.EQ, identifier);
-    } else if (isAllPresent(identifier) && isAllPresent(filter)) {
-      const filters: Array<Filter> = [];
-      filters.push(new Filter(OBJECTCLASS, FilterComp.EQ, identifier));
-      filters.push(filter as Filter);
-      filterEffective = new Filter(null, FilterComp.AND, null, filters);
+  getServiceReferences(identifier?: string, filter?: string): Array<Capability> {
+    let filterEffective = parseFilter(filter);
+    if (isAnyMissing(identifier) && isAnyMissing(filterEffective)) {
+      filterEffective = { attribute: null, operator: 'eq', value: '*' };
+    } else if (isAllPresent(identifier) && isAnyMissing(filterEffective)) {
+      filterEffective = { attribute: OBJECTCLASS, operator: 'eq', value: identifier };
+    } else if (isAllPresent(identifier) && isAllPresent(filterEffective)) {
+      const filters: Array<FilterNode> = [];
+      filters.push({ attribute: OBJECTCLASS, operator: 'eq', value: identifier });
+      filters.push(filterEffective);
+      filterEffective = { operator: 'and', children: filters };
     }
 
     return Array.from(this.regCapSet.match(filterEffective, false));

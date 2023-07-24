@@ -1,6 +1,4 @@
 import {
-  BundleContext,
-  FilterApi,
   SERVICE_ID,
   SERVICE_RANKING,
   ServiceEvent,
@@ -9,22 +7,24 @@ import {
   ServiceTracker,
   ServiceTrackerCustomizer,
 } from '@pandino/pandino-api';
+import { FilterNode, serializeFilter } from '@pandino/filters';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { AbstractTracked } from './abstract-tracked';
+import { BundleContextImpl } from './bundle-context-impl';
 
 export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   readonly customizer: ServiceTrackerCustomizer<S, T>;
-  protected readonly context: BundleContext;
-  protected readonly filter: FilterApi;
+  protected readonly context: BundleContextImpl;
+  protected readonly filter: FilterNode;
   private readonly listenerFilter: string;
   private tracked: Tracked<S, T>;
   private cachedReference: ServiceReference<S>;
   private cachedService: T;
 
-  constructor(context: BundleContext, filter: string | FilterApi, customizer?: ServiceTrackerCustomizer<S, T>) {
+  constructor(context: BundleContextImpl, filter: string | FilterNode, customizer?: ServiceTrackerCustomizer<S, T>) {
     this.context = context;
     this.customizer = customizer || this;
-    this.listenerFilter = typeof filter === 'string' ? filter : filter.toString();
+    this.listenerFilter = typeof filter === 'string' ? filter : serializeFilter(filter);
     this.filter = typeof filter === 'string' ? context.createFilter(this.listenerFilter) : filter;
   }
 

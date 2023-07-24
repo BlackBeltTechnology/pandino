@@ -1,4 +1,4 @@
-import { BundleContext, SemverFactory, SERVICE_PID, ServiceProperties } from '@pandino/pandino-api';
+import { BundleContext, SERVICE_PID, ServiceProperties } from '@pandino/pandino-api';
 import { PersistenceManager } from '@pandino/persistence-manager-api';
 import { ConfigurationImpl } from './configuration-impl';
 import { ConfigurationManager } from './configuration-manager';
@@ -8,19 +8,16 @@ export class ConfigurationCache {
   private readonly persistenceManager: PersistenceManager;
   private readonly cm: ConfigurationManager;
   private readonly context: BundleContext;
-  private readonly semVerFactory: SemverFactory;
 
-  constructor(context: BundleContext, pm: PersistenceManager, cm: ConfigurationManager, semVerFactory: SemverFactory) {
+  constructor(context: BundleContext, pm: PersistenceManager, cm: ConfigurationManager) {
     this.context = context;
     this.persistenceManager = pm;
     this.cm = cm;
-    this.semVerFactory = semVerFactory;
 
     this.persistenceManager.getProperties().forEach((props: ServiceProperties) => {
       const configuration = new ConfigurationImpl(
         this.cm,
         props[SERVICE_PID],
-        this.semVerFactory,
         this.context.getBundle().getLocation(),
         props,
       );
@@ -34,10 +31,7 @@ export class ConfigurationCache {
     }
     const stored = this.persistenceManager.load(pid);
     if (stored) {
-      this.cache.set(
-        pid,
-        new ConfigurationImpl(this.cm, pid, this.semVerFactory, this.context.getBundle().getLocation(), stored),
-      );
+      this.cache.set(pid, new ConfigurationImpl(this.cm, pid, this.context.getBundle().getLocation(), stored));
       return true;
     }
     return false;

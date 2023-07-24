@@ -1,30 +1,16 @@
-import {
-  Bundle,
-  BundleContext,
-  Logger,
-  SemverFactory,
-  SERVICE_PID,
-  ServiceEvent,
-  ServiceReference,
-} from '@pandino/pandino-api';
+import { Bundle, BundleContext, Logger, SERVICE_PID, ServiceEvent, ServiceReference } from '@pandino/pandino-api';
+import { evaluateFilter } from '@pandino/filters';
 import { ManagedService } from '@pandino/configuration-management-api';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
 import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
-import { createVersionMock } from './__mocks__/semver';
 import { ConfigurationManager } from './configuration-manager';
 
 describe('ConfigurationManager', function () {
-  const semverFactory: SemverFactory = {
-    build: (version) => createVersionMock(version),
-  };
   let persistenceManager: MockPersistenceManager;
   let context: BundleContext;
   let bundle: Bundle;
   let cm: ConfigurationManager;
-  let mockFilterParser: any = {
-    parse: jest.fn(),
-  };
   let mockDebug = jest.fn();
   let logger: Logger = {
     debug: mockDebug,
@@ -33,19 +19,14 @@ describe('ConfigurationManager', function () {
   beforeEach(() => {
     mockDebug.mockClear();
     context = new MockBundleContext();
-    bundle = new MockBundle(
-      context as MockBundleContext,
-      'test.bundle.location',
-      '@test/my-bundle',
-      createVersionMock('0.0.0'),
-    );
+    bundle = new MockBundle(context as MockBundleContext, 'test.bundle.location', '@test/my-bundle', '0.0.0');
     persistenceManager = new MockPersistenceManager(`{
       "my.component.pid": {
         "service.pid": "my.component.pid",
         "port" : 300
       }
     }`);
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
   });
 
   it('listConfigurations()', () => {
@@ -64,7 +45,7 @@ describe('ConfigurationManager', function () {
         "key": "value"
       }
     }`);
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     expect(cm.listConfigurations().length).toEqual(2);
 
@@ -83,10 +64,6 @@ describe('ConfigurationManager', function () {
   });
 
   it('listConfigurations() with filter', () => {
-    const mockFilter: any = {
-      match: jest.fn().mockImplementation((props: any) => props['key'] === 'value'),
-    };
-    mockFilterParser.parse.mockImplementation((str: string) => mockFilter);
     persistenceManager = new MockPersistenceManager(`{
       "my.component.pid": {
         "service.pid": "my.component.pid",
@@ -102,18 +79,10 @@ describe('ConfigurationManager', function () {
         "key": "value"
       }
     }`);
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
     const configurations = cm.listConfigurations('(key=value)');
 
     expect(configurations.length).toEqual(1);
-    expect(mockFilterParser.parse).toHaveBeenCalledTimes(1);
-    expect(mockFilterParser.parse).toHaveBeenCalledWith('(key=value)');
-    expect(mockFilter.match).toHaveBeenCalledTimes(2);
-    expect(mockFilter.match.mock.calls[0][0]).toBeDefined();
-    expect(mockFilter.match.mock.calls[1][0]).toEqual({
-      'service.pid': 'my.other.pid',
-      key: 'value',
-    });
 
     const [config2] = configurations;
 
@@ -122,7 +91,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('getConfiguration()', () => {
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     const config = cm.getConfiguration('my.component.pid');
 
@@ -132,7 +101,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('configuration update()', () => {
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     const config = cm.getConfiguration('my.component.pid');
 
@@ -147,7 +116,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('configuration delete()', () => {
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     const config = cm.getConfiguration('my.component.pid');
 
@@ -160,7 +129,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('serviceChanged for configuration event', () => {
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     expect((cm as any).eventListeners.size).toEqual(0);
 
@@ -200,7 +169,7 @@ describe('ConfigurationManager', function () {
   });
 
   it('serviceChanged for managed service event', () => {
-    cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
+    cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
     expect((cm as any).managedReferences.size).toEqual(0);
 
@@ -259,7 +228,7 @@ describe('ConfigurationManager', function () {
         getBundle: () => ({
           getLocation: () => 'some.location',
           getSymbolicName: () => '@scope/component-1',
-          getVersion: () => createVersionMock('1.2.3'),
+          getVersion: () => '1.2.3',
         }),
       };
       const refWithOwnConfig: any = {
@@ -271,7 +240,7 @@ describe('ConfigurationManager', function () {
         getBundle: () => ({
           getLocation: () => 'some.other.location',
           getSymbolicName: () => '@scope/component-2',
-          getVersion: () => createVersionMock('1.0.0'),
+          getVersion: () => '1.0.0',
         }),
       };
       const refWithoutAnyConfig: any = {
@@ -282,7 +251,7 @@ describe('ConfigurationManager', function () {
         getBundle: () => ({
           getLocation: () => 'yet.other.location',
           getSymbolicName: () => '@scope/component-3',
-          getVersion: () => createVersionMock('3.2.1'),
+          getVersion: () => '3.2.1',
         }),
       };
 
@@ -305,7 +274,7 @@ describe('ConfigurationManager', function () {
         [refWithoutAnyConfig, serviceToSkip],
       ]);
       (context as any).getService = (ref: any) => allServices.get(ref);
-      cm = new ConfigurationManager(context, logger, mockFilterParser, persistenceManager, semverFactory);
+      cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
 
       expect((cm as any).managedReferences.size).toEqual(0);
 

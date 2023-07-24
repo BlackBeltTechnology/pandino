@@ -1,5 +1,6 @@
 import { ServiceEvent } from '@pandino/pandino-api';
 import { EVENT_FILTER, EVENT_TOPIC } from '@pandino/event-api';
+import { evaluateFilter } from '@pandino/filters';
 import { EventAdminImpl } from './event-admin-impl';
 import { EventFactoryImpl } from './event-factory-impl';
 import { EventHandlerRegistrationInfo } from './event-handler-registration-info';
@@ -12,11 +13,8 @@ describe('EventAdminImpl', () => {
   const matchingFilter = {
     match: () => true,
   };
-  let eventFactory = new EventFactoryImpl();
+  let eventFactory = new EventFactoryImpl(evaluateFilter);
   let eventAdmin: EventAdminImpl;
-  let mockFilterParser = {
-    parse: jest.fn(),
-  };
   let mockContextGetService = jest.fn();
   let mockContext: any = {
     getService: mockContextGetService,
@@ -29,16 +27,14 @@ describe('EventAdminImpl', () => {
   };
 
   beforeEach(() => {
-    mockFilterParser.parse.mockClear();
     mockContextGetService.mockClear();
     mockDebugLog.mockClear();
     mockWarnLog.mockClear();
-    eventAdmin = new EventAdminImpl(mockContext, mockLogger, mockFilterParser);
+    eventAdmin = new EventAdminImpl(mockContext, mockLogger, evaluateFilter);
   });
 
   describe('postEvent()', () => {
     it('topic matches, filter does not, no handler triggering', async () => {
-      mockFilterParser.parse.mockImplementation(() => nonMatchingFilter);
       const event = eventFactory.build('@pandino/event-admin/Test', {
         prop1: 'nay',
       });
@@ -54,7 +50,6 @@ describe('EventAdminImpl', () => {
     });
 
     it('topic matches, filter matches, handler triggering once', async () => {
-      mockFilterParser.parse.mockImplementation(() => matchingFilter);
       const event = eventFactory.build('@pandino/event-admin/Test', {
         prop1: 'yayy',
       });
@@ -85,6 +80,7 @@ describe('EventAdminImpl', () => {
       expect(eventAdmin.getRegistrations().length).toEqual(2);
       expect(reg.service.handleEvent).toHaveBeenCalledTimes(1);
       expect(reg.service.handleEvent).toHaveBeenCalledWith({
+        filterEvaluator: evaluateFilter,
         topic: '@pandino/event-admin/Test',
         properties: {
           prop1: 'test',
@@ -153,18 +149,14 @@ describe('EventAdminImpl', () => {
 
       expect(eventAdmin.getRegistrations().length).toEqual(1);
       expect(mock).toHaveBeenCalledTimes(2);
-      expect(mock.mock.calls[0][0]).toEqual({
-        topic: '@pandino/event-admin/Test1',
-        properties: {
-          prop1: 'test1',
-        },
-      });
-      expect(mock.mock.calls[1][0]).toEqual({
-        topic: '@pandino/event-admin/Test2',
-        properties: {
-          prop1: 'test2',
-        },
-      });
+
+      const call0 = mock.mock.calls[0][0];
+      expect(call0.getTopic()).toEqual('@pandino/event-admin/Test1');
+      expect(call0.getPropertyNames()).toEqual(['prop1', 'event.topics']);
+
+      const call1 = mock.mock.calls[1][0];
+      expect(call1.getTopic()).toEqual('@pandino/event-admin/Test2');
+      expect(call1.getPropertyNames()).toEqual(['prop1', 'event.topics']);
     });
   });
 

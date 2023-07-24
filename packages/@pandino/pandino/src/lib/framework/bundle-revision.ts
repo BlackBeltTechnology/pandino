@@ -1,4 +1,4 @@
-import { BundleReference, SemVer } from '@pandino/pandino-api';
+import { BundleReference } from '@pandino/pandino-api';
 import { BundleRequirement } from './wiring/bundle-requirement';
 import { BundleCapability } from './wiring/bundle-capability';
 import { Requirement } from './resource/requirement';
@@ -14,7 +14,7 @@ import { Resource } from './resource/resource';
  */
 export interface BundleRevision extends BundleReference, Resource {
   getSymbolicName(): string;
-  getVersion(): SemVer;
+  getVersion(): string;
   getDeclaredCapabilities(namespace?: string): BundleCapability[];
   getDeclaredRequirements(namespace?: string): BundleRequirement[];
   getWiring(): BundleWiring | undefined;

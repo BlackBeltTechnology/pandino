@@ -51,7 +51,7 @@ describe('BundleRequirementImpl', () => {
     expect(req.getRevision().getSymbolicName()).toEqual('@scope/bundle1');
     expect(req.getRevision().getVersion().toString()).toEqual('0.0.0');
     expect(req.isOptional()).toEqual(false);
-    expect(req.getFilter()).toEqual({ attrib: 'power', comp: '=', filters: [], type: 'filter', value: 'SuperSaiyan' });
+    expect(req.getFilter()).toEqual('(power=SuperSaiyan)');
     expect(req.toString()).toEqual('[@mock/symbolic-name: 0.0.0 (R 1)] my.namespace; (power=SuperSaiyan)');
   });
 

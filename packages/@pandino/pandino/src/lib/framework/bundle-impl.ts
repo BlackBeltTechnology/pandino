@@ -7,14 +7,12 @@ import {
   Logger,
   BUNDLE_ACTIVATOR,
   ServiceReference,
-  SemVer,
 } from '@pandino/pandino-api';
+import { evaluateSemver } from '@pandino/filters';
 import { Pandino } from '../../pandino';
 import { BundleRevisionImpl } from './bundle-revision-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { BundleRevision } from './bundle-revision';
-import { SemVerImpl } from '../utils/semver-impl';
-import { equal } from '../semver-lite/src';
 
 export class BundleImpl implements Bundle {
   private readonly id: number;
@@ -97,7 +95,7 @@ export class BundleImpl implements Bundle {
     return this.getCurrentRevision().getSymbolicName();
   }
 
-  getVersion(): SemVer {
+  getVersion(): string {
     return this.getCurrentRevision().getVersion();
   }
 
@@ -161,7 +159,7 @@ export class BundleImpl implements Bundle {
     );
 
     let bundleVersion = revision.getVersion();
-    bundleVersion = isAnyMissing(bundleVersion) ? new SemVerImpl('0.0.0') : bundleVersion;
+    bundleVersion = isAnyMissing(bundleVersion) ? '0.0.0' : bundleVersion;
     const symName = revision.getSymbolicName();
 
     const collisionCandidates: Array<Bundle> = [];
@@ -169,7 +167,7 @@ export class BundleImpl implements Bundle {
     for (let i = 0; Array.isArray(bundles) && i < bundles.length; i++) {
       const id = (bundles[i] as BundleImpl).getBundleId();
       if (id !== this.getBundleId()) {
-        if (symName === bundles[i].getSymbolicName() && equal(bundleVersion, bundles[i].getVersion())) {
+        if (symName === bundles[i].getSymbolicName() && evaluateSemver(bundleVersion, 'eq', bundles[i].getVersion())) {
           collisionCandidates.push(bundles[i]);
         }
       }

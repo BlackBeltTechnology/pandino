@@ -1,5 +1,5 @@
 import { Configuration } from '@pandino/configuration-management-api';
-import { SemverFactory, SERVICE_PID, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import { SERVICE_PID, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 import { ConfigurationManager } from './configuration-manager';
 import { TargetedPID } from './helper/targeted-pid';
 
@@ -13,12 +13,11 @@ export class ConfigurationImpl implements Configuration {
   constructor(
     configurationManager: ConfigurationManager,
     pid: string,
-    semVerFactory: SemverFactory,
     location?: string,
     properties?: ServiceProperties,
   ) {
     this.configurationManager = configurationManager;
-    this.pid = new TargetedPID(pid, semVerFactory);
+    this.pid = new TargetedPID(pid);
     this.location = location;
     if (properties) {
       this.properties = {

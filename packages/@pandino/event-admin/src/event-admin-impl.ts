@@ -1,11 +1,4 @@
-import {
-  BundleContext,
-  FilterParser,
-  Logger,
-  ServiceEvent,
-  ServiceListener,
-  ServiceReference,
-} from '@pandino/pandino-api';
+import { BundleContext, Logger, ServiceEvent, ServiceListener, ServiceReference } from '@pandino/pandino-api';
 import {
   Event,
   EVENT_FILTER,
@@ -14,6 +7,7 @@ import {
   EventAdmin,
   EventHandler,
 } from '@pandino/event-api';
+import type { FilterEvaluator } from '@pandino/filters';
 import { EventHandlerRegistrationInfo } from './event-handler-registration-info';
 import { Matchers } from './matchers';
 
@@ -21,12 +15,12 @@ export class EventAdminImpl implements EventAdmin, ServiceListener {
   private readonly regs: Array<EventHandlerRegistrationInfo> = [];
   private readonly context: BundleContext;
   private readonly logger: Logger;
-  private readonly filterParser: FilterParser;
+  private readonly evaluateFilter: FilterEvaluator;
 
-  constructor(context: BundleContext, logger: Logger, filterParser: FilterParser) {
+  constructor(context: BundleContext, logger: Logger, filterParser: FilterEvaluator) {
     this.context = context;
     this.logger = logger;
-    this.filterParser = filterParser;
+    this.evaluateFilter = filterParser;
   }
 
   serviceChanged(event: ServiceEvent): void {
@@ -51,7 +45,7 @@ export class EventAdminImpl implements EventAdmin, ServiceListener {
     // The Event Admin service should log a warning.
 
     for (const reg of this.regs) {
-      const filter = typeof reg[EVENT_FILTER] === 'string' ? this.filterParser.parse(reg[EVENT_FILTER]) : undefined;
+      const filter = typeof reg[EVENT_FILTER] === 'string' ? reg[EVENT_FILTER] : undefined;
 
       if (!filter || event.matches(filter)) {
         const config = (Array.isArray(reg[EVENT_TOPIC]) ? reg[EVENT_TOPIC] : [reg[EVENT_TOPIC]]) as string[];

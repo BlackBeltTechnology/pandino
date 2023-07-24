@@ -17,6 +17,7 @@ import {
   TYPE_FRAGMENT,
   USES_DIRECTIVE,
 } from '@pandino/pandino-api';
+import { evaluateSemver } from '@pandino/filters';
 import { isAnyMissing } from '../../utils/helpers';
 import { BundleCapability } from './bundle-capability';
 import { BundleRevision } from '../bundle-revision';
@@ -70,7 +71,7 @@ export class BundleCapabilityImpl implements BundleCapability {
     }
 
     return (
-      this.revision.getVersion().compare(other.revision.getVersion()) === 0 &&
+      evaluateSemver(this.revision.getVersion(), 'eq', other.revision.getVersion()) &&
       this.getNamespace() === other.getNamespace()
     );
   }

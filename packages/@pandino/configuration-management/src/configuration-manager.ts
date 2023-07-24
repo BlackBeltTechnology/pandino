@@ -1,8 +1,6 @@
 import {
   BundleContext,
-  FilterParser,
   Logger,
-  SemverFactory,
   SERVICE_PID,
   ServiceEvent,
   ServiceEventType,
@@ -16,6 +14,7 @@ import {
   MANAGED_SERVICE_INTERFACE_KEY,
   ManagedService,
 } from '@pandino/configuration-management-api';
+import type { FilterEvaluator } from '@pandino/filters';
 import { PersistenceManager } from '@pandino/persistence-manager-api';
 import { ConfigurationImpl } from './configuration-impl';
 import { TargetedPID } from './helper/targeted-pid';
@@ -25,27 +24,19 @@ export class ConfigurationManager implements ServiceListener {
   isSync: boolean = true;
   private readonly context: BundleContext;
   private readonly logger: Logger;
-  private readonly filterParser: FilterParser;
+  private readonly evaluateFilter: FilterEvaluator;
   private readonly managedReferences: Map<string, Array<ServiceReference<ManagedService>>> = new Map<
     string,
     Array<ServiceReference<ManagedService>>
   >();
   private readonly eventListeners: Map<string, ConfigurationListener[]> = new Map<string, ConfigurationListener[]>();
   private readonly configurationCache: ConfigurationCache;
-  private readonly semVerFactory: SemverFactory;
 
-  constructor(
-    context: BundleContext,
-    logger: Logger,
-    filterParser: FilterParser,
-    pm: PersistenceManager,
-    semVerFactory: SemverFactory,
-  ) {
+  constructor(context: BundleContext, logger: Logger, evaluateFilter: FilterEvaluator, pm: PersistenceManager) {
     this.context = context;
     this.logger = logger;
-    this.filterParser = filterParser;
-    this.configurationCache = new ConfigurationCache(context, pm, this, this.semVerFactory);
-    this.semVerFactory = semVerFactory;
+    this.evaluateFilter = evaluateFilter;
+    this.configurationCache = new ConfigurationCache(context, pm, this);
   }
 
   initReferencesAddedBeforeManagerActivation(): void {
@@ -60,7 +51,7 @@ export class ConfigurationManager implements ServiceListener {
       for (const reference of configuredReferences) {
         const refPid = reference.getProperty(SERVICE_PID);
         if (refPid && !this.managedReferences.has(refPid)) {
-          const targetedPid = new TargetedPID(refPid, this.semVerFactory);
+          const targetedPid = new TargetedPID(refPid);
           const service: ManagedService = this.context.getService<ManagedService>(reference);
           this.initManagedService(refPid, reference, config, targetedPid, service);
         }
@@ -115,7 +106,7 @@ export class ConfigurationManager implements ServiceListener {
     managedService: ManagedService,
     config: ConfigurationImpl,
   ): void {
-    const targetedPid = new TargetedPID(pid, this.semVerFactory);
+    const targetedPid = new TargetedPID(pid);
     if (eventType === 'REGISTERED') {
       this.initManagedService(pid, reference, config, targetedPid, managedService);
     } else if (eventType === 'UNREGISTERING') {
@@ -209,10 +200,11 @@ export class ConfigurationManager implements ServiceListener {
 
   listConfigurations(filterString?: string): ConfigurationImpl[] {
     if (filterString) {
-      const filter = this.filterParser.parse(filterString);
       this.logger.debug(`Listing configurations matching ${filterString}`);
 
-      return Array.from(this.configurationCache.values()).filter((config) => filter.match(config.getProperties()));
+      return Array.from(this.configurationCache.values()).filter((config) =>
+        this.evaluateFilter(config.getProperties(), filterString),
+      );
     }
 
     return [...this.configurationCache.values()];
@@ -255,7 +247,7 @@ export class ConfigurationManager implements ServiceListener {
 
   private internalCreateConfiguration(pid: string, bundleLocation?: string): ConfigurationImpl {
     this.logger.debug(`createConfiguration(${pid}, ${bundleLocation})`);
-    return new ConfigurationImpl(this, pid, this.semVerFactory, bundleLocation);
+    return new ConfigurationImpl(this, pid, bundleLocation);
   }
 
   // private storeConfiguration(configuration: ConfigurationImpl): ConfigurationImpl {

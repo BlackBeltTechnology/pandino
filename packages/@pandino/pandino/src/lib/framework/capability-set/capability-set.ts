@@ -1,10 +1,9 @@
 import { BundleCapabilityImpl } from '../wiring/bundle-capability-impl';
-import Filter, { FilterComp } from '../../filter/filter';
 import { isAllPresent, isAnyMissing } from '../../utils/helpers';
 import { BundleCapability } from '../wiring/bundle-capability';
 import { Capability } from '../resource/capability';
-import { SemVerImpl } from '../../utils/semver-impl';
-import { equal, gte, lte } from '../../semver-lite/src';
+import type { FilterNode, FilterOperator } from '@pandino/filters';
+import { evaluateSemver, isSemVer, parseFilter } from '@pandino/filters';
 
 export type CapabilityIndex = Record<any, Set<BundleCapability>>;
 
@@ -18,7 +17,7 @@ export class CapabilitySet {
     }
   }
 
-  match(sf: Filter, obeyMandatory: boolean): Set<Capability> {
+  match(sf: FilterNode, obeyMandatory: boolean): Set<Capability> {
     const matches: Set<Capability> = this.matchCapSet(this.capSet, sf);
     return obeyMandatory ? CapabilitySet.matchMandatoryCapSet(matches, sf) : matches;
   }
@@ -65,11 +64,12 @@ export class CapabilitySet {
     }
   }
 
-  static matches(cap: Capability, sf?: Filter): boolean {
-    return CapabilitySet.matchesInternal(cap, sf) && CapabilitySet.matchMandatory(cap, sf);
+  static matches(cap: Capability, sf?: string): boolean {
+    const node = parseFilter(sf);
+    return CapabilitySet.matchesInternal(cap, node) && CapabilitySet.matchMandatory(cap, node);
   }
 
-  static matchMandatory(cap: Capability, sf?: Filter): boolean {
+  static matchMandatory(cap: Capability, sf?: FilterNode): boolean {
     if (isAnyMissing(sf)) {
       return false;
     }
@@ -82,18 +82,18 @@ export class CapabilitySet {
     return true;
   }
 
-  static matchMandatoryAttribute(attrName: string, sf?: Filter): boolean {
+  static matchMandatoryAttribute(attrName: string, sf?: FilterNode): boolean {
     if (!sf) {
       return false;
     }
 
-    if (sf.attrib !== null && sf.attrib !== undefined && sf.attrib === attrName) {
+    if (sf.attribute !== null && sf.attribute !== undefined && sf.attribute === attrName) {
       return true;
-    } else if (sf.comp === FilterComp.AND) {
-      let list: any[] = sf.filters;
+    } else if (sf.operator === 'and') {
+      let list: any[] = sf.children;
       for (let i = 0; i < list.length; i++) {
-        let sf2 = list[i] as Filter;
-        if (sf2.attrib !== null && sf.attrib !== undefined && sf2.attrib === attrName) {
+        let sf2 = list[i] as FilterNode;
+        if (sf2.attribute !== null && sf2.attribute !== undefined && sf2.attribute === attrName) {
           return true;
         }
       }
@@ -102,12 +102,12 @@ export class CapabilitySet {
     return false;
   }
 
-  static compare(lhs: any, rhsUnknown: any, cmp: FilterComp): boolean {
+  static compare(lhs: any, rhsUnknown: any, cmp: FilterOperator): boolean {
     if (isAnyMissing(lhs)) {
       return false;
     }
 
-    if (cmp === FilterComp.PRESENT) {
+    if (cmp === 'eq' && rhsUnknown === '*') {
       return true;
     }
 
@@ -115,9 +115,9 @@ export class CapabilitySet {
 
     if (typeof lhs === 'boolean') {
       switch (cmp) {
-        case FilterComp.EQ:
-        case FilterComp.GTE:
-        case FilterComp.LTE:
+        case 'eq':
+        case 'gte':
+        case 'lte':
           return lhs === (rhs === 'true');
         default:
           throw new Error('Unsupported comparison operator: ' + cmp);
@@ -126,27 +126,27 @@ export class CapabilitySet {
 
     if (typeof lhs === 'number') {
       switch (cmp) {
-        case FilterComp.EQ:
+        case 'eq':
           return lhs === Number(rhs);
-        case FilterComp.GTE:
+        case 'gte':
           return lhs >= Number(rhs);
-        case FilterComp.LTE:
+        case 'lte':
           return lhs <= Number(rhs);
         default:
           throw new Error('Unsupported comparison operator: ' + cmp);
       }
     }
 
-    if (lhs instanceof SemVerImpl) {
+    if (isSemVer(lhs)) {
       switch (cmp) {
-        case FilterComp.EQ:
-          return equal(lhs.toString(), rhs.toString());
-        case FilterComp.NOT:
-          return !equal(lhs.toString(), rhs.toString());
-        case FilterComp.GTE:
-          return gte(lhs.toString(), rhs.toString());
-        case FilterComp.LTE:
-          return lte(lhs.toString(), rhs.toString());
+        case 'eq':
+          return evaluateSemver(lhs, 'eq', rhs);
+        case 'not':
+          return !evaluateSemver(lhs, 'eq', rhs);
+        case 'gte':
+          return evaluateSemver(lhs, 'gte', rhs);
+        case 'lte':
+          return evaluateSemver(lhs, 'lte', rhs);
         default:
           throw new Error('Unsupported comparison operator: ' + cmp);
       }
@@ -154,9 +154,9 @@ export class CapabilitySet {
 
     if (typeof lhs === 'string') {
       switch (cmp) {
-        case FilterComp.EQ:
+        case 'eq':
           return lhs === rhs;
-        case FilterComp.NOT:
+        case 'not':
           return lhs !== rhs;
         default:
           throw new Error('Unsupported comparison operator: ' + cmp);
@@ -199,7 +199,7 @@ export class CapabilitySet {
     }
   }
 
-  private static matchMandatoryCapSet(caps: Set<Capability>, sf: Filter): Set<Capability> {
+  private static matchMandatoryCapSet(caps: Set<Capability>, sf: FilterNode): Set<Capability> {
     for (const cap of caps) {
       if (!CapabilitySet.matchMandatory(cap, sf)) {
         caps.delete(cap);
@@ -208,33 +208,35 @@ export class CapabilitySet {
     return caps;
   }
 
-  private matchCapSet(caps: Set<Capability>, sf: Filter): Set<Capability> {
+  private matchCapSet(caps: Set<Capability>, sf: FilterNode): Set<Capability> {
     let matches: Set<Capability> = new Set<Capability>();
 
-    if (sf.comp === FilterComp.MATCH_ALL) {
+    if (sf.expression === '*') {
       caps.forEach((c) => matches.add(c));
-    } else if (sf.comp === FilterComp.AND) {
-      const sfs: Array<Filter> = sf.filters;
+    } else if (sf.operator === 'eq' && sf.value === '*') {
+      caps.forEach((c) => matches.add(c));
+    } else if (sf.operator === 'and') {
+      const sfs: Array<FilterNode> = sf.children;
       for (let i = 0; caps.size > 0 && i < sfs.length; i++) {
         matches = this.matchCapSet(caps, sfs[i]);
         caps = matches;
       }
-    } else if (sf.comp === FilterComp.OR) {
-      const sfs: Array<Filter> = sf.filters;
+    } else if (sf.operator === 'or') {
+      const sfs: Array<FilterNode> = sf.children;
       for (let i = 0; i < sfs.length; i++) {
         this.matchCapSet(caps, sfs[i]).forEach((c) => matches.add(c));
       }
-    } else if (sf.comp === FilterComp.NOT) {
+    } else if (sf.operator === 'not') {
       caps.forEach((c) => matches.add(c));
-      const sfs: Array<Filter> = sf.filters;
+      const sfs: Array<FilterNode> = sf.children;
       for (let i = 0; i < sfs.length; i++) {
         const ms = this.matchCapSet(caps, sfs[i]);
         ms.forEach((c) => matches.delete(c));
       }
     } else {
-      const index: Record<any, Set<BundleCapability>> = this.indices[sf.attrib];
-      if (sf.comp === FilterComp.EQ && isAllPresent(index)) {
-        const existingCaps: Set<BundleCapability> = index[sf.attrib];
+      const index: Record<any, Set<BundleCapability>> = this.indices[sf.attribute];
+      if (sf.operator === 'eq' && isAllPresent(index)) {
+        const existingCaps: Set<BundleCapability> = index[sf.attribute];
         if (isAllPresent(existingCaps)) {
           existingCaps.forEach((c) => matches.add(c));
           if (caps !== this.capSet) {
@@ -247,9 +249,9 @@ export class CapabilitySet {
         }
       } else {
         for (const cap of caps) {
-          const lhs: any = cap.getAttributes()[sf.attrib];
+          const lhs: any = cap.getAttributes()[sf.attribute];
           if (isAllPresent(lhs)) {
-            if (CapabilitySet.compare(lhs, sf.value, sf.comp)) {
+            if (CapabilitySet.compare(lhs, sf.value, sf.operator)) {
               matches.add(cap);
             }
           }
@@ -260,34 +262,34 @@ export class CapabilitySet {
     return matches;
   }
 
-  private static matchesInternal(cap: Capability, sf?: Filter): boolean {
+  private static matchesInternal(cap: Capability, sf?: FilterNode): boolean {
     let matched = true;
 
     if (isAnyMissing(sf)) {
       matched = false;
-    } else if (sf.comp === FilterComp.MATCH_ALL) {
+    } else if ((sf.operator === 'eq' && sf.value === '*') || sf.expression === '*') {
       matched = true;
-    } else if (sf.comp === FilterComp.AND) {
-      const sfs = sf.filters as Filter[];
+    } else if (sf.operator === 'and') {
+      const sfs = sf.children as FilterNode[];
       for (let i = 0; matched && i < sfs.length; i++) {
         matched = CapabilitySet.matchesInternal(cap, sfs[i]);
       }
-    } else if (sf.comp === FilterComp.OR) {
+    } else if (sf.operator === 'or') {
       matched = false;
-      const sfs = sf.filters as Filter[];
+      const sfs = sf.children as FilterNode[];
       for (let i = 0; !matched && i < sfs.length; i++) {
         matched = CapabilitySet.matchesInternal(cap, sfs[i]);
       }
-    } else if (sf.comp === FilterComp.NOT) {
-      const sfs = sf.filters as Filter[];
+    } else if (sf.operator === 'not') {
+      const sfs = sf.children as FilterNode[];
       for (let i = 0; i < sfs.length; i++) {
         matched = !CapabilitySet.matchesInternal(cap, sfs[i]);
       }
     } else {
       matched = false;
-      const lhs = cap.getAttributes()[sf.attrib];
+      const lhs = cap.getAttributes()[sf.attribute];
       if (lhs !== null && lhs !== undefined) {
-        matched = CapabilitySet.compare(lhs, sf.value, sf.comp);
+        matched = CapabilitySet.compare(lhs, sf.value, sf.operator);
       }
     }
 

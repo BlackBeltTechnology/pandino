@@ -1,20 +1,13 @@
-import {
-  Bundle,
-  BundleContext,
-  BundleManifestHeaders,
-  BundleState,
-  SemVer,
-  ServiceReference,
-} from '@pandino/pandino-api';
+import { Bundle, BundleContext, BundleManifestHeaders, BundleState, ServiceReference } from '@pandino/pandino-api';
 import { MockBundleContext } from './mock-bundle-context';
 
 export class MockBundle implements Bundle {
   private readonly context: BundleContext;
   private readonly location: string;
   private readonly symbolicName: string;
-  private readonly version: SemVer;
+  private readonly version: string;
 
-  constructor(context: MockBundleContext, location: string, symbolicName: string, version: SemVer) {
+  constructor(context: MockBundleContext, location: string, symbolicName: string, version: string) {
     this.context = context;
     this.location = location;
     this.symbolicName = symbolicName;
@@ -58,7 +51,7 @@ export class MockBundle implements Bundle {
     return '';
   }
 
-  getVersion(): SemVer {
+  getVersion(): string {
     return this.version;
   }
 

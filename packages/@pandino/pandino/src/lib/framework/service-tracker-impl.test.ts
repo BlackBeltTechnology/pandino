@@ -23,7 +23,7 @@ import {
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { ServiceTrackerImpl } from './service-tracker-impl';
-import { parse } from '../filter';
+import { BundleContextImpl } from './bundle-context-impl';
 
 interface TestService {
   sayHello(): string;
@@ -38,7 +38,7 @@ describe('ServiceTrackerImpl', () => {
   const expectedBaseProps: ServiceProperties = {
     [OBJECTCLASS]: SERVICE_IDENTIFIER,
     [SERVICE_BUNDLEID]: 1,
-    [SERVICE_ID]: 7,
+    [SERVICE_ID]: 6,
     [SERVICE_SCOPE]: 'singleton',
   };
   const mockStart = jest.fn().mockReturnValue(Promise.resolve());
@@ -216,7 +216,7 @@ describe('ServiceTrackerImpl', () => {
     };
     const addingData: [ServiceProperties?, TestService?] = [];
     const bundle1 = await installBundle(bundle1Headers);
-    const tracker = bundle1.getBundleContext().trackService(parse('(prop1=test)'), {
+    const tracker = bundle1.getBundleContext().trackService('(prop1=test)', {
       addingService(reference: ServiceReference<TestService>): TestService {
         const service = bundle1.getBundleContext().getService(reference);
         addingData.push({ ...reference.getProperties() }, service);
@@ -254,7 +254,7 @@ describe('ServiceTrackerImpl', () => {
     bundle1.getBundleContext().registerService<TestService>(SERVICE_IDENTIFIER, service, {
       prop1: 'test',
     });
-    const tracker = bundle1.getBundleContext().trackService(parse('(prop1=test)'), {
+    const tracker = bundle1.getBundleContext().trackService('(prop1=test)', {
       addingService(reference: ServiceReference<TestService>): TestService {
         const service = bundle1.getBundleContext().getService(reference);
         addingData.push({ ...reference.getProperties() }, service);
@@ -287,7 +287,7 @@ describe('ServiceTrackerImpl', () => {
       test: () => true,
     };
     const bundle1 = await installBundle(bundle1Headers);
-    const tracker = new ServiceTrackerImpl(bundle1.getBundleContext(), SERVICE_FILTER);
+    const tracker = new ServiceTrackerImpl(bundle1.getBundleContext() as BundleContextImpl, SERVICE_FILTER);
 
     tracker.open();
     tracker.open(); // second call skips open init logic

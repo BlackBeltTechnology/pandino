@@ -1,5 +1,6 @@
 import { OBJECTCLASS, ServiceEvent } from '@pandino/pandino-api';
 import { EVENT, SERVICE, SERVICE_ID, SERVICE_OBJECTCLASS, SERVICE_PID } from '@pandino/event-api';
+import { evaluateFilter } from '@pandino/filters';
 import { ServiceEventAdapter } from './service-event-adapter';
 import { EventAdminImpl } from '../event-admin-impl';
 import { EventFactoryImpl } from '../event-factory-impl';
@@ -7,7 +8,7 @@ import { EventFactoryImpl } from '../event-factory-impl';
 describe('ServiceEventAdapter', () => {
   let sea: ServiceEventAdapter;
   let eventAdmin: EventAdminImpl;
-  const eventFactoryImpl = new EventFactoryImpl();
+  const eventFactoryImpl = new EventFactoryImpl(evaluateFilter);
   const mockContextGetService = jest.fn();
   const mockContextAddServiceListener = jest.fn();
   const mockContextRemoveServiceListener = jest.fn();
@@ -15,9 +16,6 @@ describe('ServiceEventAdapter', () => {
     getService: mockContextGetService,
     addServiceListener: mockContextAddServiceListener,
     removeServiceListener: mockContextRemoveServiceListener,
-  };
-  const mockFilterParser = {
-    parse: jest.fn(),
   };
   const mockLogger: any = {};
   const mockPostEvent = jest.fn();
@@ -27,7 +25,7 @@ describe('ServiceEventAdapter', () => {
     mockContextGetService.mockClear();
     mockContextAddServiceListener.mockClear();
     mockContextRemoveServiceListener.mockClear();
-    eventAdmin = new EventAdminImpl(mockContext, mockLogger, mockFilterParser);
+    eventAdmin = new EventAdminImpl(mockContext, mockLogger, evaluateFilter);
     sea = new ServiceEventAdapter(mockContext, eventAdmin, eventFactoryImpl);
 
     (eventAdmin as any).postEvent = mockPostEvent;
@@ -67,6 +65,7 @@ describe('ServiceEventAdapter', () => {
 
     expect(mockPostEvent).toHaveBeenCalledTimes(1);
     expect(mockPostEvent).toHaveBeenCalledWith({
+      filterEvaluator: evaluateFilter,
       topic: expectedTopic,
       properties: {
         [EVENT]: event,

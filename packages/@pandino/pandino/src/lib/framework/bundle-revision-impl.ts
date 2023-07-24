@@ -1,4 +1,5 @@
-import { ActivationPolicy, Bundle, BundleManifestHeaders, SemVer } from '@pandino/pandino-api';
+import { ActivationPolicy, Bundle, BundleManifestHeaders } from '@pandino/pandino-api';
+import { evaluateSemver } from '@pandino/filters';
 import { BundleImpl } from './bundle-impl';
 import { ManifestParserImpl } from './util/manifest-parser/manifest-parser-impl';
 import { isAllPresent, isAnyMissing } from '../utils/helpers';
@@ -16,7 +17,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
   private readonly headerMap: Record<string, any>;
   private readonly manifestVersion: string;
   private readonly symbolicName: string;
-  private readonly version: SemVer;
+  private readonly version: string;
   private readonly declaredCaps: Array<BundleCapability> = [];
   private readonly declaredReqs: Array<BundleRequirement> = [];
 
@@ -47,7 +48,9 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
     if (isAnyMissing(other) || !(other instanceof BundleRevisionImpl)) {
       return false;
     }
-    return this.getSymbolicName() === other.getSymbolicName() && this.getVersion().compare(other.getVersion()) === 0;
+    return (
+      this.getSymbolicName() === other.getSymbolicName() && evaluateSemver(this.getVersion(), 'eq', other.getVersion())
+    );
   }
 
   getBundle(): Bundle {
@@ -86,7 +89,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
     return this.symbolicName;
   }
 
-  getVersion(): SemVer {
+  getVersion(): string {
     return this.version;
   }
 

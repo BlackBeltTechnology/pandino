@@ -1,15 +1,15 @@
 {
-  "name": "@pandino/pandino",
+  "name": "@pandino/filters",
   "version": "0.8.27",
-  "description": "The reference implementation of the Pandino API specification",
-  "main": "./dist/cjs/pandino.cjs",
-  "module": "./dist/esm/pandino.mjs",
+  "description": "filter parser and evaluator utility for Pandino",
+  "main": "./dist/cjs/filters.cjs",
+  "module": "./dist/esm/filters.mjs",
   "types": "dist/esm/dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/pandino.cjs",
-      "default": "./dist/esm/pandino.mjs"
+      "require": "./dist/cjs/filters.cjs",
+      "default": "./dist/esm/filters.mjs"
     }
   },
   "scripts": {
@@ -19,12 +19,10 @@
   },
   "keywords": [
     "pandino",
-    "microfrontend",
-    "micro-frontend",
-    "library",
-    "framework",
-    "decouple",
-    "runtime"
+    "filters",
+    "filter",
+    "parser",
+    "evaluator"
   ],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "EPL-2.0",
@@ -32,7 +30,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/BlackBeltTechnology/pandino.git",
-    "directory": "packages/@pandino/pandino"
+    "directory": "packages/@pandino/filter-parser"
   },
   "bugs": {
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
@@ -47,27 +45,7 @@
     "dist",
     "src"
   ],
-  "dependencies": {
-    "@pandino/filters": "^0.8.27"
-  },
-  "devDependencies": {
-    "@pandino/pandino-api": "^0.8.27"
-  },
   "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "text",
-      "json",
-      "html"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 80,
-        "branches": 65,
-        "functions": 85,
-        "lines": 80
-      }
-    },
     "transform": {
       "^.+\\.tsx?$": [
         "ts-jest",
@@ -82,10 +60,6 @@
       "js",
       "jsx",
       "json"
-    ],
-    "testPathIgnorePatterns": [
-      "src/lib/framework/util/fetcher.ts",
-      "src/lib/utils/console-logger.ts"
     ]
   }
 }

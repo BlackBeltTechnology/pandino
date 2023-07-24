@@ -1,5 +1,6 @@
 import { BundleEvent } from '@pandino/pandino-api';
 import { BUNDLE_SYMBOLICNAME, EVENT } from '@pandino/event-api';
+import { evaluateFilter } from '@pandino/filters';
 import { BundleEventAdapter } from './bundle-event-adapter';
 import { EventAdminImpl } from '../event-admin-impl';
 import { EventFactoryImpl } from '../event-factory-impl';
@@ -7,7 +8,7 @@ import { EventFactoryImpl } from '../event-factory-impl';
 describe('BundleEventAdapter', () => {
   let bea: BundleEventAdapter;
   let eventAdmin: EventAdminImpl;
-  const eventFactoryImpl = new EventFactoryImpl();
+  const eventFactoryImpl = new EventFactoryImpl(evaluateFilter);
   const mockContextGetService = jest.fn();
   const mockContextAddBundleListener = jest.fn();
   const mockContextRemoveBundleListener = jest.fn();
@@ -15,9 +16,6 @@ describe('BundleEventAdapter', () => {
     getService: mockContextGetService,
     addBundleListener: mockContextAddBundleListener,
     removeBundleListener: mockContextRemoveBundleListener,
-  };
-  const mockFilterParser = {
-    parse: jest.fn(),
   };
   const mockLogger: any = {};
   const mockPostEvent = jest.fn();
@@ -35,7 +33,7 @@ describe('BundleEventAdapter', () => {
     mockContextGetService.mockClear();
     mockContextAddBundleListener.mockClear();
     mockContextRemoveBundleListener.mockClear();
-    eventAdmin = new EventAdminImpl(mockContext, mockLogger, mockFilterParser);
+    eventAdmin = new EventAdminImpl(mockContext, mockLogger, evaluateFilter);
     bea = new BundleEventAdapter(mockContext, eventAdmin, eventFactoryImpl);
 
     (eventAdmin as any).postEvent = mockPostEvent;
@@ -67,6 +65,7 @@ describe('BundleEventAdapter', () => {
 
     expect(mockPostEvent).toHaveBeenCalledTimes(1);
     expect(mockPostEvent).toHaveBeenCalledWith({
+      filterEvaluator: evaluateFilter,
       topic: expectedTopic,
       properties: {
         [EVENT]: event,
