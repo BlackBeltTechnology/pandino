@@ -12,7 +12,7 @@
     }
   },
   "npmClient": "npm",
-  "version": "0.8.27",
+  "version": "0.8.28",
   "ignoreChanges": [
     "**/__fixtures__/**",
     "**/__tests__/**",

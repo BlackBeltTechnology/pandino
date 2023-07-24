@@ -1,9 +1,4 @@
-#  (2023-03-06)
-
-
-### Bug Fixes
-
-* **react-hooks:** add missing service listener cleanup ([4783a4c](https://github.com/BlackBeltTechnology/pandino/commit/4783a4c4e10211ab06f606744b3bd8b075b6a0ed))
+#  (2023-07-24)
 
 
 
@@ -11,6 +6,10 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## 0.8.28 (2023-07-24)
+
+**Note:** Version bump only for package pandino-root
 
 ## 0.8.27 (2023-03-06)
 

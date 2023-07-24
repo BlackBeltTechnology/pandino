@@ -1,6 +1,6 @@
 {
   "name": "@pandino/filters",
-  "version": "0.8.27",
+  "version": "0.8.28",
   "description": "filter parser and evaluator utility for Pandino",
   "main": "./dist/cjs/filters.cjs",
   "module": "./dist/esm/filters.mjs",
