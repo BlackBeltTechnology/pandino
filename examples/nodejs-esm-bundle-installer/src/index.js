@@ -1,6 +1,7 @@
 import express from 'express';
-import {fileURLToPath} from 'url';
-import path from 'path';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+import fs from 'node:fs';
 import Pandino from '@pandino/pandino';
 import loaderConfiguration from '@pandino/loader-configuration-nodejs';
 import bundleInstallerHeaders from '@pandino/bundle-installer-nodejs';
@@ -8,6 +9,8 @@ import bundleInstallerHeaders from '@pandino/bundle-installer-nodejs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const deploymentRoot = path.normalize(path.join(__dirname, 'deploy'));
+
+fs.mkdirSync(deploymentRoot, { recursive: true });
 
 (async () => {
   const app = express();

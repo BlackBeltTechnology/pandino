@@ -17,7 +17,7 @@
       ]
     </script>
     <script type="module">
-      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@latest/dist/loader-configuration-dom.mjs';
+      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@latest/dist/esm/loader-configuration-dom.mjs';
       import Pandino from 'https://unpkg.com/@pandino/pandino@latest/dist/esm/pandino.mjs';
 
       const pandino = new Pandino({
@@ -27,7 +27,7 @@
       await pandino.init();
       await pandino.start();
 
-      await pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom@latest/dist/bundle-installer-dom-manifest.json');
+      await pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom@latest/dist/esm/bundle-installer-dom-manifest.json');
 
       window.setTimeout(() => {
         pandino.getBundleContext().installBundle('./config-admin-manager-manifest.json');
