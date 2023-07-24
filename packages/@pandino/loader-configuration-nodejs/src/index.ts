@@ -1,5 +1,6 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import {
   BundleImporter,
   ManifestFetcher,
@@ -21,7 +22,7 @@ const loaderConfig: LoaderConfig = {
   },
   [PANDINO_BUNDLE_IMPORTER_PROP]: {
     import: (activatorLocation: string, manifestLocation: string, deploymentRoot?: string) => {
-      return import(path.normalize(path.join(deploymentRoot, activatorLocation)));
+      return import(pathToFileURL(path.normalize(path.join(deploymentRoot, activatorLocation))).toString());
       // const normalManifest = path.normalize(manifestLocation);
       // console.log(normalManifest);
       // const root = normalManifest.includes(path.sep)
