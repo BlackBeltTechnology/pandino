@@ -26,7 +26,7 @@ Pandino is also extendable, some of the functionalities defined in the [OSGi Com
 ## Supported platforms
 
 Pandino can be used as an [ES Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in browsers
-and NodeJS v16, and v18 as well. To support legacy setups, we export CJS modules as well, where applicable.
+and NodeJS v18, and v20 as well. To support legacy setups, we export CJS modules as well, where applicable.
 
 ## Inspiration
 
