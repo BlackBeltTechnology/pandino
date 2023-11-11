@@ -1,6 +1,6 @@
 {
   "name": "@pandino/event-admin",
-  "version": "0.8.29",
+  "version": "0.8.30",
   "description": "Reference implementation of the Pandino Event Admin API",
   "main": "./dist/cjs/event-admin.cjs",
   "module": "./dist/esm/event-admin.mjs",
@@ -45,11 +45,11 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/event-api": "^0.8.29",
-    "@pandino/filters": "^0.8.29",
-    "@pandino/log-api": "^0.8.29",
-    "@pandino/pandino-api": "^0.8.29",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.29"
+    "@pandino/event-api": "^0.8.30",
+    "@pandino/filters": "^0.8.30",
+    "@pandino/log-api": "^0.8.30",
+    "@pandino/pandino-api": "^0.8.30",
+    "@pandino/rollup-plugin-generate-manifest": "^0.8.30"
   },
   "jest": {
     "collectCoverage": true,

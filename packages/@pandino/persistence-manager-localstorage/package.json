@@ -1,6 +1,6 @@
 {
   "name": "@pandino/persistence-manager-localstorage",
-  "version": "0.8.29",
+  "version": "0.8.30",
   "description": "Localstorage implementation of the Pandino Persistence Manager API",
   "module": "./dist/esm/persistence-manager-localstorage.mjs",
   "types": "dist/esm/index.d.ts",
@@ -44,9 +44,9 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.29",
-    "@pandino/persistence-manager-api": "^0.8.29",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.29"
+    "@pandino/pandino-api": "^0.8.30",
+    "@pandino/persistence-manager-api": "^0.8.30",
+    "@pandino/rollup-plugin-generate-manifest": "^0.8.30"
   },
   "jest": {
     "collectCoverage": true,

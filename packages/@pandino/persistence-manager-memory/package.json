@@ -1,6 +1,6 @@
 {
   "name": "@pandino/persistence-manager-memory",
-  "version": "0.8.29",
+  "version": "0.8.30",
   "description": "In Memory implementation of the Pandino Persistence Manager API",
   "main": "./dist/cjs/persistence-manager-memory.cjs",
   "module": "./dist/esm/persistence-manager-memory.mjs",
@@ -47,9 +47,9 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.29",
-    "@pandino/persistence-manager-api": "^0.8.29",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.29"
+    "@pandino/pandino-api": "^0.8.30",
+    "@pandino/persistence-manager-api": "^0.8.30",
+    "@pandino/rollup-plugin-generate-manifest": "^0.8.30"
   },
   "jest": {
     "collectCoverage": true,
