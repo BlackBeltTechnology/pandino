@@ -3,7 +3,7 @@
   "version": "0.8.29",
   "description": "React helpers and hooks for applications using Pandino",
   "module": "./dist/esm/react-hooks.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
