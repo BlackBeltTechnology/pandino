@@ -4,7 +4,7 @@
   "description": "Install Bundles defined in the filesystem",
   "main": "dist/cjs/bundle-installer-nodejs.cjs",
   "module": "dist/esm/bundle-installer-nodejs.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "exports": {
     ".": {

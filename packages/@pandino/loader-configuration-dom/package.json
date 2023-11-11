@@ -3,7 +3,7 @@
   "version": "0.8.29",
   "description": "Bundle loading configuration for the DOM",
   "module": "./dist/loader-configuration-dom.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "exports": {
     ".": {

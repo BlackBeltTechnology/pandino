@@ -34,7 +34,7 @@
     "@pandino/manifest-generator": "^0.8.29"
   },
   "devDependencies": {
-    "webpack": "^5.76.2",
-    "webpack-cli": "^5.0.1"
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   }
 }

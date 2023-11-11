@@ -4,7 +4,7 @@
   "description": "Pandino Event API",
   "main": "dist/cjs/event-api.cjs",
   "module": "dist/esm/event-api.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "exports": {
     ".": {

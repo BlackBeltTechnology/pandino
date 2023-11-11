@@ -4,7 +4,7 @@
   "description": "Pandino Log API",
   "main": "dist/cjs/log-api.cjs",
   "module": "dist/esm/log-api.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "exports": {
     ".": {

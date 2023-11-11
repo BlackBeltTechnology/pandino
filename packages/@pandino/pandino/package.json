@@ -4,7 +4,7 @@
   "description": "The reference implementation of the Pandino API specification",
   "main": "./dist/cjs/pandino.cjs",
   "module": "./dist/esm/pandino.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "exports": {
     ".": {

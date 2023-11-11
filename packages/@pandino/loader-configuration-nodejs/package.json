@@ -4,7 +4,7 @@
   "description": "Bundle loading configuration for NodeJS",
   "main": "./dist/cjs/loader-configuration-nodejs.cjs",
   "module": "./dist/esm/loader-configuration-nodejs.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "exports": {
     ".": {

@@ -3,7 +3,7 @@
   "version": "0.8.29",
   "description": "Install Bundles defined in a browser's DOM",
   "module": "./dist/esm/bundle-installer-dom.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "exports": {
     ".": {

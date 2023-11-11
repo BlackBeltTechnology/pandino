@@ -3,7 +3,7 @@
   "version": "0.8.29",
   "description": "Localstorage implementation of the Pandino Persistence Manager API",
   "module": "./dist/esm/persistence-manager-localstorage.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "exports": {
     ".": {

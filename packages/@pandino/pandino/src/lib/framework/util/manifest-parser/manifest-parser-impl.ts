@@ -345,7 +345,6 @@ export class ManifestParserImpl implements ManifestParser {
       for (const path of clause.paths) {
         const attrs: Record<string, any> = clause.attrs;
         const newAttrs: Record<string, any> = {
-          [BUNDLE_NAMESPACE]: path,
           ...attrs,
           [BUNDLE_NAMESPACE]: path, // ensure it's not overwritten
         };

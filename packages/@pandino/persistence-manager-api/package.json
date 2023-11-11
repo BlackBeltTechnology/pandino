@@ -4,7 +4,7 @@
   "description": "Pandino Persistence Manager API",
   "main": "dist/cjs/persistence-manager-api.cjs",
   "module": "dist/esm/persistence-manager-api.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "exports": {
     ".": {

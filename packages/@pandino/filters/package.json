@@ -4,7 +4,7 @@
   "description": "filter parser and evaluator utility for Pandino",
   "main": "./dist/cjs/filters.cjs",
   "module": "./dist/esm/filters.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
