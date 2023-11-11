@@ -1,5 +1,4 @@
 import {
-  Bundle,
   BundleActivator,
   BundleContext,
   FRAMEWORK_EVALUATE_FILTER,
@@ -103,9 +102,5 @@ export class Activator implements BundleActivator {
     } else {
       this.logger.warn(`Tried to re-start Configuration Admin while is already in use. Ignoring`);
     }
-  }
-
-  static getLocation(bundle: Bundle): string {
-    return bundle.getLocation();
   }
 }

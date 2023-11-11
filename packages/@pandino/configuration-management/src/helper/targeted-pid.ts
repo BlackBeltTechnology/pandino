@@ -1,7 +1,5 @@
 import { ServiceReference } from '@pandino/pandino-api';
 
-import { Activator } from '../activator';
-
 export class TargetedPID {
   private readonly rawPid: string;
   private readonly servicePid: string;
@@ -64,7 +62,7 @@ export class TargetedPID {
       return false;
     }
 
-    return !this.location || this.location === Activator.getLocation(serviceBundle);
+    return !this.location || this.location === serviceBundle.getLocation();
   }
 
   /**
