@@ -1,6 +1,6 @@
 {
   "name": "@pandino/event-api",
-  "version": "0.8.30",
+  "version": "0.8.31",
   "description": "Pandino Event API",
   "main": "dist/@pandino/event-api.cjs",
   "module": "dist/@pandino/event-api.mjs",
@@ -44,7 +44,7 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "workspace:^0.8.29",
+    "@pandino/pandino-api": "workspace:^0.8.31",
     "dts-bundle-generator": "^8.1.2",
     "rimraf": "^5.0.5",
     "typescript": "^5.2.2",

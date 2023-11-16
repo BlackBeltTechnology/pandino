@@ -1,6 +1,6 @@
 {
   "name": "@pandino/pandino",
-  "version": "0.8.30",
+  "version": "0.8.31",
   "description": "The reference implementation of the Pandino API specification",
   "main": "./dist/@pandino/pandino.cjs",
   "module": "./dist/@pandino/pandino.mjs",
@@ -48,10 +48,10 @@
     "dist"
   ],
   "dependencies": {
-    "@pandino/filters": "workspace:^0.8.29"
+    "@pandino/filters": "workspace:^0.8.31"
   },
   "devDependencies": {
-    "@pandino/pandino-api": "workspace:^0.8.29",
+    "@pandino/pandino-api": "workspace:^0.8.31",
     "dts-bundle-generator": "^8.1.2",
     "rimraf": "^5.0.5",
     "typescript": "^5.2.2",

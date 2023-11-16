@@ -1,6 +1,6 @@
 {
   "name": "@pandino/event-admin",
-  "version": "0.8.30",
+  "version": "0.8.31",
   "description": "Reference implementation of the Pandino Event Admin API",
   "main": "./dist/@pandino/event-admin.cjs",
   "module": "./dist/@pandino/event-admin.mjs",
@@ -46,11 +46,11 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/event-api": "workspace:^0.8.29",
-    "@pandino/filters": "workspace:^0.8.29",
-    "@pandino/log-api": "workspace:^0.8.29",
-    "@pandino/pandino-api": "workspace:^0.8.29",
-    "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.29",
+    "@pandino/event-api": "workspace:^0.8.31",
+    "@pandino/filters": "workspace:^0.8.31",
+    "@pandino/log-api": "workspace:^0.8.31",
+    "@pandino/pandino-api": "workspace:^0.8.31",
+    "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.31",
     "dts-bundle-generator": "^8.1.2",
     "rimraf": "^5.0.5",
     "typescript": "^5.2.2",

@@ -1,6 +1,6 @@
 {
   "name": "@pandino/react-hooks",
-  "version": "0.8.30",
+  "version": "0.8.31",
   "description": "React helpers and hooks for applications using Pandino",
   "module": "./dist/@pandino/react-hooks.mjs",
   "types": "dist/@pandino/react-hooks.d.ts",
@@ -41,7 +41,7 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "workspace:^0.8.29",
+    "@pandino/pandino-api": "workspace:^0.8.31",
     "@types/react": "^18.0.26",
     "dts-bundle-generator": "^8.1.2",
     "react": "^18.2.0",

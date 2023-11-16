@@ -1,6 +1,6 @@
 {
   "name": "@pandino/loader-configuration-dom",
-  "version": "0.8.30",
+  "version": "0.8.31",
   "description": "Bundle loading configuration for the DOM",
   "module": "./dist/@pandino/loader-configuration-dom.mjs",
   "types": "dist/@pandino/loader-configuration-dom.d.ts",
@@ -41,8 +41,8 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "workspace:^0.8.29",
-    "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.29",
+    "@pandino/pandino-api": "workspace:^0.8.31",
+    "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.31",
     "dts-bundle-generator": "^8.1.2",
     "rimraf": "^5.0.5",
     "typescript": "^5.2.2",

@@ -1,6 +1,6 @@
 {
   "name": "@pandino/log-api",
-  "version": "0.8.30",
+  "version": "0.8.31",
   "description": "Pandino Log API",
   "main": "dist/@pandino/log-api.cjs",
   "module": "dist/@pandino/log-api.mjs",
@@ -43,7 +43,7 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "workspace:^0.8.29",
+    "@pandino/pandino-api": "workspace:^0.8.31",
     "dts-bundle-generator": "^8.1.2",
     "rimraf": "^5.0.5",
     "typescript": "^5.2.2",

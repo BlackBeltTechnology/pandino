@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.8.31
+
+### Patch Changes
+
+- Move to new project architecture. Use pnpm, vite, vitest and changesets
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
