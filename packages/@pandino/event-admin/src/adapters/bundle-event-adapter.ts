@@ -1,5 +1,6 @@
-import { BundleContext, BundleEvent, BundleListener } from '@pandino/pandino-api';
-import { BUNDLE_SYMBOLICNAME, EVENT, BUNDLE_EVENT_INTERFACE_KEY, EventAdmin, EventFactory } from '@pandino/event-api';
+import type { BundleContext, BundleEvent, BundleListener } from '@pandino/pandino-api';
+import { BUNDLE_SYMBOLICNAME, EVENT, BUNDLE_EVENT_INTERFACE_KEY } from '@pandino/event-api';
+import type { EventAdmin, EventFactory } from '@pandino/event-api';
 import { AbstractAdapter } from './abstract-adapter';
 
 export class BundleEventAdapter extends AbstractAdapter implements BundleListener {

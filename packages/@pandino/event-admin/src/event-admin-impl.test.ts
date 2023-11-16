@@ -1,9 +1,10 @@
-import { ServiceEvent } from '@pandino/pandino-api';
+import { describe, beforeEach, expect, it, vi } from 'vitest';
+import type { ServiceEvent } from '@pandino/pandino-api';
 import { EVENT_FILTER, EVENT_TOPIC } from '@pandino/event-api';
 import { evaluateFilter } from '@pandino/filters';
 import { EventAdminImpl } from './event-admin-impl';
 import { EventFactoryImpl } from './event-factory-impl';
-import { EventHandlerRegistrationInfo } from './event-handler-registration-info';
+import type { EventHandlerRegistrationInfo } from './event-handler-registration-info';
 
 describe('EventAdminImpl', () => {
   const DELAY_MS = 50;
@@ -15,12 +16,12 @@ describe('EventAdminImpl', () => {
   };
   let eventFactory = new EventFactoryImpl(evaluateFilter);
   let eventAdmin: EventAdminImpl;
-  let mockContextGetService = jest.fn();
+  let mockContextGetService = vi.fn();
   let mockContext: any = {
     getService: mockContextGetService,
   };
-  let mockDebugLog: any = jest.fn();
-  let mockWarnLog: any = jest.fn();
+  let mockDebugLog: any = vi.fn();
+  let mockWarnLog: any = vi.fn();
   let mockLogger: any = {
     debug: mockDebugLog,
     warn: mockWarnLog,
@@ -138,7 +139,7 @@ describe('EventAdminImpl', () => {
       const event2 = eventFactory.build('@pandino/event-admin/Test2', {
         prop1: 'test2',
       });
-      const mock = jest.fn();
+      const mock = vi.fn();
       const reg = createRegistration(['@pandino/event-admin/Test1', '@pandino/event-admin/Test2'], mock);
 
       eventAdmin.getRegistrations().push(reg);
@@ -162,7 +163,7 @@ describe('EventAdminImpl', () => {
 
   describe('serviceChanged()', () => {
     it('does nothing if service is not an actual event handler', () => {
-      (eventAdmin as any).eventHandlerRegistered = jest.fn();
+      (eventAdmin as any).eventHandlerRegistered = vi.fn();
 
       const invalidEvent: any = {
         getServiceReference: () => ({
@@ -176,9 +177,9 @@ describe('EventAdminImpl', () => {
     });
 
     it('handles REGISTERED case', () => {
-      (eventAdmin as any).eventHandlerRegistered = jest.fn();
+      (eventAdmin as any).eventHandlerRegistered = vi.fn();
       const mockServiceForRef = {
-        handleEvent: jest.fn(),
+        handleEvent: vi.fn(),
       };
       mockContextGetService.mockImplementation(() => mockServiceForRef);
       const mockReference: any = {
@@ -196,9 +197,9 @@ describe('EventAdminImpl', () => {
     });
 
     it('handles UNREGISTERING case', () => {
-      (eventAdmin as any).eventHandlerUnregistering = jest.fn();
+      (eventAdmin as any).eventHandlerUnregistering = vi.fn();
       const mockServiceForRef = {
-        handleEvent: jest.fn(),
+        handleEvent: vi.fn(),
       };
       mockContextGetService.mockImplementation(() => mockServiceForRef);
       const mockReference: any = {
@@ -316,7 +317,7 @@ describe('EventAdminImpl', () => {
       [EVENT_TOPIC]: topic,
       [EVENT_FILTER]: filter,
       service: {
-        handleEvent: externalMock || jest.fn(),
+        handleEvent: externalMock || vi.fn(),
       },
       reference: undefined,
     };

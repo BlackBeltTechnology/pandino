@@ -1,5 +1,5 @@
-import { ServiceReference } from './service-reference';
-import { ServiceProperties } from './service-properties';
+import type { ServiceReference } from './service-reference';
+import type { ServiceProperties } from './service-properties';
 
 /**
  * A registered service.
@@ -32,7 +32,7 @@ export interface ServiceRegistration<S> {
    * @param {string} key
    * @returns {any}
    */
-  getProperty(key: string): any;
+  getProperty(key: string): any | undefined;
 
   /**
    * Returns an array of the keys in the properties {@code ServiceProperties} object of the service referenced by this

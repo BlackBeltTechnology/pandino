@@ -1,5 +1,6 @@
+import { describe, expect, it } from 'vitest';
 import { Matchers } from './matchers';
-import { Matcher } from './matcher';
+import type { Matcher } from './matcher';
 
 type TestPair = [string, boolean];
 

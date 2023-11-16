@@ -1,6 +1,6 @@
-import { Bundle } from './bundle';
-import { BundleEventType } from './bundle-event-type';
-import { FrameworkEventType } from '../framework';
+import type { Bundle } from './bundle';
+import type { BundleEventType } from './bundle-event-type';
+import type { FrameworkEventType } from '../framework';
 
 /**
  * An event from the Framework describing a bundle lifecycle change.
@@ -46,5 +46,5 @@ export interface BundleEvent {
    *
    * @return {Bundle} The bundle that was the origin of the event.
    */
-  getOrigin(): Bundle;
+  getOrigin(): Bundle | undefined;
 }

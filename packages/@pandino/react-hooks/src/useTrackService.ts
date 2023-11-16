@@ -14,8 +14,8 @@ export const useTrackService: ServiceTrackerHook = <T>(filter: string) => {
   const { bundleContext } = useBundleContext();
   const getService = useCallback<(filter: string) => T | undefined>(
     (filter: string) => {
-      const serviceUtilsRef = bundleContext.getServiceReference<ServiceUtils>(FRAMEWORK_SERVICE_UTILS);
-      const serviceUtils = bundleContext.getService(serviceUtilsRef);
+      const serviceUtilsRef = bundleContext.getServiceReference<ServiceUtils>(FRAMEWORK_SERVICE_UTILS)!;
+      const serviceUtils = bundleContext.getService(serviceUtilsRef)!;
       const refs = bundleContext.getServiceReferences(undefined, filter);
       const ref = serviceUtils.getBestServiceReference(refs);
       if (ref) {
@@ -27,7 +27,7 @@ export const useTrackService: ServiceTrackerHook = <T>(filter: string) => {
   const [tracker, setTracker] = useState<SimpleTracker<T>>({
     service: getService(filter),
   });
-  const createListener = useCallback(() => {
+  const createListener: () => ServiceListener = useCallback(() => {
     return {
       serviceChanged: (event: ServiceEvent) => {
         if (event.getType() === 'REGISTERED') {
@@ -42,7 +42,7 @@ export const useTrackService: ServiceTrackerHook = <T>(filter: string) => {
       },
     };
   }, [filter]);
-  const [listener, setListener] = useState<ServiceListener | undefined>(createListener());
+  const [listener, setListener] = useState<ServiceListener>(createListener());
 
   useEffect(() => {
     if (isInitialMount.current) {

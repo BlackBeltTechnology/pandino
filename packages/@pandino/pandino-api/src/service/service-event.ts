@@ -1,5 +1,5 @@
-import { ServiceReference } from './service-reference';
-import { ServiceEventType } from './service-event-type';
+import type { ServiceReference } from './service-reference';
+import type { ServiceEventType } from './service-event-type';
 
 /**
  * An event from the Framework describing a service lifecycle change.

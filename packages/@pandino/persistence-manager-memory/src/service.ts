@@ -1,5 +1,5 @@
-import { PersistenceManager } from '@pandino/persistence-manager-api';
-import { ServiceProperties } from '@pandino/pandino-api';
+import type { PersistenceManager } from '@pandino/persistence-manager-api';
+import type { ServiceProperties } from '@pandino/pandino-api';
 
 export class InMemoryPersistenceManager implements PersistenceManager {
   private readonly map: Map<string, ServiceProperties> = new Map<string, ServiceProperties>();

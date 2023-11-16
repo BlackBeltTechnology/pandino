@@ -1,7 +1,11 @@
-import { ServiceEvent, ServiceEventType, ServiceReference, SERVICE_ID } from '@pandino/pandino-api';
+import { SERVICE_ID } from '@pandino/pandino-api';
+import type { ServiceEvent, ServiceEventType, ServiceReference } from '@pandino/pandino-api';
 
 export class ServiceEventImpl implements ServiceEvent {
-  constructor(private readonly type: ServiceEventType, private readonly reference: ServiceReference<any>) {}
+  constructor(
+    private readonly type: ServiceEventType,
+    private readonly reference: ServiceReference<any>,
+  ) {}
 
   getServiceReference(): ServiceReference<any> {
     return this.reference;

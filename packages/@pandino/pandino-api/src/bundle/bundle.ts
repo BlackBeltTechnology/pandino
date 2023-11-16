@@ -1,7 +1,7 @@
-import { BundleState } from './bundle-state';
-import { BundleManifestHeaders } from './bundle-manifest-headers';
-import { ServiceReference } from '../service';
-import { BundleContext } from './bundle-context';
+import type { BundleState } from './bundle-state';
+import type { BundleManifestHeaders } from './bundle-manifest-headers';
+import type { ServiceReference } from '../service';
+import type { BundleContext } from './bundle-context';
 
 /**
  * An installed bundle in the Framework.

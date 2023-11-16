@@ -1,6 +1,6 @@
-import { Capability } from './capability';
-import { Requirement } from './requirement';
-import { Resource } from './resource';
+import type { Capability } from './capability';
+import type { Requirement } from './requirement';
+import type { Resource } from './resource';
 
 /**
  * A wire connecting a {@link Capability} to a {@link Requirement}.

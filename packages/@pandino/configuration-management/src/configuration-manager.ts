@@ -1,21 +1,21 @@
-import {
+import { SERVICE_PID } from '@pandino/pandino-api';
+import type {
   BundleContext,
   Logger,
-  SERVICE_PID,
   ServiceEvent,
   ServiceEventType,
   ServiceListener,
   ServiceReference,
 } from '@pandino/pandino-api';
-import {
+import { MANAGED_SERVICE_INTERFACE_KEY } from '@pandino/configuration-management-api';
+import type {
   ConfigurationEvent,
   ConfigurationEventType,
   ConfigurationListener,
-  MANAGED_SERVICE_INTERFACE_KEY,
   ManagedService,
 } from '@pandino/configuration-management-api';
 import type { FilterEvaluator } from '@pandino/filters';
-import { PersistenceManager } from '@pandino/persistence-manager-api';
+import type { PersistenceManager } from '@pandino/persistence-manager-api';
 import { ConfigurationImpl } from './configuration-impl';
 import { TargetedPID } from './helper/targeted-pid';
 import { ConfigurationCache } from './configuration-cache';
@@ -52,7 +52,7 @@ export class ConfigurationManager implements ServiceListener {
         const refPid = reference.getProperty(SERVICE_PID);
         if (refPid && !this.managedReferences.has(refPid)) {
           const targetedPid = new TargetedPID(refPid);
-          const service: ManagedService = this.context.getService<ManagedService>(reference);
+          const service = this.context.getService<ManagedService>(reference);
           this.initManagedService(refPid, reference, config, targetedPid, service);
         }
         freshReferences.push(reference);
@@ -75,7 +75,7 @@ export class ConfigurationManager implements ServiceListener {
           this.managedReferences.set(pid, []);
         }
         const refs = this.managedReferences.get(pid);
-        if (!refs.includes(ref)) {
+        if (Array.isArray(refs) && !refs.includes(ref)) {
           refs.push(ref);
         }
       }
@@ -89,8 +89,8 @@ export class ConfigurationManager implements ServiceListener {
     if (service) {
       if (refPid && typeof (service as ManagedService).updated === 'function') {
         const config = this.configurationCache.has(refPid)
-          ? this.configurationCache.get(refPid)
-          : this.internalCreateConfiguration(refPid, reference.getBundle().getLocation());
+          ? this.configurationCache.get(refPid)!
+          : this.internalCreateConfiguration(refPid, reference.getBundle()?.getLocation());
         this.handleManagedServiceEvent(event.getType(), refPid, reference, service, config);
       } else if (typeof (service as ConfigurationListener).configurationEvent === 'function') {
         const configurationListener: ConfigurationListener = service;
@@ -113,9 +113,9 @@ export class ConfigurationManager implements ServiceListener {
       if (!this.managedReferences.has(pid)) {
         this.managedReferences.set(pid, []);
       }
-      const idx = this.managedReferences.get(pid).findIndex((ref) => ref === reference);
-      if (idx > -1) {
-        this.managedReferences.get(pid).splice(idx, 1);
+      const idx = this.managedReferences.get(pid)?.findIndex((ref) => ref === reference);
+      if (idx !== undefined && idx > -1) {
+        this.managedReferences.get(pid)!.splice(idx, 1);
       }
       if (targetedPid.matchesTarget(reference)) {
         managedService.updated(undefined);
@@ -129,22 +129,22 @@ export class ConfigurationManager implements ServiceListener {
     reference: ServiceReference<any>,
     config: ConfigurationImpl,
     targetedPid: TargetedPID,
-    managedService: ManagedService,
+    managedService?: ManagedService,
   ) {
     if (!this.managedReferences.has(pid)) {
       this.managedReferences.set(pid, []);
     }
-    if (!this.managedReferences.get(pid).includes(reference)) {
-      this.managedReferences.get(pid).push(reference);
+    if (!this.managedReferences.get(pid)!.includes(reference)) {
+      this.managedReferences.get(pid)!.push(reference);
     }
 
     // As per specification if config is missing, we need to assign the first registered Service's Bundle location.
     if (!config.getBundleLocation()) {
-      config.setBundleLocation(reference.getBundle().getLocation());
+      config.setBundleLocation(reference.getBundle()?.getLocation());
     }
 
     if (targetedPid.matchesTarget(reference)) {
-      managedService.updated(config?.getProperties());
+      managedService?.updated(config.getProperties());
       this.fireConfigurationChangeEvent('UPDATED', pid, reference);
     }
   }
@@ -159,15 +159,17 @@ export class ConfigurationManager implements ServiceListener {
         this.eventListeners.set(refPid, []);
       }
       const listeners = this.eventListeners.get(refPid);
-      if (!listeners.includes(configurationListener)) {
+      if (Array.isArray(listeners) && !listeners.includes(configurationListener)) {
         listeners.push(configurationListener);
       }
     } else if (eventType === 'UNREGISTERING') {
       if (this.eventListeners.has(refPid)) {
         const listeners = this.eventListeners.get(refPid);
-        const listenerIdx = listeners.findIndex((l) => l === configurationListener);
-        if (listenerIdx > -1) {
-          listeners.splice(listenerIdx, 1);
+        if (Array.isArray(listeners)) {
+          const listenerIdx = listeners.findIndex((l) => l === configurationListener);
+          if (listenerIdx > -1) {
+            listeners.splice(listenerIdx, 1);
+          }
         }
       }
     }
@@ -180,6 +182,7 @@ export class ConfigurationManager implements ServiceListener {
 
       return config;
     }
+    return undefined;
   }
 
   createConfiguration(pid: string, location?: string): ConfigurationImpl {
@@ -192,7 +195,7 @@ export class ConfigurationManager implements ServiceListener {
     const refs = this.managedReferences.get(pid);
 
     if (refs && refs.length) {
-      effectiveLocation = refs[0].getBundle().getLocation();
+      effectiveLocation = refs[0].getBundle()?.getLocation();
     }
 
     return this.internalCreateConfiguration(pid, effectiveLocation);
@@ -215,12 +218,14 @@ export class ConfigurationManager implements ServiceListener {
       this.configurationCache.delete(pid);
       if (this.managedReferences.has(pid)) {
         const refs = this.managedReferences.get(pid);
-        for (const ref of refs) {
-          const service = this.context.getService(ref);
-          if (service) {
-            service.updated(undefined);
+        if (Array.isArray(refs)) {
+          for (const ref of refs) {
+            const service = this.context.getService(ref);
+            if (service) {
+              service.updated(undefined);
+            }
+            this.fireConfigurationChangeEvent('DELETED', pid, ref);
           }
-          this.fireConfigurationChangeEvent('DELETED', pid, ref);
         }
       }
     }
@@ -231,14 +236,16 @@ export class ConfigurationManager implements ServiceListener {
     this.configurationCache.set(config.getPid(), config);
     if (this.managedReferences.has(config.getServicePid())) {
       const refs = this.managedReferences.get(config.getServicePid());
-      for (const ref of refs) {
-        if (config.getTargetedPid().matchesTarget(ref)) {
-          const service = this.context.getService(ref);
-          if (service) {
-            service.updated({
-              ...config.getProperties(),
-            });
-            this.fireConfigurationChangeEvent('UPDATED', config.getPid(), ref);
+      if (Array.isArray(refs)) {
+        for (const ref of refs) {
+          if (config.getTargetedPid().matchesTarget(ref)) {
+            const service = this.context.getService(ref);
+            if (service) {
+              service.updated({
+                ...config.getProperties(),
+              });
+              this.fireConfigurationChangeEvent('UPDATED', config.getPid(), ref);
+            }
           }
         }
       }

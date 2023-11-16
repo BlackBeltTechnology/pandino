@@ -1,12 +1,10 @@
-import {
+import { Logger, BUNDLE_SYMBOLICNAME, BUNDLE_VERSION } from '@pandino/pandino-api';
+import type {
   Bundle,
   BundleContext,
   BundleListener,
   BundleManifestHeaders,
   FrameworkListener,
-  Logger,
-  BUNDLE_SYMBOLICNAME,
-  BUNDLE_VERSION,
   ServiceListener,
   ServiceReference,
   ServiceProperties,
@@ -22,13 +20,13 @@ import {
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { BundleImpl } from './bundle-impl';
-import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { ServiceReferenceImpl } from './service-reference-impl';
 import { ServiceObjectsImpl } from './service-objects-impl';
 import { BundleTrackerImpl } from './bundle-tracker-impl';
 import { ServiceTrackerImpl } from './service-tracker-impl';
-import { serviceUtilsImpl } from '../utils/service-utils';
-import { FilterNode, parseFilter } from '@pandino/filters';
+import { serviceUtilsImpl } from '../utils';
+import { parseFilter } from '@pandino/filters';
+import type { FilterNode } from '@pandino/filters';
 
 export class BundleContextImpl implements BundleContext {
   private valid = true;
@@ -65,17 +63,17 @@ export class BundleContextImpl implements BundleContext {
     this.pandino.removeFrameworkListener(this.bundle, listener);
   }
 
-  createFilter(filter: string): FilterNode {
+  createFilter(filter: string): FilterNode | undefined {
     this.checkValidity();
 
     return parseFilter(filter);
   }
 
-  getBundle(id?: number): Bundle {
+  getBundle(id?: number): Bundle | never {
     this.checkValidity();
 
-    if (isAllPresent(id)) {
-      return this.pandino.getBundle(id);
+    if (typeof id === 'number') {
+      return this.pandino.getBundle(id)!;
     }
 
     return this.bundle;
@@ -93,7 +91,7 @@ export class BundleContextImpl implements BundleContext {
     return this.pandino.getProperty(key);
   }
 
-  async installBundle(locationOrHeaders: string | BundleManifestHeaders): Promise<Bundle> {
+  async installBundle(locationOrHeaders: string | BundleManifestHeaders): Promise<Bundle | undefined> {
     if (typeof locationOrHeaders === 'string') {
       this.logger.debug(`Installing Bundle from location: ${locationOrHeaders}`);
     } else {
@@ -111,10 +109,10 @@ export class BundleContextImpl implements BundleContext {
     this.pandino.addServiceListener(this.bundle, listener, filter);
   }
 
-  getService<S>(reference: ServiceReference<S>): S {
+  getService<S>(reference: ServiceReference<S>): S | undefined {
     this.checkValidity();
 
-    if (isAnyMissing(reference)) {
+    if (!reference) {
       throw new Error('Specified service reference must be defined.');
     }
 
@@ -124,7 +122,7 @@ export class BundleContextImpl implements BundleContext {
   getServiceReference<S>(identifier: string): ServiceReference<S> | undefined {
     this.checkValidity();
     try {
-      const refs = this.getServiceReferences(identifier, null);
+      const refs = this.getServiceReferences(identifier, undefined);
       return serviceUtilsImpl.getBestServiceReference(refs);
     } catch (ex) {
       this.logger.error('BundleContextImpl: ' + ex);
@@ -161,7 +159,7 @@ export class BundleContextImpl implements BundleContext {
   ungetService<S>(reference: ServiceReference<S>): boolean {
     this.checkValidity();
 
-    if (isAnyMissing(reference)) {
+    if (!reference) {
       throw new Error('Specified service reference cannot be missing.');
     }
 
@@ -186,7 +184,7 @@ export class BundleContextImpl implements BundleContext {
     this.valid = false;
   }
 
-  checkValidity(): void {
+  checkValidity(): void | never {
     if (this.valid) {
       switch (this.bundle.getState()) {
         case 'ACTIVE':
@@ -200,12 +198,12 @@ export class BundleContextImpl implements BundleContext {
   }
 
   equals(other: any): boolean {
-    if (isAnyMissing(other) || !(other instanceof BundleContextImpl)) {
+    if (!other || !(other instanceof BundleContextImpl)) {
       return false;
     }
     if (
-      this.getBundle().getSymbolicName() === other.getBundle().getSymbolicName() &&
-      this.getBundle().getVersion().toString() === other.getBundle().getVersion().toString()
+      this.getBundle()?.getSymbolicName() === other.getBundle()?.getSymbolicName() &&
+      this.getBundle()?.getVersion().toString() === other.getBundle()?.getVersion().toString()
     ) {
       return true;
     }
@@ -257,7 +255,7 @@ export class BundleContextImpl implements BundleContext {
         super(self, identifierOrFilter);
       }
 
-      addingService(reference: ServiceReference<S>): T {
+      addingService(reference: ServiceReference<S>): T | undefined {
         return customizer.addingService ? customizer.addingService(reference) : super.addingService(reference);
       }
 

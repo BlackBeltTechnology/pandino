@@ -1,10 +1,8 @@
+import { describe, expect, it } from 'vitest';
 import { StatefulResolver } from './stateful-resolver';
-import { BundleRevision } from './bundle-revision';
-import { BundleCapability } from './wiring/bundle-capability';
-import { BundleWire } from './wiring/bundle-wire';
-import { BundleRequirement } from './wiring/bundle-requirement';
-import { BundleRequirementImpl } from './wiring/bundle-requirement-impl';
-import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
+import type { BundleRevision } from './bundle-revision';
+import type { BundleCapability, BundleWire, BundleRequirement } from './wiring';
+import { BundleRequirementImpl, BundleCapabilityImpl } from './wiring';
 import { FILTER_DIRECTIVE } from '@pandino/pandino-api';
 
 describe('StatefulResolver', () => {

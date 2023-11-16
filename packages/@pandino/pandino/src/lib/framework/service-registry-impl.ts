@@ -1,26 +1,17 @@
-import {
-  Bundle,
-  Logger,
-  OBJECTCLASS,
-  SCOPE_PROTOTYPE,
-  SERVICE_ID,
-  SERVICE_SCOPE,
-  ServiceProperties,
-  ServiceReference,
-  ServiceRegistration,
-} from '@pandino/pandino-api';
-import { FilterNode, parseFilter } from '@pandino/filters';
+import { Logger, OBJECTCLASS, SCOPE_PROTOTYPE, SERVICE_ID, SERVICE_SCOPE } from '@pandino/pandino-api';
+import type { Bundle, ServiceProperties, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
+import { parseFilter } from '@pandino/filters';
+import type { FilterNode } from '@pandino/filters';
 import { ServiceRegistrationImpl } from './service-registration-impl';
-import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { ServiceEventImpl } from './service-event-impl';
 import { ServiceReferenceImpl } from './service-reference-impl';
 import { CapabilitySet } from './capability-set/capability-set';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
 import { UsageCountImpl } from './usage-count-impl';
-import { ServiceRegistryCallbacks } from './service-registry-callbacks';
-import { Capability } from './resource/capability';
-import { ServiceRegistry } from './service-registry';
-import { UsageCount } from './usage-count';
+import type { ServiceRegistryCallbacks } from './service-registry-callbacks';
+import type { Capability } from './resource';
+import type { ServiceRegistry } from './service-registry';
+import type { UsageCount } from './usage-count';
 
 export class ServiceRegistryImpl implements ServiceRegistry {
   private readonly logger: Logger;
@@ -39,8 +30,8 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   getRegisteredServices(bundle: Bundle): ServiceReference<any>[] {
-    const regs: Array<ServiceRegistration<any>> = this.regsMap.get(bundle);
-    if (isAllPresent(regs)) {
+    const regs = this.regsMap.get(bundle);
+    if (Array.isArray(regs)) {
       const refs: Array<ServiceReference<any>> = [];
       for (const reg of regs) {
         try {
@@ -56,7 +47,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
 
   getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects = false): S | undefined {
     const isPrototype = isServiceObjects && ref.getProperty(SERVICE_SCOPE) === SCOPE_PROTOTYPE;
-    let usage: UsageCount;
+    let usage: UsageCount | undefined;
     let svcObj: any;
 
     const reg = (ref as ServiceReferenceImpl).getRegistration();
@@ -66,19 +57,21 @@ export class ServiceRegistryImpl implements ServiceRegistry {
         // Get the usage count, or create a new one. If this is a prototype, then we'll always create a new one.
         usage = this.obtainUsageCount(bundle, ref, undefined, isPrototype);
 
-        usage.incrementToPositiveValue();
-        svcObj = usage.getService();
+        if (usage) {
+          usage.incrementToPositiveValue();
+          svcObj = usage.getService();
 
-        if (isAnyMissing(svcObj)) {
-          svcObj = reg.getService(bundle);
-          usage.setService(svcObj);
+          if (!svcObj) {
+            svcObj = reg.getService(bundle);
+            usage.setService(svcObj);
+          }
+
+          if (isServiceObjects) {
+            usage.incrementServiceObjectsCountToPositiveValue();
+          }
         }
 
-        if (isServiceObjects) {
-          usage.incrementServiceObjectsCountToPositiveValue();
-        }
-
-        if (isAllPresent(usage) && isPrototype) {
+        if (usage && isPrototype) {
           const existingUsage = this.obtainUsageCount(bundle, ref, svcObj);
           if (existingUsage && existingUsage !== usage) {
             this.flushUsageCount(bundle, ref, usage);
@@ -91,7 +84,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
         }
       }
     } finally {
-      if (!reg.isValid() || isAnyMissing(svcObj)) {
+      if (!reg.isValid() || !svcObj) {
         this.flushUsageCount(bundle, ref, usage);
       }
     }
@@ -100,36 +93,34 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   servicePropertiesModified(reg: ServiceRegistration<any>, oldProps: ServiceProperties): void {
-    if (isAllPresent(this.callbacks)) {
+    if (this.callbacks) {
       this.callbacks.serviceChanged(new ServiceEventImpl('MODIFIED', reg.getReference()), oldProps);
     }
   }
 
   getServiceReferences(identifier?: string, filter?: string): Array<Capability> {
-    let filterEffective = parseFilter(filter);
-    if (isAnyMissing(identifier) && isAnyMissing(filterEffective)) {
-      filterEffective = { attribute: null, operator: 'eq', value: '*' };
-    } else if (isAllPresent(identifier) && isAnyMissing(filterEffective)) {
+    let filterEffective = filter ? parseFilter(filter) : undefined;
+    if (!identifier && !filterEffective) {
+      filterEffective = { attribute: undefined, operator: 'eq', value: '*' };
+    } else if (identifier && !filterEffective) {
       filterEffective = { attribute: OBJECTCLASS, operator: 'eq', value: identifier };
-    } else if (isAllPresent(identifier) && isAllPresent(filterEffective)) {
+    } else if (identifier && filterEffective) {
       const filters: Array<FilterNode> = [];
       filters.push({ attribute: OBJECTCLASS, operator: 'eq', value: identifier });
       filters.push(filterEffective);
       filterEffective = { operator: 'and', children: filters };
     }
 
-    return Array.from(this.regCapSet.match(filterEffective, false));
+    return Array.from(this.regCapSet.match(filterEffective!, false));
   }
 
   getUsingBundles(ref: ServiceReference<any>): Bundle[] {
     let bundles: Bundle[] = [];
     for (const bundle of this.inUseMap.keys()) {
       const usages = this.inUseMap.get(bundle);
-      for (const usage of usages) {
-        if (usage.getReference().compareTo(ref) === 0 && usage.getCount() > 0) {
-          if (isAnyMissing(bundles)) {
-            bundles = [bundle];
-          } else {
+      if (Array.isArray(usages)) {
+        for (const usage of usages) {
+          if (usage.getReference().compareTo(ref) === 0 && usage.getCount() > 0) {
             bundles.push(bundle);
           }
         }
@@ -153,7 +144,12 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     const regs = this.regsMap.get(bundle);
 
     // TODO: implement check if same service gets registered or not!
-    if (!regs.find((r) => r.getReference().getProperty(SERVICE_ID) === reg.getReference().getProperty(SERVICE_ID))) {
+    if (!regs) {
+      // this.logger.warn(`There are no registrations for bundle! (${bundle.getSymbolicName()})`);
+    } else if (
+      regs &&
+      !regs.find((r) => r.getReference().getProperty(SERVICE_ID) === reg.getReference().getProperty(SERVICE_ID))
+    ) {
       regs.push(reg);
     } else {
       this.logger.warn(`Service already registered, skipping! (${reg.getReference().getProperty(SERVICE_ID)})`);
@@ -164,8 +160,8 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   unregisterService<S>(bundle: Bundle, reg: ServiceRegistration<S>): void {
-    const regs: Array<ServiceRegistration<any>> = this.regsMap.get(bundle);
-    if (isAllPresent(regs)) {
+    const regs = this.regsMap.get(bundle);
+    if (Array.isArray(regs)) {
       const remIdx = regs.findIndex((r) => r === reg);
       if (remIdx > -1) {
         regs.splice(remIdx, 1);
@@ -174,8 +170,8 @@ export class ServiceRegistryImpl implements ServiceRegistry {
 
     this.regCapSet.removeCapability(reg.getReference() as unknown as BundleCapabilityImpl);
 
-    if (isAllPresent(this.callbacks)) {
-      this.callbacks.serviceChanged(new ServiceEventImpl('UNREGISTERING', reg.getReference()), null);
+    if (this.callbacks) {
+      this.callbacks.serviceChanged(new ServiceEventImpl('UNREGISTERING', reg.getReference()), undefined);
     }
 
     const ref = reg.getReference();
@@ -196,11 +192,11 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     try {
       const usage = this.obtainUsageCount(bundle, ref, svcObj);
 
-      if (isAnyMissing(usage)) {
+      if (!usage) {
         return false;
       }
 
-      if (isAllPresent(svcObj)) {
+      if (svcObj) {
         if (usage.decrementAndGet() < 0) {
           return false;
         }
@@ -211,7 +207,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
         if (count <= 0) {
           const svc = usage.getService();
 
-          if (isAllPresent(svc)) {
+          if (svc) {
             usage.setService(null);
             if (usage.getCount() <= 0) {
               // Temporarily increase the usage again so that the service factory still sees the usage in the unget
@@ -233,7 +229,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
           usage.setService(null);
         }
 
-        if (!reg.isValid() || (count <= 0 && isAllPresent(svcObj))) {
+        if (!reg.isValid() || (count <= 0 && svcObj)) {
           this.flushUsageCount(bundle, ref, usage);
         }
       }
@@ -253,10 +249,8 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     const usages: UsageCount[] = this.inUseMap.get(bundle) || [];
     let processUsage = true;
 
-    while (processUsage === true) {
-      const usageIdx = usages.findIndex(
-        (usage) => (isAnyMissing(uc) && usage.getReference().compareTo(ref) === 0) || uc === usage,
-      );
+    while (processUsage) {
+      const usageIdx = usages.findIndex((usage) => (!uc && usage.getReference().compareTo(ref) === 0) || uc === usage);
 
       if (usageIdx > -1) {
         usages.splice(usageIdx, 1);
@@ -282,15 +276,15 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     svcObj: any,
     isPrototype = false,
   ): UsageCount | undefined {
-    let usage: UsageCount = null;
+    let usage: UsageCount;
 
-    const usages: UsageCount[] = this.inUseMap.get(bundle);
+    const usages = this.inUseMap.get(bundle);
 
-    if (isPrototype === false && isAllPresent(usages)) {
+    if (!isPrototype && Array.isArray(usages)) {
       for (const usage of usages) {
         if (
           usage.getReference().compareTo(ref) === 0 &&
-          ((isAnyMissing(svcObj) && !usage.isPrototype()) || usage.getService() === svcObj)
+          ((!svcObj && !usage.isPrototype()) || usage.getService() === svcObj)
         ) {
           return usage;
         }
@@ -303,7 +297,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
 
     usage = new UsageCountImpl(ref, isPrototype);
 
-    if (isAnyMissing(usages)) {
+    if (!usages) {
       const newUsages: UsageCount[] = [usage];
       this.inUseMap.set(bundle, newUsages);
     } else {
@@ -313,10 +307,10 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   unregisterServices(bundle: Bundle): void {
-    const regs: Array<ServiceRegistration<any>> = this.regsMap.get(bundle);
+    const regs = this.regsMap.get(bundle);
     this.regsMap.delete(bundle);
 
-    if (isAllPresent(regs)) {
+    if (Array.isArray(regs)) {
       for (const reg of regs) {
         if ((reg as ServiceRegistrationImpl).isValid()) {
           try {
@@ -330,8 +324,8 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   ungetServices(bundle: Bundle): void {
-    const usages: UsageCount[] = this.inUseMap.get(bundle);
-    if (isAnyMissing(usages)) {
+    const usages = this.inUseMap.get(bundle);
+    if (!Array.isArray(usages)) {
       return;
     }
 
@@ -346,10 +340,12 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   private ungetServicesByRef(ref: ServiceReference<any>): void {
     const clients: Bundle[] = this.getUsingBundles(ref);
     for (const client of clients) {
-      const usages: UsageCount[] = this.inUseMap.get(client);
-      for (const usage of usages) {
-        if (usage.getReference().compareTo(ref) === 0) {
-          this.ungetService(client, ref, usage.isPrototype() ? usage.getService() : null);
+      const usages = this.inUseMap.get(client);
+      if (Array.isArray(usages)) {
+        for (const usage of usages) {
+          if (usage.getReference().compareTo(ref) === 0) {
+            this.ungetService(client, ref, usage.isPrototype() ? usage.getService() : null);
+          }
         }
       }
     }
@@ -360,6 +356,6 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   getInUseMap(bundle: Bundle): UsageCount[] {
-    return this.inUseMap.get(bundle);
+    return this.inUseMap.get(bundle) || [];
   }
 }

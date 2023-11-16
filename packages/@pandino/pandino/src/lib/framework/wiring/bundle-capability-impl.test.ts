@@ -1,5 +1,6 @@
+import { describe, beforeEach, expect, it, vi } from 'vitest';
 import { BundleCapabilityImpl } from './bundle-capability-impl';
-import { BundleRevision } from '../bundle-revision';
+import type { BundleRevision } from '../bundle-revision';
 import { BundleRevisionImpl } from '../bundle-revision-impl';
 import { BundleImpl } from '../bundle-impl';
 import { MuteLogger } from '../../../__mocks__/mute-logger';
@@ -10,24 +11,26 @@ import {
   BUNDLE_NAME,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
-  BundleActivator,
-  BundleImporter,
-  BundleManifestHeaders,
   DEPLOYMENT_ROOT_PROP,
-  FrameworkConfigMap,
   LOG_LEVEL_PROP,
-  Logger,
   LogLevel,
   MANDATORY_DIRECTIVE,
   PANDINO_BUNDLE_IMPORTER_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
   USES_DIRECTIVE,
 } from '@pandino/pandino-api';
+import type {
+  BundleActivator,
+  BundleImporter,
+  BundleManifestHeaders,
+  FrameworkConfigMap,
+  Logger,
+} from '@pandino/pandino-api';
 
 describe('BundleCapabilityImpl', () => {
   const dummyActivator: BundleActivator = {
-    start: jest.fn(),
-    stop: jest.fn(),
+    start: vi.fn(),
+    stop: vi.fn(),
   };
   const importer: BundleImporter = {
     import: (activator: string, manifest: string) =>
@@ -63,7 +66,7 @@ describe('BundleCapabilityImpl', () => {
     logger = new MuteLogger();
     params = {
       [DEPLOYMENT_ROOT_PROP]: '',
-      [PANDINO_MANIFEST_FETCHER_PROP]: jest.fn() as any,
+      [PANDINO_MANIFEST_FETCHER_PROP]: vi.fn() as any,
       [PANDINO_BUNDLE_IMPORTER_PROP]: importer,
       [LOG_LEVEL_PROP]: LogLevel.WARN,
     };

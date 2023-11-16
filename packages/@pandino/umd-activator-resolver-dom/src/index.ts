@@ -1,10 +1,6 @@
-import {
-  ActivatorResolver,
-  BUNDLE_SYMBOLICNAME,
-  BUNDLE_UMD_NAME,
-  BundleActivator,
-  BundleManifestHeaders,
-} from '@pandino/pandino-api';
+import { BUNDLE_SYMBOLICNAME, BUNDLE_UMD_NAME } from '@pandino/pandino-api';
+
+import type { ActivatorResolver, BundleActivator, BundleManifestHeaders } from '@pandino/pandino-api';
 
 const resolver: ActivatorResolver = {
   resolve(module: any, bundleHeaders: BundleManifestHeaders): BundleActivator {

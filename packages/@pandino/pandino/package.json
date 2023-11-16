@@ -1,21 +1,22 @@
 {
   "name": "@pandino/pandino",
-  "version": "0.8.28",
+  "version": "0.8.31",
   "description": "The reference implementation of the Pandino API specification",
-  "main": "./dist/cjs/pandino.cjs",
-  "module": "./dist/esm/pandino.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "main": "./dist/@pandino/pandino.cjs",
+  "module": "./dist/@pandino/pandino.mjs",
+  "types": "dist/@pandino/pandino.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/pandino.cjs",
-      "default": "./dist/esm/pandino.mjs"
+      "require": "./dist/@pandino/pandino.cjs",
+      "import": "./dist/@pandino/pandino.mjs"
     }
   },
   "scripts": {
-    "test": "jest",
-    "build": "rollup -c --environment=PRODUCTION",
-    "build:dev": "rollup -c"
+    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "tsc": "tsc"
   },
   "keywords": [
     "pandino",
@@ -38,7 +39,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
@@ -47,44 +48,14 @@
     "dist"
   ],
   "dependencies": {
-    "@pandino/filters": "^0.8.28"
+    "@pandino/filters": "workspace:^0.8.31"
   },
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.28"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "text",
-      "json",
-      "html"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 80,
-        "branches": 65,
-        "functions": 85,
-        "lines": 80
-      }
-    },
-    "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        {
-          "tsconfig": "tsconfig.test.json"
-        }
-      ]
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json"
-    ],
-    "testPathIgnorePatterns": [
-      "src/lib/framework/util/fetcher.ts",
-      "src/lib/utils/console-logger.ts"
-    ]
+    "@pandino/pandino-api": "workspace:^0.8.31",
+    "dts-bundle-generator": "^8.1.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vitest": "^0.34.6"
   }
 }

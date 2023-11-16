@@ -1,18 +1,18 @@
 {
   "name": "@pandino/react-hooks",
-  "version": "0.8.28",
+  "version": "0.8.31",
   "description": "React helpers and hooks for applications using Pandino",
-  "module": "./dist/esm/react-hooks.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "module": "./dist/@pandino/react-hooks.mjs",
+  "types": "dist/@pandino/react-hooks.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "default": "./dist/esm/react-hooks.mjs"
+      "import": "./dist/@pandino/react-hooks.mjs"
     }
   },
   "scripts": {
-    "build": "rollup -c --environment=PRODUCTION",
-    "build:dev": "rollup -c"
+    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "tsc": "tsc"
   },
   "keywords": [
     "pandino",
@@ -32,7 +32,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
@@ -41,8 +41,12 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.28",
+    "@pandino/pandino-api": "workspace:^0.8.31",
     "@types/react": "^18.0.26",
-    "react": "^18.2.0"
+    "dts-bundle-generator": "^8.1.2",
+    "react": "^18.2.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
   }
 }

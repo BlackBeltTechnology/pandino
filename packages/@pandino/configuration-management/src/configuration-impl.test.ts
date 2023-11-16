@@ -1,12 +1,16 @@
-import { Bundle, BundleContext, Logger, SERVICE_PID, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import { describe, beforeEach, expect, it, vi } from 'vitest';
+import type { Bundle, BundleContext, Logger, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import { SERVICE_PID } from '@pandino/pandino-api';
 import {
+  CONFIGURATION_LISTENER_INTERFACE_KEY,
+  MANAGED_SERVICE_INTERFACE_KEY,
+} from '@pandino/configuration-management-api';
+import type {
   Configuration,
   ConfigurationEvent,
   ConfigurationEventType,
   ConfigurationListener,
   ManagedService,
-  CONFIGURATION_LISTENER_INTERFACE_KEY,
-  MANAGED_SERVICE_INTERFACE_KEY,
 } from '@pandino/configuration-management-api';
 import { evaluateFilter } from '@pandino/filters';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
@@ -20,7 +24,7 @@ describe('ConfigurationImpl', () => {
   let bundle: Bundle;
   let configAdmin: ConfigurationAdminImpl;
   let cm: ConfigurationManager;
-  let mockDebug = jest.fn();
+  let mockDebug = vi.fn();
   let logger: Logger = {
     debug: mockDebug,
   } as unknown as Logger;
@@ -48,7 +52,7 @@ describe('ConfigurationImpl', () => {
 
   it('location updates at first registration after initially missing', () => {
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
-    const mockUpdated = jest.fn();
+    const mockUpdated = vi.fn();
     const service: ManagedService = {
       updated: mockUpdated,
     };
@@ -92,7 +96,7 @@ describe('ConfigurationImpl', () => {
   });
 
   it('registration and configuration after', () => {
-    const mockUpdated = jest.fn();
+    const mockUpdated = vi.fn();
     const service: ManagedService = {
       updated: mockUpdated,
     };
@@ -119,7 +123,7 @@ describe('ConfigurationImpl', () => {
 
   it('configuration and registration after', () => {
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
-    const mockUpdated = jest.fn();
+    const mockUpdated = vi.fn();
     const service: ManagedService = {
       updated: mockUpdated,
     };
@@ -135,7 +139,7 @@ describe('ConfigurationImpl', () => {
   it('configuration and registration after and update after that', () => {
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
     configuration.update();
-    const mockUpdated = jest.fn();
+    const mockUpdated = vi.fn();
     const service: ManagedService = {
       updated: mockUpdated,
     };
@@ -171,8 +175,8 @@ describe('ConfigurationImpl', () => {
   it('multiple services register for the same PID', () => {
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
     configuration.update();
-    const mockUpdated1 = jest.fn();
-    const mockUpdated2 = jest.fn();
+    const mockUpdated1 = vi.fn();
+    const mockUpdated2 = vi.fn();
     const service1: ManagedService = {
       updated: mockUpdated1,
     };
@@ -227,7 +231,7 @@ describe('ConfigurationImpl', () => {
 
   it('delete configuration', () => {
     const configuration: Configuration = configAdmin.getConfiguration('test.pid');
-    const mockUpdated = jest.fn();
+    const mockUpdated = vi.fn();
     const service: ManagedService = {
       updated: mockUpdated,
     };
@@ -257,7 +261,7 @@ describe('ConfigurationImpl', () => {
   });
 
   it('events', () => {
-    const mockConfigurationEvent = jest.fn();
+    const mockConfigurationEvent = vi.fn();
     const listener: ConfigurationListener = {
       configurationEvent: mockConfigurationEvent,
     };
@@ -270,7 +274,7 @@ describe('ConfigurationImpl', () => {
     testConfigurationEvent(mockConfigurationEvent, 0);
 
     const service: ManagedService = {
-      updated: jest.fn(),
+      updated: vi.fn(),
     };
     const registration = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
@@ -293,7 +297,7 @@ describe('ConfigurationImpl', () => {
 
   it('targetpid matching use-case based on bundle symbolic name', () => {
     const configuration: Configuration = configAdmin.getConfiguration(`test.pid|${bundle.getSymbolicName()}`);
-    const mockUpdated = jest.fn();
+    const mockUpdated = vi.fn();
     const service: ManagedService = {
       updated: mockUpdated,
     };
@@ -330,7 +334,7 @@ describe('ConfigurationImpl', () => {
 
   it('targetpid not matching use-case based on bundle symbolic name', () => {
     const configuration: Configuration = configAdmin.getConfiguration('test.pid|@scope/some-other-package');
-    const mockUpdated = jest.fn();
+    const mockUpdated = vi.fn();
     const service: ManagedService = {
       updated: mockUpdated,
     };

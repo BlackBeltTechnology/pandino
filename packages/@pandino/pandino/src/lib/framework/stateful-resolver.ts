@@ -6,26 +6,26 @@ import { BundleRequirementImpl } from './wiring/bundle-requirement-impl';
 import { BundleWireImpl } from './wiring/bundle-wire-impl';
 import { BundleWiringImpl } from './bundle-wiring-impl';
 import { BundleImpl } from './bundle-impl';
-import { BundleWiring } from './bundle-wiring';
-import { BundleRevision } from './bundle-revision';
-import { ServiceRegistry } from './service-registry';
-import { BundleCapability } from './wiring/bundle-capability';
-import { BundleWire } from './wiring/bundle-wire';
+import type { BundleWiring } from './bundle-wiring';
+import type { BundleRevision } from './bundle-revision';
+import type { ServiceRegistry } from './service-registry';
+import type { BundleCapability } from './wiring/bundle-capability';
+import type { BundleWire } from './wiring/bundle-wire';
 
 export class StatefulResolver {
   private readonly pandino: Pandino;
   private readonly revisions: Array<BundleRevision> = [];
-  private readonly registry: ServiceRegistry;
+  // private readonly registry: ServiceRegistry;
   private readonly logger: Logger;
 
   constructor(logger: Logger, pandino: Pandino, registry: ServiceRegistry) {
     this.logger = logger;
     this.pandino = pandino;
-    this.registry = registry;
+    // this.registry = registry;
   }
 
   async resolveOne(revision: BundleRevision): Promise<void> {
-    if (['ACTIVE', 'STARTING'].includes(revision.getBundle().getState())) {
+    if (revision.getBundle() && ['ACTIVE', 'STARTING'].includes(revision.getBundle()!.getState())) {
       return;
     }
 
@@ -36,13 +36,19 @@ export class StatefulResolver {
       );
 
       const bundle = bundleWiring.getRevision().getBundle();
-      this.pandino.fireBundleEvent('RESOLVED', bundle);
+      if (bundle) {
+        this.pandino.fireBundleEvent('RESOLVED', bundle);
 
-      try {
-        await this.pandino.startBundle(bundle as BundleImpl);
-        await this.resolveRemaining();
-      } catch (err) {
-        this.logger.error(err);
+        try {
+          await this.pandino.startBundle(bundle as BundleImpl);
+          await this.resolveRemaining();
+        } catch (err) {
+          this.logger.error(err);
+        }
+      } else {
+        this.logger.debug(
+          `Bundle not found in Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`,
+        );
       }
     } else {
       this.logger.debug(
@@ -66,11 +72,11 @@ export class StatefulResolver {
     // rev.getWiring().getRequiredWires(null)
     const wirings = this.revisions
       .filter((rev) => !!rev.getWiring())
-      .map((rev) => rev.getWiring())
+      .map((rev) => rev.getWiring()!)
       .filter((wiring) => wiring.isInUse());
     for (const wiring of wirings) {
       const wire = wiring
-        .getRequiredWires(null)
+        .getRequiredWires(undefined)
         .find((wire: BundleWire) => wire.getProvider().equals(bundle.getCurrentRevision()));
       if (wire) {
         bundles.push(wire.getRequirer().getBundle() as BundleImpl);
@@ -85,9 +91,9 @@ export class StatefulResolver {
    */
   private getEligibleCapabilities(): BundleCapability[] {
     const caps: BundleCapability[] = [];
-    const activeRevisions: BundleRevision[] = this.revisions.filter((rev) => rev.getBundle().getState() === 'ACTIVE');
+    const activeRevisions: BundleRevision[] = this.revisions.filter((rev) => rev.getBundle()?.getState() === 'ACTIVE');
     for (const rev of activeRevisions) {
-      caps.push(...rev.getDeclaredCapabilities(null));
+      caps.push(...rev.getDeclaredCapabilities(undefined));
     }
     return caps;
   }
@@ -101,10 +107,10 @@ export class StatefulResolver {
 
   private static canBundleBeResolved(rev: BundleRevision, wires: Array<BundleWire>): boolean {
     const validStates: BundleState[] = ['INSTALLED', 'STARTING', 'ACTIVE'];
-    if (!validStates.includes(rev.getBundle().getState())) {
+    if (!rev.getBundle() || !validStates.includes(rev.getBundle()!.getState())) {
       return false;
     }
-    const requirements = rev.getDeclaredRequirements(null);
+    const requirements = rev.getDeclaredRequirements(undefined);
     const reqs = requirements.map((r) => r.getNamespace());
     const wireCaps = wires.map((w) => w.getCapability().getNamespace());
 
@@ -112,7 +118,7 @@ export class StatefulResolver {
   }
 
   static getResolvableWires(rev: BundleRevision, allProvidedCapabilities: BundleCapability[]): Array<BundleWire> {
-    const requirements = rev.getDeclaredRequirements(null);
+    const requirements = rev.getDeclaredRequirements(undefined);
     const wires: Array<BundleWire> = [];
     for (const req of requirements) {
       const filter = (req as BundleRequirementImpl).getFilter();
@@ -120,7 +126,7 @@ export class StatefulResolver {
         (p) => p.getNamespace() === req.getNamespace() && (filter ? CapabilitySet.matches(p, filter) : true),
       );
       if (providedCap) {
-        const wire = new BundleWireImpl(req.getResource(), req, providedCap?.getResource(), providedCap);
+        const wire = new BundleWireImpl(req.getResource(), req, providedCap?.getResource()!, providedCap);
         wires.push(wire);
       }
     }
@@ -134,6 +140,7 @@ export class StatefulResolver {
       const impl = revision as BundleRevisionImpl;
       return new BundleWiringImpl(impl.getHeaders(), this, impl, wires);
     }
+    return undefined;
   }
 
   addRevision(br: BundleRevision): void {

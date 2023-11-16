@@ -2,9 +2,9 @@ import { RESOLUTION_DIRECTIVE, RESOLUTION_OPTIONAL } from '@pandino/pandino-api'
 import type { FilterNode } from '@pandino/filters';
 import { convert, serializeFilter } from '@pandino/filters';
 import { CapabilitySet } from '../capability-set/capability-set';
-import { BundleRevision } from '../bundle-revision';
-import { BundleCapability } from './bundle-capability';
-import { BundleRequirement } from './bundle-requirement';
+import type { BundleRevision } from '../bundle-revision';
+import type { BundleCapability } from './bundle-capability';
+import type { BundleRequirement } from './bundle-requirement';
 
 export class BundleRequirementImpl implements BundleRequirement {
   private readonly revision: BundleRevision;
@@ -58,7 +58,7 @@ export class BundleRequirementImpl implements BundleRequirement {
     return this.optional;
   }
 
-  getFilter?(): string {
+  getFilter(): string | undefined {
     return this.filter;
   }
 

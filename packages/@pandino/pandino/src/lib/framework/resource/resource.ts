@@ -1,5 +1,5 @@
-import { Capability } from './capability';
-import { Requirement } from './requirement';
+import type { Capability } from './capability';
+import type { Requirement } from './requirement';
 
 export interface Resource {
   getCapabilities(namespace: string): Capability[];

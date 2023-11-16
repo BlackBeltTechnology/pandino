@@ -3,7 +3,6 @@
 [![build-test](https://github.com/BlackBeltTechnology/pandino/actions/workflows/build-test.yml/badge.svg)](https://github.com/BlackBeltTechnology/pandino/actions/workflows/build-test.yml)
 [![license](https://img.shields.io/badge/license-EPL%20v2.0-blue.svg)](https://github.com/BlackBeltTechnology/pandino)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
-[![Conventional Changelog](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-conventional--changelog-e10079.svg?style=flat)](https://github.com/conventional-changelog/conventional-changelog)
 
 A Pandino library providing handy tools for React-based applications.
 
@@ -59,6 +58,40 @@ export const MyComponent: FC = () => {
 };
 ```
 
+### useServiceInterceptor
+
+This hook is intended to be used in scenarios where we would like to intercept / decorate e.g. functions.
+
+The intercepted reference is **NOT** "renewed" if post-registration a more fitting / stronger registration occurs.
+
+This means that e.g. once a component is loaded, the intercepted references will remain the same!
+
+**Intercepting a function:**
+
+```typescript jsx
+import { OBJECTCLASS } from '@pandino/pandino-api';
+import { useServiceInterceptor } from '@pandino/react-hooks';
+
+type Formatter = (input: string) => string;
+
+export const ComponentOne: CustomComponent = (props) => {
+    const intercept = useServiceInterceptor();
+    const formatter = intercept<Formatter>(`(${OBJECTCLASS}=x-formatter)`, (input: string) => input.split('').reverse().join(''));
+
+    return (
+        <p>Decorator test: {formatter('abcd')}</p>
+    );
+};
+```
+
+**Defining an interceptor:**
+
+```typescript jsx
+bundleContext.registerService<Formatter>('x-formatter', (input) => input.toUpperCase());
+```
+
+The `intercept` function also takes a 3rd argument  
+
 ### useTrackService
 
 This is a simple hook which expects a `filter` parameter and returns a Service or `undefined`.
@@ -67,6 +100,8 @@ When a service is removed from the system or if is not present to begin with, th
 the returned value will be `undefined`.
 
 Developers **MUST** handle the undefined scenarios explicitly.
+
+Service changes trigger the tracker, which means related components will also be triggered!
 
 ```typescript jsx
 import type { FC } from 'react';

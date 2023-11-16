@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { EventImpl } from './event-impl';
 import { evaluateFilter } from '@pandino/filters';
 

@@ -2,7 +2,7 @@
  * The <code>PersistenceManager</code> interface defines the API to be implemented to support persisting configuration
  * data. This interface may be implemented by bundles, which support storing configuration data in different locations.
  */
-import { ServiceProperties } from '@pandino/pandino-api';
+import type { ServiceProperties } from '@pandino/pandino-api';
 
 export interface PersistenceManager {
   /**

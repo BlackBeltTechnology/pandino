@@ -1,5 +1,5 @@
-import { Bundle } from './bundle';
-import { BundleEvent } from './bundle-event';
+import type { Bundle } from './bundle';
+import type { BundleEvent } from './bundle-event';
 
 /**
  * The {@code BundleTrackerCustomizer} interface allows a {@code BundleTracker} to customize the {@code Bundle}s that
@@ -23,7 +23,7 @@ export interface BundleTrackerCustomizer<T> {
    * of the {@code BundleTracker} is added to the {@code BundleTracker}. This
    * method should return the object to be tracked for the specified
    */
-  addingBundle(bundle: Bundle, event: BundleEvent): T;
+  addingBundle(bundle: Bundle, event?: BundleEvent): T;
 
   /**
    * A bundle tracked by the {@code BundleTracker} has been modified.
@@ -32,7 +32,7 @@ export interface BundleTrackerCustomizer<T> {
    * This method is called when a bundle being tracked by the
    * {@code BundleTracker} has had its state modified.
    */
-  modifiedBundle(bundle: Bundle, event: BundleEvent, object: T): void;
+  modifiedBundle(bundle: Bundle, event?: BundleEvent, object?: T): void;
 
   /**
    * A bundle tracked by the {@code BundleTracker} has been removed.
@@ -41,5 +41,5 @@ export interface BundleTrackerCustomizer<T> {
    * This method is called after a bundle is no longer being tracked by the
    * {@code BundleTracker}.
    */
-  removedBundle(bundle: Bundle, event: BundleEvent, object: T): void;
+  removedBundle(bundle: Bundle, event?: BundleEvent, object?: T): void;
 }

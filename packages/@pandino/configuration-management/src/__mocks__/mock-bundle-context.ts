@@ -1,4 +1,4 @@
-import {
+import type {
   Bundle,
   BundleContext,
   BundleListener,
@@ -26,7 +26,7 @@ export class MockBundleContext implements BundleContext {
     ServiceReference<any>
   >();
   private readonly serviceMap: Map<ServiceReference<any>, any> = new Map<ServiceReference<any>, any>();
-  private bundle: Bundle;
+  private bundle?: Bundle;
 
   setProperty(name: string, value: string): void {
     if (value === null || value === undefined) {
@@ -55,7 +55,7 @@ export class MockBundleContext implements BundleContext {
   getBundle(id?: number): Bundle;
   getBundle(): Bundle;
   getBundle(id?: number): Bundle {
-    return this.bundle;
+    return this.bundle as any;
   }
 
   getBundles(): Bundle[] {
@@ -66,11 +66,11 @@ export class MockBundleContext implements BundleContext {
     return '';
   }
 
-  getService<S>(reference: ServiceReference<S>): S {
+  getService<S>(reference: ServiceReference<S>): S | undefined {
     return this.serviceMap.get(reference);
   }
 
-  getServiceReference<S>(identifier: string): ServiceReference<S> {
+  getServiceReference<S>(identifier: string): ServiceReference<S> | undefined {
     return this.refMap.get(identifier);
   }
 
@@ -78,7 +78,7 @@ export class MockBundleContext implements BundleContext {
     return [];
   }
 
-  installBundle(locationOrHeaders: string | BundleManifestHeaders): Promise<Bundle> {
+  installBundle(locationOrHeaders: string | BundleManifestHeaders): Promise<Bundle | undefined> {
     return Promise.resolve(undefined);
   }
 
@@ -140,13 +140,13 @@ export class MockBundleContext implements BundleContext {
   }
 
   trackBundle<T>(trackedStates: BundleState[], customizer: Partial<BundleTrackerCustomizer<T>>): BundleTracker<T> {
-    return undefined;
+    return undefined as any;
   }
 
   trackService<S, T>(
     identifierOrFilter: string,
     customizer: Partial<ServiceTrackerCustomizer<S, T>>,
   ): ServiceTracker<S, T> {
-    return undefined;
+    return undefined as any;
   }
 }

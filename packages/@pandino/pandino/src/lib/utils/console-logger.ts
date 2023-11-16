@@ -1,4 +1,5 @@
-import { Logger, LogLevel } from '@pandino/pandino-api';
+import { LogLevel } from '@pandino/pandino-api';
+import type { Logger } from '@pandino/pandino-api';
 
 /* istanbul ignore file */
 export class ConsoleLogger implements Logger {

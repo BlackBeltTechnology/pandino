@@ -1,4 +1,4 @@
-import { FrameworkEvent } from './framework-event';
+import type { FrameworkEvent } from './framework-event';
 
 /**
  * A {@code FrameworkEvent} listener. {@code FrameworkListener} is a listener interface that may be implemented by a

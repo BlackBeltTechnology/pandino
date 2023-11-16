@@ -1,17 +1,15 @@
-import {
+import { Logger, BUNDLE_ACTIVATOR } from '@pandino/pandino-api';
+import type {
   Bundle,
   BundleActivator,
   BundleContext,
   BundleManifestHeaders,
   BundleState,
-  Logger,
-  BUNDLE_ACTIVATOR,
   ServiceReference,
 } from '@pandino/pandino-api';
 import { evaluateSemver } from '@pandino/filters';
 import { Pandino } from '../../pandino';
 import { BundleRevisionImpl } from './bundle-revision-impl';
-import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { BundleRevision } from './bundle-revision';
 
 export class BundleImpl implements Bundle {
@@ -21,12 +19,11 @@ export class BundleImpl implements Bundle {
   private readonly headers: BundleManifestHeaders;
   private readonly pandino?: Pandino;
   private readonly installingBundle?: Bundle;
-  private readonly useDeclaredActivationPolicy: boolean;
-  private activator: BundleActivator;
-  private context: BundleContext;
+  private activator?: BundleActivator;
+  private context?: BundleContext;
   private state: BundleState;
   private readonly revisions: BundleRevisionImpl[] = [];
-  private currentRevision: BundleRevisionImpl;
+  private currentRevision?: BundleRevisionImpl;
   protected readonly logger: Logger;
 
   constructor(
@@ -42,18 +39,14 @@ export class BundleImpl implements Bundle {
     this.id = id;
     this.deploymentRoot = deploymentRoot;
     this.manifestLocation = manifestLocation;
-    this.useDeclaredActivationPolicy = false;
     this.state = 'INSTALLED';
     this.headers = headers;
     this.pandino = pandino;
     this.installingBundle = installingBundle;
-    if (
-      isAllPresent(headers[BUNDLE_ACTIVATOR]) &&
-      typeof (headers[BUNDLE_ACTIVATOR] as BundleActivator).start === 'function'
-    ) {
+    if (headers[BUNDLE_ACTIVATOR] && typeof (headers[BUNDLE_ACTIVATOR] as BundleActivator).start === 'function') {
       this.activator = headers[BUNDLE_ACTIVATOR] as BundleActivator;
     }
-    if (isAllPresent(pandino)) {
+    if (pandino) {
       const revision = this.createRevision();
       this.addRevision(revision);
     }
@@ -72,10 +65,10 @@ export class BundleImpl implements Bundle {
   }
 
   getBundleContext(): BundleContext {
-    return this.context;
+    return this.context!;
   }
 
-  setBundleContext(context: BundleContext): void {
+  setBundleContext(context?: BundleContext): void {
     this.context = context;
   }
 
@@ -120,10 +113,10 @@ export class BundleImpl implements Bundle {
   }
 
   getActivator(): BundleActivator {
-    return this.activator;
+    return this.activator!;
   }
 
-  setActivator(activator: BundleActivator): void {
+  setActivator(activator?: BundleActivator): void {
     this.activator = activator;
   }
 
@@ -143,7 +136,7 @@ export class BundleImpl implements Bundle {
       this.closeRevisions();
     } else {
       this.getFramework().getResolver().removeRevision(current);
-      current.resolve(null);
+      current.resolve(undefined);
     }
 
     this.revisions.length = 0;
@@ -159,7 +152,7 @@ export class BundleImpl implements Bundle {
     );
 
     let bundleVersion = revision.getVersion();
-    bundleVersion = isAnyMissing(bundleVersion) ? '0.0.0' : bundleVersion;
+    bundleVersion = !bundleVersion ? '0.0.0' : bundleVersion;
     const symName = revision.getSymbolicName();
 
     const collisionCandidates: Array<Bundle> = [];
@@ -172,7 +165,7 @@ export class BundleImpl implements Bundle {
         }
       }
     }
-    if (collisionCandidates.length && isAllPresent(this.installingBundle)) {
+    if (collisionCandidates.length && this.installingBundle) {
       throw new Error('Bundle symbolic name and version are not unique: ' + symName + ':' + bundleVersion);
     }
 
@@ -197,11 +190,11 @@ export class BundleImpl implements Bundle {
   }
 
   getFramework(): Pandino {
-    return this.pandino;
+    return this.pandino!;
   }
 
   getCurrentRevision(): BundleRevisionImpl {
-    return this.currentRevision;
+    return this.currentRevision!;
   }
 
   getRevisions(): BundleRevision[] {

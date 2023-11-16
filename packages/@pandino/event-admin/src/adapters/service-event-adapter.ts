@@ -1,19 +1,7 @@
-import {
-  BundleContext,
-  OBJECTCLASS,
-  SERVICE_ID,
-  SERVICE_PID,
-  ServiceEvent,
-  ServiceListener,
-} from '@pandino/pandino-api';
-import {
-  EVENT,
-  EventAdmin,
-  EventFactory,
-  SERVICE,
-  SERVICE_EVENT_INTERFACE_KEY,
-  SERVICE_OBJECTCLASS,
-} from '@pandino/event-api';
+import { OBJECTCLASS, SERVICE_ID, SERVICE_PID } from '@pandino/pandino-api';
+import type { BundleContext, ServiceEvent, ServiceListener } from '@pandino/pandino-api';
+import { EVENT, SERVICE, SERVICE_EVENT_INTERFACE_KEY, SERVICE_OBJECTCLASS } from '@pandino/event-api';
+import type { EventAdmin, EventFactory } from '@pandino/event-api';
 import { AbstractAdapter } from './abstract-adapter';
 
 export class ServiceEventAdapter extends AbstractAdapter implements ServiceListener {

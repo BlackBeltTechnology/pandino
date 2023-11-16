@@ -1,8 +1,7 @@
-import { BundleRevision } from '../bundle-revision';
-import { BundleCapability } from './bundle-capability';
-import { BundleWire } from './bundle-wire';
-import { BundleRequirement } from './bundle-requirement';
-import { isAnyMissing } from '../../utils/helpers';
+import type { BundleRevision } from '../bundle-revision';
+import type { BundleCapability } from './bundle-capability';
+import type { BundleWire } from './bundle-wire';
+import type { BundleRequirement } from './bundle-requirement';
 
 export class BundleWireImpl implements BundleWire {
   private readonly requirer: BundleRevision;
@@ -18,7 +17,7 @@ export class BundleWireImpl implements BundleWire {
   }
 
   equals(other: any): boolean {
-    if (isAnyMissing(other) || !(other instanceof BundleWireImpl)) {
+    if (!other || !(other instanceof BundleWireImpl)) {
       return false;
     }
     return this.getRequirement() === other.getRequirement() && this.getCapability() === other.getCapability();

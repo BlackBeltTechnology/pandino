@@ -1,9 +1,9 @@
-import { FrameworkEvent, FrameworkEventType, Bundle } from '@pandino/pandino-api';
+import type { FrameworkEvent, FrameworkEventType, Bundle } from '@pandino/pandino-api';
 
 export class FrameworkEventImpl implements FrameworkEvent {
   constructor(
     private readonly type: FrameworkEventType,
-    private readonly bundle?: Bundle,
+    private readonly bundle: Bundle,
     private readonly error?: Error,
   ) {}
 
@@ -15,7 +15,7 @@ export class FrameworkEventImpl implements FrameworkEvent {
     return this.type;
   }
 
-  getError(): Error {
+  getError(): Error | undefined {
     return this.error;
   }
 

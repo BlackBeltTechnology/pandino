@@ -1,28 +1,31 @@
+import { describe, beforeEach, expect, it, vi } from 'vitest';
 import { Pandino } from '../../pandino';
 import {
-  Bundle,
   BUNDLE_ACTIVATOR,
   BUNDLE_DESCRIPTION,
   BUNDLE_NAME,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
-  BundleActivator,
-  BundleListener,
-  BundleManifestHeaders,
-  FrameworkListener,
-  BundleImporter,
   LOG_LEVEL_PROP,
   Logger,
   LogLevel,
   OBJECTCLASS,
   PANDINO_BUNDLE_IMPORTER_PROP,
-  ServiceListener,
-  ServiceReference,
-  FrameworkConfigMap,
   PANDINO_MANIFEST_FETCHER_PROP,
   SERVICE_RANKING,
   SERVICE_SCOPE,
   SCOPE_PROTOTYPE,
+} from '@pandino/pandino-api';
+import type {
+  Bundle,
+  BundleActivator,
+  BundleListener,
+  BundleManifestHeaders,
+  FrameworkListener,
+  BundleImporter,
+  ServiceListener,
+  ServiceReference,
+  FrameworkConfigMap,
   ServiceFactory,
   ServiceRegistration,
 } from '@pandino/pandino-api';
@@ -38,8 +41,8 @@ interface MockService {
 
 describe('BundleContextImpl', () => {
   const dummyActivator: BundleActivator = {
-    start: jest.fn(),
-    stop: jest.fn(),
+    start: vi.fn(),
+    stop: vi.fn(),
   };
   const importer: BundleImporter = {
     import: (activator: string, manifest: string) =>
@@ -60,24 +63,24 @@ describe('BundleContextImpl', () => {
     [BUNDLE_ACTIVATOR]: 'https://some.url/does-not-exist.js',
     [BUNDLE_NAME]: 'Other Bundle',
   };
-  const frameworkEvent = jest.fn().mockImplementation();
+  const frameworkEvent = vi.fn().mockImplementation(() => {});
   const frameworkEventListener: FrameworkListener = {
     frameworkEvent,
   };
-  const bundleChanged = jest.fn().mockImplementation();
+  const bundleChanged = vi.fn().mockImplementation(() => {});
   const bundleChangedListener: BundleListener = {
     bundleChanged,
   };
-  const serviceChanged = jest.fn().mockImplementation();
+  const serviceChanged = vi.fn().mockImplementation(() => {});
   const serviceChangedListener: ServiceListener = {
     serviceChanged,
   };
-  const mockGetService = jest
+  const mockGetService = vi
     .fn()
     .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>) => ({
       execute: () => true,
     }));
-  const mockUngetService = jest
+  const mockUngetService = vi
     .fn()
     .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>, service: MockService) => {
       return;
@@ -97,7 +100,7 @@ describe('BundleContextImpl', () => {
     mockUngetService.mockClear();
     logger = new MuteLogger();
     params = {
-      [PANDINO_MANIFEST_FETCHER_PROP]: jest.fn() as any,
+      [PANDINO_MANIFEST_FETCHER_PROP]: vi.fn() as any,
       [PANDINO_BUNDLE_IMPORTER_PROP]: importer,
       [LOG_LEVEL_PROP]: LogLevel.WARN,
       'custom-prop': 'custom-value',

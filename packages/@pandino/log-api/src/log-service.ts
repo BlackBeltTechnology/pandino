@@ -1,5 +1,5 @@
-import { LogLevel } from './constants';
-import { ServiceReference } from '@pandino/pandino-api';
+import type { LogLevel } from './constants';
+import type { ServiceReference } from '@pandino/pandino-api';
 
 /**
  * Provides methods for bundles to write messages to the log.

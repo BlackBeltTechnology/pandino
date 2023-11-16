@@ -1,7 +1,5 @@
-import { isAnyMissing } from '../../../utils/helpers';
-
 export const parseDelimitedString = (value: string, delim: string, trim = true): string[] => {
-  if (isAnyMissing(value)) {
+  if (!value) {
     value = '';
   }
 

@@ -1,5 +1,4 @@
-import { BundleReference } from '../bundle/bundle-reference';
-import { Bundle } from '../bundle/bundle';
+import type { Bundle, BundleReference } from '../bundle';
 import { ServiceProperties } from './service-properties';
 
 /**
@@ -70,7 +69,7 @@ export interface ServiceReference<S> extends BundleReference {
    * @returns {Bundle} The bundle that registered the service referenced by this {@code ServiceReference} object;
    *          {@code undefined} if that service has already been unregistered.
    */
-  getBundle(): Bundle;
+  getBundle(): Bundle | undefined;
 
   /**
    * Returns the bundles that are using the service referenced by this {@code ServiceReference} object. Specifically,

@@ -1,5 +1,6 @@
-import { BundleContext, SERVICE_PID, ServiceProperties } from '@pandino/pandino-api';
-import { PersistenceManager } from '@pandino/persistence-manager-api';
+import type { BundleContext, ServiceProperties } from '@pandino/pandino-api';
+import { SERVICE_PID } from '@pandino/pandino-api';
+import type { PersistenceManager } from '@pandino/persistence-manager-api';
 import { ConfigurationImpl } from './configuration-impl';
 import { ConfigurationManager } from './configuration-manager';
 
@@ -46,7 +47,7 @@ export class ConfigurationCache {
   }
 
   set(pid: string, configuration: ConfigurationImpl): void {
-    this.persistenceManager.store(pid, configuration.getProperties());
+    this.persistenceManager.store(pid, configuration.getProperties() ?? {});
     this.cache.set(pid, configuration);
   }
 

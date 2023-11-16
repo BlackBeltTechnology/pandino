@@ -1,21 +1,22 @@
 {
   "name": "@pandino/configuration-management",
-  "version": "0.8.28",
+  "version": "0.8.31",
   "description": "",
-  "main": "./dist/cjs/configuration-management.cjs",
-  "module": "./dist/esm/configuration-management.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "main": "./dist/@pandino/configuration-management.cjs",
+  "module": "./dist/@pandino/configuration-management.mjs",
+  "types": "dist/@pandino/configuration-management.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/configuration-management.cjs",
-      "default": "./dist/esm/configuration-management.mjs"
+      "require": "./dist/@pandino/configuration-management.cjs",
+      "import": "./dist/@pandino/configuration-management.mjs"
     }
   },
   "scripts": {
-    "test": "jest",
-    "build": "rollup -c --environment=PRODUCTION",
-    "build:dev": "rollup -c"
+    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "tsc": "tsc"
   },
   "keywords": [
     "pandino",
@@ -35,7 +36,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
@@ -44,46 +45,17 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/configuration-management-api": "^0.8.28",
-    "@pandino/filters": "^0.8.28",
-    "@pandino/pandino": "^0.8.28",
-    "@pandino/pandino-api": "^0.8.28",
-    "@pandino/persistence-manager-api": "^0.8.28",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.28"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "text",
-      "json",
-      "html"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 95,
-        "branches": 90,
-        "functions": 95,
-        "lines": 95
-      }
-    },
-    "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        {
-          "tsconfig": "tsconfig.test.json"
-        }
-      ]
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json"
-    ],
-    "testPathIgnorePatterns": [
-      "src/activator.ts"
-    ]
+    "@pandino/configuration-management-api": "workspace:^0.8.31",
+    "@pandino/filters": "workspace:^0.8.31",
+    "@pandino/pandino": "workspace:^0.8.31",
+    "@pandino/pandino-api": "workspace:^0.8.31",
+    "@pandino/persistence-manager-api": "workspace:^0.8.31",
+    "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.31",
+    "dts-bundle-generator": "^8.1.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vitest": "^0.34.6"
   },
   "pandino": {
     "manifest": {

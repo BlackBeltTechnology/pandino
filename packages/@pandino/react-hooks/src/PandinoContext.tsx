@@ -9,7 +9,7 @@ export interface Context {
 const PandinoContext = createContext<Context>({} as unknown as Context);
 
 export const PandinoProvider = ({ children, ctx }: { children: ReactNode; ctx: BundleContext }) => {
-  const [bundleContext, setBundleContext] = useState<BundleContext>(ctx);
+  const [bundleContext, _] = useState<BundleContext>(ctx);
 
   return <PandinoContext.Provider value={{ bundleContext }}>{children}</PandinoContext.Provider>;
 };

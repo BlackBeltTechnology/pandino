@@ -3,7 +3,6 @@ import {
   BUNDLE_DESCRIPTION,
   BUNDLE_NAMESPACE,
   BUNDLE_VERSION_ATTRIBUTE,
-  BundleConfigMap,
   CAPABILITY_COPYRIGHT_ATTRIBUTE,
   CAPABILITY_DESCRIPTION_ATTRIBUTE,
   CAPABILITY_SINGLETON_DIRECTIVE,
@@ -17,23 +16,23 @@ import {
   TYPE_FRAGMENT,
   USES_DIRECTIVE,
 } from '@pandino/pandino-api';
+import type { BundleConfigMap } from '@pandino/pandino-api';
 import { evaluateSemver } from '@pandino/filters';
-import { isAnyMissing } from '../../utils/helpers';
-import { BundleCapability } from './bundle-capability';
-import { BundleRevision } from '../bundle-revision';
-import { parseDelimitedString } from '../util/manifest-parser/utils';
+import type { BundleCapability } from './bundle-capability';
+import type { BundleRevision } from '../bundle-revision';
+import { parseDelimitedString } from '../util/manifest-parser';
 
 export class BundleCapabilityImpl implements BundleCapability {
-  private readonly revision: BundleRevision;
-  private readonly namespace: string;
+  private readonly revision?: BundleRevision;
+  private readonly namespace?: string;
   private readonly dirs: Record<string, string> = {};
   private readonly attrs: Record<string, any> = {};
   private readonly uses: string[] = [];
   private readonly mandatory: Set<string> = new Set<string>();
 
   constructor(
-    revision: BundleRevision,
-    namespace: string,
+    revision?: BundleRevision,
+    namespace?: string,
     dirs: Record<string, string> = {},
     attrs: Record<string, any> = {},
   ) {
@@ -66,10 +65,12 @@ export class BundleCapabilityImpl implements BundleCapability {
   }
 
   equals(other: any): boolean {
-    if (isAnyMissing(other) || !(other instanceof BundleCapabilityImpl)) {
+    if (!other || !(other instanceof BundleCapabilityImpl)) {
       return false;
     }
-
+    if (!this.revision || !other.revision) {
+      return false;
+    }
     return (
       evaluateSemver(this.revision.getVersion(), 'eq', other.revision.getVersion()) &&
       this.getNamespace() === other.getNamespace()
@@ -84,15 +85,15 @@ export class BundleCapabilityImpl implements BundleCapability {
     return this.dirs;
   }
 
-  getNamespace(): string {
+  getNamespace(): string | undefined {
     return this.namespace;
   }
 
-  getResource(): BundleRevision {
+  getResource(): BundleRevision | undefined {
     return this.revision;
   }
 
-  getRevision(): BundleRevision {
+  getRevision(): BundleRevision | undefined {
     return this.revision;
   }
 
@@ -105,7 +106,7 @@ export class BundleCapabilityImpl implements BundleCapability {
   }
 
   toString(): string {
-    if (isAnyMissing(this.revision)) {
+    if (!this.revision) {
       return this.stringifyAttributes();
     }
     return '[' + this.revision + '] ' + this.namespace + '; ' + this.stringifyAttributes();

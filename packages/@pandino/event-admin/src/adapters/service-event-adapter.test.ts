@@ -1,4 +1,6 @@
-import { OBJECTCLASS, ServiceEvent } from '@pandino/pandino-api';
+import { describe, beforeEach, expect, it, vi } from 'vitest';
+import { OBJECTCLASS } from '@pandino/pandino-api';
+import type { ServiceEvent } from '@pandino/pandino-api';
 import { EVENT, SERVICE, SERVICE_ID, SERVICE_OBJECTCLASS, SERVICE_PID } from '@pandino/event-api';
 import { evaluateFilter } from '@pandino/filters';
 import { ServiceEventAdapter } from './service-event-adapter';
@@ -9,16 +11,16 @@ describe('ServiceEventAdapter', () => {
   let sea: ServiceEventAdapter;
   let eventAdmin: EventAdminImpl;
   const eventFactoryImpl = new EventFactoryImpl(evaluateFilter);
-  const mockContextGetService = jest.fn();
-  const mockContextAddServiceListener = jest.fn();
-  const mockContextRemoveServiceListener = jest.fn();
+  const mockContextGetService = vi.fn();
+  const mockContextAddServiceListener = vi.fn();
+  const mockContextRemoveServiceListener = vi.fn();
   const mockContext: any = {
     getService: mockContextGetService,
     addServiceListener: mockContextAddServiceListener,
     removeServiceListener: mockContextRemoveServiceListener,
   };
   const mockLogger: any = {};
-  const mockPostEvent = jest.fn();
+  const mockPostEvent = vi.fn();
 
   beforeEach(() => {
     mockPostEvent.mockClear();

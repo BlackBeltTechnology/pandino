@@ -1,6 +1,6 @@
-import { ServiceFactory } from './service-factory';
-import { Bundle } from '../bundle';
-import { ServiceRegistration } from './service-registration';
+import type { ServiceFactory } from './service-factory';
+import type { Bundle } from '../bundle';
+import type { ServiceRegistration } from './service-registration';
 
 /**
  * A factory for {@link SCOPE_PROTOTYPE prototype scope} services. The factory can provide multiple, customized service

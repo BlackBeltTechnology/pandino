@@ -1,4 +1,5 @@
-import { FrameworkEvent } from '@pandino/pandino-api';
+import { describe, beforeEach, expect, it, vi } from 'vitest';
+import type { FrameworkEvent } from '@pandino/pandino-api';
 import { BUNDLE_SYMBOLICNAME, EVENT } from '@pandino/event-api';
 import { evaluateFilter } from '@pandino/filters';
 import { EventAdminImpl } from '../event-admin-impl';
@@ -9,16 +10,16 @@ describe('FrameworkEventAdapter', () => {
   let fea: FrameworkEventAdapter;
   let eventAdmin: EventAdminImpl;
   const eventFactoryImpl = new EventFactoryImpl(evaluateFilter);
-  const mockContextGetService = jest.fn();
-  const mockContextAddFrameworkListener = jest.fn();
-  const mockContextRemoveFrameworkListener = jest.fn();
+  const mockContextGetService = vi.fn();
+  const mockContextAddFrameworkListener = vi.fn();
+  const mockContextRemoveFrameworkListener = vi.fn();
   const mockContext: any = {
     getService: mockContextGetService,
     addFrameworkListener: mockContextAddFrameworkListener,
     removeFrameworkListener: mockContextRemoveFrameworkListener,
   };
   const mockLogger: any = {};
-  const mockPostEvent = jest.fn();
+  const mockPostEvent = vi.fn();
   const bundle1: any = {
     getSymbolicName: () => '@scope/bundle1',
     getBundleId: () => 11,

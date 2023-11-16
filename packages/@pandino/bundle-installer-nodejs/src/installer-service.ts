@@ -1,10 +1,11 @@
-import { Bundle, BundleContext, Logger } from '@pandino/pandino-api';
-import { FSWatcher, watch, WatchEventType, readdirSync } from 'fs';
+import type { Bundle, BundleContext, Logger } from '@pandino/pandino-api';
+import fs from 'node:fs';
+import type { FSWatcher } from 'node:fs';
 
 export class InstallerService {
   private pathAndBundlePairs: Map<string, Bundle> = new Map<string, Bundle>();
   private processing: string[] = [];
-  private watcher: FSWatcher;
+  private watcher?: FSWatcher;
 
   constructor(
     private readonly deploymentRoot: string,
@@ -18,7 +19,9 @@ export class InstallerService {
       this.logger.info(`Detected addition of new Bundle Manifest at: ${path}, processing...`);
       try {
         const bundle = await this.context.installBundle(path);
-        this.pathAndBundlePairs.set(path, bundle);
+        if (bundle) {
+          this.pathAndBundlePairs.set(path, bundle);
+        }
       } finally {
         this.processing.splice(
           this.processing.findIndex((p) => p === path),
@@ -34,8 +37,10 @@ export class InstallerService {
       this.logger.info(`Detected removal of Bundle Manifest at: ${path}, processing...`);
       const bundle = this.pathAndBundlePairs.get(path);
       try {
-        await bundle.uninstall();
-        this.pathAndBundlePairs.delete(path);
+        if (bundle) {
+          await bundle.uninstall();
+          this.pathAndBundlePairs.delete(path);
+        }
       } finally {
         this.processing.splice(
           this.processing.findIndex((p) => p === path),
@@ -50,14 +55,14 @@ export class InstallerService {
     for (const manifest of this.listAllManifests()) {
       this.install(manifest);
     }
-    this.watcher = watch(
+    this.watcher = fs.watch(
       this.deploymentRoot,
       {
         encoding: 'utf8',
         recursive: false,
       },
-      (eventType: WatchEventType, filename: string) => {
-        if (filename.endsWith('-manifest.json') && !this.processing.includes(filename)) {
+      (eventType, filename) => {
+        if (filename && filename.endsWith('-manifest.json') && !this.processing.includes(filename)) {
           if (eventType === 'change' && !this.pathAndBundlePairs.has(filename)) {
             this.install(filename); // not awaiting on purpose
           } else if (eventType === 'rename' && this.pathAndBundlePairs.has(filename)) {
@@ -82,7 +87,7 @@ export class InstallerService {
   }
 
   private listAllManifests(): Array<string> {
-    const dirEntries = readdirSync(this.deploymentRoot, { withFileTypes: true });
+    const dirEntries = fs.readdirSync(this.deploymentRoot, { withFileTypes: true });
     return dirEntries.filter((de) => de.isFile() && de.name.endsWith('-manifest.json')).map((de) => de.name);
   }
 }

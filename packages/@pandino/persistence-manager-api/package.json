@@ -1,19 +1,20 @@
 {
   "name": "@pandino/persistence-manager-api",
-  "version": "0.8.28",
+  "version": "0.8.31",
   "description": "Pandino Persistence Manager API",
-  "main": "dist/cjs/persistence-manager-api.cjs",
-  "module": "dist/esm/persistence-manager-api.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "main": "dist/@pandino/persistence-manager-api.cjs",
+  "module": "dist/@pandino/persistence-manager-api.mjs",
+  "types": "dist/@pandino/persistence-manager-api.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/persistence-manager-api.cjs",
-      "default": "./dist/esm/persistence-manager-api.mjs"
+      "require": "./dist/@pandino/persistence-manager-api.cjs",
+      "import": "./dist/@pandino/persistence-manager-api.mjs"
     }
   },
   "scripts": {
-    "build": "rollup -c"
+    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "tsc": "tsc"
   },
   "keywords": [
     "pandino",
@@ -34,7 +35,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
@@ -43,6 +44,10 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.28"
+    "@pandino/pandino-api": "workspace:^0.8.31",
+    "dts-bundle-generator": "^8.1.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
   }
 }

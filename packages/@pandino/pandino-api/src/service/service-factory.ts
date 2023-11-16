@@ -1,6 +1,6 @@
-import { ServiceRegistration } from './service-registration';
-import { Bundle } from '../bundle';
-import { SERVICE_FACTORY_TYPE } from '../pandino-constants';
+import type { ServiceRegistration } from './service-registration';
+import type { Bundle } from '../bundle';
+import type { SERVICE_FACTORY_TYPE } from '../pandino-constants';
 
 /**
  * A factory for {@link SCOPE_BUNDLE bundle scope} services. The factory can provide service objects customized for each

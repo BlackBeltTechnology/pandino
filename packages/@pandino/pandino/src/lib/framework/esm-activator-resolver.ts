@@ -1,4 +1,4 @@
-import { ActivatorResolver, BundleActivator, BundleManifestHeaders } from '@pandino/pandino-api';
+import type { ActivatorResolver, BundleActivator, BundleManifestHeaders } from '@pandino/pandino-api';
 
 export class EsmActivatorResolver implements ActivatorResolver {
   resolve(module: any, bundleHeaders: BundleManifestHeaders): BundleActivator {

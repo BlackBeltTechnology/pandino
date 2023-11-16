@@ -1,4 +1,43 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ConfigurationManager > configuration delete() 1`] = `
+"{
+    \\"my.component.pid\\": {
+        \\"service.pid\\": \\"my.component.pid\\",
+        \\"port\\": 300
+    }
+}"
+`;
+
+exports[`ConfigurationManager > configuration delete() 2`] = `"{}"`;
+
+exports[`ConfigurationManager > configuration update() 1`] = `
+"{
+    \\"my.component.pid\\": {
+        \\"service.pid\\": \\"my.component.pid\\",
+        \\"port\\": 300
+    }
+}"
+`;
+
+exports[`ConfigurationManager > configuration update() 2`] = `
+"{
+    \\"my.component.pid\\": {
+        \\"service.pid\\": \\"my.component.pid\\",
+        \\"port\\": 300,
+        \\"new-prop\\": \\"new-value\\"
+    }
+}"
+`;
+
+exports[`ConfigurationManager > getConfiguration() 1`] = `
+"{
+    \\"my.component.pid\\": {
+        \\"service.pid\\": \\"my.component.pid\\",
+        \\"port\\": 300
+    }
+}"
+`;
 
 exports[`ConfigurationManager configuration delete() 1`] = `
 "{

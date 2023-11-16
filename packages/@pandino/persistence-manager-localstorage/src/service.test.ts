@@ -1,5 +1,6 @@
-import { PersistenceManager } from '@pandino/persistence-manager-api';
-import { Logger } from '@pandino/pandino-api';
+import { describe, beforeEach, expect, it, vi } from 'vitest';
+import type { PersistenceManager } from '@pandino/persistence-manager-api';
+import type { Logger } from '@pandino/pandino-api';
 import { LocalstoragePersistenceManager } from './service';
 
 describe('InMemoryPersistenceManager', () => {
@@ -9,11 +10,11 @@ describe('InMemoryPersistenceManager', () => {
   let mockStorage: Storage;
   let mockLogger: Logger;
   let mockLength: number;
-  const getItemMock = jest.fn().mockImplementation((key: string) => {
+  const getItemMock = vi.fn().mockImplementation((key: string) => {
     return mockStorageValues[key];
   });
-  const removeItemMock = jest.fn().mockImplementation((key: string) => delete mockStorageValues[key]);
-  const setItemMock = jest.fn().mockImplementation((key: string, value: any) => (mockStorageValues[key] = value));
+  const removeItemMock = vi.fn().mockImplementation((key: string) => delete mockStorageValues[key]);
+  const setItemMock = vi.fn().mockImplementation((key: string, value: any) => (mockStorageValues[key] = value));
 
   beforeEach(() => {
     getItemMock.mockClear();
@@ -21,21 +22,21 @@ describe('InMemoryPersistenceManager', () => {
     setItemMock.mockClear();
     mockStorageValues = {};
     mockStorage = {
-      key: jest.fn(),
-      clear: jest.fn(),
+      key: vi.fn(),
+      clear: vi.fn(),
       length: mockLength,
       getItem: getItemMock,
       removeItem: removeItemMock,
       setItem: setItemMock,
     };
     mockLogger = {
-      error: jest.fn(),
-      warn: jest.fn(),
-      debug: jest.fn(),
-      info: jest.fn(),
-      log: jest.fn(),
-      setLogLevel: jest.fn(),
-      trace: jest.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+      info: vi.fn(),
+      log: vi.fn(),
+      setLogLevel: vi.fn(),
+      trace: vi.fn(),
     };
     service = new LocalstoragePersistenceManager(mockStorage, managedKeysKey, mockLogger);
   });

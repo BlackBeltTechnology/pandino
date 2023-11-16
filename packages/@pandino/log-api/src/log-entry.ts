@@ -1,5 +1,5 @@
-import { Bundle, ServiceReference } from '@pandino/pandino-api';
-import { LogLevel } from './constants';
+import type { Bundle, ServiceReference } from '@pandino/pandino-api';
+import type { LogLevel } from './constants';
 
 /**
  * Provides methods to access the information contained in an individual Log Service log entry.

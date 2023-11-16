@@ -3,7 +3,8 @@ import { INTERFACE_KEY, PersistenceManager, SERVICE_DISCRIMINATOR_PROPERTY } fro
 import { InMemoryPersistenceManager } from './service';
 
 export default class Activator implements BundleActivator {
-  private serviceRegistration: ServiceRegistration<PersistenceManager>;
+  private serviceRegistration?: ServiceRegistration<PersistenceManager>;
+  // @ts-ignore
   private service: PersistenceManager;
 
   async start(context: BundleContext): Promise<void> {

@@ -1,8 +1,8 @@
-import { BundleState } from '@pandino/pandino-api';
-import { BundleCapability } from './wiring/bundle-capability';
-import { BundleRequirement } from './wiring/bundle-requirement';
-import { BundleWire } from './wiring/bundle-wire';
-import { BundleRevision } from './bundle-revision';
+import type { BundleState } from '@pandino/pandino-api';
+import type { BundleCapability } from './wiring/bundle-capability';
+import type { BundleRequirement } from './wiring/bundle-requirement';
+import type { BundleWire } from './wiring/bundle-wire';
+import type { BundleRevision } from './bundle-revision';
 
 /**
  * A wiring for a bundle. Each time a bundle is resolved, a new bundle wiring for the bundle is created. A bundle wiring
@@ -18,10 +18,10 @@ import { BundleRevision } from './bundle-revision';
  */
 export interface BundleWiring {
   isInUse(): boolean;
-  getCapabilities(namespace: string): BundleCapability[];
-  getRequirements(namespace: string): BundleRequirement[];
-  getProvidedWires(namespace: string): BundleWire[];
-  getRequiredWires(namespace: string): BundleWire[];
+  getCapabilities(namespace?: string): BundleCapability[];
+  getRequirements(namespace?: string): BundleRequirement[];
+  getProvidedWires(namespace?: string): BundleWire[];
+  getRequiredWires(namespace?: string): BundleWire[];
   getRevision(): BundleRevision;
   allWireProvidersInAnyState(states: BundleState[]): boolean;
 }

@@ -1,4 +1,5 @@
-import { PersistenceManager } from '@pandino/persistence-manager-api';
+import { describe, beforeEach, expect, it } from 'vitest';
+import type { PersistenceManager } from '@pandino/persistence-manager-api';
 import { InMemoryPersistenceManager } from './service';
 
 describe('InMemoryPersistenceManager', () => {

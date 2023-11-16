@@ -1,4 +1,4 @@
-import { Matcher } from './matcher';
+import type { Matcher } from './matcher';
 
 export class MatcherAll implements Matcher {
   match(className: string): boolean {

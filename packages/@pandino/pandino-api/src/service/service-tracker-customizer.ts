@@ -1,4 +1,4 @@
-import { ServiceReference } from './service-reference';
+import type { ServiceReference } from './service-reference';
 
 /**
  * The {@code ServiceTrackerCustomizer} interface allows a {@code ServiceTracker} to customize the service objects that
@@ -24,7 +24,7 @@ export interface ServiceTrackerCustomizer<S, T> {
    * @return The service object to be tracked for the specified referenced service or {@code null} if the specified
    *         referenced service should not be tracked.
    */
-  addingService(reference: ServiceReference<S>): T;
+  addingService(reference: ServiceReference<S>): T | undefined;
 
   /**
    * A service tracked by the {@code ServiceTracker} has been modified.

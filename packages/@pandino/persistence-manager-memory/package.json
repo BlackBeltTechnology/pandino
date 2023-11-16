@@ -1,21 +1,22 @@
 {
   "name": "@pandino/persistence-manager-memory",
-  "version": "0.8.28",
+  "version": "0.8.31",
   "description": "In Memory implementation of the Pandino Persistence Manager API",
-  "main": "./dist/cjs/persistence-manager-memory.cjs",
-  "module": "./dist/esm/persistence-manager-memory.mjs",
-  "types": "dist/esm/dist/index.d.ts",
+  "main": "./dist/@pandino/persistence-manager-memory.cjs",
+  "module": "./dist/@pandino/persistence-manager-memory.mjs",
+  "types": "dist/@pandino/persistence-manager-memory.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/persistence-manager-memory.cjs",
-      "default": "./dist/esm/persistence-manager-memory.mjs"
+      "require": "./dist/@pandino/persistence-manager-memory.cjs",
+      "import": "./dist/@pandino/persistence-manager-memory.mjs"
     }
   },
   "scripts": {
-    "test": "jest",
-    "build": "rollup -c --environment=PRODUCTION",
-    "build:dev": "rollup -c"
+    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "tsc": "tsc"
   },
   "keywords": [
     "pandino",
@@ -38,7 +39,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
@@ -47,40 +48,14 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.28",
-    "@pandino/persistence-manager-api": "^0.8.28",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.28"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "text",
-      "json",
-      "html"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 95,
-        "branches": 95,
-        "functions": 95,
-        "lines": 95
-      }
-    },
-    "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        {
-          "tsconfig": "tsconfig.test.json"
-        }
-      ]
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json"
-    ]
+    "@pandino/pandino-api": "workspace:^0.8.31",
+    "@pandino/persistence-manager-api": "workspace:^0.8.31",
+    "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.31",
+    "dts-bundle-generator": "^8.1.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vitest": "^0.34.6"
   },
   "pandino": {
     "manifest": {
