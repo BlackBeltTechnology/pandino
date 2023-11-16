@@ -24,10 +24,10 @@ importers:
   packages/@pandino/bundle-installer-dom:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       '@pandino/rollup-plugin-generate-manifest':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -45,10 +45,10 @@ importers:
   packages/@pandino/bundle-installer-nodejs:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       '@pandino/rollup-plugin-generate-manifest':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -66,22 +66,22 @@ importers:
   packages/@pandino/configuration-management:
     devDependencies:
       '@pandino/configuration-management-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../configuration-management-api
       '@pandino/filters':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../filters
       '@pandino/pandino':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       '@pandino/persistence-manager-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../persistence-manager-api
       '@pandino/rollup-plugin-generate-manifest':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -102,10 +102,10 @@ importers:
   packages/@pandino/configuration-management-api:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       '@pandino/persistence-manager-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../persistence-manager-api
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -123,19 +123,19 @@ importers:
   packages/@pandino/event-admin:
     devDependencies:
       '@pandino/event-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../event-api
       '@pandino/filters':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../filters
       '@pandino/log-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../log-api
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       '@pandino/rollup-plugin-generate-manifest':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -156,7 +156,7 @@ importers:
   packages/@pandino/event-api:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -192,10 +192,10 @@ importers:
   packages/@pandino/loader-configuration-dom:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       '@pandino/rollup-plugin-generate-manifest':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -213,10 +213,10 @@ importers:
   packages/@pandino/loader-configuration-nodejs:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       '@pandino/rollup-plugin-generate-manifest':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       '@types/node':
         specifier: ^20.9.0
@@ -237,7 +237,7 @@ importers:
   packages/@pandino/log-api:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -257,11 +257,11 @@ importers:
   packages/@pandino/pandino:
     dependencies:
       '@pandino/filters':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../filters
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -297,7 +297,7 @@ importers:
   packages/@pandino/persistence-manager-api:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -315,13 +315,13 @@ importers:
   packages/@pandino/persistence-manager-localstorage:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       '@pandino/persistence-manager-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../persistence-manager-api
       '@pandino/rollup-plugin-generate-manifest':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -342,13 +342,13 @@ importers:
   packages/@pandino/persistence-manager-memory:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       '@pandino/persistence-manager-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../persistence-manager-api
       '@pandino/rollup-plugin-generate-manifest':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -369,7 +369,7 @@ importers:
   packages/@pandino/react-hooks:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       '@types/react':
         specifier: ^18.0.26
@@ -393,13 +393,13 @@ importers:
   packages/@pandino/rollup-plugin-generate-manifest:
     dependencies:
       '@pandino/manifest-generator':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../manifest-generator
 
   packages/@pandino/umd-activator-resolver-dom:
     devDependencies:
       '@pandino/pandino-api':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../pandino-api
       dts-bundle-generator:
         specifier: ^8.1.2
@@ -417,7 +417,7 @@ importers:
   packages/@pandino/webpack-plugin-generate-manifest:
     dependencies:
       '@pandino/manifest-generator':
-        specifier: workspace:^0.8.29
+        specifier: workspace:^0.8.31
         version: link:../manifest-generator
     devDependencies:
       webpack:
