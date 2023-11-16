@@ -4,16 +4,12 @@
 [![Discord](https://img.shields.io/discord/1014474039017865256)](https://discord.gg/Gr38aEzyx7)
 [![license](https://img.shields.io/badge/license-EPL%20v2.0-blue.svg)](https://github.com/BlackBeltTechnology/pandino)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
-[![Conventional Changelog](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-conventional--changelog-e10079.svg?style=flat)](https://github.com/conventional-changelog/conventional-changelog)
-[![lerna--lite](https://img.shields.io/badge/maintained%20with-lerna--lite-e137ff)](https://github.com/ghiscoding/lerna-lite)
 
 An OSGi - lite framework for JavaScript runtimes.
 
 ## What is Pandino
 
-Pandino was designed to build on top of the **L** and **D** sections of the [SOLID principles](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design).
-
-It helps build software in a way where certain functionalities are "interfaced" and concrete implementation(s) are provided at runtime or potentially by different teams.
+Pandino helps build software in a way where functionality is "interfaced" and concrete implementation(s) are provided at runtime or potentially by different teams.
 
 Other tools provide dependency injection capabilities but Pandino is more. Pandino gives us the ability to wire in implementation in a way where it can come and **go** at runtime.
 It is also worth noting that Pandino does not require you to install specialized tooling to work compared to other micro-frontend frameworks / tools.
@@ -87,19 +83,8 @@ a custom service which will alter the application it self.
 In this example we are importing a `loaderConfiguration`. This is only for our convenience, you can implement
 your own loader if for some reason the default is not sufficient!
 
-Pandino has 2 mandatory init parameters (which the `loaderConfiguration` also implement):
-- `pandino.manifest.fetcher`: an object with a `fetch()` method where we implement the [Manifest](./docs/basics.md) loading mechanism
-- `pandino.bundle.importer`: an object with an `import()` method where we implement the [Activator](./docs/basics.md) loading mechanism
-
-The reason for why we would want to manually define `pandino.manifest.fetcher` and `pandino.bundle.importer` is that 
-Pandino it self is platform agnostic, which means that the "file loading" mechanism will be different in e.g. a Browser
-compared to NodeJS.
-
-Another benefit is that this way the library user can fine-tune the loading logic if needed (e.g.: handle proxies,
-etc...).
-
-A complete list of Framework configuration properties can be found in the corresponding source code:
-[framework-config-map.ts](packages/@pandino/pandino-api/src/framework/framework-config-map.ts)
+Loaders abstract away mandatory configurations for each platform. A complete list of Framework configuration properties
+can be found in the corresponding source code: [framework-config-map.ts](packages/@pandino/pandino-api/src/framework/framework-config-map.ts)
 
 > For different platforms or languages, please check the [installation documentation](./docs/installation.md)!
 
