@@ -23,11 +23,11 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
+    filename: '[name].js',
     library: {
-      name: 'umd-bundle-ts',
-      type: 'umd',
-      umdNamedDefine: true,
+      type: 'module',
     },
+    umdNamedDefine: true,
     path: path.resolve(__dirname, 'dist'),
   },
   plugins: [

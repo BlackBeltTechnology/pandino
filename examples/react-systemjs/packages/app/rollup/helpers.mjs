@@ -55,7 +55,7 @@ export const customTemplate = ({attributes, files, meta, publicPath, title}) => 
           "react-is": "./react/react-is.system.js",
           "react-dom/client": "./react/react-dom-client.system.js",
           "react/jsx-runtime": "./react/react-jsx-runtime.system.js",
-          "@pandino/pandino": "./@pandino/pandino/system/pandino.min.js"
+          "@pandino/pandino": "./@pandino/pandino/pandino.umd.js"
         }
       }
     </script>

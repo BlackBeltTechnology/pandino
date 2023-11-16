@@ -11,14 +11,14 @@
     <p>Please check the console for demo content!</p>
     <script type="pandino-manifests">
       [
-        "https://unpkg.com/@pandino/persistence-manager-localstorage/dist/esm/persistence-manager-localstorage-manifest.json",
-        "https://unpkg.com/@pandino/configuration-management/dist/esm/configuration-management-manifest.json",
+        "./@pandino/persistence-manager-localstorage-manifest.json",
+        "./@pandino/configuration-management-manifest.json",
         "./configuration-consumer-manifest.json"
       ]
     </script>
     <script type="module">
-      import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@latest/dist/esm/loader-configuration-dom.mjs';
-      import Pandino from 'https://unpkg.com/@pandino/pandino@latest/dist/esm/pandino.mjs';
+      import loaderConfiguration from './@pandino/loader-configuration-dom.mjs';
+      import Pandino from './@pandino/pandino.mjs';
 
       const pandino = new Pandino({
         ...loaderConfiguration,
@@ -27,7 +27,7 @@
       await pandino.init();
       await pandino.start();
 
-      await pandino.getBundleContext().installBundle('https://unpkg.com/@pandino/bundle-installer-dom@latest/dist/esm/bundle-installer-dom-manifest.json');
+      await pandino.getBundleContext().installBundle('./@pandino/bundle-installer-dom-manifest.json');
 
       window.setTimeout(() => {
         pandino.getBundleContext().installBundle('./config-admin-manager-manifest.json');

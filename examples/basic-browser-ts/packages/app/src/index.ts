@@ -14,6 +14,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   window.setTimeout(() => {
     pandino
       .getBundleContext()
-      .installBundle('https://unpkg.com/@pandino/bundle-installer-dom/dist/esm/bundle-installer-dom-manifest.json');
+      .installBundle('./@pandino/bundle-installer-dom-manifest.json');
   }, 2000);
 });

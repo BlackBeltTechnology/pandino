@@ -41,10 +41,10 @@ export default [
                     {src: '../component-one/dist/*', dest: 'dist'},
                     {src: '../../node_modules/systemjs/dist/*', dest: 'dist/systemjs'},
                     {src: '../../node_modules/react/umd/*', dest: 'dist/react'},
-                    {src: '../../node_modules/@pandino/pandino/dist/system/*.*', dest: 'dist/@pandino/pandino/system'},
+                    {src: '../../node_modules/@pandino/pandino/dist/@pandino/*.*', dest: 'dist/@pandino/pandino'},
                     {
-                        src: '../../node_modules/@pandino/bundle-installer-dom/dist/system/*.*',
-                        dest: 'dist/@pandino/bundle-installer-dom/system'
+                        src: '../../node_modules/@pandino/bundle-installer-dom/dist/@pandino/*.*',
+                        dest: 'dist/@pandino/bundle-installer-dom'
                     },
                 ],
             }),
