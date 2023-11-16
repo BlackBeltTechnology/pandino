@@ -1,6 +1,6 @@
 {
   "name": "@pandino/pandino-api",
-  "version": "0.8.30",
+  "version": "0.8.31",
   "description": "Pandino public API",
   "main": "dist/@pandino/pandino-api.cjs",
   "module": "dist/@pandino/pandino-api.mjs",
