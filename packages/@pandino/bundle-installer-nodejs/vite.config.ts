@@ -33,6 +33,13 @@ export default defineConfig(({ mode }) => ({
       formats,
       fileName: (format) => fileName[format],
     },
+    rollupOptions: {
+      external: [
+        'node:fs',
+        'node:path',
+        'node:url',
+      ],
+    },
   },
   plugins: [
     generateManifest(),
