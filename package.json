@@ -1,5 +1,6 @@
 {
   "name": "pandino-root",
+  "version": "0.8.30",
   "license": "EPL-2.0",
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "workspaces": [
@@ -9,12 +10,14 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
+    "changeset": "changeset",
     "build": "pnpm -r run build",
     "test": "pnpm -r --if-present run test",
     "format": "prettier --config .prettierrc \"packages/@pandino/*/src/**/*.{js,ts,tsx}\" --write",
     "format-examples": "prettier --config .prettierrc examples/*/packages/*/src/**/*.{ts,tsx} --write"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.26.2",
     "@types/node": "^20.9.0",
     "prettier": "^3.1.0",
     "rimraf": "^5.0.5"
