@@ -48,9 +48,9 @@ ActivatorResolvers can be registered with the [FrameworkConfigMap](../../package
 - with the corresponding [ActivatorResolver](../../packages/@pandino/pandino-api/src/activator-resolver.ts) implementation
 
 ```javascript
-import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom/dist/loader-configuration-dom.mjs';
-import umdActivatorResolver from 'https://unpkg.com/@pandino/umd-activator-resolver-dom/dist/umd-activator-resolver-dom.mjs';
-import Pandino from 'https://unpkg.com/@pandino/pandino/dist/esm/pandino.mjs';
+import loaderConfiguration from 'https://unpkg.com/@pandino/loader-configuration-dom@latest/dist/@pandino/loader-configuration-dom.mjs';
+import umdActivatorResolver from 'https://unpkg.com/@pandino/umd-activator-resolver-dom@latest/dist/@pandino/umd-activator-resolver-dom.mjs';
+import Pandino from 'https://unpkg.com/@pandino/pandino@latest/dist/@pandino/pandino.mjs';
 
 const pandino = new Pandino({
     ...loaderConfiguration,
