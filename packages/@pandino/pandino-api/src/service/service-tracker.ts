@@ -1,5 +1,5 @@
-import { ServiceTrackerCustomizer } from './service-tracker-customizer';
-import { ServiceReference } from './service-reference';
+import type { ServiceTrackerCustomizer } from './service-tracker-customizer';
+import type { ServiceReference } from './service-reference';
 
 /**
  * The {@code ServiceTracker} class simplifies using services from the Framework's service registry.

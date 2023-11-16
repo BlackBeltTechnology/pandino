@@ -1,14 +1,10 @@
+import { describe, beforeEach, afterEach, expect, it, vi } from 'vitest';
 import {
-  Bundle,
   BUNDLE_ACTIVATOR,
   BUNDLE_DESCRIPTION,
   BUNDLE_NAME,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
-  BundleActivator,
-  BundleImporter,
-  BundleManifestHeaders,
-  FrameworkConfigMap,
   LOG_LEVEL_PROP,
   LogLevel,
   OBJECTCLASS,
@@ -18,6 +14,13 @@ import {
   SERVICE_ID,
   SERVICE_RANKING,
   SERVICE_SCOPE,
+} from '@pandino/pandino-api';
+import type {
+  Bundle,
+  BundleActivator,
+  BundleImporter,
+  BundleManifestHeaders,
+  FrameworkConfigMap,
   ServiceProperties,
   ServiceReference,
 } from '@pandino/pandino-api';
@@ -41,8 +44,8 @@ describe('ServiceTrackerImpl', () => {
     [SERVICE_ID]: 6,
     [SERVICE_SCOPE]: 'singleton',
   };
-  const mockStart = jest.fn().mockReturnValue(Promise.resolve());
-  const mockStop = jest.fn().mockReturnValue(Promise.resolve());
+  const mockStart = vi.fn().mockReturnValue(Promise.resolve());
+  const mockStop = vi.fn().mockReturnValue(Promise.resolve());
   const dummyActivator: BundleActivator = {
     start: mockStart,
     stop: mockStop,
@@ -66,7 +69,7 @@ describe('ServiceTrackerImpl', () => {
     mockStart.mockImplementation(() => {});
     mockStop.mockClear();
     params = {
-      [PANDINO_MANIFEST_FETCHER_PROP]: jest.fn() as any,
+      [PANDINO_MANIFEST_FETCHER_PROP]: vi.fn() as any,
       [PANDINO_BUNDLE_IMPORTER_PROP]: importer,
       [LOG_LEVEL_PROP]: LogLevel.WARN,
     };
@@ -185,6 +188,7 @@ describe('ServiceTrackerImpl', () => {
     const bundle1 = await installBundle(bundle1Headers);
     const tracker = bundle1.getBundleContext().trackService(SERVICE_FILTER, {
       addingService(reference: ServiceReference<TestService>): TestService {
+        // @ts-ignore
         const service = super.addingService(reference);
         addingData.push({ ...reference.getProperties() }, service);
         return service;

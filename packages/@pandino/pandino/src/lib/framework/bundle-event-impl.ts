@@ -1,4 +1,4 @@
-import { Bundle, BundleEvent, BundleEventType, FrameworkEventType } from '@pandino/pandino-api';
+import type { Bundle, BundleEvent, BundleEventType, FrameworkEventType } from '@pandino/pandino-api';
 
 export class BundleEventImpl implements BundleEvent {
   constructor(
@@ -11,7 +11,7 @@ export class BundleEventImpl implements BundleEvent {
     return this.bundle;
   }
 
-  getOrigin(): Bundle {
+  getOrigin(): Bundle | undefined {
     return this.origin;
   }
 

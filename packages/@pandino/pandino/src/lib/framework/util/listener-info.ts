@@ -1,4 +1,4 @@
-import { Bundle, BundleContext, BundleListener, ServiceListener, FrameworkListener } from '@pandino/pandino-api';
+import type { Bundle, BundleContext, BundleListener, ServiceListener, FrameworkListener } from '@pandino/pandino-api';
 import type { FilterNode } from '@pandino/filters';
 import { parseFilter, serializeFilter } from '@pandino/filters';
 
@@ -6,13 +6,13 @@ export class ListenerInfo {
   private readonly bundle: Bundle;
   private readonly context: BundleContext;
   private readonly listener: ServiceListener | BundleListener | FrameworkListener;
-  private readonly filter: FilterNode;
+  private readonly filter?: FilterNode;
 
   constructor(
+    bundle: Bundle,
+    context: BundleContext,
+    listener: ServiceListener | BundleListener | FrameworkListener,
     info?: ListenerInfo,
-    bundle?: Bundle,
-    context?: BundleContext,
-    listener?: ServiceListener | BundleListener | FrameworkListener,
     filter?: string,
   ) {
     if (info) {
@@ -24,7 +24,9 @@ export class ListenerInfo {
       this.bundle = bundle;
       this.context = context;
       this.listener = listener;
-      this.filter = parseFilter(filter);
+      if (filter) {
+        this.filter = parseFilter(filter);
+      }
     }
   }
 
@@ -40,7 +42,7 @@ export class ListenerInfo {
     return this.listener;
   }
 
-  public getParsedFilter(): FilterNode {
+  public getParsedFilter(): FilterNode | undefined {
     return this.filter;
   }
 

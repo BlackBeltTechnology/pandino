@@ -1,4 +1,5 @@
-import { ClassMatcher, Matcher, MatcherAll, PackageMatcher, SEP_PCK, SEP_TOPIC, SubPackageMatcher } from './matcher';
+import { ClassMatcher, MatcherAll, PackageMatcher, SEP_PCK, SEP_TOPIC, SubPackageMatcher } from './matcher';
+import type { Matcher } from './matcher';
 
 export class Matchers {
   static createEventTopicMatchers(config: string[] = []): Matcher[] {

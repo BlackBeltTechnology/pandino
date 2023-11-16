@@ -1,4 +1,5 @@
-import { Bundle, ServiceReference } from '@pandino/pandino-api';
+import { describe, expect, it } from 'vitest';
+import type { Bundle, ServiceReference } from '@pandino/pandino-api';
 import { MockBundleContext } from '../__mocks__/mock-bundle-context';
 import { MockBundle } from '../__mocks__/mock-bundle';
 import { MockServiceReference } from '../__mocks__/mock-service-reference';

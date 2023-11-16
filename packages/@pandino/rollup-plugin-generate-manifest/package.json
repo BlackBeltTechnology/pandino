@@ -2,7 +2,7 @@
   "name": "@pandino/rollup-plugin-generate-manifest",
   "version": "0.8.30",
   "description": "Utility plugin to help manage Pandino Manifest file generation / maintenance",
-  "main": "src/index.js",
+  "main": "src/index.cjs",
   "scripts": {},
   "keywords": [
     "pandino",
@@ -22,13 +22,13 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
   },
   "license": "EPL-2.0",
   "dependencies": {
-    "@pandino/manifest-generator": "^0.8.30"
+    "@pandino/manifest-generator": "workspace:^0.8.29"
   }
 }

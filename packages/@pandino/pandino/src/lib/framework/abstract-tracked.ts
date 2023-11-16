@@ -1,6 +1,4 @@
-import { isAnyMissing } from '../utils/helpers';
-
-export /**
+/**
  * Abstract class to track items. If a Tracker is reused (closed then reopened), then a new AbstractTracked object is
  * used. This class acts a map of tracked item -> customized object. Subclasses of this class will act as the listener
  * object for the tracker. This class is used to synchronize access to the tracked items. This is not a public class. It
@@ -10,7 +8,7 @@ export /**
  * @param <T> The value mapped to the tracked item.
  * @param <R> The reason the tracked item is being tracked or untracked.
  */
-abstract class AbstractTracked<S, T, R> {
+export abstract class AbstractTracked<S, T, R> {
   closed = false;
   private trackingCount = 0;
   private tracked: Map<S, T> = new Map<S, T>();
@@ -33,7 +31,7 @@ abstract class AbstractTracked<S, T, R> {
    * @param object <T> Customized object for the tracked item.
    * @param related <R> Action related object.
    */
-  abstract customizerModified(item: S, object: T, related?: R): void;
+  abstract customizerModified(item: S, object?: T, related?: R): void;
 
   /**
    * Call the specific customizer removed method.
@@ -42,9 +40,9 @@ abstract class AbstractTracked<S, T, R> {
    * @param object <T> Customized object for the tracked item.
    * @param related <R> Action related object.
    */
-  abstract customizerRemoved(item: S, object: T, related?: R): void;
+  abstract customizerRemoved(item: S, object?: T, related?: R): void;
 
-  setInitial(list: S[] = []): void {
+  setInitial(list: Array<S | undefined> = []): void {
     for (const item of list) {
       if (!item) {
         continue;
@@ -77,12 +75,12 @@ abstract class AbstractTracked<S, T, R> {
   }
 
   track(item: S, related?: R): void {
-    let object: T;
+    let object: T | undefined;
     if (this.closed) {
       return;
     }
     object = this.tracked.get(item);
-    if (isAnyMissing(object)) {
+    if (!object) {
       if (this.adding.includes(item)) {
         return;
       }
@@ -90,7 +88,7 @@ abstract class AbstractTracked<S, T, R> {
     } else {
       this.modified();
     }
-    if (isAnyMissing(object)) {
+    if (!object) {
       this.trackAdding(item, related);
     } else {
       this.customizerModified(item, object, related);
@@ -98,7 +96,7 @@ abstract class AbstractTracked<S, T, R> {
   }
 
   untrack(item: S, related?: R): void {
-    let object: T;
+    let object: T | undefined;
     const initialIdx = this.initial.findIndex((i) => i === item);
     if (initialIdx > -1) {
       this.initial.splice(initialIdx, 1);
@@ -111,7 +109,7 @@ abstract class AbstractTracked<S, T, R> {
     }
     object = this.tracked.get(item);
     this.tracked.delete(item);
-    if (isAnyMissing(object)) {
+    if (!object) {
       return;
     }
     this.modified();
@@ -126,7 +124,7 @@ abstract class AbstractTracked<S, T, R> {
     return this.size() === 0;
   }
 
-  getCustomizedObject(item: S): T {
+  getCustomizedObject(item: S): T | undefined {
     return this.tracked.get(item);
   }
 
@@ -143,7 +141,7 @@ abstract class AbstractTracked<S, T, R> {
   }
 
   private trackAdding(item: S, related?: R): void {
-    let object: T;
+    let object: T | undefined;
     let becameUntracked = false;
     try {
       object = this.customizerAdding(item, related);

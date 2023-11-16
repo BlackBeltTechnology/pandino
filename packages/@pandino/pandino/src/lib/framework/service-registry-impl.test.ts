@@ -1,20 +1,23 @@
+import { describe, beforeEach, expect, it, vi } from 'vitest';
 import {
-  Bundle,
   OBJECTCLASS,
-  PrototypeServiceFactory,
   SCOPE_PROTOTYPE,
   SCOPE_SINGLETON,
   SERVICE_BUNDLEID,
   SERVICE_ID,
   SERVICE_SCOPE,
+} from '@pandino/pandino-api';
+import type {
+  Bundle,
+  PrototypeServiceFactory,
   ServiceEvent,
   ServiceProperties,
   ServiceReference,
   ServiceRegistration,
 } from '@pandino/pandino-api';
 import { ServiceRegistryImpl } from './service-registry-impl';
-import { ServiceRegistry } from './service-registry';
-import { ServiceRegistryCallbacks } from './service-registry-callbacks';
+import type { ServiceRegistry } from './service-registry';
+import type { ServiceRegistryCallbacks } from './service-registry-callbacks';
 
 interface HelloService {
   sayHello(): string;
@@ -218,7 +221,7 @@ describe('ServiceRegistryImpl', () => {
   it('service properties modified triggers event', () => {
     let serviceEvent: ServiceEvent;
     let oldServiceProps: ServiceProperties;
-    const mockServiceChanged = jest.fn().mockImplementation((eventObj, oldProps) => {
+    const mockServiceChanged = vi.fn().mockImplementation((eventObj, oldProps) => {
       serviceEvent = eventObj;
       oldServiceProps = oldProps;
     });

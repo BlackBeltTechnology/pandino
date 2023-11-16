@@ -1,4 +1,4 @@
-import { Bundle } from './bundle';
+import type { Bundle } from './bundle';
 
 /**
  * A reference to a Bundle.
@@ -9,5 +9,5 @@ export interface BundleReference {
    *
    * @returns {Bundle} The {@code Bundle} object associated with this {@code BundleReference}.
    */
-  getBundle(): Bundle;
+  getBundle(): Bundle | undefined;
 }

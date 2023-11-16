@@ -1,4 +1,4 @@
-import { BundleContext } from './bundle-context';
+import type { BundleContext } from './bundle-context';
 
 /**
  * Customizes the starting and stopping of a bundle.

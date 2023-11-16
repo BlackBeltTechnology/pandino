@@ -1,5 +1,6 @@
-import { Configuration } from '@pandino/configuration-management-api';
-import { SERVICE_PID, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import type { Configuration } from '@pandino/configuration-management-api';
+import { SERVICE_PID } from '@pandino/pandino-api';
+import type { ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 import { ConfigurationManager } from './configuration-manager';
 import { TargetedPID } from './helper/targeted-pid';
 
@@ -44,7 +45,7 @@ export class ConfigurationImpl implements Configuration {
 
   getBundleLocation(): string {
     this.checkDeleted();
-    return this.location;
+    return this.location!;
   }
 
   getPid(): string {

@@ -2,18 +2,19 @@
   "name": "@pandino/event-api",
   "version": "0.8.30",
   "description": "Pandino Event API",
-  "main": "dist/cjs/event-api.cjs",
-  "module": "dist/esm/event-api.mjs",
-  "types": "dist/esm/index.d.ts",
+  "main": "dist/@pandino/event-api.cjs",
+  "module": "dist/@pandino/event-api.mjs",
+  "types": "dist/@pandino/event-api.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/event-api.cjs",
-      "default": "./dist/esm/event-api.mjs"
+      "require": "./dist/@pandino/event-api.cjs",
+      "import": "./dist/@pandino/event-api.mjs"
     }
   },
   "scripts": {
-    "build": "rollup -c"
+    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "tsc": "tsc"
   },
   "keywords": [
     "pandino",
@@ -34,7 +35,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
@@ -43,6 +44,10 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.30"
+    "@pandino/pandino-api": "workspace:^0.8.29",
+    "dts-bundle-generator": "^8.1.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
   }
 }

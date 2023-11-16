@@ -1,8 +1,5 @@
+import { describe, beforeEach, afterEach, expect, it, vi } from 'vitest';
 import {
-  Bundle,
-  BundleActivator,
-  BundleListener,
-  BundleManifestHeaders,
   BUNDLE_ACTIVATOR,
   BUNDLE_DESCRIPTION,
   BUNDLE_NAME,
@@ -12,17 +9,23 @@ import {
   REQUIRE_CAPABILITY,
   PANDINO_BUNDLE_IMPORTER_PROP,
   SYSTEM_BUNDLE_SYMBOLICNAME,
-  BundleImporter,
   LOG_LEVEL_PROP,
   LogLevel,
-  FrameworkConfigMap,
   PANDINO_MANIFEST_FETCHER_PROP,
-  ServiceRegistration,
   OBJECTCLASS,
+} from '@pandino/pandino-api';
+import type {
+  Bundle,
+  BundleActivator,
+  BundleListener,
+  BundleManifestHeaders,
+  BundleImporter,
+  FrameworkConfigMap,
   ServiceReference,
+  ServiceRegistration,
 } from '@pandino/pandino-api';
 import { Pandino } from './pandino';
-import { BundleImpl } from './lib/framework/bundle-impl';
+import { BundleImpl } from './lib/framework';
 
 interface HelloService {
   sayHello(): string;
@@ -35,8 +38,8 @@ interface WelcomeService {
 describe('Pandino', () => {
   let params: FrameworkConfigMap;
   let pandino: Pandino;
-  const mockStart = jest.fn().mockReturnValue(Promise.resolve());
-  const mockStop = jest.fn().mockReturnValue(Promise.resolve());
+  const mockStart = vi.fn().mockReturnValue(Promise.resolve());
+  const mockStop = vi.fn().mockReturnValue(Promise.resolve());
   const dummyActivator: BundleActivator = {
     start: mockStart,
     stop: mockStop,
@@ -78,7 +81,7 @@ describe('Pandino', () => {
     mockStart.mockImplementation(() => {});
     mockStop.mockClear();
     params = {
-      [PANDINO_MANIFEST_FETCHER_PROP]: jest.fn() as any,
+      [PANDINO_MANIFEST_FETCHER_PROP]: vi.fn() as any,
       [PANDINO_BUNDLE_IMPORTER_PROP]: importer,
       [LOG_LEVEL_PROP]: LogLevel.WARN,
     };
@@ -207,7 +210,7 @@ describe('Pandino', () => {
     expect(bundle.getSymbolicName()).toEqual('@scope/bundle');
     expect(bundle.getVersion().toString()).toEqual('1.2.3');
     expect(bundle.getState()).toEqual('INSTALLED');
-    expect(bundle.getBundleContext()).toEqual(null);
+    expect(bundle.getBundleContext()).toEqual(undefined);
   });
 
   it('multiple requirements case', async () => {
@@ -296,8 +299,8 @@ describe('Pandino', () => {
     await myBundle.stop();
 
     expect(myBundle.getState()).toEqual('INSTALLED');
-    expect(myBundle.getBundleContext()).toEqual(null);
-    expect((myBundle as BundleImpl).getActivator()).toEqual(null);
+    expect(myBundle.getBundleContext()).toEqual(undefined);
+    expect((myBundle as BundleImpl).getActivator()).toEqual(undefined);
     expect(mockStop).toHaveBeenCalledTimes(1);
   });
 
@@ -330,7 +333,7 @@ describe('Pandino', () => {
     await preparePandino();
     await installBundle(bundle1Headers);
     const [bundle1] = pandino.getBundleContext().getBundles();
-    const mockBundleChangedListener = jest.fn();
+    const mockBundleChangedListener = vi.fn();
     const bundleListener: BundleListener = {
       bundleChanged: mockBundleChangedListener,
       isSync: true,
@@ -342,8 +345,8 @@ describe('Pandino', () => {
     await bundle1.stop();
 
     expect(bundle1.getState()).toEqual('INSTALLED');
-    expect(bundle1.getBundleContext()).toEqual(null);
-    expect((bundle1 as BundleImpl).getActivator()).toEqual(null);
+    expect(bundle1.getBundleContext()).toEqual(undefined);
+    expect((bundle1 as BundleImpl).getActivator()).toEqual(undefined);
     expect(mockStop).toHaveBeenCalledTimes(1);
     expect(mockStart).toHaveBeenCalledTimes(1);
 

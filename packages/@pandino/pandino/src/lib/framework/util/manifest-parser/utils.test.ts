@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { parseDelimitedString } from './utils';
 
 describe('ManifestParser utils', () => {

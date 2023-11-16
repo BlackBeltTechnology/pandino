@@ -1,4 +1,4 @@
-import { BundleActivator, BundleManifestHeaders } from './bundle';
+import type { BundleActivator, BundleManifestHeaders } from './bundle';
 
 export interface ActivatorResolver {
   /**

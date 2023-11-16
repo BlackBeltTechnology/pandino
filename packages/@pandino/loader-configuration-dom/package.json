@@ -2,17 +2,17 @@
   "name": "@pandino/loader-configuration-dom",
   "version": "0.8.30",
   "description": "Bundle loading configuration for the DOM",
-  "module": "./dist/loader-configuration-dom.mjs",
-  "types": "dist/esm/index.d.ts",
+  "module": "./dist/@pandino/loader-configuration-dom.mjs",
+  "types": "dist/@pandino/loader-configuration-dom.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "default": "./dist/esm/loader-configuration-dom.mjs"
+      "import": "./dist/@pandino/loader-configuration-dom.mjs"
     }
   },
   "scripts": {
-    "build": "rollup -c --environment=PRODUCTION",
-    "build:dev": "rollup -c"
+    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "tsc": "tsc"
   },
   "keywords": [
     "pandino",
@@ -32,7 +32,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
@@ -41,6 +41,11 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.30"
+    "@pandino/pandino-api": "workspace:^0.8.29",
+    "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.29",
+    "dts-bundle-generator": "^8.1.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
   }
 }

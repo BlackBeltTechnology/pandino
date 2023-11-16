@@ -1,9 +1,5 @@
-import {
-  BundleImporter,
-  ManifestFetcher,
-  PANDINO_BUNDLE_IMPORTER_PROP,
-  PANDINO_MANIFEST_FETCHER_PROP,
-} from '@pandino/pandino-api';
+import { PANDINO_BUNDLE_IMPORTER_PROP, PANDINO_MANIFEST_FETCHER_PROP } from '@pandino/pandino-api';
+import type { BundleImporter, ManifestFetcher } from '@pandino/pandino-api';
 
 export interface LoaderConfig {
   [PANDINO_MANIFEST_FETCHER_PROP]: ManifestFetcher;

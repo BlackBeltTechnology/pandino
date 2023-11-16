@@ -1,7 +1,8 @@
+import { describe, beforeEach, expect, it, vi } from 'vitest';
 import { ListenerInfo } from './listener-info';
 import { BundleImpl } from '../bundle-impl';
 import { BundleContextImpl } from '../bundle-context-impl';
-import { ServiceListener } from '@pandino/pandino-api';
+import type { ServiceListener } from '@pandino/pandino-api';
 import { Pandino } from '../../../pandino';
 import { MuteLogger } from '../../../__mocks__/mute-logger';
 
@@ -17,8 +18,8 @@ describe('ListenerInfo', () => {
   });
 
   it('instantiation via info', () => {
-    const sourceInfo = new ListenerInfo();
-    info = new ListenerInfo(sourceInfo);
+    const sourceInfo = new ListenerInfo(null, null, null);
+    info = new ListenerInfo(null, null, null, sourceInfo);
 
     expect(info).toBeDefined();
     expect(info.getFilter()).toEqual(undefined);
@@ -27,10 +28,10 @@ describe('ListenerInfo', () => {
   it('instantiation via attributes', () => {
     const filter = '(age>=40)';
     const serviceListener: ServiceListener = {
-      serviceChanged: jest.fn(),
+      serviceChanged: vi.fn(),
     };
     const bundleContext = new BundleContextImpl(logger, bundle, pandino);
-    info = new ListenerInfo(null, bundle, bundleContext, serviceListener, filter);
+    info = new ListenerInfo(bundle, bundleContext, serviceListener, null, filter);
 
     expect(info).toBeDefined();
     expect(info.getBundle()).toEqual(bundle);

@@ -1,4 +1,4 @@
-import { ServiceEvent } from './service-event';
+import type { ServiceEvent } from './service-event';
 
 /**
  * A {@code ServiceEvent} listener. {@code ServiceListener} is a listener interface that may be implemented by a bundle

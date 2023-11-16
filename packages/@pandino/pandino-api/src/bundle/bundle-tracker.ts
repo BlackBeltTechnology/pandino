@@ -1,5 +1,5 @@
-import { BundleTrackerCustomizer } from './bundle-tracker-customizer';
-import { Bundle } from './bundle';
+import type { BundleTrackerCustomizer } from './bundle-tracker-customizer';
+import type { Bundle } from './bundle';
 
 export interface BundleTracker<T> extends BundleTrackerCustomizer<T> {
   /**

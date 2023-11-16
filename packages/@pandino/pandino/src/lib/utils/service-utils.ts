@@ -1,4 +1,4 @@
-import { ServiceReference, ServiceUtils } from '@pandino/pandino-api';
+import type { ServiceReference, ServiceUtils } from '@pandino/pandino-api';
 
 export const serviceUtilsImpl: ServiceUtils = {
   getBestServiceReference: (refs: ServiceReference<any>[]): ServiceReference<any> | undefined => {

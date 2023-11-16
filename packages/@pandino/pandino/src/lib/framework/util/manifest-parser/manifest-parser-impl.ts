@@ -1,6 +1,4 @@
 import {
-  ActivationPolicy,
-  BundleConfigMap,
   ACTIVATION_LAZY,
   BUNDLE_ACTIVATIONPOLICY,
   BUNDLE_MANIFESTVERSION,
@@ -15,29 +13,29 @@ import {
   PROVIDE_CAPABILITY,
   REQUIRE_BUNDLE,
   REQUIRE_CAPABILITY,
-  BundleManifestHeaders,
 } from '@pandino/pandino-api';
+import type { ActivationPolicy, BundleConfigMap, BundleManifestHeaders } from '@pandino/pandino-api';
 import type { FilterNode } from '@pandino/filters';
 import { convert, parseFilter } from '@pandino/filters';
-import { BundleCapabilityImpl } from '../../wiring/bundle-capability-impl';
 import { ParsedHeaderClause } from './parsed-header-clause';
-import { BundleRequirementImpl } from '../../wiring/bundle-requirement-impl';
-import { isAnyMissing } from '../../../utils/helpers';
-import { ManifestParser } from './manifest-parser';
-import { BundleRequirement } from '../../wiring/bundle-requirement';
-import { BundleCapability } from '../../wiring/bundle-capability';
-import { BundleRevision } from '../../bundle-revision';
+import type { ManifestParser } from './manifest-parser';
+import type { BundleCapability } from '../../wiring/bundle-capability';
+import type { BundleRequirement } from '../../wiring/bundle-requirement';
+import type { BundleRevision } from '../../bundle-revision';
 import { parseDelimitedString } from './utils';
+import { BundleRequirementImpl } from '../../wiring/bundle-requirement-impl';
+import { BundleCapabilityImpl } from '../../wiring/bundle-capability-impl';
 
 export class ManifestParserImpl implements ManifestParser {
+  // @ts-ignore
   private readonly configMap: BundleConfigMap;
   private readonly headerMap: Record<string, any>;
   private readonly requirements: BundleRequirement[] = [];
   private readonly capabilities: BundleCapability[] = [];
-  private readonly bundleSymbolicName: string;
+  private readonly bundleSymbolicName?: string;
   private readonly bundleVersion: string;
-  private activationIncludeDir: string;
-  private activationExcludeDir: string;
+  private activationIncludeDir?: string;
+  private activationExcludeDir?: string;
   private activationPolicy: ActivationPolicy = 'EAGER_ACTIVATION';
 
   static readonly EMPTY_VERSION = '0.0.0';
@@ -62,7 +60,7 @@ export class ManifestParserImpl implements ManifestParser {
     }
 
     // Parse bundle symbolic name.
-    const bundleCap: BundleCapability = ManifestParserImpl.parseBundleSymbolicName(owner, this.headerMap);
+    const bundleCap = ManifestParserImpl.parseBundleSymbolicName(owner, this.headerMap);
     if (bundleCap) {
       this.bundleSymbolicName = bundleCap.getAttributes()[BUNDLE_NAMESPACE];
 
@@ -133,10 +131,10 @@ export class ManifestParserImpl implements ManifestParser {
     return ManifestParserImpl.convertRequireCapabilities(provideClauses, owner);
   }
 
-  getActivationIncludeDirective(): string {
+  getActivationIncludeDirective(): string | undefined {
     return this.activationIncludeDir;
   }
-  getActivationExcludeDirective(): string {
+  getActivationExcludeDirective(): string | undefined {
     return this.activationExcludeDir;
   }
 
@@ -145,7 +143,7 @@ export class ManifestParserImpl implements ManifestParser {
   }
 
   getSymbolicName(): string {
-    return this.bundleSymbolicName;
+    return this.bundleSymbolicName!;
   }
 
   getBundleVersion(): string {
@@ -167,21 +165,19 @@ export class ManifestParserImpl implements ManifestParser {
 
   getManifestVersion(): string {
     const manifestVersion = ManifestParserImpl.getManifestVersion(this.headerMap);
-    return isAnyMissing(manifestVersion) ? '1' : manifestVersion;
+    return manifestVersion ?? '1';
   }
 
-  private static getManifestVersion(headerMap: Record<string, any>): string {
-    const manifestVersion = headerMap[BUNDLE_MANIFESTVERSION] as string;
-    return isAnyMissing(manifestVersion) ? null : manifestVersion.trim();
+  private static getManifestVersion(headerMap: Record<string, any>): string | undefined {
+    const manifestVersion = headerMap[BUNDLE_MANIFESTVERSION] as string | undefined;
+    return manifestVersion?.trim();
   }
 
   private static parseBundleSymbolicName(
     owner: BundleRevision,
     headerMap: Record<string, any>,
-  ): BundleCapabilityImpl | undefined {
-    const clauses: Array<ParsedHeaderClause> = this.normalizeCapabilityClauses(
-      this.parseStandardHeader(headerMap[BUNDLE_SYMBOLICNAME]),
-    );
+  ): BundleCapabilityImpl | never {
+    const clauses = this.normalizeCapabilityClauses(this.parseStandardHeader(headerMap[BUNDLE_SYMBOLICNAME]));
     if (clauses.length > 0) {
       if (clauses.length > 1) {
         throw new Error('Cannot have multiple symbolic names: ' + headerMap[BUNDLE_SYMBOLICNAME]);
@@ -197,7 +193,7 @@ export class ManifestParserImpl implements ManifestParser {
         try {
           bundleVersion = headerMap[BUNDLE_VERSION];
         } catch (ex) {
-          let mv: string = this.getManifestVersion(headerMap);
+          let mv = this.getManifestVersion(headerMap);
           if (mv !== null && mv !== undefined) {
             throw ex;
           }
@@ -210,14 +206,13 @@ export class ManifestParserImpl implements ManifestParser {
       clauses[0].attrs[BUNDLE_VERSION_ATTRIBUTE] = bundleVersion;
       return new BundleCapabilityImpl(owner, BUNDLE_NAMESPACE, clauses[0].dirs, clauses[0].attrs);
     }
-
-    return undefined;
+    throw new Error('Invalid capability clauses in bundle headers!', headerMap);
   }
 
-  private static parseStandardHeader(header: string): ParsedHeaderClause[] {
+  private static parseStandardHeader(header?: string): ParsedHeaderClause[] {
     const clauses: ParsedHeaderClause[] = [];
 
-    if (isAnyMissing(header)) {
+    if (!header) {
       return clauses;
     }
 
@@ -230,7 +225,7 @@ export class ManifestParserImpl implements ManifestParser {
 
     const semiColons = header.split(';');
 
-    let clause: ParsedHeaderClause;
+    let clause: ParsedHeaderClause | undefined;
     let dirs: Record<string, string> = {};
     let attrs: Record<string, any> = {};
     let types: Record<string, string> = {};
@@ -275,7 +270,9 @@ export class ManifestParserImpl implements ManifestParser {
       }
     });
 
-    clauses.push(clause);
+    if (clause) {
+      clauses.push(clause);
+    }
 
     return clauses;
   }
@@ -366,10 +363,10 @@ export class ManifestParserImpl implements ManifestParser {
     const reqList: BundleRequirement[] = [];
     for (const clause of clauses) {
       try {
-        let filterStr: string = clause.dirs[FILTER_DIRECTIVE];
-        const sf: FilterNode = !!filterStr
+        let filterStr = clause.dirs[FILTER_DIRECTIVE];
+        const sf = filterStr
           ? parseFilter(filterStr.trim().replace(/"|\\"/g, '').toString())
-          : { attribute: null, operator: 'eq', value: '*', children: [] };
+          : ({ attribute: undefined, operator: 'eq', value: '*', children: [] } as FilterNode);
         for (const path of clause.paths) {
           if (path.startsWith('pandino.wiring.')) {
             throw new Error("Manifest cannot use Require-Capability for '" + path + "' namespace.");

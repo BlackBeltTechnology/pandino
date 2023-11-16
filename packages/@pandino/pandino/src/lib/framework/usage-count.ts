@@ -1,4 +1,4 @@
-import { ServiceReference } from '@pandino/pandino-api';
+import type { ServiceReference } from '@pandino/pandino-api';
 
 export interface UsageCount {
   getReference(): ServiceReference<any>;

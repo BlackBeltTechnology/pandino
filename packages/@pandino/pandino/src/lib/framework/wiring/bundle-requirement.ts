@@ -1,6 +1,6 @@
-import { BundleCapability } from './bundle-capability';
-import { Requirement } from '../resource/requirement';
-import { BundleRevision } from '../bundle-revision';
+import type { BundleCapability } from './bundle-capability';
+import type { Requirement } from '../resource';
+import type { BundleRevision } from '../bundle-revision';
 
 /**
  * A requirement that has been declared from a {@link BundleRevision bundle

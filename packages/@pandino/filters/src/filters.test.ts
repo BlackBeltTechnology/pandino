@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import type { FilterNode } from './types';
 import { evaluateFilter, serializeFilter } from './filters';
 

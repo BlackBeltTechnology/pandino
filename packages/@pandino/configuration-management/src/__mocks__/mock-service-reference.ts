@@ -1,4 +1,5 @@
-import { Bundle, SERVICE_PID, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import type { Bundle, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import { SERVICE_PID } from '@pandino/pandino-api';
 
 export class MockServiceReference implements ServiceReference<any> {
   private readonly bundle: Bundle;
@@ -22,7 +23,7 @@ export class MockServiceReference implements ServiceReference<any> {
   }
 
   getProperties(): ServiceProperties {
-    return undefined;
+    return undefined as any;
   }
 
   getProperty(key: string): any {
@@ -32,7 +33,7 @@ export class MockServiceReference implements ServiceReference<any> {
   }
 
   getPropertyKeys(): Array<string> {
-    return undefined;
+    return [];
   }
 
   getUsingBundles(): Bundle[] {

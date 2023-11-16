@@ -1,10 +1,8 @@
-import { BundleReference } from '@pandino/pandino-api';
-import { BundleRequirement } from './wiring/bundle-requirement';
-import { BundleCapability } from './wiring/bundle-capability';
-import { Requirement } from './resource/requirement';
-import { Capability } from './resource/capability';
-import { BundleWiring } from './bundle-wiring';
-import { Resource } from './resource/resource';
+import type { BundleReference } from '@pandino/pandino-api';
+import type { BundleRequirement } from './wiring/bundle-requirement';
+import type { BundleCapability } from './wiring/bundle-capability';
+import type { Requirement, Capability, Resource } from './resource';
+import type { BundleWiring } from './bundle-wiring';
 
 /**
  * Bundle Revision. When a bundle is installed and each time a bundle is

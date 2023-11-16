@@ -2,17 +2,17 @@
   "name": "@pandino/umd-activator-resolver-dom",
   "version": "0.8.30",
   "description": "Activator Resolver supporting UMD modules for browsers",
-  "module": "./dist/esm/umd-activator-resolver-dom.mjs",
-  "types": "dist/esm/index.d.ts",
+  "module": "./dist/@pandino/umd-activator-resolver-dom.mjs",
+  "types": "dist/@pandino/umd-activator-resolver-dom.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "default": "./dist/esm/umd-activator-resolver-dom.mjs"
+      "import": "./dist/@pandino/umd-activator-resolver-dom.mjs"
     }
   },
   "scripts": {
-    "build": "rollup -c --environment=PRODUCTION",
-    "build:dev": "rollup -c"
+    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "tsc": "tsc"
   },
   "keywords": [
     "pandino",
@@ -33,7 +33,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
@@ -42,6 +42,10 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.30"
+    "@pandino/pandino-api": "workspace:^0.8.29",
+    "dts-bundle-generator": "^8.1.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
   }
 }

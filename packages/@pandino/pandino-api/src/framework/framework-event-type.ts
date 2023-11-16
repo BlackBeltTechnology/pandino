@@ -1,3 +1,3 @@
-import { BundleEventType } from '../bundle';
+import type { BundleEventType } from '../bundle';
 
 export type FrameworkEventType = BundleEventType | 'ERROR';

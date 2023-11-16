@@ -1,6 +1,6 @@
-import { ActivationPolicy } from '@pandino/pandino-api';
-import { BundleCapability } from '../../wiring/bundle-capability';
-import { BundleRequirement } from '../../wiring/bundle-requirement';
+import type { ActivationPolicy } from '@pandino/pandino-api';
+import type { BundleCapability } from '../../wiring/bundle-capability';
+import type { BundleRequirement } from '../../wiring/bundle-requirement';
 
 export interface ManifestParser {
   getSymbolicName(): string;
@@ -10,6 +10,6 @@ export interface ManifestParser {
   getName(path: string): string;
   getActivationPolicy(): ActivationPolicy;
   getManifestVersion(): string;
-  getActivationIncludeDirective(): string;
-  getActivationExcludeDirective(): string;
+  getActivationIncludeDirective(): string | undefined;
+  getActivationExcludeDirective(): string | undefined;
 }

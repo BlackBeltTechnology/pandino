@@ -1,4 +1,4 @@
-import { BundleEvent } from './bundle-event';
+import type { BundleEvent } from './bundle-event';
 
 /**
  * A {@code BundleEvent} listener. {@code BundleListener} is a listener interface that may be implemented by a bundle

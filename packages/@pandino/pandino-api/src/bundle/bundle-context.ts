@@ -1,7 +1,7 @@
-import { BundleReference } from './bundle-reference';
-import { Bundle } from './bundle';
-import { BundleManifestHeaders } from './bundle-manifest-headers';
-import {
+import type { BundleReference } from './bundle-reference';
+import type { Bundle } from './bundle';
+import type { BundleManifestHeaders } from './bundle-manifest-headers';
+import type {
   ServiceFactory,
   ServiceListener,
   ServiceObjects,
@@ -11,11 +11,11 @@ import {
   ServiceTracker,
   ServiceTrackerCustomizer,
 } from '../service';
-import { BundleListener } from './bundle-listener';
-import { FrameworkListener } from '../framework';
-import { BundleTracker } from './bundle-tracker';
-import { BundleState } from './bundle-state';
-import { BundleTrackerCustomizer } from './bundle-tracker-customizer';
+import type { BundleListener } from './bundle-listener';
+import type { FrameworkListener } from '../framework';
+import type { BundleTracker } from './bundle-tracker';
+import type { BundleState } from './bundle-state';
+import type { BundleTrackerCustomizer } from './bundle-tracker-customizer';
 
 /**
  * A bundle's execution context within the Framework. The context is used to grant access to other methods so that this
@@ -116,7 +116,7 @@ export interface BundleContext extends BundleReference {
    *        actual headers.
    * @returns {Promise<Bundle>} of the installed bundle.
    */
-  installBundle(locationOrHeaders: string | BundleManifestHeaders): Promise<Bundle>;
+  installBundle(locationOrHeaders: string | BundleManifestHeaders): Promise<Bundle | undefined>;
 
   /**
    * Adds the specified {@code ServiceListener} object with the specified {@code filter} to the context bundle's list of
@@ -267,7 +267,7 @@ export interface BundleContext extends BundleReference {
    * @returns A {@code ServiceReference} object, or {@code null} if no services
    *          are registered which implement the named class.
    */
-  getServiceReference<S>(identifier: string): ServiceReference<S>;
+  getServiceReference<S>(identifier: string): ServiceReference<S> | undefined;
 
   /**
    * Returns an array of {@code ServiceReference} objects. The returned array of {@code ServiceReference} objects
@@ -363,7 +363,7 @@ export interface BundleContext extends BundleReference {
    * @param {ServiceReference<S>} reference A reference to the service.
    * @returns {S} A service object for the service associated with {@code reference}.
    */
-  getService<S>(reference: ServiceReference<S>): S;
+  getService<S>(reference: ServiceReference<S>): S | undefined;
 
   /**
    * Releases the service object for the service referenced by the specified {@code ServiceReference} object. If the

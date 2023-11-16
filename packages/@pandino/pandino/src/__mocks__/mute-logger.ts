@@ -1,4 +1,4 @@
-import { Logger, LogLevel } from '@pandino/pandino-api';
+import type { Logger, LogLevel } from '@pandino/pandino-api';
 
 export class MuteLogger implements Logger {
   debug(...data: any[]): void {}

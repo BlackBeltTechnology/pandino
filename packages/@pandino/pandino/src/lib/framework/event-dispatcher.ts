@@ -1,4 +1,4 @@
-import {
+import type {
   BundleContext,
   BundleEvent,
   BundleListener,
@@ -10,19 +10,20 @@ import {
   Bundle,
   BundleState,
 } from '@pandino/pandino-api';
-import { evaluateFilter, FilterNode } from '@pandino/filters';
+import { evaluateFilter } from '@pandino/filters';
+import type { FilterNode } from '@pandino/filters';
 import { ListenerInfo } from './util/listener-info';
 import { BundleImpl } from './bundle-impl';
 import { BundleEventImpl } from './bundle-event-impl';
 import { FrameworkEventImpl } from './framework-event-impl';
 import { ServiceEventImpl } from './service-event-impl';
-import { isAllPresent, isAnyMissing } from '../utils/helpers';
 import { CapabilitySet } from './capability-set/capability-set';
-import { Capability } from './resource/capability';
+import type { Capability } from './resource';
 
 export type ListenerType = 'BUNDLE' | 'FRAMEWORK' | 'SERVICE';
 
 export class EventDispatcher {
+  // @ts-ignore
   private readonly logger: Logger;
   private svcListeners: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>();
   private bndListeners: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>();
@@ -62,8 +63,8 @@ export class EventDispatcher {
     event: any,
     oldProps?: Record<string, any>,
   ): void {
-    for (let [ctx, lstnrs] of listeners.entries()) {
-      for (let info of lstnrs) {
+    for (let [_, listenerInfo] of listeners.entries()) {
+      for (let info of listenerInfo) {
         const bundle = info.getBundle();
         const listener = info.getListener();
         const filter = info.getFilter();
@@ -97,8 +98,7 @@ export class EventDispatcher {
       return;
     }
 
-    let matched =
-      isAnyMissing(filter) || CapabilitySet.matches(event.getServiceReference() as unknown as Capability, filter);
+    let matched = !filter || CapabilitySet.matches(event.getServiceReference() as unknown as Capability, filter);
 
     if (matched) {
       listener.serviceChanged(event);
@@ -140,7 +140,7 @@ export class EventDispatcher {
     }
   }
 
-  addListener?(bc: BundleContext, type: ListenerType, listener: any, filter?: string): FilterNode | undefined {
+  addListener(bc: BundleContext, type: ListenerType, listener: any, filter?: string): FilterNode | undefined {
     if (!listener) {
       throw new Error('Listener is missing');
     }
@@ -158,7 +158,7 @@ export class EventDispatcher {
       return undefined;
     }
 
-    let listeners: Map<BundleContext, Array<ListenerInfo>> = null;
+    let listeners: Map<BundleContext, Array<ListenerInfo>>;
 
     if (type === 'FRAMEWORK') {
       listeners = this.fwkListeners;
@@ -170,7 +170,7 @@ export class EventDispatcher {
       throw new Error('Unknown listener: ' + type);
     }
 
-    const info: ListenerInfo = new ListenerInfo(null, bc.getBundle(), bc, listener, filter);
+    const info: ListenerInfo = new ListenerInfo(bc.getBundle()!, bc, listener, undefined, filter);
     listeners = EventDispatcher.addListenerInfo(listeners, info);
 
     if (type === 'FRAMEWORK') {
@@ -185,7 +185,7 @@ export class EventDispatcher {
   }
 
   removeListener(bc: BundleContext, type: ListenerType, listener: any): void {
-    let listeners: Map<BundleContext, Array<ListenerInfo>> = null;
+    let listeners: Map<BundleContext, Array<ListenerInfo>>;
 
     if (!listener) {
       throw new Error('Listener is missing');
@@ -251,7 +251,7 @@ export class EventDispatcher {
     const copy: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(
       listeners.entries(),
     );
-    const infos: Array<ListenerInfo> = [...copy.get(bc)];
+    const infos: Array<ListenerInfo> = [...copy.get(bc)!];
     copy.delete(bc);
     if (Array.isArray(infos)) {
       infos.splice(idx, 1);
@@ -272,13 +272,19 @@ export class EventDispatcher {
         return undefined;
       }
 
-      const infos: Array<ListenerInfo> = this.svcListeners.get(bc);
-      for (let i = 0; isAllPresent(infos) && i < infos.length; i++) {
+      const infos: Array<ListenerInfo> | undefined = this.svcListeners.get(bc);
+      for (let i = 0; Array.isArray(infos) && i < infos.length; i++) {
         const info: ListenerInfo = infos[i];
         if (info.getBundleContext().equals(bc) && info.getListener() === listener) {
           // The spec says to update the filter in this case.
           const oldFilter = info.getParsedFilter();
-          const newInfo = new ListenerInfo(null, info.getBundle(), info.getBundleContext(), info.getListener(), filter);
+          const newInfo = new ListenerInfo(
+            info.getBundle()!,
+            info.getBundleContext(),
+            info.getListener(),
+            undefined,
+            filter,
+          );
           this.svcListeners = EventDispatcher.updateListenerInfo(this.svcListeners, i, newInfo);
           return oldFilter;
         }
@@ -294,10 +300,10 @@ export class EventDispatcher {
     info: ListenerInfo,
   ): Map<BundleContext, Array<ListenerInfo>> {
     let copy: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(listeners);
-    let infos: Array<ListenerInfo> = copy.get(info.getBundleContext());
+    let infos: Array<ListenerInfo> | undefined = copy.get(info.getBundleContext());
     copy.delete(info.getBundleContext());
-    if (isAllPresent(infos)) {
-      infos = [...infos];
+    if (Array.isArray(infos)) {
+      infos = [...(infos ?? [])];
       infos[idx] = info;
       copy.set(info.getBundleContext(), infos);
       return copy;
@@ -314,7 +320,7 @@ export class EventDispatcher {
     }
     const infos = listeners.get(info.getBundleContext());
 
-    infos.push(info);
+    infos?.push(info);
 
     return listeners;
   }

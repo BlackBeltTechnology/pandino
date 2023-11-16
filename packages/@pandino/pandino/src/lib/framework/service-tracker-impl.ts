@@ -1,37 +1,41 @@
-import {
-  SERVICE_ID,
-  SERVICE_RANKING,
+import { SERVICE_ID, SERVICE_RANKING } from '@pandino/pandino-api';
+import type {
   ServiceEvent,
   ServiceListener,
   ServiceReference,
   ServiceTracker,
   ServiceTrackerCustomizer,
 } from '@pandino/pandino-api';
-import { FilterNode, serializeFilter } from '@pandino/filters';
-import { isAllPresent, isAnyMissing } from '../utils/helpers';
+import { serializeFilter } from '@pandino/filters';
+import type { FilterNode } from '@pandino/filters';
 import { AbstractTracked } from './abstract-tracked';
 import { BundleContextImpl } from './bundle-context-impl';
 
 export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   readonly customizer: ServiceTrackerCustomizer<S, T>;
   protected readonly context: BundleContextImpl;
-  protected readonly filter: FilterNode;
-  private readonly listenerFilter: string;
-  private tracked: Tracked<S, T>;
-  private cachedReference: ServiceReference<S>;
-  private cachedService: T;
+  protected readonly filter?: FilterNode;
+  private readonly listenerFilter?: string;
+  private tracked?: Tracked<S, T>;
+  private cachedReference?: ServiceReference<S>;
+  private cachedService?: T;
 
   constructor(context: BundleContextImpl, filter: string | FilterNode, customizer?: ServiceTrackerCustomizer<S, T>) {
     this.context = context;
     this.customizer = customizer || this;
     this.listenerFilter = typeof filter === 'string' ? filter : serializeFilter(filter);
-    this.filter = typeof filter === 'string' ? context.createFilter(this.listenerFilter) : filter;
+    this.filter =
+      typeof filter === 'string'
+        ? this.listenerFilter
+          ? context.createFilter(this.listenerFilter)
+          : undefined
+        : filter;
   }
 
   open(): void {
     let t: Tracked<S, T>;
 
-    if (isAllPresent(this.tracked)) {
+    if (this.tracked) {
       return;
     }
 
@@ -51,10 +55,10 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   close(): void {
-    const outgoing: Tracked<S, T> = this.tracked;
+    const outgoing: Tracked<S, T> | undefined = this.tracked;
     let references: Array<ServiceReference<S>>;
 
-    if (isAnyMissing(outgoing)) {
+    if (!outgoing) {
       return;
     }
 
@@ -71,7 +75,7 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
 
     this.modified();
 
-    if (isAllPresent(references)) {
+    if (Array.isArray(references)) {
       for (const reference of references) {
         outgoing.untrack(reference, undefined);
       }
@@ -79,11 +83,11 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   getServiceReferences(): Array<ServiceReference<S>> {
-    let t: Tracked<S, T> = this.tracked;
-    if (isAnyMissing(t)) {
+    let t = this.tracked;
+    if (!t) {
       return [];
     }
-    if (t.isEmpty()) {
+    if (!t || t.isEmpty()) {
       return [];
     }
 
@@ -91,7 +95,7 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
     return t.copyKeys(result);
   }
 
-  addingService(reference: ServiceReference<S>): T {
+  addingService(reference: ServiceReference<S>): T | undefined {
     return this.context.getService<T>(reference);
   }
 
@@ -107,24 +111,24 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   getService(): T | undefined {
-    let service: T = this.cachedService;
-    if (isAllPresent(service)) {
+    let service = this.cachedService;
+    if (service) {
       return service;
     }
-    let reference: ServiceReference<S> = this.getServiceReference();
-    if (isAnyMissing(reference)) {
+    let reference = this.getServiceReference();
+    if (!reference) {
       return undefined;
     }
     return (this.cachedService = this.getServiceForReference(reference));
   }
 
   getServiceReference(): ServiceReference<S> | undefined {
-    const reference: ServiceReference<S> = this.cachedReference;
-    if (isAllPresent(reference)) {
+    const reference = this.cachedReference;
+    if (reference) {
       return reference;
     }
-    const references: Array<ServiceReference<S>> = this.getServiceReferences();
-    const length = isAnyMissing(references) ? 0 : references.length;
+    const references = this.getServiceReferences();
+    const length = !Array.isArray(references) ? 0 : references.length;
     if (length === 0) {
       return undefined;
     }
@@ -164,28 +168,31 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   getServiceForReference(reference: ServiceReference<S>): T | undefined {
-    let t: Tracked<S, T> = this.tracked;
-    if (isAnyMissing(t)) {
+    let t = this.tracked;
+    if (!t) {
       return undefined;
     }
     return t.getCustomizedObject(reference);
   }
 
   getServices(): T[] {
-    let t: Tracked<S, T> = this.tracked;
-    if (isAnyMissing(t)) {
+    let t = this.tracked;
+    if (!t) {
       return [];
     }
-    let references: ServiceReference<S>[] = this.getServiceReferences();
-    let length = isAllPresent(references) ? references.length : 0;
-    if (length === 0) {
-      return [];
+    const references: ServiceReference<S>[] = this.getServiceReferences();
+
+    if (Array.isArray(references)) {
+      const refs: T[] = [];
+      for (const ref of references) {
+        const svc = this.getServiceForReference(ref);
+        if (svc) {
+          refs.push(svc);
+        }
+      }
+      return refs;
     }
-    const objects: T[] = [];
-    for (let i = 0; i < length; i++) {
-      objects[i] = this.getServiceForReference(references[i]);
-    }
-    return objects;
+    return [];
   }
 
   modified(): void {
@@ -194,16 +201,16 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   remove(reference: ServiceReference<S>): void {
-    let t: Tracked<S, T> = this.tracked;
-    if (isAnyMissing(t)) {
+    let t = this.tracked;
+    if (!t) {
       return;
     }
     t.untrack(reference, undefined);
   }
 
   size(): number {
-    const t: Tracked<S, T> = this.tracked;
-    if (isAnyMissing(t)) {
+    const t = this.tracked;
+    if (!t) {
       return 0;
     }
 
@@ -211,9 +218,9 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   getTrackingCount(): number {
-    const t: Tracked<S, T> = this.tracked;
+    const t = this.tracked;
 
-    if (isAnyMissing(t)) {
+    if (!t) {
       return -1;
     }
 
@@ -221,9 +228,9 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   isEmpty(): boolean {
-    const t: Tracked<S, T> = this.tracked;
+    const t = this.tracked;
 
-    if (isAnyMissing(t)) {
+    if (!t) {
       return true;
     }
 
@@ -231,7 +238,7 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   private getInitialReferences(identifier?: string, filterString?: string): Array<ServiceReference<S>> {
-    if (isAnyMissing(identifier) && isAnyMissing(filterString)) {
+    if (!identifier && !filterString) {
       throw new Error('Either the parameter "identifier" or "filterString" must be provided!');
     }
     return this.context.getAllServiceReferences(identifier, filterString);
@@ -270,7 +277,7 @@ class Tracked<S, T> extends AbstractTracked<ServiceReference<S>, T, ServiceEvent
     this.tracker.modified();
   }
 
-  customizerAdding(item: ServiceReference<S>, related?: ServiceEvent): T {
+  customizerAdding(item: ServiceReference<S>, related?: ServiceEvent): T | undefined {
     return this.tracker.customizer.addingService(item);
   }
 

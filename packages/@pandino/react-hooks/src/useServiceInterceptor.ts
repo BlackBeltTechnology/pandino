@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { FRAMEWORK_SERVICE_UTILS, ServiceReference, ServiceUtils } from '@pandino/pandino-api';
+import { FRAMEWORK_SERVICE_UTILS } from '@pandino/pandino-api';
+import type { ServiceReference, ServiceUtils } from '@pandino/pandino-api';
 import { useBundleContext } from './PandinoContext';
 
 export type InterceptorHook = () => <T>(filter: string, target: T) => T;
@@ -7,7 +8,7 @@ export type InterceptorHook = () => <T>(filter: string, target: T) => T;
 export const useServiceInterceptor: InterceptorHook = <T>() => {
   const { bundleContext } = useBundleContext();
   const serviceUtilsRef = bundleContext.getServiceReference<ServiceUtils>(FRAMEWORK_SERVICE_UTILS);
-  const serviceUtils = bundleContext.getService(serviceUtilsRef);
+  const serviceUtils = bundleContext.getService(serviceUtilsRef!);
   const refsUsed = useRef<Set<ServiceReference<any>>>(new Set<ServiceReference<any>>());
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export const useServiceInterceptor: InterceptorHook = <T>() => {
 
   return (filter: string, target: T) => {
     const refs = bundleContext.getServiceReferences(undefined, filter);
-    const ref = serviceUtils.getBestServiceReference(refs);
+    const ref = serviceUtils!.getBestServiceReference(refs);
     for (const refI of refs) {
       refsUsed.current.add(refI);
     }

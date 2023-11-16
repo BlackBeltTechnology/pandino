@@ -1,9 +1,11 @@
-import { Configuration, ConfigurationAdmin } from '@pandino/configuration-management-api';
-import { Bundle, Logger } from '@pandino/pandino-api';
+import type { Configuration, ConfigurationAdmin } from '@pandino/configuration-management-api';
+import type { Bundle, Logger } from '@pandino/pandino-api';
 import { ConfigurationManager } from './configuration-manager';
 
 export class ConfigurationAdminImpl implements ConfigurationAdmin {
+  // @ts-ignore
   private readonly bundle: Bundle;
+  // @ts-ignore
   private readonly logger: Logger;
   private readonly configurationManager: ConfigurationManager;
 
@@ -14,7 +16,7 @@ export class ConfigurationAdminImpl implements ConfigurationAdmin {
   }
 
   getConfiguration(pid: string, location?: string): Configuration {
-    let config: Configuration = this.configurationManager.getConfiguration(pid);
+    let config = this.configurationManager.getConfiguration(pid);
     if (!config) {
       config = this.configurationManager.createConfiguration(pid, location);
     }

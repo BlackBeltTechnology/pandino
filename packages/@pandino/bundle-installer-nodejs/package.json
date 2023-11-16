@@ -2,19 +2,19 @@
   "name": "@pandino/bundle-installer-nodejs",
   "version": "0.8.30",
   "description": "Install Bundles defined in the filesystem",
-  "main": "dist/cjs/bundle-installer-nodejs.cjs",
-  "module": "dist/esm/bundle-installer-nodejs.mjs",
-  "types": "dist/esm/index.d.ts",
+  "main": "dist/@pandino/bundle-installer-nodejs.cjs",
+  "module": "dist/@pandino/bundle-installer-nodejs.mjs",
+  "types": "dist/@pandino/bundle-installer-nodejs.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "require": "./dist/cjs/bundle-installer-nodejs.cjs",
-      "default": "./dist/esm/bundle-installer-nodejs.mjs"
+      "require": "./dist/@pandino/bundle-installer-nodejs.cjs",
+      "import": "./dist/@pandino/bundle-installer-nodejs.mjs"
     }
   },
   "scripts": {
-    "build": "rollup -c --environment=PRODUCTION",
-    "build:dev": "rollup -c"
+    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "tsc": "tsc"
   },
   "keywords": [
     "pandino",
@@ -34,7 +34,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
@@ -43,8 +43,12 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.30",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.30"
+    "@pandino/pandino-api": "workspace:^0.8.29",
+    "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.29",
+    "dts-bundle-generator": "^8.1.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
   },
   "pandino": {
     "manifest": {

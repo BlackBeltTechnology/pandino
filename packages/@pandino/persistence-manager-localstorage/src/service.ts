@@ -1,5 +1,5 @@
-import { PersistenceManager } from '@pandino/persistence-manager-api';
-import { Logger, ServiceProperties } from '@pandino/pandino-api';
+import type { PersistenceManager } from '@pandino/persistence-manager-api';
+import type { Logger, ServiceProperties } from '@pandino/pandino-api';
 
 export class LocalstoragePersistenceManager implements PersistenceManager {
   private readonly storage: Storage;
@@ -36,8 +36,10 @@ export class LocalstoragePersistenceManager implements PersistenceManager {
     for (const pid of managedKeys) {
       try {
         const value = this.storage.getItem(pid);
-        const parsed = JSON.parse(value) as ServiceProperties;
-        props.push(parsed);
+        if (value) {
+          const parsed = JSON.parse(value) as ServiceProperties;
+          props.push(parsed);
+        }
       } catch (err) {
         this.logger.error(`Error while trying to parse persisted Configuration for PID: ${pid}!`);
       }
@@ -49,11 +51,12 @@ export class LocalstoragePersistenceManager implements PersistenceManager {
     if (this.exists(pid)) {
       if (this.isKeyManaged(pid)) {
         const value = this.storage.getItem(pid);
-        return JSON.parse(value);
+        return value ? JSON.parse(value) : undefined;
       } else {
         this.logger.warn(`Cannot load Configuration for PID: ${pid}, because it's not in the list of Managed Keys!`);
       }
     }
+    return undefined;
   }
 
   store(pid: string, properties: ServiceProperties): void {
@@ -71,9 +74,11 @@ export class LocalstoragePersistenceManager implements PersistenceManager {
 
   getManagedKeys(): string[] {
     try {
-      return JSON.parse(this.storage.getItem(this.managedKeysKey));
+      const item = this.storage.getItem(this.managedKeysKey);
+      return item ? JSON.parse(item) : [];
     } catch (err) {
       this.logger.error(`Could not load contents of Managed Keys!`);
+      return [];
     }
   }
 

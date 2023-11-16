@@ -24,14 +24,14 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
   },
   "license": "EPL-2.0",
   "dependencies": {
-    "@pandino/manifest-generator": "^0.8.30"
+    "@pandino/manifest-generator": "workspace:^0.8.29"
   },
   "devDependencies": {
     "webpack": "^5.89.0",

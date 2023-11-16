@@ -1,20 +1,15 @@
-import { BundleContext, Logger, ServiceEvent, ServiceListener, ServiceReference } from '@pandino/pandino-api';
-import {
-  Event,
-  EVENT_FILTER,
-  EVENT_HANDLER_INTERFACE_KEY,
-  EVENT_TOPIC,
-  EventAdmin,
-  EventHandler,
-} from '@pandino/event-api';
+import type { BundleContext, Logger, ServiceEvent, ServiceListener, ServiceReference } from '@pandino/pandino-api';
+import { EVENT_FILTER, EVENT_HANDLER_INTERFACE_KEY, EVENT_TOPIC } from '@pandino/event-api';
+import type { Event, EventAdmin, EventHandler } from '@pandino/event-api';
 import type { FilterEvaluator } from '@pandino/filters';
-import { EventHandlerRegistrationInfo } from './event-handler-registration-info';
+import type { EventHandlerRegistrationInfo } from './event-handler-registration-info';
 import { Matchers } from './matchers';
 
 export class EventAdminImpl implements EventAdmin, ServiceListener {
   private readonly regs: Array<EventHandlerRegistrationInfo> = [];
   private readonly context: BundleContext;
   private readonly logger: Logger;
+  // @ts-ignore
   private readonly evaluateFilter: FilterEvaluator;
 
   constructor(context: BundleContext, logger: Logger, filterParser: FilterEvaluator) {
@@ -66,17 +61,18 @@ export class EventAdminImpl implements EventAdmin, ServiceListener {
 
   private eventHandlerRegistered(ref: ServiceReference<EventHandler>): void {
     const props = ref.getProperties();
+    const service = this.context.getService(ref);
 
     if (typeof props[EVENT_TOPIC] !== 'string' && !Array.isArray(props[EVENT_TOPIC])) {
       this.logger.warn(`Skipping registration of Event Handler, invalid topic format: ${props[EVENT_TOPIC]}!`);
       return;
     }
 
-    if (!this.regs.find((reg) => reg.reference === ref)) {
+    if (service && !this.regs.find((reg) => reg.reference === ref)) {
       let newReg: EventHandlerRegistrationInfo = {
         [EVENT_TOPIC]: props[EVENT_TOPIC],
         reference: ref,
-        service: this.context.getService(ref),
+        service,
       };
       if (props[EVENT_FILTER] !== null && props[EVENT_FILTER] !== undefined) {
         newReg[EVENT_FILTER] = props[EVENT_FILTER];

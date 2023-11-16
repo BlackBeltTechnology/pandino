@@ -1,16 +1,13 @@
-import { ActivationPolicy, Bundle, BundleManifestHeaders } from '@pandino/pandino-api';
+import type { ActivationPolicy, Bundle, BundleManifestHeaders } from '@pandino/pandino-api';
 import { evaluateSemver } from '@pandino/filters';
 import { BundleImpl } from './bundle-impl';
-import { ManifestParserImpl } from './util/manifest-parser/manifest-parser-impl';
-import { isAllPresent, isAnyMissing } from '../utils/helpers';
-import { Requirement } from './resource/requirement';
-import { ManifestParser } from './util/manifest-parser/manifest-parser';
-import { Capability } from './resource/capability';
-import { BundleWiring } from './bundle-wiring';
-import { BundleRevision } from './bundle-revision';
-import { Resource } from './resource/resource';
-import { BundleCapability } from './wiring/bundle-capability';
-import { BundleRequirement } from './wiring/bundle-requirement';
+import { ManifestParserImpl } from './util/manifest-parser';
+import type { ManifestParser } from './util/manifest-parser';
+import type { Requirement, Capability, Resource } from './resource';
+import type { BundleWiring } from './bundle-wiring';
+import type { BundleRevision } from './bundle-revision';
+import type { BundleRequirement } from './wiring/bundle-requirement';
+import type { BundleCapability } from './wiring/bundle-capability';
 
 export class BundleRevisionImpl implements BundleRevision, Resource {
   private readonly id: string;
@@ -28,9 +25,13 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
   constructor(bundle: BundleImpl, id: string, headerMap?: BundleManifestHeaders) {
     this.bundle = bundle;
     this.id = id;
-    this.headerMap = headerMap;
+    this.headerMap = headerMap ?? {};
 
-    const mp: ManifestParser = new ManifestParserImpl(bundle.getFramework().getConfig(), this, headerMap);
+    const mp: ManifestParser = new ManifestParserImpl(
+      bundle.getFramework().getConfig(),
+      this,
+      this.headerMap as BundleManifestHeaders,
+    );
 
     this.manifestVersion = mp.getManifestVersion();
     this.version = mp.getBundleVersion();
@@ -45,7 +46,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
   }
 
   equals(other: any): boolean {
-    if (isAnyMissing(other) || !(other instanceof BundleRevisionImpl)) {
+    if (other === undefined || other === null || !(other instanceof BundleRevisionImpl)) {
       return false;
     }
     return (
@@ -59,7 +60,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
 
   getCapabilities(namespace?: string): Capability[] {
     let result = this.declaredCaps;
-    if (!isAnyMissing(namespace)) {
+    if (namespace) {
       result = this.declaredCaps.filter((cap) => cap.getNamespace() === namespace);
     }
     return result;
@@ -67,7 +68,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
 
   getDeclaredCapabilities(namespace?: string): BundleCapability[] {
     let result = this.declaredCaps;
-    if (!isAnyMissing(namespace)) {
+    if (namespace) {
       result = this.declaredCaps.filter((cap) => cap.getNamespace() === namespace);
     }
     return result;
@@ -75,7 +76,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
 
   getDeclaredRequirements(namespace?: string): BundleRequirement[] {
     let result = this.declaredReqs;
-    if (isAllPresent(namespace)) {
+    if (namespace) {
       result = this.declaredReqs.filter((req) => req.getNamespace() === namespace);
     }
     return result;

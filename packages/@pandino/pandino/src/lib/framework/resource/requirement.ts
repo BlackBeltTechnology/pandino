@@ -1,4 +1,4 @@
-import { Resource } from './resource';
+import type { Resource } from './resource';
 
 /**
  * A requirement that has been declared from a {@link Resource} .

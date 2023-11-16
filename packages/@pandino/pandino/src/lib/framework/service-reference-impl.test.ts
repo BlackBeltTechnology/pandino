@@ -1,12 +1,13 @@
+import { describe, beforeEach, expect, it, vi } from 'vitest';
 import { ServiceReferenceImpl } from './service-reference-impl';
 
 describe('ServiceReferenceImpl', () => {
-  const mockGetProperty = jest.fn();
+  const mockGetProperty = vi.fn();
   let serviceReference: ServiceReferenceImpl;
   let mockServiceRegistrationImpl: any = {
     getProperty: mockGetProperty,
   };
-  let mockBundle: any = jest.fn(() => ({}));
+  let mockBundle: any = vi.fn(() => ({}));
 
   beforeEach(() => {
     mockGetProperty.mockClear();

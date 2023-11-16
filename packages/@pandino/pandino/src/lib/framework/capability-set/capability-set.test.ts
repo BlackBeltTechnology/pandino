@@ -1,13 +1,15 @@
-import { BUNDLE_SYMBOLICNAME, BUNDLE_VERSION, BundleManifestHeaders, MANDATORY_DIRECTIVE } from '@pandino/pandino-api';
+import { describe, beforeEach, expect, it } from 'vitest';
+import { BUNDLE_SYMBOLICNAME, BUNDLE_VERSION, MANDATORY_DIRECTIVE } from '@pandino/pandino-api';
+import type { BundleManifestHeaders } from '@pandino/pandino-api';
 import { parseFilter } from '@pandino/filters';
 import { CapabilitySet } from './capability-set';
 import { BundleCapabilityImpl } from '../wiring/bundle-capability-impl';
+import type { BundleCapability } from '../wiring/bundle-capability';
 import { BundleRevisionImpl } from '../bundle-revision-impl';
 import { BundleImpl } from '../bundle-impl';
 import { MuteLogger } from '../../../__mocks__/mute-logger';
 import { Pandino } from '../../../pandino';
-import { BundleRevision } from '../bundle-revision';
-import { BundleCapability } from '../wiring/bundle-capability';
+import type { BundleRevision } from '../bundle-revision';
 
 describe('capability-set', () => {
   let capabilitySet: CapabilitySet;

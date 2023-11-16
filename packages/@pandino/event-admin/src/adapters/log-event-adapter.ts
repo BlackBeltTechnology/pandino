@@ -8,7 +8,8 @@ import {
   ServiceListener,
   ServiceReference,
 } from '@pandino/pandino-api';
-import { LOG_READER_SERVICE_INTERFACE_KEY, LogEntry, LogListener, LogReaderService } from '@pandino/log-api';
+import { LOG_READER_SERVICE_INTERFACE_KEY } from '@pandino/log-api';
+import type { LogEntry, LogListener, LogReaderService } from '@pandino/log-api';
 import {
   BUNDLE_ID,
   EventAdmin,
@@ -24,6 +25,7 @@ import { AbstractAdapter } from './abstract-adapter';
 export class LogEventAdapter extends AbstractAdapter implements ServiceListener {
   private readonly eventFactory: EventFactory;
   private readonly context: BundleContext;
+  // @ts-ignore
   private logListener: LogListener;
 
   constructor(context: BundleContext, admin: EventAdmin, eventFactory: EventFactory) {
@@ -38,7 +40,7 @@ export class LogEventAdapter extends AbstractAdapter implements ServiceListener 
 
       if (refs && refs.length) {
         for (let i = 0; i < refs.length; i++) {
-          const logReader: LogReaderService = context.getService(refs[i]);
+          const logReader = context.getService(refs[i]);
 
           if (logReader) {
             logReader.addLogListener(this.getLogListener());

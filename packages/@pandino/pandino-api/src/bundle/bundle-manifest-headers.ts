@@ -12,9 +12,9 @@ import {
   BUNDLE_TYPE,
   BUNDLE_UMD_NAME,
 } from '../pandino-constants';
-import { BundleActivator } from './bundle-activator';
-import { ActivationPolicy } from './activation-policy';
-import { BundleType } from './bundle-type';
+import type { BundleActivator } from './bundle-activator';
+import type { ActivationPolicy } from './activation-policy';
+import type { BundleType } from './bundle-type';
 
 export interface BundleManifestHeaders {
   [BUNDLE_MANIFESTVERSION]?: string;

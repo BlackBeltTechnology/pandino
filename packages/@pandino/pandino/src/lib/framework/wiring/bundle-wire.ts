@@ -1,6 +1,6 @@
-import { BundleCapability } from './bundle-capability';
-import { BundleRequirement } from './bundle-requirement';
-import { BundleRevision } from '../bundle-revision';
+import type { BundleCapability } from './bundle-capability';
+import type { BundleRequirement } from './bundle-requirement';
+import type { BundleRevision } from '../bundle-revision';
 
 /**
  * A wire connecting a {@link BundleCapability} to a {@link BundleRequirement}.

@@ -1,8 +1,4 @@
 import {
-  Bundle,
-  ServiceProperties,
-  ServiceReference,
-  ServiceRegistration,
   OBJECTCLASS,
   SCOPE_SINGLETON,
   SERVICE_BUNDLEID,
@@ -10,10 +6,15 @@ import {
   SERVICE_SCOPE,
   SCOPE_BUNDLE,
   SCOPE_PROTOTYPE,
+} from '@pandino/pandino-api';
+import type {
+  Bundle,
+  ServiceProperties,
+  ServiceReference,
+  ServiceRegistration,
   ServiceFactory,
 } from '@pandino/pandino-api';
 import { ServiceReferenceImpl } from './service-reference-impl';
-import { isAllPresent } from '../utils/helpers';
 import { ServiceRegistry } from './service-registry';
 import { ServiceRegistryImpl } from './service-registry-impl';
 
@@ -24,7 +25,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
   private readonly serviceId: number;
   private svcObj: any;
   private factory?: ServiceFactory<any>;
-  private propMap?: ServiceProperties;
+  private propMap: ServiceProperties;
   private readonly ref: ServiceReferenceImpl;
   private isUnregistering = false;
 
@@ -41,8 +42,8 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     this.classes = classNames;
     this.serviceId = serviceId;
     this.svcObj = svcObj;
-    this.factory = isAllPresent((this.svcObj as ServiceFactory<any>).factoryType) ? this.svcObj : undefined;
-    this.propMap = dict;
+    this.factory = (this.svcObj as ServiceFactory<any>).factoryType ? this.svcObj : undefined;
+    this.propMap = dict || {};
 
     this.initializeProperties(dict);
 
@@ -50,7 +51,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
   }
 
   isValid(): boolean {
-    return isAllPresent(this.svcObj);
+    return !!this.svcObj;
   }
 
   invalidate(): void {
@@ -61,7 +62,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     return this.registry.getUsingBundles(ref);
   }
 
-  getService(acqBundle?: Bundle): any {
+  getService(acqBundle: Bundle): any {
     if (this.factory) {
       return this.getFactoryUnchecked(acqBundle);
     }
@@ -88,7 +89,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
   }
 
   setProperties(properties: ServiceProperties): void {
-    let oldProps: ServiceProperties;
+    let oldProps: ServiceProperties | undefined;
     if (!this.isValid()) {
       throw new Error('The service registration is no longer valid for class(es): ' + JSON.stringify(this.classes));
     }
@@ -105,11 +106,11 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     // TODO: re-introduce
     this.registry.unregisterService(this.bundle, this);
     this.svcObj = null;
-    this.factory = null;
+    this.factory = undefined;
   }
 
-  getProperty(key: string): any {
-    return this.propMap[key];
+  getProperty(key: string): any | undefined {
+    return this.propMap ? this.propMap[key] : undefined;
   }
 
   getProperties(): ServiceProperties {
@@ -120,17 +121,17 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
     return Object.keys(this.propMap || {});
   }
 
-  private getFactoryUnchecked(bundle?: Bundle): any {
-    return this.factory.getService(bundle, this);
+  private getFactoryUnchecked(bundle: Bundle): any | undefined {
+    return this.factory?.getService(bundle, this);
   }
 
   private ungetFactoryUnchecked(bundle: Bundle, svcObj: any): void {
-    this.factory.ungetService(bundle, this, svcObj);
+    this.factory?.ungetService(bundle, this, svcObj);
   }
 
-  private initializeProperties(dict: Record<string, any>): void {
+  private initializeProperties(dict?: Record<string, any>): void {
     const props: Record<string, any> = {};
-    if (isAllPresent(dict)) {
+    if (dict) {
       Object.assign(props, { ...dict });
     }
 

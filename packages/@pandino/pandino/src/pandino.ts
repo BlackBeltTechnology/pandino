@@ -1,11 +1,29 @@
 import {
-  ActivatorResolver,
-  Bundle,
   BUNDLE_ACTIVATOR,
   BUNDLE_NAME,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_TYPE,
   BUNDLE_VERSION,
+  DEPLOYMENT_ROOT_PROP,
+  FRAMEWORK_BUNDLE_IMPORTER,
+  FRAMEWORK_EVALUATE_FILTER,
+  FRAMEWORK_LOGGER,
+  FRAMEWORK_MANIFEST_FETCHER,
+  FRAMEWORK_SERVICE_UTILS,
+  LOG_LEVEL_PROP,
+  LOG_LOGGER_PROP,
+  OBJECTCLASS,
+  PANDINO_ACTIVATOR_RESOLVERS,
+  PANDINO_BUNDLE_IMPORTER_PROP,
+  PANDINO_MANIFEST_FETCHER_PROP,
+  SYSTEM_BUNDLE_LOCATION,
+  SYSTEM_BUNDLE_SYMBOLICNAME,
+  SYSTEMBUNDLE_ACTIVATORS_PROP,
+  LogLevel,
+} from '@pandino/pandino-api';
+import type {
+  ActivatorResolver,
+  Bundle,
   BundleActivator,
   BundleContext,
   BundleEventType,
@@ -14,24 +32,11 @@ import {
   BundleManifestHeaders,
   BundleState,
   BundleType,
-  DEPLOYMENT_ROOT_PROP,
-  FRAMEWORK_BUNDLE_IMPORTER,
-  FRAMEWORK_EVALUATE_FILTER,
-  FRAMEWORK_LOGGER,
-  FRAMEWORK_MANIFEST_FETCHER,
-  FRAMEWORK_SERVICE_UTILS,
   FrameworkConfigMap,
   FrameworkEventType,
   FrameworkListener,
-  LOG_LEVEL_PROP,
-  LOG_LOGGER_PROP,
   Logger,
-  LogLevel,
   ManifestFetcher,
-  OBJECTCLASS,
-  PANDINO_ACTIVATOR_RESOLVERS,
-  PANDINO_BUNDLE_IMPORTER_PROP,
-  PANDINO_MANIFEST_FETCHER_PROP,
   ServiceEvent,
   ServiceFactory,
   ServiceListener,
@@ -39,29 +44,23 @@ import {
   ServiceReference,
   ServiceRegistration,
   ServiceUtils,
-  SYSTEM_BUNDLE_LOCATION,
-  SYSTEM_BUNDLE_SYMBOLICNAME,
-  SYSTEMBUNDLE_ACTIVATORS_PROP,
 } from '@pandino/pandino-api';
-import { evaluateFilter, FilterEvaluator } from '@pandino/filters';
-import { BundleImpl } from './lib/framework/bundle-impl';
-import { EventDispatcher } from './lib/framework/event-dispatcher';
-import { BundleContextImpl } from './lib/framework/bundle-context-impl';
-import { BundleEventImpl } from './lib/framework/bundle-event-impl';
-import { isAllPresent, isAnyMissing } from './lib/utils/helpers';
-import { StatefulResolver } from './lib/framework/stateful-resolver';
-import { ServiceRegistryImpl } from './lib/framework/service-registry-impl';
-import { FrameworkEventImpl } from './lib/framework/framework-event-impl';
-import { ConsoleLogger } from './lib/utils/console-logger';
-import { ServiceEventImpl } from './lib/framework/service-event-impl';
-import { BundleRevisionImpl } from './lib/framework/bundle-revision-impl';
-import { VoidFetcher } from './lib/utils/void-fetcher';
-import { VoidImporter } from './lib/utils/void-importer';
-import { Framework } from './lib/framework/framework';
-import { ServiceRegistry } from './lib/framework/service-registry';
-import { ServiceRegistryCallbacks } from './lib/framework/service-registry-callbacks';
-import { EsmActivatorResolver } from './lib/framework/esm-activator-resolver';
-import { serviceUtilsImpl } from './lib/utils/service-utils';
+import { evaluateFilter } from '@pandino/filters';
+import type { FilterEvaluator } from '@pandino/filters';
+import { ConsoleLogger, VoidFetcher, VoidImporter, serviceUtilsImpl } from './lib/utils';
+import {
+  BundleContextImpl,
+  BundleEventImpl,
+  BundleImpl,
+  BundleRevisionImpl,
+  EsmActivatorResolver,
+  EventDispatcher,
+  FrameworkEventImpl,
+  ServiceEventImpl,
+  ServiceRegistryImpl,
+  StatefulResolver,
+} from './lib/framework';
+import type { Framework, ServiceRegistry, ServiceRegistryCallbacks } from './lib/framework';
 
 export class Pandino extends BundleImpl implements Framework {
   private readonly fetcher: ManifestFetcher;
@@ -76,11 +75,11 @@ export class Pandino extends BundleImpl implements Framework {
 
   constructor(configMap: FrameworkConfigMap) {
     const deploymentRoot: string | undefined = configMap[DEPLOYMENT_ROOT_PROP];
-    const logger: Logger = isAllPresent(configMap[LOG_LOGGER_PROP]) ? configMap[LOG_LOGGER_PROP] : new ConsoleLogger();
-    const fetcher: ManifestFetcher = isAllPresent(configMap[PANDINO_MANIFEST_FETCHER_PROP])
+    const logger: Logger = configMap[LOG_LOGGER_PROP] ? configMap[LOG_LOGGER_PROP]! : new ConsoleLogger();
+    const fetcher: ManifestFetcher = configMap[PANDINO_MANIFEST_FETCHER_PROP]
       ? configMap[PANDINO_MANIFEST_FETCHER_PROP]
       : new VoidFetcher();
-    const importer: BundleImporter = isAllPresent(configMap[PANDINO_BUNDLE_IMPORTER_PROP])
+    const importer: BundleImporter = configMap[PANDINO_BUNDLE_IMPORTER_PROP]
       ? configMap[PANDINO_BUNDLE_IMPORTER_PROP]
       : new VoidImporter();
     logger.setLogLevel(configMap[LOG_LEVEL_PROP] || LogLevel.LOG);
@@ -149,7 +148,7 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   getVersion(): string {
-    return this.getHeaders()[BUNDLE_VERSION];
+    return this.getHeaders()[BUNDLE_VERSION]!;
   }
 
   async start(): Promise<void> {
@@ -194,7 +193,7 @@ export class Pandino extends BundleImpl implements Framework {
     }
   }
 
-  async installBundle(origin: Bundle, locationOrHeaders: string | BundleManifestHeaders): Promise<Bundle> {
+  async installBundle(origin: Bundle, locationOrHeaders: string | BundleManifestHeaders): Promise<Bundle | undefined> {
     if (this.getState() === 'STOPPING' || this.getState() === 'UNINSTALLED') {
       throw new Error('The framework has been shutdown.');
     }
@@ -204,7 +203,7 @@ export class Pandino extends BundleImpl implements Framework {
         ? await this.fetcher.fetch(locationOrHeaders, this.getDeploymentRoot())
         : locationOrHeaders;
     let bundle: BundleImpl;
-    let existing: Bundle = this.isBundlePresent(resolvedHeaders);
+    let existing = this.isBundlePresent(resolvedHeaders);
 
     if (!existing) {
       const id = this.getNextId();
@@ -231,17 +230,18 @@ export class Pandino extends BundleImpl implements Framework {
         return existing;
       } catch (err) {
         this.logger.error(err);
+        return Promise.resolve(undefined);
       }
     }
   }
 
-  async updateBundle(bundle: BundleImpl, headers: BundleManifestHeaders, origin: Bundle): Promise<Bundle> {
+  async updateBundle(bundle: BundleImpl, headers: BundleManifestHeaders, origin?: Bundle): Promise<Bundle> {
     if (bundle.getState() === 'STARTING' || bundle.getState() === 'STOPPING') {
       throw new Error(
         'Bundle ' + bundle.getUniqueIdentifier() + ' cannot be updated, since it is either STARTING or STOPPING.',
       );
     }
-    let rethrow: Error;
+    let rethrow: Error | undefined;
     const oldState: BundleState = bundle.getState();
 
     if (oldState === 'ACTIVE') {
@@ -250,12 +250,12 @@ export class Pandino extends BundleImpl implements Framework {
 
     try {
       bundle.revise(headers);
-    } catch (ex) {
+    } catch (ex: any) {
       this.logger.error('Unable to update the bundle.', ex);
       rethrow = ex;
     }
 
-    if (isAnyMissing(rethrow)) {
+    if (!rethrow) {
       this.setBundleStateAndNotify(bundle, 'INSTALLED');
       this.fireBundleEvent('UNRESOLVED', bundle, origin);
       this.fireBundleEvent('UPDATED', bundle, origin);
@@ -268,9 +268,9 @@ export class Pandino extends BundleImpl implements Framework {
     return bundle;
   }
 
-  async startBundle(bundle: BundleImpl): Promise<void> {
+  async startBundle(bundle: BundleImpl): Promise<void> | never {
     this.logger.info(`Starting Bundle: ${bundle.getSymbolicName()}: ${bundle.getVersion()}`);
-    let rethrow: Error;
+    let rethrow: Error | undefined;
     const validStates: BundleState[] = ['INSTALLED'];
     if (!validStates.includes(bundle.getState())) {
       throw new Error(
@@ -286,10 +286,10 @@ export class Pandino extends BundleImpl implements Framework {
     try {
       const revision = bundle.getCurrentRevision();
       const wiring = revision.getWiring() || this.resolver.createWiringForRevision(revision);
-      if (isAllPresent(wiring) && wiring.allWireProvidersInAnyState(['ACTIVE'])) {
+      if (wiring && wiring.allWireProvidersInAnyState(['ACTIVE'])) {
         await this.activateBundle(bundle, false);
       }
-    } catch (ex) {
+    } catch (ex: any) {
       rethrow = ex;
       this.logger.error(`Error while starting Bundle: ${bundle.getSymbolicName()}: ${bundle.getVersion()}`, ex);
     }
@@ -307,28 +307,28 @@ export class Pandino extends BundleImpl implements Framework {
     }
   }
 
-  async activateBundle(bundle: BundleImpl, fireEvent: boolean): Promise<void> {
+  async activateBundle(bundle: BundleImpl, fireEvent: boolean): Promise<void> | never {
     this.logger.info(`Activating Bundle: ${bundle.getSymbolicName()}: ${bundle.getVersion()}`);
     if (bundle.getState() === 'ACTIVE') {
       return;
     }
 
-    let rethrow: Error = null;
+    let rethrow: Error | undefined;
     try {
       const activator = await this.createBundleActivator(bundle);
       bundle.setActivator(activator);
-    } catch (th) {
+    } catch (th: any) {
       rethrow = th;
     }
 
     try {
       this.fireBundleEvent('STARTING', bundle);
 
-      if (isAllPresent(rethrow)) {
+      if (rethrow) {
         throw rethrow;
       }
 
-      if (isAllPresent(bundle.getActivator())) {
+      if (bundle.getActivator()) {
         await bundle.getActivator().start(bundle.getBundleContext());
       }
 
@@ -342,25 +342,25 @@ export class Pandino extends BundleImpl implements Framework {
 
       this.setBundleStateAndNotify(bundle, 'INSTALLED');
 
-      bundle.setActivator(null);
+      bundle.setActivator(undefined);
 
       const bci: BundleContextImpl = bundle.getBundleContext() as BundleContextImpl;
       bci.invalidate();
       bci.closeTrackers();
-      bundle.setBundleContext(null);
+      bundle.setBundleContext(undefined);
 
       this.registry.unregisterServices(bundle);
       this.registry.ungetServices(bundle);
-      this.dispatcher.removeListeners(bci);
+      this.dispatcher.removeListeners(bci as BundleContext);
 
       // Rethrow all other exceptions as a BundleException.
       throw new Error('Activator start error in bundle ' + bundle + ': ' + th);
     }
   }
 
-  async stopBundle(bundle: BundleImpl): Promise<void> {
+  async stopBundle(bundle: BundleImpl): Promise<void> | never {
     try {
-      let error: Error;
+      let error: Error | undefined;
       let wasActive = false;
 
       switch (bundle.getState()) {
@@ -385,17 +385,17 @@ export class Pandino extends BundleImpl implements Framework {
           if (typeof bundle.getActivator()?.stop === 'function') {
             await bundle.getActivator().stop(bundle.getBundleContext());
           }
-        } catch (err) {
+        } catch (err: any) {
           error = err;
         }
       }
 
       if (bundle.getBundleId() !== 0) {
-        bundle.setActivator(null);
+        bundle.setActivator(undefined);
         const bci: BundleContextImpl = bundle.getBundleContext() as BundleContextImpl;
         bci.invalidate();
         bci.closeTrackers();
-        bundle.setBundleContext(null);
+        bundle.setBundleContext(undefined);
 
         // Unregister any services offered by this bundle.
         this.registry.unregisterServices(bundle);
@@ -404,7 +404,7 @@ export class Pandino extends BundleImpl implements Framework {
         this.registry.ungetServices(bundle);
 
         // The spec says that we must remove all event listeners for a bundle when it is stopped.
-        this.dispatcher.removeListeners(bci);
+        this.dispatcher.removeListeners(bci as BundleContext);
 
         bundle.setState('INSTALLED');
       }
@@ -423,7 +423,7 @@ export class Pandino extends BundleImpl implements Framework {
     this.fireBundleEvent('STOPPED', bundle);
   }
 
-  getBundle(id: number): Bundle {
+  getBundle(id: number): Bundle | undefined {
     return this.bundles.find((b) => b.getBundleId() === id);
   }
 
@@ -448,7 +448,7 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   addBundleListener(bundle: BundleImpl, l: BundleListener): void {
-    this.dispatcher.addListener(bundle.getBundleContext(), 'BUNDLE', l, null);
+    this.dispatcher.addListener?.(bundle.getBundleContext(), 'BUNDLE', l, undefined);
   }
 
   removeBundleListener(bundle: BundleImpl, l: BundleListener): void {
@@ -464,7 +464,7 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   addFrameworkListener(bundle: BundleImpl, l: FrameworkListener): void {
-    this.dispatcher.addListener(bundle.getBundleContext(), 'FRAMEWORK', l, null);
+    this.dispatcher.addListener(bundle.getBundleContext(), 'FRAMEWORK', l, undefined);
   }
 
   removeFrameworkListener(bundle: BundleImpl, l: FrameworkListener): void {
@@ -516,7 +516,7 @@ export class Pandino extends BundleImpl implements Framework {
     if (bundle.getState() === 'ACTIVE') {
       try {
         await this.stopBundle(bundle);
-      } catch (err) {
+      } catch (err: any) {
         this.logger.error(`Error stopping bundle: ${bundle.getUniqueIdentifier()}`, err);
         this.fireFrameworkEvent('ERROR', bundle, err);
         errored = err;
@@ -539,7 +539,7 @@ export class Pandino extends BundleImpl implements Framework {
   ): ServiceReference<any>[] {
     const refs: ServiceReference<any>[] = this.getServiceReferences(bundle, className, filter, checkAssignable);
 
-    return isAnyMissing(refs) ? [] : [...refs];
+    return refs ?? [];
   }
 
   private getServiceReferences(
@@ -574,12 +574,11 @@ export class Pandino extends BundleImpl implements Framework {
     return n;
   }
 
-  private async createBundleActivator(impl: BundleImpl): Promise<BundleActivator> {
-    let activator: BundleActivator = null;
+  private async createBundleActivator(impl: BundleImpl): Promise<BundleActivator> | never {
     let headerMap: BundleManifestHeaders = impl.getHeaders();
     let activatorDefinition = headerMap[BUNDLE_ACTIVATOR];
 
-    if (isAnyMissing(activatorDefinition)) {
+    if (!activatorDefinition) {
       throw new Error('Missing mandatory Bundle Activator!');
     } else if (typeof activatorDefinition === 'string') {
       this.logger.debug(`Attempting to load Activator from: ${activatorDefinition}`);
@@ -607,13 +606,10 @@ export class Pandino extends BundleImpl implements Framework {
         );
       }
 
-      activator =
-        typeof activatorInstance === 'function' ? (new activatorInstance() as BundleActivator) : activatorInstance;
+      return typeof activatorInstance === 'function' ? (new activatorInstance() as BundleActivator) : activatorInstance;
     } else {
       return impl.getActivator();
     }
-
-    return activator;
   }
 
   private static isServiceAssignable(requester: Bundle, ref: ServiceReference<any>): boolean {
@@ -638,7 +634,7 @@ export class Pandino extends BundleImpl implements Framework {
   getService<S>(bundle: Bundle, ref: ServiceReference<S>, isServiceObjects: boolean): S | undefined {
     try {
       return this.registry.getService(bundle, ref, isServiceObjects);
-    } catch (ex) {
+    } catch (ex: any) {
       this.fireFrameworkEvent('ERROR', bundle, ex);
     }
 
@@ -655,7 +651,7 @@ export class Pandino extends BundleImpl implements Framework {
     svcObj: S | ServiceFactory<S>,
     dict: Record<any, any>,
   ): ServiceRegistration<S> {
-    let reg = this.registry.registerService(context.getBundle(), identifier, svcObj, dict);
+    let reg = this.registry.registerService(context.getBundle()!, identifier, svcObj, dict);
 
     this.fireServiceEvent(new ServiceEventImpl('REGISTERED', reg.getReference()), {});
 

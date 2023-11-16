@@ -1,4 +1,4 @@
-import { ManifestFetcher } from '@pandino/pandino-api';
+import type { ManifestFetcher } from '@pandino/pandino-api';
 
 /* istanbul ignore file */
 export class VoidFetcher implements ManifestFetcher {

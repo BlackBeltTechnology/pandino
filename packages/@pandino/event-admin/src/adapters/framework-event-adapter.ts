@@ -1,11 +1,6 @@
-import { BundleContext, FrameworkEvent, FrameworkListener } from '@pandino/pandino-api';
-import {
-  BUNDLE_SYMBOLICNAME,
-  EVENT,
-  EventAdmin,
-  EventFactory,
-  FRAMEWORK_EVENT_INTERFACE_KEY,
-} from '@pandino/event-api';
+import type { BundleContext, FrameworkEvent, FrameworkListener } from '@pandino/pandino-api';
+import { BUNDLE_SYMBOLICNAME, EVENT, FRAMEWORK_EVENT_INTERFACE_KEY } from '@pandino/event-api';
+import type { EventAdmin, EventFactory } from '@pandino/event-api';
 import { AbstractAdapter } from './abstract-adapter';
 
 export class FrameworkEventAdapter extends AbstractAdapter implements FrameworkListener {

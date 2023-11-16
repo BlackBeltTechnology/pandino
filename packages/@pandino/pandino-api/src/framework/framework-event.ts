@@ -1,5 +1,5 @@
-import { FrameworkEventType } from './framework-event-type';
-import { Bundle } from '../bundle';
+import type { FrameworkEventType } from './framework-event-type';
+import type { Bundle } from '../bundle';
 
 /**
  * A general event from the Framework.
@@ -38,5 +38,5 @@ export interface FrameworkEvent {
    *
    * @returns {Error} The error which occurred during Event processing.
    */
-  getError(): Error;
+  getError(): Error | undefined;
 }

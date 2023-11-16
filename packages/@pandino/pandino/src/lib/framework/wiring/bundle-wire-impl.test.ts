@@ -1,11 +1,12 @@
+import { describe, beforeEach, expect, it, vi } from 'vitest';
 import { BundleWireImpl } from './bundle-wire-impl';
 import { BundleCapabilityImpl } from './bundle-capability-impl';
 import { BundleRevisionImpl } from '../bundle-revision-impl';
 import { BundleImpl } from '../bundle-impl';
 import { BUNDLE_SYMBOLICNAME, FILTER_DIRECTIVE } from '@pandino/pandino-api';
-import { BundleRevision } from '../bundle-revision';
-import { BundleRequirement } from './bundle-requirement';
-import { BundleCapability } from './bundle-capability';
+import type { BundleRevision } from '../bundle-revision';
+import type { BundleRequirement } from './bundle-requirement';
+import type { BundleCapability } from './bundle-capability';
 import { BundleRequirementImpl } from './bundle-requirement-impl';
 
 describe('BundleWireImpl', () => {
@@ -14,7 +15,7 @@ describe('BundleWireImpl', () => {
   let provider: BundleRevision;
   let cap: BundleCapability;
   let wire: BundleWireImpl;
-  let mockGetConfig = jest.fn();
+  let mockGetConfig = vi.fn();
   const mockConfig = {};
 
   beforeEach(() => {

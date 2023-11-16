@@ -1,4 +1,4 @@
-import { BundleImporter, ImporterReturns } from '@pandino/pandino-api';
+import type { BundleImporter, ImporterReturns } from '@pandino/pandino-api';
 
 /* istanbul ignore file */
 export class VoidImporter implements BundleImporter {

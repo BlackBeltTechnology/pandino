@@ -2,18 +2,19 @@
   "name": "@pandino/persistence-manager-localstorage",
   "version": "0.8.30",
   "description": "Localstorage implementation of the Pandino Persistence Manager API",
-  "module": "./dist/esm/persistence-manager-localstorage.mjs",
-  "types": "dist/esm/index.d.ts",
+  "module": "./dist/@pandino/persistence-manager-localstorage.mjs",
+  "types": "dist/@pandino/persistence-manager-localstorage.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "default": "./dist/esm/persistence-manager-localstorage.mjs"
+      "import": "./dist/@pandino/persistence-manager-localstorage.mjs"
     }
   },
   "scripts": {
-    "test": "jest",
-    "build": "rollup -c --environment=PRODUCTION",
-    "build:dev": "rollup -c"
+    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "tsc": "tsc"
   },
   "keywords": [
     "pandino",
@@ -35,7 +36,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
@@ -44,40 +45,14 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "^0.8.30",
-    "@pandino/persistence-manager-api": "^0.8.30",
-    "@pandino/rollup-plugin-generate-manifest": "^0.8.30"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "text",
-      "json",
-      "html"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 85,
-        "branches": 90,
-        "functions": 95,
-        "lines": 85
-      }
-    },
-    "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        {
-          "tsconfig": "tsconfig.test.json"
-        }
-      ]
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json"
-    ]
+    "@pandino/pandino-api": "workspace:^0.8.29",
+    "@pandino/persistence-manager-api": "workspace:^0.8.29",
+    "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.29",
+    "dts-bundle-generator": "^8.1.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vitest": "^0.34.6"
   },
   "pandino": {
     "manifest": {

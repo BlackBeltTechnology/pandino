@@ -1,4 +1,5 @@
-import { BundleEvent } from '@pandino/pandino-api';
+import { describe, beforeEach, expect, it, vi } from 'vitest';
+import type { BundleEvent } from '@pandino/pandino-api';
 import { BUNDLE_SYMBOLICNAME, EVENT } from '@pandino/event-api';
 import { evaluateFilter } from '@pandino/filters';
 import { BundleEventAdapter } from './bundle-event-adapter';
@@ -9,16 +10,16 @@ describe('BundleEventAdapter', () => {
   let bea: BundleEventAdapter;
   let eventAdmin: EventAdminImpl;
   const eventFactoryImpl = new EventFactoryImpl(evaluateFilter);
-  const mockContextGetService = jest.fn();
-  const mockContextAddBundleListener = jest.fn();
-  const mockContextRemoveBundleListener = jest.fn();
+  const mockContextGetService = vi.fn();
+  const mockContextAddBundleListener = vi.fn();
+  const mockContextRemoveBundleListener = vi.fn();
   const mockContext: any = {
     getService: mockContextGetService,
     addBundleListener: mockContextAddBundleListener,
     removeBundleListener: mockContextRemoveBundleListener,
   };
   const mockLogger: any = {};
-  const mockPostEvent = jest.fn();
+  const mockPostEvent = vi.fn();
   const bundle1: any = {
     getSymbolicName: () => '@scope/bundle1',
     getBundleId: () => 11,

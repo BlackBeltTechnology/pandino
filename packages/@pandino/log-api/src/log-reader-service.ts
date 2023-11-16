@@ -1,4 +1,4 @@
-import { LogListener } from './log-listener';
+import type { LogListener } from './log-listener';
 
 /**
  * Provides methods to retrieve LogEntry objects from the log.

@@ -1,4 +1,4 @@
-import { Matcher } from './matcher';
+import type { Matcher } from './matcher';
 
 export class SubPackageMatcher implements Matcher {
   private readonly packageName: string;

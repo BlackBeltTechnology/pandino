@@ -1,30 +1,25 @@
-import {
-  Bundle,
-  BundleActivator,
-  BundleContext,
-  DEPLOYMENT_ROOT_PROP,
-  FRAMEWORK_MANIFEST_FETCHER,
-  ManifestFetcher,
-  ServiceReference,
-} from '@pandino/pandino-api';
+import { DEPLOYMENT_ROOT_PROP, FRAMEWORK_MANIFEST_FETCHER } from '@pandino/pandino-api';
+import type { Bundle, BundleActivator, BundleContext, ManifestFetcher, ServiceReference } from '@pandino/pandino-api';
 
 export default class PandinoBundleInstallerDomActivator implements BundleActivator {
-  private context: BundleContext;
-  private observer: MutationObserver;
-  private fetcherReference: ServiceReference<ManifestFetcher>;
-  private fetcher: ManifestFetcher;
+  private context?: BundleContext;
+  private observer?: MutationObserver;
+  private fetcherReference?: ServiceReference<ManifestFetcher>;
+  private fetcher?: ManifestFetcher;
   private installedManifestList: string[] = [];
 
   async start(context: BundleContext): Promise<void> {
     this.context = context;
-    this.fetcherReference = context.getServiceReference<ManifestFetcher>(FRAMEWORK_MANIFEST_FETCHER);
-    this.fetcher = context.getService<ManifestFetcher>(this.fetcherReference);
-    this.registerDocumentDefinedManifests();
+    this.fetcherReference = context.getServiceReference<ManifestFetcher>(FRAMEWORK_MANIFEST_FETCHER)!;
+    this.fetcher = context.getService<ManifestFetcher>(this.fetcherReference)!;
+    await this.registerDocumentDefinedManifests();
   }
 
   async stop(context: BundleContext): Promise<void> {
-    context.ungetService(this.fetcherReference);
-    this.observer.disconnect();
+    context.ungetService(this.fetcherReference!);
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 
   async registerDocumentDefinedManifests(): Promise<void> {
@@ -43,12 +38,12 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
 
     const callback = async () => {
       if (documentDefinedManifest.hasAttribute('src')) {
-        locations = await this.fetcher.fetch(
-          this.context.getProperty(DEPLOYMENT_ROOT_PROP),
-          documentDefinedManifest.getAttribute('src'),
+        locations = await this.fetcher!.fetch(
+          this.context!.getProperty(DEPLOYMENT_ROOT_PROP),
+          documentDefinedManifest.getAttribute('src') as string,
         );
       } else {
-        locations = documentDefinedManifest ? JSON.parse(documentDefinedManifest.textContent) : [];
+        locations = documentDefinedManifest ? JSON.parse(documentDefinedManifest.textContent!) : [];
       }
 
       const installList = locations.filter(
@@ -71,11 +66,11 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
   }
 
   async install(path: string): Promise<void> {
-    await this.context.installBundle(path);
+    await this.context!.installBundle(path);
   }
 
   async uninstall(path: string): Promise<void> {
-    const bundle = this.context.getBundles().find((bundle: Bundle) => path === bundle.getLocation());
+    const bundle = this.context!.getBundles().find((bundle: Bundle) => path === bundle.getLocation());
     if (bundle) {
       await bundle.uninstall();
     }

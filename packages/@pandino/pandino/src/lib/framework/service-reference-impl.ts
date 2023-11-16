@@ -1,20 +1,17 @@
 import {
-  Bundle,
-  ServiceProperties,
-  ServiceReference,
   SERVICE_DEFAULT_RANK,
   SERVICE_ID,
   SERVICE_RANKING,
   PACKAGE_NAMESPACE,
   OBJECTCLASS,
 } from '@pandino/pandino-api';
+import type { Bundle, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 import { ServiceRegistrationImpl } from './service-registration-impl';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
 import { BundleImpl } from './bundle-impl';
-import { isAllPresent, isAnyMissing } from '../utils/helpers';
-import { BundleRevision } from './bundle-revision';
-import { BundleCapability } from './wiring/bundle-capability';
-import { BundleWire } from './wiring/bundle-wire';
+import type { BundleRevision } from './bundle-revision';
+import type { BundleCapability } from './wiring/bundle-capability';
+import type { BundleWire } from './wiring/bundle-wire';
 
 export const PACKAGE_SEPARATOR = '.';
 
@@ -23,7 +20,7 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
   private readonly bundle: Bundle;
 
   constructor(reg: ServiceRegistrationImpl, bundle: Bundle) {
-    super(null, null, {}, {});
+    super(undefined, undefined, {}, {});
     this.reg = reg;
     this.bundle = bundle;
   }
@@ -78,10 +75,11 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
     return [];
   }
 
-  getBundle(): Bundle {
+  getBundle(): Bundle | undefined {
     if (this.reg.isValid()) {
       return this.bundle;
     }
+    return undefined;
   }
 
   getProperties(): ServiceProperties {
@@ -116,22 +114,23 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
     const providerWire = ServiceReferenceImpl.getWire(providerRevision, pkgName);
     const providerCap = ServiceReferenceImpl.getPackageCapability(providerRevision, pkgName);
 
-    if (isAnyMissing(requesterWire) && isAnyMissing(providerWire)) {
+    if (!requesterWire && !providerWire) {
       allow = true;
-    } else if (isAnyMissing(requesterWire) && isAllPresent(providerWire)) {
-      if (isAllPresent(requesterCap)) {
-        allow = providerRevision.getWiring().getRevision().equals(requesterRevision);
+    } else if (!requesterWire && providerWire) {
+      if (requesterCap) {
+        const wiring = providerRevision.getWiring();
+        allow = wiring ? wiring.getRevision().equals(requesterRevision) : false;
       } else {
         allow = true;
       }
-    } else if (requesterWire != null && providerWire == null) {
-      if (isAllPresent(providerCap)) {
+    } else if (requesterWire && !providerWire) {
+      if (providerCap) {
         allow = requesterWire.getProvider().equals(providerRevision);
       } else {
         allow = true;
       }
     } else {
-      allow = providerWire.getProvider().equals(requesterWire.getProvider());
+      allow = providerWire!.getProvider().equals(requesterWire!.getProvider());
     }
 
     return allow;
@@ -142,24 +141,18 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
     return Array.isArray(classOrArray) ? classOrArray.includes(objectClass) : classOrArray === objectClass;
   }
 
-  private static getClassName(className?: string): string {
-    if (isAnyMissing(className)) {
-      return '';
-    }
-    return className.substring(className.lastIndexOf(PACKAGE_SEPARATOR), className.length - 1);
-  }
-
   private static getClassPackage(className?: string): string {
-    if (isAnyMissing(className)) {
+    if (!className) {
       return '';
     }
     return className.substring(0, className.lastIndexOf(PACKAGE_SEPARATOR));
   }
 
   private static getWire(br: BundleRevision, name: string): BundleWire | undefined {
-    if (isAllPresent(br.getWiring())) {
-      const wires = br.getWiring().getRequiredWires(null);
-      if (isAllPresent(wires)) {
+    const wiring = br.getWiring();
+    if (wiring) {
+      const wires = wiring.getRequiredWires(undefined);
+      if (Array.isArray(wires)) {
         for (const w of wires) {
           if (
             w.getCapability().getNamespace() === PACKAGE_NAMESPACE &&
@@ -174,9 +167,10 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
   }
 
   private static getPackageCapability(br: BundleRevision, name: string): BundleCapability | undefined {
-    if (isAllPresent(br.getWiring())) {
-      const capabilities = br.getWiring().getCapabilities(null);
-      if (isAllPresent(capabilities)) {
+    const wiring = br.getWiring();
+    if (wiring) {
+      const capabilities = wiring.getCapabilities(undefined);
+      if (Array.isArray(capabilities)) {
         for (const c of capabilities) {
           if (c.getNamespace() === PACKAGE_NAMESPACE && c.getAttributes()[PACKAGE_NAMESPACE] === name) {
             return c;

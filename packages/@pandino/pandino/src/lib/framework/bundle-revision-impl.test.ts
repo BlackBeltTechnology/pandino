@@ -1,14 +1,14 @@
+import { describe, expect, it } from 'vitest';
 import {
-  ActivationPolicy,
   BUNDLE_ACTIVATIONPOLICY,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
-  BundleManifestHeaders,
   PROVIDE_CAPABILITY,
   REQUIRE_CAPABILITY,
 } from '@pandino/pandino-api';
+import type { ActivationPolicy, BundleManifestHeaders } from '@pandino/pandino-api';
 import { BundleRevisionImpl } from './bundle-revision-impl';
-import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
+import { BundleCapabilityImpl } from './wiring';
 
 describe('BundleRevisionImpl', () => {
   let mockConfig: Record<string, any> = {};

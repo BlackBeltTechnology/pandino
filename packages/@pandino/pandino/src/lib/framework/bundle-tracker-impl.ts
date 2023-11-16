@@ -1,4 +1,4 @@
-import {
+import type {
   Bundle,
   BundleContext,
   BundleEvent,
@@ -8,13 +8,12 @@ import {
   BundleTrackerCustomizer,
 } from '@pandino/pandino-api';
 import { AbstractTracked } from './abstract-tracked';
-import { isAllPresent, isAnyMissing } from '../utils/helpers';
 
 export class BundleTrackerImpl<T> implements BundleTracker<T> {
   readonly customizer: BundleTrackerCustomizer<T>;
   private readonly context: BundleContext;
   private readonly trackedStates: BundleState[] = [];
-  private tracked: Tracked<T>;
+  private tracked?: Tracked<T>;
 
   constructor(context: BundleContext, trackedStates: BundleState[], customizer?: BundleTrackerCustomizer<T>) {
     this.context = context;
@@ -23,7 +22,7 @@ export class BundleTrackerImpl<T> implements BundleTracker<T> {
   }
 
   open(): void {
-    if (isAllPresent(this.tracked)) {
+    if (this.tracked) {
       return;
     }
 
@@ -31,12 +30,12 @@ export class BundleTrackerImpl<T> implements BundleTracker<T> {
 
     this.context.addBundleListener(t);
 
-    const bundles = this.context.getBundles();
+    const bundles: Array<Bundle | undefined> = this.context.getBundles();
 
     if (bundles && bundles.length) {
       const length = bundles.length;
       for (let i = 0; i < length; i++) {
-        const state = bundles[i].getState();
+        const state = bundles[i]!.getState();
         if (this.getTrackedStates().includes(state)) {
           /* undefined out bundles whose states are not interesting */
           bundles[i] = undefined;
@@ -52,10 +51,10 @@ export class BundleTrackerImpl<T> implements BundleTracker<T> {
   }
 
   close(): void {
-    const outgoing: Tracked<T> = this.tracked;
+    const outgoing = this.tracked;
     let bundles: Bundle[];
 
-    if (isAnyMissing(outgoing)) {
+    if (!outgoing) {
       return;
     }
 
@@ -90,45 +89,45 @@ export class BundleTrackerImpl<T> implements BundleTracker<T> {
   }
 
   getBundles(): Bundle[] {
-    if (isAnyMissing(this.tracked)) {
+    if (!this.tracked) {
       return [];
     }
-    if (this.tracked.isEmpty()) {
+    if (this.tracked?.isEmpty()) {
       return [];
     }
-    return this.tracked.copyKeys([]);
+    return this.tracked ? this.tracked.copyKeys([]) : [];
   }
 
   getObject(bundle: Bundle): T | undefined {
-    if (isAnyMissing(this.tracked)) {
+    if (!this.tracked) {
       return undefined;
     }
     return this.tracked.getCustomizedObject(bundle);
   }
 
   remove(bundle: Bundle): void {
-    if (isAnyMissing(this.tracked)) {
+    if (!this.tracked) {
       return;
     }
     this.tracked.untrack(bundle, undefined);
   }
 
   size(): number {
-    if (isAnyMissing(this.tracked)) {
+    if (!this.tracked) {
       return 0;
     }
     return this.tracked.size();
   }
 
   getTrackingCount(): number {
-    if (isAnyMissing(this.tracked)) {
+    if (!this.tracked) {
       return -1;
     }
     return this.tracked.getTrackingCount();
   }
 
   isEmpty(): boolean {
-    if (isAnyMissing(this.tracked)) {
+    if (!this.tracked) {
       return true;
     }
     return this.tracked.isEmpty();

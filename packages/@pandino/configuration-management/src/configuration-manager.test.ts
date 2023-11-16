@@ -1,6 +1,8 @@
-import { Bundle, BundleContext, Logger, SERVICE_PID, ServiceEvent, ServiceReference } from '@pandino/pandino-api';
+import { describe, beforeEach, expect, it, vi } from 'vitest';
+import { SERVICE_PID } from '@pandino/pandino-api';
+import type { Bundle, BundleContext, Logger, ServiceEvent, ServiceReference } from '@pandino/pandino-api';
 import { evaluateFilter } from '@pandino/filters';
-import { ManagedService } from '@pandino/configuration-management-api';
+import type { ManagedService } from '@pandino/configuration-management-api';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
 import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
@@ -11,7 +13,7 @@ describe('ConfigurationManager', function () {
   let context: BundleContext;
   let bundle: Bundle;
   let cm: ConfigurationManager;
-  let mockDebug = jest.fn();
+  let mockDebug = vi.fn();
   let logger: Logger = {
     debug: mockDebug,
   } as unknown as Logger;
@@ -134,7 +136,7 @@ describe('ConfigurationManager', function () {
     expect((cm as any).eventListeners.size).toEqual(0);
 
     const mockService: any = {
-      configurationEvent: jest.fn(),
+      configurationEvent: vi.fn(),
     };
     (context as any).getService = () => mockService;
     const mockServiceReference: any = {
@@ -174,7 +176,7 @@ describe('ConfigurationManager', function () {
     expect((cm as any).managedReferences.size).toEqual(0);
 
     const mockService: any = {
-      updated: jest.fn(),
+      updated: vi.fn(),
     };
     (context as any).getService = () => mockService;
     const mockServiceReference: any = {
@@ -259,13 +261,13 @@ describe('ConfigurationManager', function () {
       (context as any).getServiceReferences = () => allRefs;
 
       const serviceForRefWithInitializedConfig: ManagedService = {
-        updated: jest.fn(),
+        updated: vi.fn(),
       };
       const serviceForRefWithOwnConfig: ManagedService = {
-        updated: jest.fn(),
+        updated: vi.fn(),
       };
       const serviceToSkip: ManagedService = {
-        updated: jest.fn(),
+        updated: vi.fn(),
       };
 
       const allServices: Map<any, ManagedService> = new Map<any, ManagedService>([

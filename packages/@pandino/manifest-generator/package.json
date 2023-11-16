@@ -2,7 +2,7 @@
   "name": "@pandino/manifest-generator",
   "version": "0.8.30",
   "description": "manifest generator utility to help manage Pandino Manifest file generation / maintenance",
-  "main": "src/index.js",
+  "main": "src/index.cjs",
   "scripts": {},
   "keywords": [
     "pandino",
@@ -20,7 +20,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=14.9.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"

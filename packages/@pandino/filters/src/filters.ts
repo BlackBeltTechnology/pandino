@@ -13,12 +13,12 @@ export const convert = (attrs: Record<string, any>): FilterNode => {
   if (filters.length === 1) {
     filter = filters[0];
   } else if (Object.keys(attrs).length > 1) {
-    filter = { attribute: null, operator: 'and', children: filters };
+    filter = { attribute: undefined, operator: 'and', children: filters };
   } else if (filters.length === 0) {
-    filter = { attribute: null, operator: 'eq', value: '*' };
+    filter = { attribute: undefined, operator: 'eq', value: '*' };
   }
 
-  return filter;
+  return filter!;
 };
 
 export const evaluateFilter: FilterEvaluator = (data: any, query: string): boolean => {
@@ -27,31 +27,31 @@ export const evaluateFilter: FilterEvaluator = (data: any, query: string): boole
 };
 
 export function evaluateFilterNode(node: FilterNode, data: any): boolean {
-  if (!node.operator) {
+  if (!node.operator && node.children) {
     return evaluateFilterNode(node.children[0], data);
   }
 
   switch (node.operator) {
     case 'and':
-      return node.children.every(function (child) {
-        return evaluateFilterNode(child, data);
-      });
+      return (
+        node.children?.every(function (child) {
+          return evaluateFilterNode(child, data);
+        }) ?? false
+      );
     case 'or':
-      return node.children.some(function (child) {
-        return evaluateFilterNode(child, data);
-      });
+      return (
+        node.children?.some(function (child) {
+          return evaluateFilterNode(child, data);
+        }) ?? false
+      );
     case 'not':
-      return !evaluateFilterNode(node.children[0], data);
+      return node.children ? !evaluateFilterNode(node.children[0], data) : false;
     default:
       return evaluateComparison(node, data);
   }
 }
 
-export function serializeFilter(node?: FilterNode): string | undefined {
-  if (!node) {
-    return undefined;
-  }
-
+export function serializeFilter(node: FilterNode): string | undefined {
   if (node.operator && node.attribute && node.value !== undefined) {
     return `(${node.attribute}${FilterOperatorSymbolMapping[node.operator]}${node.value})`;
   }
@@ -68,10 +68,7 @@ export function serializeFilter(node?: FilterNode): string | undefined {
   return undefined;
 }
 
-export function parseFilter(filter?: string): FilterNode | undefined {
-  if (filter === null || filter === undefined) {
-    return undefined;
-  }
+export function parseFilter(filter: string): FilterNode | never {
   const filtered = filter.replace(/\s/g, '');
   const stack = [];
   let current: FilterNode = {};
@@ -89,6 +86,7 @@ export function parseFilter(filter?: string): FilterNode | undefined {
       if (!stack.length) {
         throw new Error('Unmatched closing parenthesis');
       }
+      // @ts-ignore
       current = stack.pop();
     } else if (char === '|') {
       current.operator = 'or';
@@ -126,10 +124,10 @@ function evaluateComparison(comparison: FilterNode, data: any): boolean {
   let value = comparison.value;
 
   // Traverse the nested attributes to get the actual value
-  const attributePath = attribute.split('.');
+  const attributePath = attribute ? attribute.split('.') : [];
   let current = data;
   while (attributePath.length > 0 && current) {
-    current = current[attributePath.shift()];
+    current = current[attributePath.shift()!];
   }
 
   // Handle missing attributes gracefully
@@ -233,42 +231,42 @@ export function evaluateSemver(version: string, operator: SemVerOperator, target
       return vMajor < tMajor
         ? true
         : vMajor > tMajor
-        ? false
-        : vMinor < tMinor
-        ? true
-        : vMinor > tMinor
-        ? false
-        : vPatch <= tPatch;
+          ? false
+          : vMinor < tMinor
+            ? true
+            : vMinor > tMinor
+              ? false
+              : vPatch <= tPatch;
     case 'lt':
       return vMajor < tMajor
         ? true
         : vMajor > tMajor
-        ? false
-        : vMinor < tMinor
-        ? true
-        : vMinor > tMinor
-        ? false
-        : vPatch < tPatch;
+          ? false
+          : vMinor < tMinor
+            ? true
+            : vMinor > tMinor
+              ? false
+              : vPatch < tPatch;
     case 'gte':
       return vMajor > tMajor
         ? true
         : vMajor < tMajor
-        ? false
-        : vMinor > tMinor
-        ? true
-        : vMinor < tMinor
-        ? false
-        : vPatch >= tPatch;
+          ? false
+          : vMinor > tMinor
+            ? true
+            : vMinor < tMinor
+              ? false
+              : vPatch >= tPatch;
     case 'gt':
       return vMajor > tMajor
         ? true
         : vMajor < tMajor
-        ? false
-        : vMinor > tMinor
-        ? true
-        : vMinor < tMinor
-        ? false
-        : vPatch > tPatch;
+          ? false
+          : vMinor > tMinor
+            ? true
+            : vMinor < tMinor
+              ? false
+              : vPatch > tPatch;
     case 'eq':
       return vMajor === tMajor && vMinor === tMinor && vPatch === tPatch;
     default:

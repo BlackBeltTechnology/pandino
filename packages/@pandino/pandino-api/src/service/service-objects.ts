@@ -12,7 +12,7 @@
  * framework when the bundle associated with the BundleContext used to create this {@code ServiceObjects} object is
  * stopped.
  */
-import { ServiceReference } from './service-reference';
+import type { ServiceReference } from './service-reference';
 
 export interface ServiceObjects<S> {
   /**

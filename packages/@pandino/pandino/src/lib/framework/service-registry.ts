@@ -1,6 +1,6 @@
-import { Bundle, ServiceProperties, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
-import { UsageCount } from './usage-count';
-import { Capability } from './resource/capability';
+import type { Bundle, ServiceProperties, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
+import type { UsageCount } from './usage-count';
+import type { Capability } from './resource';
 
 export interface ServiceRegistry {
   getRegisteredServices(bundle: Bundle): ServiceReference<any>[];
