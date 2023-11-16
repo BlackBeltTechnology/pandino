@@ -1,0 +1,52 @@
+{
+  "name": "@pandino/scr-api",
+  "version": "0.8.31",
+  "description": "Pandino Service Component Runtime API",
+  "main": "dist/@pandino/scr-api.cjs",
+  "module": "dist/@pandino/scr-api.mjs",
+  "types": "dist/@pandino/scr-api.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": "./dist/@pandino/scr-api.cjs",
+      "import": "./dist/@pandino/scr-api.mjs"
+    }
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "tsc": "tsc"
+  },
+  "keywords": [
+    "pandino",
+    "api",
+    "scr",
+    "service-component-runtime",
+    "declarative-services"
+  ],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "EPL-2.0",
+  "homepage": "https://github.com/BlackBeltTechnology/pandino",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlackBeltTechnology/pandino.git",
+    "directory": "packages/@pandino/scr-api"
+  },
+  "bugs": {
+    "url": "https://github.com/BlackBeltTechnology/pandino/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "dts-bundle-generator": "^8.1.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
+  }
+}

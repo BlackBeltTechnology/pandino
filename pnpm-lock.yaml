@@ -396,6 +396,48 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../manifest-generator
 
+  packages/@pandino/scr:
+    devDependencies:
+      '@pandino/pandino-api':
+        specifier: workspace:^0.8.31
+        version: link:../pandino-api
+      '@pandino/rollup-plugin-generate-manifest':
+        specifier: workspace:^0.8.31
+        version: link:../rollup-plugin-generate-manifest
+      '@pandino/scr-api':
+        specifier: workspace:^0.8.31
+        version: link:../scr-api
+      dts-bundle-generator:
+        specifier: ^8.1.2
+        version: 8.1.2
+      rimraf:
+        specifier: ^5.0.5
+        version: 5.0.5
+      typescript:
+        specifier: ^5.2.2
+        version: 5.2.2
+      vite:
+        specifier: ^4.5.0
+        version: 4.5.0(@types/node@20.9.0)
+      vitest:
+        specifier: ^0.34.6
+        version: 0.34.6
+
+  packages/@pandino/scr-api:
+    devDependencies:
+      dts-bundle-generator:
+        specifier: ^8.1.2
+        version: 8.1.2
+      rimraf:
+        specifier: ^5.0.5
+        version: 5.0.5
+      typescript:
+        specifier: ^5.2.2
+        version: 5.2.2
+      vite:
+        specifier: ^4.5.0
+        version: 4.5.0(@types/node@20.9.0)
+
   packages/@pandino/umd-activator-resolver-dom:
     devDependencies:
       '@pandino/pandino-api':
