@@ -6,6 +6,10 @@
 
 WIP
 
+## Sources
+
+- https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.component.html#service.component-service.component.runtime
+
 ## License
 
 Eclipse Public License - v 2.0

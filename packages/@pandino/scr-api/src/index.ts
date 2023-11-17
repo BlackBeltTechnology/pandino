@@ -1,3 +1,1 @@
-const index = 1;
-
-export default index;
+export * from './decorators';

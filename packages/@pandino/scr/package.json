@@ -13,8 +13,6 @@
   },
   "scripts": {
     "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
-    "test": "vitest run",
-    "test:dev": "vitest",
     "tsc": "tsc"
   },
   "keywords": [
