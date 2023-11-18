@@ -4,4 +4,6 @@ dist
 !examples/*/dist
 .idea
 packages/**/coverage
+packages/@pandino/*/dist
+packages/@pandino/*/types
 **/.DS_Store

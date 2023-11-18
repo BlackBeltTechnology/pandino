@@ -1,4 +1,4 @@
-import { BundleContext, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import type { BundleContext, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 
 export type ConfigurationPolicy = 'IGNORE' | 'OPTIONAL' | 'REQUIRE';
 export type ReferenceCardinality = 'MANDATORY' | 'OPTIONAL';
@@ -34,9 +34,9 @@ export interface ComponentContext<S> {
    * If the component instance is registered as a service using the service element, then this method returns the
    * service reference of the service provided by this component instance.
    *
-   * @return ServiceReference<S> | undefined
+   * @return ServiceReference<S>
    */
-  getServiceReference(): ServiceReference<S> | undefined;
+  getServiceReference(): ServiceReference<S>;
 }
 
 export interface ComponentProps {
@@ -61,4 +61,8 @@ export interface ReferenceProps {
   policy?: ReferencePolicy; // default: STATIC
   policyOption?: ReferencePolicyOption; // default: RELUCTANT
   scope?: ReferenceScope; // default: BUNDLE
+}
+
+export interface ComponentRegistrar {
+  registerComponent(target: any, bundleContext: BundleContext): void;
 }
