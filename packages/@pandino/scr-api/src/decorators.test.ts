@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { SERVICE_RANKING } from '@pandino/pandino-api';
 import { DOES_STUFF_INTERFACE_KEY, Host } from './__fixtures__/hostAndGuest';
 import {
+  $$PANDINO_META,
   COMPONENT_ACTIVATE_KEY_METHOD,
   COMPONENT_DEACTIVATE_KEY_METHOD,
   COMPONENT_KEY_CONFIGURATION_PID,
@@ -11,40 +12,65 @@ import {
   COMPONENT_KEY_SERVICE,
   COMPONENT_MODIFIED_KEY_METHOD,
   REFERENCE_KEY_CARDINALITY,
+  REFERENCE_KEY_POLICY,
+  REFERENCE_KEY_POLICY_OPTION,
+  REFERENCE_KEY_SCOPE,
   REFERENCE_KEY_SERVICE,
 } from './constants';
+import type { InternalMetaData, InternalReferenceMetaData } from './internal-interfaces';
 
 describe('Decorators', () => {
   it('@Component', () => {
-    expect(Reflect.getMetadata(COMPONENT_KEY_NAME, Host)).toEqual('@test/Host');
-    expect(Reflect.getMetadata(COMPONENT_KEY_SERVICE, Host)).toEqual('@test/Host');
-    expect(Reflect.getMetadata(COMPONENT_KEY_CONFIGURATION_PID, Host)).toEqual('@test/Host');
-    expect(Reflect.getMetadata(COMPONENT_KEY_CONFIGURATION_POLICY, Host)).toEqual('OPTIONAL');
-    expect(Reflect.getMetadata(COMPONENT_KEY_PROPERTY, Host)).toEqual({ [SERVICE_RANKING]: 10 });
+    const classMetaData: InternalMetaData = Host.prototype[$$PANDINO_META];
 
-    expect(Reflect.getMetadataKeys(Host.prototype, 'test')).toEqual([]);
+    expect(classMetaData[COMPONENT_KEY_NAME]).toEqual('@test/Host');
+    expect(classMetaData[COMPONENT_KEY_SERVICE]).toEqual('@test/Host');
+    expect(classMetaData[COMPONENT_KEY_CONFIGURATION_PID]).toEqual('@test/Host');
+    expect(classMetaData[COMPONENT_KEY_CONFIGURATION_POLICY]).toEqual('OPTIONAL');
+    expect(classMetaData[COMPONENT_KEY_PROPERTY]).toEqual({ [SERVICE_RANKING]: 10 });
   });
 
   it('@Activate', () => {
-    expect(Reflect.getMetadataKeys(Host.prototype, 'onActivate')).toEqual([COMPONENT_ACTIVATE_KEY_METHOD]);
+    const classMetaData: InternalMetaData = Host.prototype[$$PANDINO_META];
+    expect(classMetaData).toBeDefined();
+    expect(classMetaData[COMPONENT_ACTIVATE_KEY_METHOD]).toEqual({ method: 'onActivate' });
   });
 
   it('@Deactivate', () => {
-    expect(Reflect.getMetadataKeys(Host.prototype, 'onDeactivate')).toEqual([COMPONENT_DEACTIVATE_KEY_METHOD]);
+    const classMetaData: InternalMetaData = Host.prototype[$$PANDINO_META];
+    expect(classMetaData).toBeDefined();
+    expect(classMetaData[COMPONENT_DEACTIVATE_KEY_METHOD]).toEqual({ method: 'onDeactivate' });
   });
 
   it('@Modified', () => {
-    expect(Reflect.getMetadataKeys(Host.prototype, 'onModified')).toEqual([COMPONENT_MODIFIED_KEY_METHOD]);
+    const classMetaData: InternalMetaData = Host.prototype[$$PANDINO_META];
+    expect(classMetaData).toBeDefined();
+    expect(classMetaData[COMPONENT_MODIFIED_KEY_METHOD]).toEqual({ method: 'onModified' });
   });
 
   it('@Reference', () => {
-    const fieldsWithReference: string[] = Object.keys(Host.prototype).filter((k) =>
-      Reflect.getMetadataKeys(Host.prototype, k).some((k) => k.startsWith('pandino:scr:Reference.')),
-    );
+    const classMetaData: InternalMetaData = Host.prototype[$$PANDINO_META];
+    expect(classMetaData).toBeDefined();
 
-    expect(fieldsWithReference.length).toEqual(1);
-    expect(fieldsWithReference[0]).toEqual('guest');
-    expect(Reflect.getMetadata(REFERENCE_KEY_SERVICE, Host.prototype, 'guest')).toEqual(DOES_STUFF_INTERFACE_KEY);
-    expect(Reflect.getMetadata(REFERENCE_KEY_CARDINALITY, Host.prototype, 'guest')).toEqual('MANDATORY');
+    const guestMetaData: InternalReferenceMetaData = classMetaData.references['guest'];
+    expect(guestMetaData).toBeDefined();
+    expect(guestMetaData[REFERENCE_KEY_SERVICE]).toEqual(DOES_STUFF_INTERFACE_KEY);
+    expect(guestMetaData[REFERENCE_KEY_CARDINALITY]).toEqual('MANDATORY');
+    expect(guestMetaData[REFERENCE_KEY_POLICY]).toEqual('STATIC');
+    expect(guestMetaData[REFERENCE_KEY_POLICY_OPTION]).toEqual('RELUCTANT');
+    expect(guestMetaData[REFERENCE_KEY_SCOPE]).toEqual('BUNDLE');
+  });
+
+  it('instance info', () => {
+    const host = new Host();
+    expect(host).toBeDefined();
+    expect(host[$$PANDINO_META]).toBeDefined();
+    expect((host[$$PANDINO_META] as InternalMetaData)[COMPONENT_KEY_NAME]).toEqual('@test/Host');
+  });
+
+  it('instance info for symbol', () => {
+    const host = new Host();
+    expect(host).toBeDefined();
+    expect(host[Symbol.for('$$PANDINO_SCR_META')]).toBeDefined();
   });
 });

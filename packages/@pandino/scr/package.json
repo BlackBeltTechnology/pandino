@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "build": "rimraf dist && tsc && vite build",
     "tsc": "tsc"
   },
   "keywords": [
@@ -47,7 +47,6 @@
     "@pandino/pandino-api": "workspace:^0.8.31",
     "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.31",
     "@pandino/scr-api": "workspace:^0.8.31",
-    "dts-bundle-generator": "^8.1.2",
     "rimraf": "^5.0.5",
     "typescript": "^5.2.2",
     "vite": "^4.5.0",

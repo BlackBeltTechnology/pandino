@@ -407,9 +407,6 @@ importers:
       '@pandino/scr-api':
         specifier: workspace:^0.8.31
         version: link:../scr-api
-      dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -428,9 +425,6 @@ importers:
       '@pandino/pandino-api':
         specifier: workspace:^0.8.31
         version: link:../pandino-api
-      dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.13
