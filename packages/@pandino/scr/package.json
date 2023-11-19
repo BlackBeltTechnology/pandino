@@ -44,6 +44,7 @@
     "dist"
   ],
   "devDependencies": {
+    "@pandino/configuration-management-api": "workspace:^0.8.31",
     "@pandino/pandino-api": "workspace:^0.8.31",
     "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.31",
     "@pandino/scr-api": "workspace:^0.8.31",
@@ -54,7 +55,8 @@
   },
   "pandino": {
     "manifest": {
-      "Provide-Capability": "@pandino/scr"
+      "Require-Capability": "@pandino/configuration-management;objectClass:Array=\"@pandino/configuration-management/ConfigurationAdmin,@pandino/configuration-management/ConfigurationListener\"\"",
+      "Provide-Capability": "@pandino/extender;pandino.extender=\"pandino.component\""
     }
   }
 }

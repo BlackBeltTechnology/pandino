@@ -1,3 +1,17 @@
+export const COMPONENT_CAPABILITY_NAME = 'pandino.component';
+export const COMPONENT_ID = 'component.id';
+export const COMPONENT_NAME = 'component.name';
+
+export const DEACTIVATION_REASON_BUNDLE_STOPPED = 'bundle-stopped';
+export const DEACTIVATION_REASON_CONFIGURATION_DELETED = 'configuration-deleted';
+export const DEACTIVATION_REASON_CONFIGURATION_MODIFIED = 'configuration-modified';
+export const DEACTIVATION_REASON_DISABLED = 'disabled';
+export const DEACTIVATION_REASON_DISPOSED = 'disposed';
+export const DEACTIVATION_REASON_REFERENCE = 'reference';
+export const DEACTIVATION_REASON_UNSPECIFIED = 'unspecified';
+
+export const SERVICE_COMPONENT = 'Service-Component';
+
 export const $$PANDINO_META = Symbol.for('$$PANDINO_SCR_META');
 export const COMPONENT_REGISTRAR_INTERFACE_KEY = '@pandino/scr-api/ComponentRegistrar';
 

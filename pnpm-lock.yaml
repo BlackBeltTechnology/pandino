@@ -398,6 +398,9 @@ importers:
 
   packages/@pandino/scr:
     devDependencies:
+      '@pandino/configuration-management-api':
+        specifier: workspace:^0.8.31
+        version: link:../configuration-management-api
       '@pandino/pandino-api':
         specifier: workspace:^0.8.31
         version: link:../pandino-api

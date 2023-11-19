@@ -1,10 +1,78 @@
-import type { BundleContext, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import type { Bundle, BundleContext, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 
 export type ConfigurationPolicy = 'IGNORE' | 'OPTIONAL' | 'REQUIRE';
 export type ReferenceCardinality = 'MANDATORY' | 'OPTIONAL';
+
+/**
+ * The static policy is the most simple policy and is the default policy.
+ *
+ * A component instance never sees any of the dynamics. Component configurations are deactivated before any bound
+ * service for a reference having a static policy becomes unavailable. If a target service is available to replace the
+ * bound service which became unavailable, the component configuration must be reactivated and bound to the replacement
+ * service.
+ *
+ * The dynamic policy is slightly more complex since the component implementation must properly handle changes in the
+ * set of bound services. With the dynamic policy, SCR can change the set of bound services without deactivating a
+ * component configuration. If the component uses method injection to access services, then the component instance will
+ * be notified of changes in the set of bound services by calls to the bind and unbind methods.
+ */
 export type ReferencePolicy = 'STATIC' | 'DYNAMIC';
+
+/**
+ * The reluctant policy option is the default policy option for both static and dynamic reference policies.
+ *
+ * When a new target service for a reference becomes available, references having the reluctant policy option for the
+ * static policy or the dynamic policy with a unary cardinality will ignore the new target service.
+ *
+ * The greedy policy option is a valid policy option for both static and dynamic reference policies.
+ *
+ * When a new target service for a reference becomes available, references having the greedy policy option will bind the
+ * new target service.
+ */
 export type ReferencePolicyOption = 'RELUCTANT' | 'GREEDY';
 export type ReferenceScope = 'BUNDLE' | 'PROTOTYPE';
+export type ComponentConfigurationState =
+  | 'UNSATISFIED_CONFIGURATION'
+  | 'UNSATISFIED_REFERENCE'
+  | 'SATISFIED'
+  | 'ACTIVE'
+  | 'FAILED_ACTIVATION';
+
+export interface ComponentConfiguration<S> {
+  getId(): number;
+  getPID(): string | string[];
+  getConfigurationPolicy(): ConfigurationPolicy;
+  getProperties(): ServiceProperties;
+  getSatisfiedReferences(): SatisfiedReference[];
+  getUnsatisfiedReferences(): UnsatisfiedReference[];
+  getService(): ServiceReference<S> | undefined;
+  getState(): ComponentConfigurationState;
+}
+
+export interface SatisfiedReference {
+  getName(): string;
+  getTarget(): string;
+  getBoundServices(): ServiceReference<any>[];
+}
+
+export interface UnsatisfiedReference {
+  getName(): string;
+  getTarget(): string;
+  getTargetServices(): ServiceReference<any>[];
+}
+
+export interface ComponentInstance<S> {
+  /**
+   * Dispose of the component configuration for this component instance. The component configuration will be
+   * deactivated. If the component configuration has already been deactivated, this method does nothing.
+   */
+  dispose(): void;
+
+  /**
+   * Returns the component instance of the activated component configuration.
+   */
+  getInstance(): S;
+}
 
 /**
  * The Component Context can be made available to a component instance during activation, modification, and
@@ -17,11 +85,30 @@ export type ReferenceScope = 'BUNDLE' | 'PROTOTYPE';
  */
 export interface ComponentContext<S> {
   /**
+   * Disables the specified component name. The specified component name must be in the same bundle as this component.
+   *
+   * @param {string} name
+   */
+  disableComponent(name: string): void;
+
+  /**
+   * Enables the specified component name. The specified component name must be in the same bundle as this component.
+   *
+   * @param {string} name
+   */
+  enableComponent(name: string): void;
+
+  /**
    * Returns the BundleContext of the bundle which declares this component.
    *
    * @return BundleContext
    */
   getBundleContext(): BundleContext;
+
+  /**
+   * Returns the Component Instance object for the component instance associated with this Component Context.
+   */
+  getComponentInstance(): ComponentInstance<S>;
 
   /**
    * Returns the component properties for this Component Context.
@@ -37,6 +124,20 @@ export interface ComponentContext<S> {
    * @return ServiceReference<S>
    */
   getServiceReference(): ServiceReference<S>;
+
+  /**
+   * If the component instance is registered as a service using the servicescope="bundle" or servicescope="prototype"
+   * attribute, then this method returns the bundle using the service provided by the component instance.
+   */
+  getUsingBundle(): Bundle | undefined;
+
+  /**
+   * Returns the service object for the specified reference name.
+   *
+   * @param {string} name
+   * @param {ServiceReference<S>} [reference]
+   */
+  locateService(name: string, reference?: ServiceReference<S>): S | undefined;
 }
 
 export interface ComponentProps {
