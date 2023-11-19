@@ -1,3 +1,3 @@
-const index = 1;
+import { Activator } from './Activator';
 
-export default index;
+export default Activator;
