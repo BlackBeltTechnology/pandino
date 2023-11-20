@@ -2,13 +2,7 @@ export const COMPONENT_CAPABILITY_NAME = 'pandino.component';
 export const COMPONENT_ID = 'component.id';
 export const COMPONENT_NAME = 'component.name';
 
-export const DEACTIVATION_REASON_BUNDLE_STOPPED = 'bundle-stopped';
-export const DEACTIVATION_REASON_CONFIGURATION_DELETED = 'configuration-deleted';
-export const DEACTIVATION_REASON_CONFIGURATION_MODIFIED = 'configuration-modified';
-export const DEACTIVATION_REASON_DISABLED = 'disabled';
-export const DEACTIVATION_REASON_DISPOSED = 'disposed';
-export const DEACTIVATION_REASON_REFERENCE = 'reference';
-export const DEACTIVATION_REASON_UNSPECIFIED = 'unspecified';
+export type DeactivationReason = 'BUNDLE_STOPPED' | 'CONFIGURATION_DELETED' | 'CONFIGURATION_MODIFIED' | 'DISABLED' | 'DISPOSED' | 'REFERENCE' | 'UNSPECIFIED';
 
 export const SERVICE_COMPONENT = 'Service-Component';
 

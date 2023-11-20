@@ -1,4 +1,4 @@
-import type { Bundle, BundleContext, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import type { BundleContext, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 
 export type ConfigurationPolicy = 'IGNORE' | 'OPTIONAL' | 'REQUIRE';
 export type ReferenceCardinality = 'MANDATORY' | 'OPTIONAL';
@@ -31,12 +31,7 @@ export type ReferencePolicy = 'STATIC' | 'DYNAMIC';
  */
 export type ReferencePolicyOption = 'RELUCTANT' | 'GREEDY';
 export type ReferenceScope = 'BUNDLE' | 'PROTOTYPE';
-export type ComponentConfigurationState =
-  | 'UNSATISFIED_CONFIGURATION'
-  | 'UNSATISFIED_REFERENCE'
-  | 'SATISFIED'
-  | 'ACTIVE'
-  | 'FAILED_ACTIVATION';
+export type ComponentConfigurationState = 'UNSATISFIED_CONFIGURATION' | 'UNSATISFIED_REFERENCE' | 'SATISFIED' | 'ACTIVE' | 'FAILED_ACTIVATION';
 
 export interface ComponentConfiguration<S> {
   getId(): number;
@@ -51,14 +46,13 @@ export interface ComponentConfiguration<S> {
 
 export interface SatisfiedReference {
   getName(): string;
-  getTarget(): string;
+  getTarget(): string | undefined;
   getBoundServices(): ServiceReference<any>[];
 }
 
 export interface UnsatisfiedReference {
   getName(): string;
-  getTarget(): string;
-  getTargetServices(): ServiceReference<any>[];
+  getTarget(): string | undefined;
 }
 
 export interface ComponentInstance<S> {
@@ -123,21 +117,7 @@ export interface ComponentContext<S> {
    *
    * @return ServiceReference<S>
    */
-  getServiceReference(): ServiceReference<S>;
-
-  /**
-   * If the component instance is registered as a service using the servicescope="bundle" or servicescope="prototype"
-   * attribute, then this method returns the bundle using the service provided by the component instance.
-   */
-  getUsingBundle(): Bundle | undefined;
-
-  /**
-   * Returns the service object for the specified reference name.
-   *
-   * @param {string} name
-   * @param {ServiceReference<S>} [reference]
-   */
-  locateService(name: string, reference?: ServiceReference<S>): S | undefined;
+  getServiceReference(): ServiceReference<S> | undefined;
 }
 
 export interface ComponentProps {

@@ -1,11 +1,5 @@
-import { FRAMEWORK_LOGGER } from '@pandino/pandino-api';
-import type {
-  BundleActivator,
-  BundleContext,
-  Logger,
-  ServiceReference,
-  ServiceRegistration,
-} from '@pandino/pandino-api';
+import { FRAMEWORK_LOGGER, FRAMEWORK_SERVICE_UTILS, ServiceUtils } from '@pandino/pandino-api';
+import type { BundleActivator, BundleContext, Logger, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
 import type { ServiceComponentRuntime } from './ServiceComponentRuntime';
 import { ServiceComponentRuntimeImpl } from './ServiceComponentRuntimeImpl';
 import { SCR_INTERFACE_KEY } from './constants';
@@ -22,6 +16,8 @@ export class Activator implements BundleActivator {
   private componentRegistrar?: ComponentRegistrar;
   private loggerReference?: ServiceReference<Logger>;
   private logger?: Logger;
+  private serviceUtilsReference?: ServiceReference<ServiceUtils>;
+  private serviceUtils?: ServiceUtils;
   private configAdminReference?: ServiceReference<ConfigurationAdmin>;
   private configAdmin?: ConfigurationAdmin;
 
@@ -30,13 +26,12 @@ export class Activator implements BundleActivator {
     this.logger = context.getService<Logger>(this.loggerReference)!;
     this.configAdminReference = context.getServiceReference<ConfigurationAdmin>(CONFIG_ADMIN_INTERFACE_KEY)!;
     this.configAdmin = context.getService<ConfigurationAdmin>(this.configAdminReference)!;
-    this.service = new ServiceComponentRuntimeImpl(context, this.logger, this.configAdmin);
+    this.serviceUtilsReference = context.getServiceReference<ServiceUtils>(FRAMEWORK_SERVICE_UTILS)!;
+    this.serviceUtils = context.getService<ServiceUtils>(this.serviceUtilsReference)!;
+    this.service = new ServiceComponentRuntimeImpl(context, this.logger, this.configAdmin, this.serviceUtils);
     this.serviceRegistration = context.registerService<ServiceComponentRuntime>(SCR_INTERFACE_KEY, this.service, {});
     this.componentRegistrar = new ComponentRegistrarImpl(this.service);
-    this.componentRegistrarRegistration = context.registerService<ComponentRegistrar>(
-      COMPONENT_REGISTRAR_INTERFACE_KEY,
-      this.componentRegistrar,
-    );
+    this.componentRegistrarRegistration = context.registerService<ComponentRegistrar>(COMPONENT_REGISTRAR_INTERFACE_KEY, this.componentRegistrar);
 
     try {
       this.service.processComponents();
@@ -53,6 +48,9 @@ export class Activator implements BundleActivator {
     }
     if (this.loggerReference) {
       context.ungetService(this.loggerReference);
+    }
+    if (this.serviceUtilsReference) {
+      context.ungetService(this.serviceUtilsReference);
     }
     if (this.configAdminReference) {
       context.ungetService(this.configAdminReference);

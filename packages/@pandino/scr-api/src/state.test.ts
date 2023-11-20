@@ -6,14 +6,12 @@ import type { ComponentRegistrar } from './interfaces';
 import { Guest, Host } from './__fixtures__/hostAndGuest';
 
 describe('Decorator registration', () => {
-  const mockGetServiceReference = vi
-    .fn()
-    .mockImplementation((identifier: string): ServiceReference<any> | undefined => {
-      if (identifier === COMPONENT_REGISTRAR_INTERFACE_KEY) {
-        return mockRegistrarServiceReference;
-      }
-      return undefined;
-    });
+  const mockGetServiceReference = vi.fn().mockImplementation((identifier: string): ServiceReference<any> | undefined => {
+    if (identifier === COMPONENT_REGISTRAR_INTERFACE_KEY) {
+      return mockRegistrarServiceReference;
+    }
+    return undefined;
+  });
   const mockGetService = vi.fn().mockImplementation((reference: ServiceReference<any>): any | undefined => {
     if (mockRegistrarServiceReference && reference === mockRegistrarServiceReference) {
       return mockRegistrar;
@@ -30,8 +28,7 @@ describe('Decorator registration', () => {
   const mockRegistrar: ComponentRegistrar = {
     registerComponent: mockRegisterComponent,
   };
-  const mockRegistrarServiceReference: ServiceReference<ComponentRegistrar> =
-    {} as unknown as ServiceReference<ComponentRegistrar>;
+  const mockRegistrarServiceReference: ServiceReference<ComponentRegistrar> = {} as unknown as ServiceReference<ComponentRegistrar>;
 
   describe('lifecycle', () => {
     let deregisterCallback: () => void;
