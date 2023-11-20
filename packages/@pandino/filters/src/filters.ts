@@ -228,45 +228,13 @@ export function evaluateSemver(version: string, operator: SemVerOperator, target
   // Evaluate the comparison based on the specified operator
   switch (operator) {
     case 'lte':
-      return vMajor < tMajor
-        ? true
-        : vMajor > tMajor
-          ? false
-          : vMinor < tMinor
-            ? true
-            : vMinor > tMinor
-              ? false
-              : vPatch <= tPatch;
+      return vMajor < tMajor ? true : vMajor > tMajor ? false : vMinor < tMinor ? true : vMinor > tMinor ? false : vPatch <= tPatch;
     case 'lt':
-      return vMajor < tMajor
-        ? true
-        : vMajor > tMajor
-          ? false
-          : vMinor < tMinor
-            ? true
-            : vMinor > tMinor
-              ? false
-              : vPatch < tPatch;
+      return vMajor < tMajor ? true : vMajor > tMajor ? false : vMinor < tMinor ? true : vMinor > tMinor ? false : vPatch < tPatch;
     case 'gte':
-      return vMajor > tMajor
-        ? true
-        : vMajor < tMajor
-          ? false
-          : vMinor > tMinor
-            ? true
-            : vMinor < tMinor
-              ? false
-              : vPatch >= tPatch;
+      return vMajor > tMajor ? true : vMajor < tMajor ? false : vMinor > tMinor ? true : vMinor < tMinor ? false : vPatch >= tPatch;
     case 'gt':
-      return vMajor > tMajor
-        ? true
-        : vMajor < tMajor
-          ? false
-          : vMinor > tMinor
-            ? true
-            : vMinor < tMinor
-              ? false
-              : vPatch > tPatch;
+      return vMajor > tMajor ? true : vMajor < tMajor ? false : vMinor > tMinor ? true : vMinor < tMinor ? false : vPatch > tPatch;
     case 'eq':
       return vMajor === tMajor && vMinor === tMinor && vPatch === tPatch;
     default:

@@ -63,9 +63,7 @@ describe('BundleWireImpl', () => {
     expect(wire.getProvider()).toEqual(provider);
     expect(wire.getRequirement()).toEqual(req);
     expect(wire.getRequirer()).toEqual(requirer);
-    expect(wire.toString()).toEqual(
-      '[@mock/symbolic-name: 0.0.0 (R 1)] ns.one; (power=SuperSaiyan) -> [@mock/symbolic-name: 0.0.0 (R 2)]',
-    );
+    expect(wire.toString()).toEqual('[@mock/symbolic-name: 0.0.0 (R 1)] ns.one; (power=SuperSaiyan) -> [@mock/symbolic-name: 0.0.0 (R 2)]');
     expect(wire.equals(wire)).toEqual(true);
     expect(wire.equals(undefined)).toEqual(false);
     expect(wire.equals(null)).toEqual(false);

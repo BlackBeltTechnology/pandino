@@ -1,19 +1,7 @@
 import { SERVICE_PID } from '@pandino/pandino-api';
-import type {
-  BundleContext,
-  Logger,
-  ServiceEvent,
-  ServiceEventType,
-  ServiceListener,
-  ServiceReference,
-} from '@pandino/pandino-api';
+import type { BundleContext, Logger, ServiceEvent, ServiceEventType, ServiceListener, ServiceReference } from '@pandino/pandino-api';
 import { MANAGED_SERVICE_INTERFACE_KEY } from '@pandino/configuration-management-api';
-import type {
-  ConfigurationEvent,
-  ConfigurationEventType,
-  ConfigurationListener,
-  ManagedService,
-} from '@pandino/configuration-management-api';
+import type { ConfigurationEvent, ConfigurationEventType, ConfigurationListener, ManagedService } from '@pandino/configuration-management-api';
 import type { FilterEvaluator } from '@pandino/filters';
 import type { PersistenceManager } from '@pandino/persistence-manager-api';
 import { ConfigurationImpl } from './configuration-impl';
@@ -25,10 +13,7 @@ export class ConfigurationManager implements ServiceListener {
   private readonly context: BundleContext;
   private readonly logger: Logger;
   private readonly evaluateFilter: FilterEvaluator;
-  private readonly managedReferences: Map<string, Array<ServiceReference<ManagedService>>> = new Map<
-    string,
-    Array<ServiceReference<ManagedService>>
-  >();
+  private readonly managedReferences: Map<string, Array<ServiceReference<ManagedService>>> = new Map<string, Array<ServiceReference<ManagedService>>>();
   private readonly eventListeners: Map<string, ConfigurationListener[]> = new Map<string, ConfigurationListener[]>();
   private readonly configurationCache: ConfigurationCache;
 
@@ -42,9 +27,7 @@ export class ConfigurationManager implements ServiceListener {
   initReferencesAddedBeforeManagerActivation(): void {
     const nonConfiguredReferences: ServiceReference<any>[] = [];
     const freshReferences: ServiceReference<any>[] = [];
-    const references = this.context
-      .getServiceReferences(MANAGED_SERVICE_INTERFACE_KEY)
-      .filter((ref) => ref.getProperty(SERVICE_PID));
+    const references = this.context.getServiceReferences(MANAGED_SERVICE_INTERFACE_KEY).filter((ref) => ref.getProperty(SERVICE_PID));
     for (const config of this.configurationCache.values()) {
       // multiple references can have the same pid
       const configuredReferences = references.filter((ref) => ref.getProperty(SERVICE_PID) === config.getPid());
@@ -149,11 +132,7 @@ export class ConfigurationManager implements ServiceListener {
     }
   }
 
-  private handleConfigurationEventListenerEvent(
-    eventType: ServiceEventType,
-    refPid: string,
-    configurationListener: ConfigurationListener,
-  ): void {
+  private handleConfigurationEventListenerEvent(eventType: ServiceEventType, refPid: string, configurationListener: ConfigurationListener): void {
     if (eventType === 'REGISTERED') {
       if (!this.eventListeners.has(refPid)) {
         this.eventListeners.set(refPid, []);
@@ -205,9 +184,7 @@ export class ConfigurationManager implements ServiceListener {
     if (filterString) {
       this.logger.debug(`Listing configurations matching ${filterString}`);
 
-      return Array.from(this.configurationCache.values()).filter((config) =>
-        this.evaluateFilter(config.getProperties(), filterString),
-      );
+      return Array.from(this.configurationCache.values()).filter((config) => this.evaluateFilter(config.getProperties(), filterString));
     }
 
     return [...this.configurationCache.values()];

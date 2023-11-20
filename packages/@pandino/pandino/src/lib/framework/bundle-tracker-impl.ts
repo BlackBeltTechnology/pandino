@@ -1,12 +1,4 @@
-import type {
-  Bundle,
-  BundleContext,
-  BundleEvent,
-  BundleListener,
-  BundleState,
-  BundleTracker,
-  BundleTrackerCustomizer,
-} from '@pandino/pandino-api';
+import type { Bundle, BundleContext, BundleEvent, BundleListener, BundleState, BundleTracker, BundleTrackerCustomizer } from '@pandino/pandino-api';
 import { AbstractTracked } from './abstract-tracked';
 
 export class BundleTrackerImpl<T> implements BundleTracker<T> {

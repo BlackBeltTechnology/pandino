@@ -1,11 +1,5 @@
 import { SERVICE_ID, SERVICE_RANKING } from '@pandino/pandino-api';
-import type {
-  ServiceEvent,
-  ServiceListener,
-  ServiceReference,
-  ServiceTracker,
-  ServiceTrackerCustomizer,
-} from '@pandino/pandino-api';
+import type { ServiceEvent, ServiceListener, ServiceReference, ServiceTracker, ServiceTrackerCustomizer } from '@pandino/pandino-api';
 import { serializeFilter } from '@pandino/filters';
 import type { FilterNode } from '@pandino/filters';
 import { AbstractTracked } from './abstract-tracked';
@@ -24,12 +18,7 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
     this.context = context;
     this.customizer = customizer || this;
     this.listenerFilter = typeof filter === 'string' ? filter : serializeFilter(filter);
-    this.filter =
-      typeof filter === 'string'
-        ? this.listenerFilter
-          ? context.createFilter(this.listenerFilter)
-          : undefined
-        : filter;
+    this.filter = typeof filter === 'string' ? (this.listenerFilter ? context.createFilter(this.listenerFilter) : undefined) : filter;
   }
 
   open(): void {

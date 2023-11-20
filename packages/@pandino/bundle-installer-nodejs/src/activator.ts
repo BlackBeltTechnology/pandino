@@ -17,11 +17,7 @@ export class Activator implements BundleActivator {
     this.logger = context.getService<Logger>(this.loggerReference)!;
     this.fetcherReference = context.getServiceReference<ManifestFetcher>(FRAMEWORK_MANIFEST_FETCHER)!;
     this.fetcher = context.getService<ManifestFetcher>(this.fetcherReference)!;
-    this.installerService = new InstallerService(
-      this.context.getProperty(DEPLOYMENT_ROOT_PROP),
-      this.context,
-      this.logger,
-    );
+    this.installerService = new InstallerService(this.context.getProperty(DEPLOYMENT_ROOT_PROP), this.context, this.logger);
     this.installerService.watch();
   }
 

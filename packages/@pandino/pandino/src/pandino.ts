@@ -76,12 +76,8 @@ export class Pandino extends BundleImpl implements Framework {
   constructor(configMap: FrameworkConfigMap) {
     const deploymentRoot: string | undefined = configMap[DEPLOYMENT_ROOT_PROP];
     const logger: Logger = configMap[LOG_LOGGER_PROP] ? configMap[LOG_LOGGER_PROP]! : new ConsoleLogger();
-    const fetcher: ManifestFetcher = configMap[PANDINO_MANIFEST_FETCHER_PROP]
-      ? configMap[PANDINO_MANIFEST_FETCHER_PROP]
-      : new VoidFetcher();
-    const importer: BundleImporter = configMap[PANDINO_BUNDLE_IMPORTER_PROP]
-      ? configMap[PANDINO_BUNDLE_IMPORTER_PROP]
-      : new VoidImporter();
+    const fetcher: ManifestFetcher = configMap[PANDINO_MANIFEST_FETCHER_PROP] ? configMap[PANDINO_MANIFEST_FETCHER_PROP] : new VoidFetcher();
+    const importer: BundleImporter = configMap[PANDINO_BUNDLE_IMPORTER_PROP] ? configMap[PANDINO_BUNDLE_IMPORTER_PROP] : new VoidImporter();
     logger.setLogLevel(configMap[LOG_LEVEL_PROP] || LogLevel.LOG);
 
     if (!configMap[PANDINO_ACTIVATOR_RESOLVERS]) {
@@ -199,9 +195,7 @@ export class Pandino extends BundleImpl implements Framework {
     }
 
     const resolvedHeaders: BundleManifestHeaders =
-      typeof locationOrHeaders === 'string'
-        ? await this.fetcher.fetch(locationOrHeaders, this.getDeploymentRoot())
-        : locationOrHeaders;
+      typeof locationOrHeaders === 'string' ? await this.fetcher.fetch(locationOrHeaders, this.getDeploymentRoot()) : locationOrHeaders;
     let bundle: BundleImpl;
     let existing = this.isBundlePresent(resolvedHeaders);
 
@@ -209,15 +203,7 @@ export class Pandino extends BundleImpl implements Framework {
       const id = this.getNextId();
       // FIXME: this could cause issues for loading JS via explicit Header spec!
       const manifestLocation = typeof locationOrHeaders === 'string' ? locationOrHeaders : '';
-      bundle = new BundleImpl(
-        this.logger,
-        id,
-        resolvedHeaders,
-        manifestLocation,
-        this.getDeploymentRoot(),
-        this,
-        origin,
-      );
+      bundle = new BundleImpl(this.logger, id, resolvedHeaders, manifestLocation, this.getDeploymentRoot(), this, origin);
       this.bundles.push(bundle);
       this.fireBundleEvent('INSTALLED', bundle, origin);
       this.logger.info(`Installed Bundle: ${resolvedHeaders[BUNDLE_SYMBOLICNAME]}: ${resolvedHeaders[BUNDLE_VERSION]}`);
@@ -237,9 +223,7 @@ export class Pandino extends BundleImpl implements Framework {
 
   async updateBundle(bundle: BundleImpl, headers: BundleManifestHeaders, origin?: Bundle): Promise<Bundle> {
     if (bundle.getState() === 'STARTING' || bundle.getState() === 'STOPPING') {
-      throw new Error(
-        'Bundle ' + bundle.getUniqueIdentifier() + ' cannot be updated, since it is either STARTING or STOPPING.',
-      );
+      throw new Error('Bundle ' + bundle.getUniqueIdentifier() + ' cannot be updated, since it is either STARTING or STOPPING.');
     }
     let rethrow: Error | undefined;
     const oldState: BundleState = bundle.getState();
@@ -273,11 +257,7 @@ export class Pandino extends BundleImpl implements Framework {
     let rethrow: Error | undefined;
     const validStates: BundleState[] = ['INSTALLED'];
     if (!validStates.includes(bundle.getState())) {
-      throw new Error(
-        `Cannot start ${bundle.getUniqueIdentifier()}, because it\'s not in any of the valid states: ${validStates.join(
-          ', ',
-        )}.`,
-      );
+      throw new Error(`Cannot start ${bundle.getUniqueIdentifier()}, because it\'s not in any of the valid states: ${validStates.join(', ')}.`);
     }
 
     bundle.setBundleContext(new BundleContextImpl(this.logger, bundle, this));
@@ -499,16 +479,12 @@ export class Pandino extends BundleImpl implements Framework {
       if (bundle.getState() === 'UNINSTALLED') {
         throw new Error('Cannot uninstall an uninstalled bundle.');
       } else {
-        throw new Error(
-          `Bundle ${bundle.getUniqueIdentifier()} cannot be uninstalled because it is in an undesired state: ${bundle.getState()}`,
-        );
+        throw new Error(`Bundle ${bundle.getUniqueIdentifier()} cannot be uninstalled because it is in an undesired state: ${bundle.getState()}`);
       }
     }
 
     if (bundle.getState() === 'STARTING' || bundle.getState() === 'STOPPING') {
-      throw new Error(
-        'Bundle ' + bundle.getUniqueIdentifier() + ' cannot be uninstalled, since it is either STARTING or STOPPING.',
-      );
+      throw new Error('Bundle ' + bundle.getUniqueIdentifier() + ' cannot be uninstalled, since it is either STARTING or STOPPING.');
     }
 
     let errored = null;
@@ -531,23 +507,13 @@ export class Pandino extends BundleImpl implements Framework {
     }
   }
 
-  getAllowedServiceReferences(
-    bundle: BundleImpl,
-    className?: string,
-    filter?: string,
-    checkAssignable = false,
-  ): ServiceReference<any>[] {
+  getAllowedServiceReferences(bundle: BundleImpl, className?: string, filter?: string, checkAssignable = false): ServiceReference<any>[] {
     const refs: ServiceReference<any>[] = this.getServiceReferences(bundle, className, filter, checkAssignable);
 
     return refs ?? [];
   }
 
-  private getServiceReferences(
-    bundle: BundleImpl,
-    className?: string,
-    filter?: string,
-    checkAssignable = false,
-  ): ServiceReference<any>[] {
+  private getServiceReferences(bundle: BundleImpl, className?: string, filter?: string, checkAssignable = false): ServiceReference<any>[] {
     const refList = this.registry.getServiceReferences(className, filter) as unknown as ServiceReference<any>[];
     const effectiveRefList: ServiceReference<any>[] = [];
 
@@ -584,11 +550,7 @@ export class Pandino extends BundleImpl implements Framework {
       this.logger.debug(`Attempting to load Activator from: ${activatorDefinition}`);
 
       let activatorInstance: any;
-      const activatorModule = await this.importer.import(
-        activatorDefinition,
-        impl.getLocation(),
-        impl.getDeploymentRoot(),
-      );
+      const activatorModule = await this.importer.import(activatorDefinition, impl.getLocation(), impl.getDeploymentRoot());
       const bundleType: BundleType = impl.getHeaders()[BUNDLE_TYPE] || 'esm';
       const activatorResolver: ActivatorResolver = this.configMap.get(PANDINO_ACTIVATOR_RESOLVERS)[bundleType];
 
@@ -645,12 +607,7 @@ export class Pandino extends BundleImpl implements Framework {
     return this.registry.ungetService(bundle, ref, srvObj);
   }
 
-  registerService<S>(
-    context: BundleContextImpl,
-    identifier: string[] | string,
-    svcObj: S | ServiceFactory<S>,
-    dict: Record<any, any>,
-  ): ServiceRegistration<S> {
+  registerService<S>(context: BundleContextImpl, identifier: string[] | string, svcObj: S | ServiceFactory<S>, dict: Record<any, any>): ServiceRegistration<S> {
     let reg = this.registry.registerService(context.getBundle()!, identifier, svcObj, dict);
 
     this.fireServiceEvent(new ServiceEventImpl('REGISTERED', reg.getReference()), {});
