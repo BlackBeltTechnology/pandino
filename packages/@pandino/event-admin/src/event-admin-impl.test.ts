@@ -308,11 +308,7 @@ describe('EventAdminImpl', () => {
     });
   });
 
-  function createRegistration(
-    topic: string | string[],
-    externalMock?: any,
-    filter?: string,
-  ): EventHandlerRegistrationInfo {
+  function createRegistration(topic: string | string[], externalMock?: any, filter?: string): EventHandlerRegistrationInfo {
     return {
       [EVENT_TOPIC]: topic,
       [EVENT_FILTER]: filter,

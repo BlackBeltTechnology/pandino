@@ -31,9 +31,7 @@ export class StatefulResolver {
 
     const bundleWiring = this.resolve(revision as BundleRevisionImpl);
     if (bundleWiring) {
-      this.logger.debug(
-        `Bundle Wiring created for Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`,
-      );
+      this.logger.debug(`Bundle Wiring created for Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`);
 
       const bundle = bundleWiring.getRevision().getBundle();
       if (bundle) {
@@ -46,14 +44,10 @@ export class StatefulResolver {
           this.logger.error(err);
         }
       } else {
-        this.logger.debug(
-          `Bundle not found in Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`,
-        );
+        this.logger.debug(`Bundle not found in Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`);
       }
     } else {
-      this.logger.debug(
-        `No Wiring found for Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`,
-      );
+      this.logger.debug(`No Wiring found for Revision: ${revision.getSymbolicName()}: ${revision.getVersion().toString()}`);
     }
   }
 
@@ -75,9 +69,7 @@ export class StatefulResolver {
       .map((rev) => rev.getWiring()!)
       .filter((wiring) => wiring.isInUse());
     for (const wiring of wirings) {
-      const wire = wiring
-        .getRequiredWires(undefined)
-        .find((wire: BundleWire) => wire.getProvider().equals(bundle.getCurrentRevision()));
+      const wire = wiring.getRequiredWires(undefined).find((wire: BundleWire) => wire.getProvider().equals(bundle.getCurrentRevision()));
       if (wire) {
         bundles.push(wire.getRequirer().getBundle() as BundleImpl);
       }
@@ -122,9 +114,7 @@ export class StatefulResolver {
     const wires: Array<BundleWire> = [];
     for (const req of requirements) {
       const filter = (req as BundleRequirementImpl).getFilter();
-      const providedCap = allProvidedCapabilities.find(
-        (p) => p.getNamespace() === req.getNamespace() && (filter ? CapabilitySet.matches(p, filter) : true),
-      );
+      const providedCap = allProvidedCapabilities.find((p) => p.getNamespace() === req.getNamespace() && (filter ? CapabilitySet.matches(p, filter) : true));
       if (providedCap) {
         const wire = new BundleWireImpl(req.getResource(), req, providedCap?.getResource()!, providedCap);
         wires.push(wire);

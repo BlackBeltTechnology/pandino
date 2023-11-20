@@ -14,20 +14,13 @@ export class BundleRequirementImpl implements BundleRequirement {
   private readonly dirs: Record<string, string> = {};
   private readonly attrs: Record<string, any> = {};
 
-  constructor(
-    revision: BundleRevision,
-    namespace: string,
-    dirs: Record<string, string> = {},
-    attrs: Record<string, any> = {},
-    filter?: FilterNode,
-  ) {
+  constructor(revision: BundleRevision, namespace: string, dirs: Record<string, string> = {}, attrs: Record<string, any> = {}, filter?: FilterNode) {
     this.revision = revision;
     this.namespace = namespace;
     this.dirs = dirs;
     this.attrs = attrs;
     this.filter = filter ? serializeFilter(filter) : serializeFilter(convert(this.attrs));
-    this.optional =
-      this.dirs.hasOwnProperty(RESOLUTION_DIRECTIVE) && this.dirs[RESOLUTION_DIRECTIVE] === RESOLUTION_OPTIONAL;
+    this.optional = this.dirs.hasOwnProperty(RESOLUTION_DIRECTIVE) && this.dirs[RESOLUTION_DIRECTIVE] === RESOLUTION_OPTIONAL;
   }
 
   getAttributes(): Record<string, any> {

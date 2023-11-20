@@ -34,25 +34,19 @@ export class EventDispatcher {
   }
 
   fireServiceEvent(event: ServiceEvent, oldProps: Record<string, any>): void {
-    const listeners: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(
-      this.svcListeners.entries(),
-    );
+    const listeners: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(this.svcListeners.entries());
 
     EventDispatcher.fireEventImmediately('SERVICE', listeners, event, oldProps);
   }
 
   fireFrameworkEvent(event: FrameworkEvent, source: BundleImpl): void {
-    const listeners: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(
-      this.fwkListeners.entries(),
-    );
+    const listeners: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(this.fwkListeners.entries());
 
     EventDispatcher.fireEventImmediately('FRAMEWORK', listeners, event, source);
   }
 
   fireBundleEvent(event: BundleEvent, source?: BundleImpl): void {
-    const listeners: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(
-      this.bndListeners.entries(),
-    );
+    const listeners: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(this.bndListeners.entries());
 
     EventDispatcher.fireEventImmediately('BUNDLE', listeners, event, source);
   }
@@ -125,11 +119,7 @@ export class EventDispatcher {
     }
   }
 
-  private static invokeFrameworkListenerCallback(
-    bundle: Bundle,
-    listener: FrameworkListener,
-    event: FrameworkEventImpl,
-  ): void {
+  private static invokeFrameworkListenerCallback(bundle: Bundle, listener: FrameworkListener, event: FrameworkEventImpl): void {
     const validBundleStateTypes: BundleState[] = ['STARTING', 'ACTIVE'];
     if (validBundleStateTypes.includes(bundle.getState())) {
       if (listener.isSync) {
@@ -232,13 +222,8 @@ export class EventDispatcher {
     this.svcListeners = EventDispatcher.removeListenerInfos(this.svcListeners, bc);
   }
 
-  private static removeListenerInfos(
-    listeners: Map<BundleContext, Array<ListenerInfo>>,
-    bc: BundleContext,
-  ): Map<BundleContext, Array<ListenerInfo>> {
-    const copy: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(
-      listeners.entries(),
-    );
+  private static removeListenerInfos(listeners: Map<BundleContext, Array<ListenerInfo>>, bc: BundleContext): Map<BundleContext, Array<ListenerInfo>> {
+    const copy: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(listeners.entries());
     copy.delete(bc);
     return copy;
   }
@@ -248,9 +233,7 @@ export class EventDispatcher {
     bc: BundleContext,
     idx: number,
   ): Map<BundleContext, Array<ListenerInfo>> {
-    const copy: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(
-      listeners.entries(),
-    );
+    const copy: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(listeners.entries());
     const infos: Array<ListenerInfo> = [...copy.get(bc)!];
     copy.delete(bc);
     if (Array.isArray(infos)) {
@@ -278,13 +261,7 @@ export class EventDispatcher {
         if (info.getBundleContext().equals(bc) && info.getListener() === listener) {
           // The spec says to update the filter in this case.
           const oldFilter = info.getParsedFilter();
-          const newInfo = new ListenerInfo(
-            info.getBundle()!,
-            info.getBundleContext(),
-            info.getListener(),
-            undefined,
-            filter,
-          );
+          const newInfo = new ListenerInfo(info.getBundle()!, info.getBundleContext(), info.getListener(), undefined, filter);
           this.svcListeners = EventDispatcher.updateListenerInfo(this.svcListeners, i, newInfo);
           return oldFilter;
         }
@@ -311,10 +288,7 @@ export class EventDispatcher {
     return listeners;
   }
 
-  private static addListenerInfo(
-    listeners: Map<BundleContext, Array<ListenerInfo>>,
-    info: ListenerInfo,
-  ): Map<BundleContext, Array<ListenerInfo>> {
+  private static addListenerInfo(listeners: Map<BundleContext, Array<ListenerInfo>>, info: ListenerInfo): Map<BundleContext, Array<ListenerInfo>> {
     if (!listeners.has(info.getBundleContext())) {
       listeners.set(info.getBundleContext(), []);
     }

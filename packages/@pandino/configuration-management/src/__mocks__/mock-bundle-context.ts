@@ -21,10 +21,7 @@ export class MockBundleContext implements BundleContext {
   private properties: Record<any, any> = {};
   private serviceListeners: ServiceListener[] = [];
   private readonly registrations: ServiceRegistration<any>[] = [];
-  private readonly refMap: Map<string[] | string, ServiceReference<any>> = new Map<
-    string[] | string,
-    ServiceReference<any>
-  >();
+  private readonly refMap: Map<string[] | string, ServiceReference<any>> = new Map<string[] | string, ServiceReference<any>>();
   private readonly serviceMap: Map<ServiceReference<any>, any> = new Map<ServiceReference<any>, any>();
   private bundle?: Bundle;
 
@@ -82,11 +79,7 @@ export class MockBundleContext implements BundleContext {
     return Promise.resolve(undefined);
   }
 
-  registerService<S>(
-    identifiers: string[] | string,
-    service: S,
-    properties: ServiceProperties = {},
-  ): ServiceRegistration<S> {
+  registerService<S>(identifiers: string[] | string, service: S, properties: ServiceProperties = {}): ServiceRegistration<S> {
     const ref: ServiceReference<any> = {
       getBundle: () => this.getBundle(),
       getProperties: () => properties,
@@ -143,10 +136,7 @@ export class MockBundleContext implements BundleContext {
     return undefined as any;
   }
 
-  trackService<S, T>(
-    identifierOrFilter: string,
-    customizer: Partial<ServiceTrackerCustomizer<S, T>>,
-  ): ServiceTracker<S, T> {
+  trackService<S, T>(identifierOrFilter: string, customizer: Partial<ServiceTrackerCustomizer<S, T>>): ServiceTracker<S, T> {
     return undefined as any;
   }
 }

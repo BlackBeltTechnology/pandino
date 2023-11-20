@@ -1,19 +1,5 @@
-import {
-  OBJECTCLASS,
-  SCOPE_SINGLETON,
-  SERVICE_BUNDLEID,
-  SERVICE_ID,
-  SERVICE_SCOPE,
-  SCOPE_BUNDLE,
-  SCOPE_PROTOTYPE,
-} from '@pandino/pandino-api';
-import type {
-  Bundle,
-  ServiceProperties,
-  ServiceReference,
-  ServiceRegistration,
-  ServiceFactory,
-} from '@pandino/pandino-api';
+import { OBJECTCLASS, SCOPE_SINGLETON, SERVICE_BUNDLEID, SERVICE_ID, SERVICE_SCOPE, SCOPE_BUNDLE, SCOPE_PROTOTYPE } from '@pandino/pandino-api';
+import type { Bundle, ServiceProperties, ServiceReference, ServiceRegistration, ServiceFactory } from '@pandino/pandino-api';
 import { ServiceReferenceImpl } from './service-reference-impl';
 import { ServiceRegistry } from './service-registry';
 import { ServiceRegistryImpl } from './service-registry-impl';
@@ -29,14 +15,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
   private readonly ref: ServiceReferenceImpl;
   private isUnregistering = false;
 
-  constructor(
-    registry: ServiceRegistry,
-    bundle: Bundle,
-    classNames: string | string[],
-    serviceId: number,
-    svcObj: any,
-    dict?: ServiceProperties,
-  ) {
+  constructor(registry: ServiceRegistry, bundle: Bundle, classNames: string | string[], serviceId: number, svcObj: any, dict?: ServiceProperties) {
     this.registry = registry;
     this.bundle = bundle;
     this.classes = classNames;
@@ -74,9 +53,7 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
       try {
         this.ungetFactoryUnchecked(relBundle, svcObj);
       } catch (e) {
-        (this.registry as ServiceRegistryImpl)
-          .getLogger()
-          .error('ServiceRegistrationImpl: Error ungetting service.', e);
+        (this.registry as ServiceRegistryImpl).getLogger().error('ServiceRegistrationImpl: Error ungetting service.', e);
       }
     }
   }

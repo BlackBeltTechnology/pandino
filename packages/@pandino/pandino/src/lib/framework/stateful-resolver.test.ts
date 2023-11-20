@@ -45,15 +45,8 @@ describe('StatefulResolver', () => {
         isAttributeMandatory: () => false,
         getResource: () => undefined,
       };
-      const allProvidedCapabilities: BundleCapability[] = [
-        capability1 as BundleCapability,
-        capability2 as BundleCapability,
-        capability3 as BundleCapability,
-      ];
-      const result: BundleWire[] = StatefulResolver.getResolvableWires(
-        revision as BundleRevision,
-        allProvidedCapabilities,
-      );
+      const allProvidedCapabilities: BundleCapability[] = [capability1 as BundleCapability, capability2 as BundleCapability, capability3 as BundleCapability];
+      const result: BundleWire[] = StatefulResolver.getResolvableWires(revision as BundleRevision, allProvidedCapabilities);
 
       expect(result.length).toEqual(1);
 

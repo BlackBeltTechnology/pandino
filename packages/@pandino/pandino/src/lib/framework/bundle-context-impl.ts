@@ -95,9 +95,7 @@ export class BundleContextImpl implements BundleContext {
     if (typeof locationOrHeaders === 'string') {
       this.logger.debug(`Installing Bundle from location: ${locationOrHeaders}`);
     } else {
-      this.logger.debug(
-        `Installing Bundle: ${locationOrHeaders[BUNDLE_SYMBOLICNAME]}: ${locationOrHeaders[BUNDLE_VERSION]}`,
-      );
+      this.logger.debug(`Installing Bundle: ${locationOrHeaders[BUNDLE_SYMBOLICNAME]}: ${locationOrHeaders[BUNDLE_VERSION]}`);
     }
     this.checkValidity();
 
@@ -142,11 +140,7 @@ export class BundleContextImpl implements BundleContext {
     return this.pandino.getAllowedServiceReferences(this.bundle, identifier, filter, true);
   }
 
-  registerService<S>(
-    identifiers: string[] | string,
-    service: S | ServiceFactory<S>,
-    properties?: ServiceProperties,
-  ): ServiceRegistration<S> {
+  registerService<S>(identifiers: string[] | string, service: S | ServiceFactory<S>, properties?: ServiceProperties): ServiceRegistration<S> {
     this.checkValidity();
     return this.pandino.registerService(this, identifiers, service, properties || {});
   }
@@ -225,15 +219,11 @@ export class BundleContextImpl implements BundleContext {
       }
 
       modifiedBundle(bundle: Bundle, event: BundleEvent, object: T) {
-        customizer.modifiedBundle
-          ? customizer.modifiedBundle(bundle, event, object)
-          : super.modifiedBundle(bundle, event, object);
+        customizer.modifiedBundle ? customizer.modifiedBundle(bundle, event, object) : super.modifiedBundle(bundle, event, object);
       }
 
       removedBundle(bundle: Bundle, event: BundleEvent, object: T) {
-        customizer.removedBundle
-          ? customizer.removedBundle(bundle, event, object)
-          : super.removedBundle(bundle, event, object);
+        customizer.removedBundle ? customizer.removedBundle(bundle, event, object) : super.removedBundle(bundle, event, object);
       }
     })();
 
@@ -242,10 +232,7 @@ export class BundleContextImpl implements BundleContext {
     return tracker;
   }
 
-  trackService<S, T>(
-    identifierOrFilter: string | FilterNode,
-    customizer: Partial<ServiceTrackerCustomizer<S, T>>,
-  ): ServiceTracker<S, T> {
+  trackService<S, T>(identifierOrFilter: string | FilterNode, customizer: Partial<ServiceTrackerCustomizer<S, T>>): ServiceTracker<S, T> {
     this.checkValidity();
 
     const self = this;
@@ -260,15 +247,11 @@ export class BundleContextImpl implements BundleContext {
       }
 
       modifiedService(reference: ServiceReference<S>, service: T) {
-        customizer.modifiedService
-          ? customizer.modifiedService(reference, service)
-          : super.modifiedService(reference, service);
+        customizer.modifiedService ? customizer.modifiedService(reference, service) : super.modifiedService(reference, service);
       }
 
       removedService(reference: ServiceReference<S>, service: T) {
-        customizer.removedService
-          ? customizer.removedService(reference, service)
-          : super.removedService(reference, service);
+        customizer.removedService ? customizer.removedService(reference, service) : super.removedService(reference, service);
       }
     })();
 

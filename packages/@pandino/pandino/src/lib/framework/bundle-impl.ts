@@ -1,12 +1,5 @@
 import { Logger, BUNDLE_ACTIVATOR } from '@pandino/pandino-api';
-import type {
-  Bundle,
-  BundleActivator,
-  BundleContext,
-  BundleManifestHeaders,
-  BundleState,
-  ServiceReference,
-} from '@pandino/pandino-api';
+import type { Bundle, BundleActivator, BundleContext, BundleManifestHeaders, BundleState, ServiceReference } from '@pandino/pandino-api';
 import { evaluateSemver } from '@pandino/filters';
 import { Pandino } from '../../pandino';
 import { BundleRevisionImpl } from './bundle-revision-impl';
@@ -145,11 +138,7 @@ export class BundleImpl implements Bundle {
   }
 
   private createRevision(headers?: BundleManifestHeaders): BundleRevisionImpl {
-    const revision = new BundleRevisionImpl(
-      this,
-      this.getBundleId() + '.' + this.revisions.length,
-      headers || this.headers,
-    );
+    const revision = new BundleRevisionImpl(this, this.getBundleId() + '.' + this.revisions.length, headers || this.headers);
 
     let bundleVersion = revision.getVersion();
     bundleVersion = !bundleVersion ? '0.0.0' : bundleVersion;

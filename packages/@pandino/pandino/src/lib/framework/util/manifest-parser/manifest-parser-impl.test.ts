@@ -94,10 +94,8 @@ describe('ManifestParserImp', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
       [BUNDLE_SYMBOLICNAME]: '@scope/example/test/sample',
-      [PROVIDE_CAPABILITY]:
-        'com.example;theArray:Array<string>="red,green,blue";theNumber:number=111;version:SemVer=1.2.3',
-      [REQUIRE_CAPABILITY]:
-        'com.example.other;theArray:Array<number>="1,2,3";theNumber:number=999;com.example.other.bla="str"',
+      [PROVIDE_CAPABILITY]: 'com.example;theArray:Array<string>="red,green,blue";theNumber:number=111;version:SemVer=1.2.3',
+      [REQUIRE_CAPABILITY]: 'com.example.other;theArray:Array<number>="1,2,3";theNumber:number=999;com.example.other.bla="str"',
     };
     const mockBundleRevision = {
       getSymbolicName: vi.fn().mockReturnValue('@scope/example/test/sample'),

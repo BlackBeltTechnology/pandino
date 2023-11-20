@@ -30,12 +30,7 @@ export class BundleCapabilityImpl implements BundleCapability {
   private readonly uses: string[] = [];
   private readonly mandatory: Set<string> = new Set<string>();
 
-  constructor(
-    revision?: BundleRevision,
-    namespace?: string,
-    dirs: Record<string, string> = {},
-    attrs: Record<string, any> = {},
-  ) {
+  constructor(revision?: BundleRevision, namespace?: string, dirs: Record<string, string> = {}, attrs: Record<string, any> = {}) {
     this.revision = revision;
     this.namespace = namespace;
     this.dirs = dirs;
@@ -71,10 +66,7 @@ export class BundleCapabilityImpl implements BundleCapability {
     if (!this.revision || !other.revision) {
       return false;
     }
-    return (
-      evaluateSemver(this.revision.getVersion(), 'eq', other.revision.getVersion()) &&
-      this.getNamespace() === other.getNamespace()
-    );
+    return evaluateSemver(this.revision.getVersion(), 'eq', other.revision.getVersion()) && this.getNamespace() === other.getNamespace();
   }
 
   getAttributes(): Record<string, any> {
@@ -117,11 +109,7 @@ export class BundleCapabilityImpl implements BundleCapability {
     return `${list.join('; ')}`;
   }
 
-  public static addIdentityCapability(
-    owner: BundleRevision,
-    headerMap: BundleConfigMap,
-    bundleCap: BundleCapability,
-  ): BundleCapability {
+  public static addIdentityCapability(owner: BundleRevision, headerMap: BundleConfigMap, bundleCap: BundleCapability): BundleCapability {
     const attrs: BundleConfigMap = { ...bundleCap.getAttributes() };
 
     attrs[IDENTITY_NAMESPACE] = bundleCap.getAttributes()[BUNDLE_NAMESPACE];

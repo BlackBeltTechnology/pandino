@@ -88,9 +88,7 @@ export class ManifestParserImpl implements ManifestParser {
         requireCaps.push(...ManifestParserImpl.getRequiredClauses(part.trim(), owner));
       }
     } else if (typeof headerMap[REQUIRE_CAPABILITY] === 'string') {
-      requireCaps.push(
-        ...ManifestParserImpl.getRequiredClauses((headerMap[REQUIRE_CAPABILITY] as string).trim(), owner),
-      );
+      requireCaps.push(...ManifestParserImpl.getRequiredClauses((headerMap[REQUIRE_CAPABILITY] as string).trim(), owner));
     }
 
     // Parse Provide-Capability.
@@ -100,9 +98,7 @@ export class ManifestParserImpl implements ManifestParser {
         provideCaps.push(...ManifestParserImpl.getProviderClauses(part.trim(), owner));
       }
     } else if (typeof headerMap[PROVIDE_CAPABILITY] === 'string') {
-      provideCaps.push(
-        ...ManifestParserImpl.getProviderClauses((headerMap[PROVIDE_CAPABILITY] as string).trim(), owner),
-      );
+      provideCaps.push(...ManifestParserImpl.getProviderClauses((headerMap[PROVIDE_CAPABILITY] as string).trim(), owner));
     }
 
     // Combine all requirements.
@@ -173,10 +169,7 @@ export class ManifestParserImpl implements ManifestParser {
     return manifestVersion?.trim();
   }
 
-  private static parseBundleSymbolicName(
-    owner: BundleRevision,
-    headerMap: Record<string, any>,
-  ): BundleCapabilityImpl | never {
+  private static parseBundleSymbolicName(owner: BundleRevision, headerMap: Record<string, any>): BundleCapabilityImpl | never {
     const clauses = this.normalizeCapabilityClauses(this.parseStandardHeader(headerMap[BUNDLE_SYMBOLICNAME]));
     if (clauses.length > 0) {
       if (clauses.length > 1) {
@@ -400,9 +393,7 @@ export class ManifestParserImpl implements ManifestParser {
   private parseActivationPolicy(headerMap: Record<string, any>): void {
     this.activationPolicy = 'EAGER_ACTIVATION';
 
-    const clauses: Array<ParsedHeaderClause> = ManifestParserImpl.parseStandardHeader(
-      headerMap[BUNDLE_ACTIVATIONPOLICY],
-    );
+    const clauses: Array<ParsedHeaderClause> = ManifestParserImpl.parseStandardHeader(headerMap[BUNDLE_ACTIVATIONPOLICY]);
 
     if (clauses.length > 0) {
       for (const path of clauses[0].paths) {

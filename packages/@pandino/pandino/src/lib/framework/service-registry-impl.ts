@@ -16,10 +16,7 @@ import type { UsageCount } from './usage-count';
 export class ServiceRegistryImpl implements ServiceRegistry {
   private readonly logger: Logger;
   private readonly callbacks: ServiceRegistryCallbacks;
-  private readonly regsMap: Map<Bundle, Array<ServiceRegistration<any>>> = new Map<
-    Bundle,
-    Array<ServiceRegistration<any>>
-  >();
+  private readonly regsMap: Map<Bundle, Array<ServiceRegistration<any>>> = new Map<Bundle, Array<ServiceRegistration<any>>>();
   private readonly regCapSet: CapabilitySet = new CapabilitySet([OBJECTCLASS]);
   private readonly inUseMap: Map<Bundle, UsageCount[]> = new Map<Bundle, UsageCount[]>();
   private currentServiceId = 0;
@@ -129,12 +126,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     return bundles;
   }
 
-  registerService(
-    bundle: Bundle,
-    classNames: string | string[],
-    svcObj: any,
-    dict?: ServiceProperties,
-  ): ServiceRegistration<any> {
+  registerService(bundle: Bundle, classNames: string | string[], svcObj: any, dict?: ServiceProperties): ServiceRegistration<any> {
     const reg = new ServiceRegistrationImpl(this, bundle, classNames, ++this.currentServiceId, svcObj, dict);
 
     if (!this.regsMap.has(bundle)) {
@@ -146,10 +138,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     // TODO: implement check if same service gets registered or not!
     if (!regs) {
       // this.logger.warn(`There are no registrations for bundle! (${bundle.getSymbolicName()})`);
-    } else if (
-      regs &&
-      !regs.find((r) => r.getReference().getProperty(SERVICE_ID) === reg.getReference().getProperty(SERVICE_ID))
-    ) {
+    } else if (regs && !regs.find((r) => r.getReference().getProperty(SERVICE_ID) === reg.getReference().getProperty(SERVICE_ID))) {
       regs.push(reg);
     } else {
       this.logger.warn(`Service already registered, skipping! (${reg.getReference().getProperty(SERVICE_ID)})`);
@@ -270,22 +259,14 @@ export class ServiceRegistryImpl implements ServiceRegistry {
    * object will be created, but this can only be done if the {@code isPrototype} parameter is not {@code undefined}.
    * If {@code isPrototype} is {@code TRUE} then a new UsageCount object will always be created.
    */
-  obtainUsageCount(
-    bundle: Bundle,
-    ref: ServiceReference<any>,
-    svcObj: any,
-    isPrototype = false,
-  ): UsageCount | undefined {
+  obtainUsageCount(bundle: Bundle, ref: ServiceReference<any>, svcObj: any, isPrototype = false): UsageCount | undefined {
     let usage: UsageCount;
 
     const usages = this.inUseMap.get(bundle);
 
     if (!isPrototype && Array.isArray(usages)) {
       for (const usage of usages) {
-        if (
-          usage.getReference().compareTo(ref) === 0 &&
-          ((!svcObj && !usage.isPrototype()) || usage.getService() === svcObj)
-        ) {
+        if (usage.getReference().compareTo(ref) === 0 && ((!svcObj && !usage.isPrototype()) || usage.getService() === svcObj)) {
           return usage;
         }
       }

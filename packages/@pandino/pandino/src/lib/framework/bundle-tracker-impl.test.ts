@@ -10,14 +10,7 @@ import {
   PANDINO_BUNDLE_IMPORTER_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
 } from '@pandino/pandino-api';
-import type {
-  Bundle,
-  BundleActivator,
-  BundleContext,
-  BundleEvent,
-  BundleImporter,
-  BundleManifestHeaders,
-} from '@pandino/pandino-api';
+import type { Bundle, BundleActivator, BundleContext, BundleEvent, BundleImporter, BundleManifestHeaders } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 
 describe('BundleTrackerImpl', () => {

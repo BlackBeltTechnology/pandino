@@ -1,17 +1,8 @@
 import { describe, beforeEach, expect, it, vi } from 'vitest';
 import type { Bundle, BundleContext, Logger, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 import { SERVICE_PID } from '@pandino/pandino-api';
-import {
-  CONFIGURATION_LISTENER_INTERFACE_KEY,
-  MANAGED_SERVICE_INTERFACE_KEY,
-} from '@pandino/configuration-management-api';
-import type {
-  Configuration,
-  ConfigurationEvent,
-  ConfigurationEventType,
-  ConfigurationListener,
-  ManagedService,
-} from '@pandino/configuration-management-api';
+import { CONFIGURATION_LISTENER_INTERFACE_KEY, MANAGED_SERVICE_INTERFACE_KEY } from '@pandino/configuration-management-api';
+import type { Configuration, ConfigurationEvent, ConfigurationEventType, ConfigurationListener, ManagedService } from '@pandino/configuration-management-api';
 import { evaluateFilter } from '@pandino/filters';
 import { MockBundleContext } from './__mocks__/mock-bundle-context';
 import { MockBundle } from './__mocks__/mock-bundle';
@@ -371,12 +362,7 @@ describe('ConfigurationImpl', () => {
     }
   }
 
-  function testConfiguration(
-    configuration: Configuration,
-    pid: string,
-    location?: string,
-    properties?: ServiceProperties,
-  ): void {
+  function testConfiguration(configuration: Configuration, pid: string, location?: string, properties?: ServiceProperties): void {
     expect(configuration).toBeDefined();
     expect(configuration.getPid()).toEqual(pid);
     expect(configuration.getBundleLocation()).toEqual(location);

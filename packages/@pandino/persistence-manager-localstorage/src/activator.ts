@@ -1,11 +1,5 @@
 import { FRAMEWORK_LOGGER } from '@pandino/pandino-api';
-import type {
-  BundleActivator,
-  BundleContext,
-  Logger,
-  ServiceReference,
-  ServiceRegistration,
-} from '@pandino/pandino-api';
+import type { BundleActivator, BundleContext, Logger, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
 import { INTERFACE_KEY, SERVICE_DISCRIMINATOR_PROPERTY } from '@pandino/persistence-manager-api';
 import type { PersistenceManager } from '@pandino/persistence-manager-api';
 import { LocalstoragePersistenceManager } from './service';

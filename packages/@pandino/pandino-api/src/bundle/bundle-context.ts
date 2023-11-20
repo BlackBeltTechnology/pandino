@@ -239,11 +239,7 @@ export interface BundleContext extends BundleReference {
    * @returns {ServiceRegistration<any>} object for use by the bundle registering the service to update the service's
    *          properties or to unregister the service.
    */
-  registerService<S>(
-    identifiers: string[] | string,
-    service: S | ServiceFactory<S>,
-    properties?: ServiceProperties,
-  ): ServiceRegistration<S>;
+  registerService<S>(identifiers: string[] | string, service: S | ServiceFactory<S>, properties?: ServiceProperties): ServiceRegistration<S>;
 
   /**
    * Returns a {@code ServiceReference} object for a service that implements and was registered under the specified class.

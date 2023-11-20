@@ -1,10 +1,4 @@
-import {
-  EFFECTIVE_DIRECTIVE,
-  EFFECTIVE_RESOLVE,
-  HOST_NAMESPACE,
-  PACKAGE_NAMESPACE,
-  RESOLUTION_DIRECTIVE,
-} from '@pandino/pandino-api';
+import { EFFECTIVE_DIRECTIVE, EFFECTIVE_RESOLVE, HOST_NAMESPACE, PACKAGE_NAMESPACE, RESOLUTION_DIRECTIVE } from '@pandino/pandino-api';
 import type { Bundle, BundleState } from '@pandino/pandino-api';
 import { BundleRevisionImpl } from './bundle-revision-impl';
 import { BundleImpl } from './bundle-impl';
@@ -27,12 +21,7 @@ export class BundleWiringImpl implements BundleWiring {
   private readonly resolvedReqs: Array<BundleRequirement> = [];
   private isDisposed = false;
 
-  constructor(
-    configMap: Record<string, any>,
-    resolver: StatefulResolver,
-    revision: BundleRevisionImpl,
-    wires: Array<BundleWire> = [],
-  ) {
+  constructor(configMap: Record<string, any>, resolver: StatefulResolver, revision: BundleRevisionImpl, wires: Array<BundleWire> = []) {
     this.configMap = configMap;
     this.resolver = resolver;
     this.revision = revision;
@@ -81,8 +70,7 @@ export class BundleWiringImpl implements BundleWiring {
 
   isCurrent(): boolean {
     const bundle = this.getBundle();
-    const current: BundleRevision | undefined =
-      bundle.getState() === 'UNINSTALLED' ? undefined : (bundle as BundleImpl).getCurrentRevision();
+    const current: BundleRevision | undefined = bundle.getState() === 'UNINSTALLED' ? undefined : (bundle as BundleImpl).getCurrentRevision();
     return current ? current.getWiring() === this : false;
   }
 
@@ -156,9 +144,7 @@ export class BundleWiringImpl implements BundleWiring {
   }
 
   allWireProvidersInAnyState(states: BundleState[] = []): boolean {
-    return this.wires.every(
-      (w) => !!w.getProvider().getBundle() && states.includes(w.getProvider().getBundle()!.getState()),
-    );
+    return this.wires.every((w) => !!w.getProvider().getBundle() && states.includes(w.getProvider().getBundle()!.getState()));
   }
 
   toString(): string {

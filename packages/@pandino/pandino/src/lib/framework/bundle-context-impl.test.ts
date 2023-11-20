@@ -75,16 +75,12 @@ describe('BundleContextImpl', () => {
   const serviceChangedListener: ServiceListener = {
     serviceChanged,
   };
-  const mockGetService = vi
-    .fn()
-    .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>) => ({
-      execute: () => true,
-    }));
-  const mockUngetService = vi
-    .fn()
-    .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>, service: MockService) => {
-      return;
-    });
+  const mockGetService = vi.fn().mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>) => ({
+    execute: () => true,
+  }));
+  const mockUngetService = vi.fn().mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>, service: MockService) => {
+    return;
+  });
   let params: FrameworkConfigMap;
   let logger: Logger;
   let pandino: Pandino;

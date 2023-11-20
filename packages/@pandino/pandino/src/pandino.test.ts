@@ -71,8 +71,7 @@ describe('Pandino', () => {
     [BUNDLE_NAME]: 'My Independent Bundle',
   };
   const bundleRequiresCapability = 'pet.grooming;filter:="(&(type=cat)(rate<=20))"';
-  const bundleProvidesCapability =
-    'pet.grooming;type:Array="dog,cat";length:number=800;soap="organic";rate:number="10"';
+  const bundleProvidesCapability = 'pet.grooming;type:Array="dog,cat";length:number=800;soap="organic";rate:number="10"';
   let helloService: HelloService;
   let welcomeService: WelcomeService;
 
@@ -577,15 +576,11 @@ describe('Pandino', () => {
     });
     (bundle as BundleImpl).setState('STARTING');
 
-    expect(bundle.uninstall()).rejects.toThrow(
-      'Bundle @scope/bundle-1.2.3 cannot be uninstalled, since it is either STARTING or STOPPING.',
-    );
+    expect(bundle.uninstall()).rejects.toThrow('Bundle @scope/bundle-1.2.3 cannot be uninstalled, since it is either STARTING or STOPPING.');
 
     (bundle as BundleImpl).setState('STOPPING');
 
-    expect(bundle.uninstall()).rejects.toThrow(
-      'Bundle @scope/bundle-1.2.3 cannot be uninstalled, since it is either STARTING or STOPPING.',
-    );
+    expect(bundle.uninstall()).rejects.toThrow('Bundle @scope/bundle-1.2.3 cannot be uninstalled, since it is either STARTING or STOPPING.');
   });
 
   it('stopping bundle unregisters all services', async () => {
@@ -596,14 +591,8 @@ describe('Pandino', () => {
     const bundle = pandino.getBundleContext().getBundles()[0];
     const context = bundle.getBundleContext();
 
-    const regHello: ServiceRegistration<HelloService> = context.registerService(
-      '@pandino/pandino/hello-impl',
-      helloService,
-    );
-    const regWelcome: ServiceRegistration<WelcomeService> = context.registerService(
-      '@pandino/pandino/welcome-impl',
-      welcomeService,
-    );
+    const regHello: ServiceRegistration<HelloService> = context.registerService('@pandino/pandino/hello-impl', helloService);
+    const regWelcome: ServiceRegistration<WelcomeService> = context.registerService('@pandino/pandino/welcome-impl', welcomeService);
 
     const refHello: ServiceReference<HelloService> = regHello.getReference();
     const refWelcome: ServiceReference<WelcomeService> = regWelcome.getReference();
@@ -628,14 +617,8 @@ describe('Pandino', () => {
     const bundle = pandino.getBundleContext().getBundles()[0];
     const context = bundle.getBundleContext();
 
-    const regHello: ServiceRegistration<HelloService> = context.registerService(
-      '@pandino/pandino/hello-impl',
-      helloService,
-    );
-    const regWelcome: ServiceRegistration<WelcomeService> = context.registerService(
-      '@pandino/pandino/welcome-impl',
-      welcomeService,
-    );
+    const regHello: ServiceRegistration<HelloService> = context.registerService('@pandino/pandino/hello-impl', helloService);
+    const regWelcome: ServiceRegistration<WelcomeService> = context.registerService('@pandino/pandino/welcome-impl', welcomeService);
 
     const refHello: ServiceReference<HelloService> = regHello.getReference();
     const refWelcome: ServiceReference<WelcomeService> = regWelcome.getReference();
