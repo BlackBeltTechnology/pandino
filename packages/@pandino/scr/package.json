@@ -44,8 +44,12 @@
     "dist"
   ],
   "devDependencies": {
+    "@pandino/configuration-management": "workspace:^0.8.31",
     "@pandino/configuration-management-api": "workspace:^0.8.31",
+    "@pandino/pandino": "workspace:^0.8.31",
     "@pandino/pandino-api": "workspace:^0.8.31",
+    "@pandino/persistence-manager-api": "workspace:^0.8.31",
+    "@pandino/persistence-manager-memory": "workspace:^0.8.31",
     "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.31",
     "@pandino/scr-api": "workspace:^0.8.31",
     "rimraf": "^5.0.5",
