@@ -398,12 +398,24 @@ importers:
 
   packages/@pandino/scr:
     devDependencies:
+      '@pandino/configuration-management':
+        specifier: workspace:^0.8.31
+        version: link:../configuration-management
       '@pandino/configuration-management-api':
         specifier: workspace:^0.8.31
         version: link:../configuration-management-api
+      '@pandino/pandino':
+        specifier: workspace:^0.8.31
+        version: link:../pandino
       '@pandino/pandino-api':
         specifier: workspace:^0.8.31
         version: link:../pandino-api
+      '@pandino/persistence-manager-api':
+        specifier: workspace:^0.8.31
+        version: link:../persistence-manager-api
+      '@pandino/persistence-manager-memory':
+        specifier: workspace:^0.8.31
+        version: link:../persistence-manager-memory
       '@pandino/rollup-plugin-generate-manifest':
         specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest

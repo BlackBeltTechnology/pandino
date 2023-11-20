@@ -345,5 +345,6 @@ export class ComponentConfigurationImpl<S> implements ComponentConfiguration<S>,
   onServiceListenerChanged(field: string, service: string, event: ServiceEvent, target?: string): void {
     // todo call potential service handler method once introduced
     this.updateRefs();
+    this.updateState();
   }
 }
