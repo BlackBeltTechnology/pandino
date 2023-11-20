@@ -1,14 +1,16 @@
-import type { ComponentConfiguration, ComponentContext, ComponentInstance } from '@pandino/scr-api';
-import type { Bundle, BundleContext, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import type { ComponentContext, ComponentInstance } from '@pandino/scr-api';
+import type { BundleContext, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 import { ComponentConfigurationImpl } from './ComponentConfigurationImpl';
 
 export class ComponentContextImpl<S> implements ComponentContext<S> {
   private readonly config: ComponentConfigurationImpl<S>;
-  private readonly target: any;
+  private readonly context: BundleContext;
+  private readonly instance: ComponentInstance<S>;
 
-  constructor(config: ComponentConfigurationImpl<S>, target: any) {
+  constructor(config: ComponentConfigurationImpl<S>, context: BundleContext, instance: ComponentInstance<S>) {
     this.config = config;
-    this.target = target;
+    this.context = context;
+    this.instance = instance;
   }
 
   disableComponent(name: string): void {
@@ -20,26 +22,18 @@ export class ComponentContextImpl<S> implements ComponentContext<S> {
   }
 
   getBundleContext(): BundleContext {
-    return undefined;
+    return this.context;
   }
 
   getComponentInstance(): ComponentInstance<S> {
-    return undefined;
+    return this.instance;
   }
 
   getProperties(): ServiceProperties {
     return this.config.getProperties();
   }
 
-  getServiceReference(): ServiceReference<S> {
-    return undefined;
-  }
-
-  getUsingBundle(): Bundle | undefined {
-    return undefined;
-  }
-
-  locateService(name: string, reference?: ServiceReference<S>): S | undefined {
-    return undefined;
+  getServiceReference(): ServiceReference<S> | undefined {
+    return this.config.getService();
   }
 }

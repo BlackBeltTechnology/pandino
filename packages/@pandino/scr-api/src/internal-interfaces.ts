@@ -15,13 +15,7 @@ import {
   REFERENCE_KEY_SERVICE,
   REFERENCE_KEY_TARGET,
 } from './constants';
-import type {
-  ConfigurationPolicy,
-  ReferenceCardinality,
-  ReferencePolicy,
-  ReferencePolicyOption,
-  ReferenceScope,
-} from './interfaces';
+import type { ConfigurationPolicy, ReferenceCardinality, ReferencePolicy, ReferencePolicyOption, ReferenceScope } from './interfaces';
 
 export interface InternalMetaData {
   [COMPONENT_KEY_NAME]: string;

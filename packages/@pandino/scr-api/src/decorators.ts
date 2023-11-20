@@ -37,9 +37,7 @@ export function Component(props: ComponentProps) {
 
     internalMeta[COMPONENT_KEY_NAME] = props.name;
     internalMeta[COMPONENT_KEY_SERVICE] =
-      typeof props.service === 'string' || (Array.isArray(props.service) && props.service.length > 0)
-        ? props.service
-        : props.name;
+      typeof props.service === 'string' || (Array.isArray(props.service) && props.service.length > 0) ? props.service : props.name;
     internalMeta[COMPONENT_KEY_CONFIGURATION_PID] = props.configurationPid ?? props.name;
     internalMeta[COMPONENT_KEY_CONFIGURATION_POLICY] = props.configurationPolicy ?? 'OPTIONAL';
 
