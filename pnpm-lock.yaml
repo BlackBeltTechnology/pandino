@@ -30,8 +30,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -51,8 +51,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -84,8 +84,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -108,8 +108,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../persistence-manager-api
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -138,8 +138,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -159,8 +159,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../pandino-api
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -174,8 +174,8 @@ importers:
   packages/@pandino/filters:
     devDependencies:
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -198,8 +198,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -222,8 +222,8 @@ importers:
         specifier: ^20.9.0
         version: 20.9.0
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -240,8 +240,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../pandino-api
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -264,8 +264,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../pandino-api
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -282,8 +282,8 @@ importers:
   packages/@pandino/pandino-api:
     devDependencies:
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -300,8 +300,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../pandino-api
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -324,8 +324,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -351,8 +351,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -375,8 +375,8 @@ importers:
         specifier: ^18.0.26
         version: 18.2.37
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -402,8 +402,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../pandino-api
       dts-bundle-generator:
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^9.0.0
+        version: 9.0.0
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -1655,8 +1655,8 @@ packages:
       path-type: 4.0.0
     dev: true
 
-  /dts-bundle-generator@8.1.2:
-    resolution: {integrity: sha512-/yvy9Xw0cfFodA8n6jEq8/COZ/WXgJtPabnLBAzIfP/TfxWbD/0a0dvfqNHneNqswQrH0kUcaAfGJC9UNvH97w==}
+  /dts-bundle-generator@9.0.0:
+    resolution: {integrity: sha512-4XPDOb+F1fkPrvqFL4hnNW2Edc3uiFxQDsK8gUMP8/45+QkA+dSOH0ZWZCKXEjA3ITVbPGV1li8oP8JE4Z/Y0g==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
