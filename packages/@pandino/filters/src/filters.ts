@@ -124,11 +124,11 @@ function evaluateComparison(comparison: FilterNode, data: any): boolean {
   let value = comparison.value;
 
   // Traverse the nested attributes to get the actual value
-  const attributePath = attribute ? attribute.split('.') : [];
-  let current = data;
-  while (attributePath.length > 0 && current) {
-    current = current[attributePath.shift()!];
-  }
+  // const attributePath = attribute ? attribute.split('.') : [];
+  let current = attribute ? data[attribute] : undefined;
+  // while (attributePath.length > 0 && current) {
+  //   current = current[attributePath.shift()!];
+  // }
 
   // Handle missing attributes gracefully
   if (current === undefined) {

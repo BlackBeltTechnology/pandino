@@ -8,6 +8,7 @@ import type { ConfigurationAdmin } from '@pandino/configuration-management-api';
 import { ComponentRegistrarImpl } from './ComponentRegistrarImpl';
 import { COMPONENT_REGISTRAR_INTERFACE_KEY } from '@pandino/scr-api';
 import type { ComponentRegistrar } from '@pandino/scr-api';
+import { registerDecoratorHandler } from '@pandino/scr-api';
 
 export class Activator implements BundleActivator {
   private serviceRegistration?: ServiceRegistration<ServiceComponentRuntime>;
@@ -20,6 +21,7 @@ export class Activator implements BundleActivator {
   private serviceUtils?: ServiceUtils;
   private configAdminReference?: ServiceReference<ConfigurationAdmin>;
   private configAdmin?: ConfigurationAdmin;
+  private decoratorHandlerUngetter?: () => void;
 
   async start(context: BundleContext) {
     this.loggerReference = context.getServiceReference<Logger>(FRAMEWORK_LOGGER)!;
@@ -32,6 +34,7 @@ export class Activator implements BundleActivator {
     this.serviceRegistration = context.registerService<ServiceComponentRuntime>(SCR_INTERFACE_KEY, this.service, {});
     this.componentRegistrar = new ComponentRegistrarImpl(this.service);
     this.componentRegistrarRegistration = context.registerService<ComponentRegistrar>(COMPONENT_REGISTRAR_INTERFACE_KEY, this.componentRegistrar);
+    this.decoratorHandlerUngetter = registerDecoratorHandler(context);
 
     try {
       this.service.processComponents();
@@ -57,5 +60,8 @@ export class Activator implements BundleActivator {
     }
     this.serviceRegistration?.unregister();
     this.componentRegistrarRegistration?.unregister();
+    if (this.decoratorHandlerUngetter) {
+      this.decoratorHandlerUngetter();
+    }
   }
 }

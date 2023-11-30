@@ -24,7 +24,7 @@ describe('ConfigurationManager', function () {
     bundle = new MockBundle(context as MockBundleContext, 'test.bundle.location', '@test/my-bundle', '0.0.0');
     persistenceManager = new MockPersistenceManager(`{
       "my.component.pid": {
-        "service.pid": "my.component.pid",
+        "${SERVICE_PID}": "my.component.pid",
         "port" : 300
       }
     }`);
@@ -34,7 +34,7 @@ describe('ConfigurationManager', function () {
   it('listConfigurations()', () => {
     persistenceManager = new MockPersistenceManager(`{
       "my.component.pid": {
-        "service.pid": "my.component.pid",
+        "${SERVICE_PID}": "my.component.pid",
         "port" : 300, 
         "collection" : [2, 3, 4],  
         "complex": { 
@@ -43,7 +43,7 @@ describe('ConfigurationManager', function () {
         }
       },
       "my.other.pid": {
-        "service.pid": "my.other.pid",
+        "${SERVICE_PID}": "my.other.pid",
         "key": "value"
       }
     }`);
@@ -58,17 +58,17 @@ describe('ConfigurationManager', function () {
       collection: [2, 3, 4],
       complex: { a: 1, b: 'two' },
       port: 300,
-      'service.pid': 'my.component.pid',
+      [SERVICE_PID]: 'my.component.pid',
     });
 
     expect(config2.getPid()).toEqual('my.other.pid');
-    expect(config2.getProperties()).toEqual({ key: 'value', 'service.pid': 'my.other.pid' });
+    expect(config2.getProperties()).toEqual({ key: 'value', [SERVICE_PID]: 'my.other.pid' });
   });
 
   it('listConfigurations() with filter', () => {
     persistenceManager = new MockPersistenceManager(`{
       "my.component.pid": {
-        "service.pid": "my.component.pid",
+        "${SERVICE_PID}": "my.component.pid",
         "port" : 300, 
         "collection" : [2, 3, 4],  
         "complex": { 
@@ -77,19 +77,19 @@ describe('ConfigurationManager', function () {
         }
       },
       "my.other.pid": {
-        "service.pid": "my.other.pid",
+        "${SERVICE_PID}": "my.other.pid",
         "key": "value"
       }
     }`);
     cm = new ConfigurationManager(context, logger, evaluateFilter, persistenceManager);
-    const configurations = cm.listConfigurations('(key=value)');
+    const configurations = cm.listConfigurations(`(${SERVICE_PID}=my.other.pid)`);
 
     expect(configurations.length).toEqual(1);
 
     const [config2] = configurations;
 
     expect(config2.getPid()).toEqual('my.other.pid');
-    expect(config2.getProperties()).toEqual({ key: 'value', 'service.pid': 'my.other.pid' });
+    expect(config2.getProperties()).toEqual({ key: 'value', [SERVICE_PID]: 'my.other.pid' });
   });
 
   it('getConfiguration()', () => {
@@ -217,7 +217,7 @@ describe('ConfigurationManager', function () {
     it('some references had pre-stored configurations, while others did not', () => {
       persistenceManager = new MockPersistenceManager(`{
         "my.component.pid": {
-          "service.pid": "my.component.pid",
+          "${SERVICE_PID}": "my.component.pid",
           "port" : 300
         }
       }`);

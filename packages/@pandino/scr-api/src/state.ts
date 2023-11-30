@@ -7,9 +7,6 @@ import { DecoratedQueueImpl } from './DecoratedQueue';
 export const decoratedQueue: DecoratedQueue = new DecoratedQueueImpl();
 
 export function registerDecoratorHandler(bundleContext: BundleContext): () => void {
-  if (decoratedQueue.isInitialized()) {
-    throw new Error('Decorator handler already initialized!');
-  }
   const registrarReference = bundleContext.getServiceReference<ComponentRegistrar>(COMPONENT_REGISTRAR_INTERFACE_KEY);
   let registrar: ComponentRegistrar | undefined;
   if (registrarReference) {
@@ -22,7 +19,9 @@ export function registerDecoratorHandler(bundleContext: BundleContext): () => vo
     if (registrarReference) {
       try {
         bundleContext.ungetService(registrarReference);
-      } catch (e) {}
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 }
