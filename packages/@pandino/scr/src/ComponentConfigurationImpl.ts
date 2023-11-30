@@ -16,10 +16,10 @@ import type {
 import {
   COMPONENT_ACTIVATE_KEY_METHOD,
   COMPONENT_DEACTIVATE_KEY_METHOD,
-  COMPONENT_KEY_CONFIGURATION_PID,
   COMPONENT_KEY_CONFIGURATION_POLICY,
   COMPONENT_KEY_NAME,
   COMPONENT_KEY_PROPERTY,
+  COMPONENT_KEY_SERVICE,
   COMPONENT_MODIFIED_KEY_METHOD,
   REFERENCE_KEY_CARDINALITY,
   REFERENCE_KEY_SERVICE,
@@ -85,22 +85,22 @@ export class ComponentConfigurationImpl<S> implements ComponentConfiguration<S>,
       this.state = 'UNSATISFIED_CONFIGURATION';
       this.isActive = false;
       return;
+    } else {
+      if (this.configurationRequiredAndSatisfied() || this.configurationPolicy === 'OPTIONAL') {
+        this.configuration = this.configAdmin.getConfiguration(Array.isArray(this.pid) ? this.pid[0] : this.pid);
+        this.configuration.update({
+          ...this.internalMetaData[COMPONENT_KEY_PROPERTY],
+          ...this.configuration.getProperties(),
+        });
+      }
+
+      this.instance = new ComponentInstanceImpl(targetConstructor);
+      this.componentContext = new ComponentContextImpl(this, declaringBundleContext, this.instance);
+
+      this.updateRefs();
+      this.updateState();
+      this.setUpServiceListeners();
     }
-
-    if (this.configurationRequiredAndSatisfied()) {
-      this.configuration = this.configAdmin.getConfiguration(Array.isArray(this.pid) ? this.pid[0] : this.pid);
-      this.configuration.update({
-        ...this.internalMetaData[COMPONENT_KEY_PROPERTY],
-        ...this.configuration.getProperties(),
-      });
-    }
-
-    this.instance = new ComponentInstanceImpl(targetConstructor);
-    this.componentContext = new ComponentContextImpl(this, declaringBundleContext, this.instance);
-
-    this.updateRefs();
-    this.updateState();
-    this.setUpServiceListeners();
   }
 
   private updateState(): void {
@@ -136,8 +136,10 @@ export class ComponentConfigurationImpl<S> implements ComponentConfiguration<S>,
     if (!this.isActive) {
       try {
         // 112.5.9 Activation Objects
-        this.invokeActivateIfPresent(this.componentContext, this.declaringBundleContext, this.configuration?.getProperties());
-        this.serviceRegistration = this.declaringBundleContext.registerService(this.internalMetaData[COMPONENT_KEY_CONFIGURATION_PID], this.instance);
+        this.serviceRegistration = this.declaringBundleContext.registerService(this.internalMetaData[COMPONENT_KEY_SERVICE], this.instance.getInstance(), {
+          ...this.getProperties(),
+        });
+        this.invokeActivateIfPresent(this.componentContext, this.declaringBundleContext, this.serviceRegistration.getProperties());
         this.isActive = true;
         this.state = 'ACTIVE';
       } catch (e: any) {

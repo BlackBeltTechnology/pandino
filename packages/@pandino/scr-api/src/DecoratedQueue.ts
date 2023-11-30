@@ -20,11 +20,9 @@ export class DecoratedQueueImpl implements DecoratedQueue {
   }
 
   init(context: BundleContext, registrar: ComponentRegistrar): void {
-    if (!this.isInitialized()) {
-      this.registrar = registrar;
-      this.context = context;
-      this.processPending();
-    }
+    this.registrar = registrar;
+    this.context = context;
+    this.processPending();
   }
 
   isInitialized(): boolean {
