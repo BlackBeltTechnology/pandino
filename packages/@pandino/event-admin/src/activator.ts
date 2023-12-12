@@ -1,24 +1,11 @@
 import { FRAMEWORK_EVALUATE_FILTER, FRAMEWORK_LOGGER, SERVICE_LISTENER_INTERFACE_KEY } from '@pandino/pandino-api';
-import type {
-  BundleActivator,
-  BundleContext,
-  Logger,
-  ServiceListener,
-  ServiceReference,
-  ServiceRegistration,
-} from '@pandino/pandino-api';
+import type { BundleActivator, BundleContext, Logger, ServiceListener, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
 import type { FilterEvaluator } from '@pandino/filters';
 import { EVENT_ADMIN_INTERFACE_KEY, EVENT_FACTORY_INTERFACE_KEY } from '@pandino/event-api';
 import type { EventAdmin, EventFactory } from '@pandino/event-api';
 import { EventAdminImpl } from './event-admin-impl';
 import { EventFactoryImpl } from './event-factory-impl';
-import {
-  AbstractAdapter,
-  BundleEventAdapter,
-  FrameworkEventAdapter,
-  LogEventAdapter,
-  ServiceEventAdapter,
-} from './adapters';
+import { AbstractAdapter, BundleEventAdapter, FrameworkEventAdapter, LogEventAdapter, ServiceEventAdapter } from './adapters';
 
 export class Activator implements BundleActivator {
   private eventAdminRegistration?: ServiceRegistration<EventAdmin>;
@@ -37,10 +24,7 @@ export class Activator implements BundleActivator {
     this.evaluateFilter = context.getService(this.evaluateFilterService)!;
     this.eventAdmin = new EventAdminImpl(context, this.logger!, this.evaluateFilter);
     const eventFactoryImpl = new EventFactoryImpl(this.evaluateFilter);
-    this.eventAdminRegistration = context.registerService(
-      [EVENT_ADMIN_INTERFACE_KEY, SERVICE_LISTENER_INTERFACE_KEY],
-      this.eventAdmin,
-    );
+    this.eventAdminRegistration = context.registerService([EVENT_ADMIN_INTERFACE_KEY, SERVICE_LISTENER_INTERFACE_KEY], this.eventAdmin);
     this.eventFactoryRegistration = context.registerService(EVENT_FACTORY_INTERFACE_KEY, eventFactoryImpl);
 
     context.addServiceListener(this.eventAdmin);

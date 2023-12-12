@@ -1,0 +1,68 @@
+{
+  "name": "@pandino/scr",
+  "version": "0.8.31",
+  "description": "Manage services in a declarative way",
+  "module": "./dist/@pandino/scr.mjs",
+  "types": "dist/@pandino/scr.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": "./dist/@pandino/scr.cjs",
+      "import": "./dist/@pandino/scr.mjs"
+    }
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc && vite build",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "tsc": "tsc"
+  },
+  "keywords": [
+    "pandino",
+    "bundle",
+    "service",
+    "scr",
+    "declarative-services",
+    "service-component-runtime"
+  ],
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "license": "EPL-2.0",
+  "homepage": "https://github.com/BlackBeltTechnology/pandino",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlackBeltTechnology/pandino.git",
+    "directory": "packages/@pandino/scr"
+  },
+  "bugs": {
+    "url": "https://github.com/BlackBeltTechnology/pandino/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@pandino/configuration-management": "workspace:^0.8.31",
+    "@pandino/configuration-management-api": "workspace:^0.8.31",
+    "@pandino/pandino": "workspace:^0.8.31",
+    "@pandino/pandino-api": "workspace:^0.8.31",
+    "@pandino/persistence-manager-api": "workspace:^0.8.31",
+    "@pandino/persistence-manager-memory": "workspace:^0.8.31",
+    "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.31",
+    "@pandino/scr-api": "workspace:^0.8.31",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vitest": "^0.34.6"
+  },
+  "pandino": {
+    "manifest": {
+      "Require-Capability": "@pandino/configuration-management;objectClass:Array=\"@pandino/configuration-management/ConfigurationAdmin,@pandino/configuration-management/ConfigurationListener\"\"",
+      "Provide-Capability": "@pandino/extender;pandino.extender=\"pandino.component\""
+    }
+  }
+}

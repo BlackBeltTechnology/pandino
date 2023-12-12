@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  BUNDLE_ACTIVATIONPOLICY,
-  BUNDLE_SYMBOLICNAME,
-  BUNDLE_VERSION,
-  PROVIDE_CAPABILITY,
-  REQUIRE_CAPABILITY,
-} from '@pandino/pandino-api';
+import { BUNDLE_ACTIVATIONPOLICY, BUNDLE_SYMBOLICNAME, BUNDLE_VERSION, PROVIDE_CAPABILITY, REQUIRE_CAPABILITY } from '@pandino/pandino-api';
 import type { ActivationPolicy, BundleManifestHeaders } from '@pandino/pandino-api';
 import { BundleRevisionImpl } from './bundle-revision-impl';
 import { BundleCapabilityImpl } from './wiring';

@@ -85,6 +85,11 @@ describe('filters', () => {
       expect(evaluateFilter({ sn: 'jones' }, query)).toEqual(false);
     });
 
+    it('simple equality with dot keys', () => {
+      const query = '(my.key=smith)';
+      expect(evaluateFilter({ 'my.key': 'smith' }, query)).toEqual(true);
+    });
+
     it('multi-valued keys', () => {
       const query = '(gn=Rick)';
       let data = { gn: ['Richard', 'Dick', 'Rick', 'Ricky'] };

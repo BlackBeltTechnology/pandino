@@ -38,20 +38,13 @@ export default class PandinoBundleInstallerDomActivator implements BundleActivat
 
     const callback = async () => {
       if (documentDefinedManifest.hasAttribute('src')) {
-        locations = await this.fetcher!.fetch(
-          this.context!.getProperty(DEPLOYMENT_ROOT_PROP),
-          documentDefinedManifest.getAttribute('src') as string,
-        );
+        locations = await this.fetcher!.fetch(this.context!.getProperty(DEPLOYMENT_ROOT_PROP), documentDefinedManifest.getAttribute('src') as string);
       } else {
         locations = documentDefinedManifest ? JSON.parse(documentDefinedManifest.textContent!) : [];
       }
 
-      const installList = locations.filter(
-        (manifestLocation) => !this.installedManifestList.includes(manifestLocation),
-      );
-      const uninstallList = this.installedManifestList.filter(
-        (manifestLocation) => !locations.includes(manifestLocation),
-      );
+      const installList = locations.filter((manifestLocation) => !this.installedManifestList.includes(manifestLocation));
+      const uninstallList = this.installedManifestList.filter((manifestLocation) => !locations.includes(manifestLocation));
 
       await Promise.all(uninstallList.map((manifestLocation) => this.uninstall(manifestLocation)));
       await Promise.all(installList.map((manifestLocation) => this.install(manifestLocation)));

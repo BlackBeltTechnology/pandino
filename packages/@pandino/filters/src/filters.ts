@@ -124,11 +124,11 @@ function evaluateComparison(comparison: FilterNode, data: any): boolean {
   let value = comparison.value;
 
   // Traverse the nested attributes to get the actual value
-  const attributePath = attribute ? attribute.split('.') : [];
-  let current = data;
-  while (attributePath.length > 0 && current) {
-    current = current[attributePath.shift()!];
-  }
+  // const attributePath = attribute ? attribute.split('.') : [];
+  let current = attribute ? data[attribute] : undefined;
+  // while (attributePath.length > 0 && current) {
+  //   current = current[attributePath.shift()!];
+  // }
 
   // Handle missing attributes gracefully
   if (current === undefined) {
@@ -228,45 +228,13 @@ export function evaluateSemver(version: string, operator: SemVerOperator, target
   // Evaluate the comparison based on the specified operator
   switch (operator) {
     case 'lte':
-      return vMajor < tMajor
-        ? true
-        : vMajor > tMajor
-          ? false
-          : vMinor < tMinor
-            ? true
-            : vMinor > tMinor
-              ? false
-              : vPatch <= tPatch;
+      return vMajor < tMajor ? true : vMajor > tMajor ? false : vMinor < tMinor ? true : vMinor > tMinor ? false : vPatch <= tPatch;
     case 'lt':
-      return vMajor < tMajor
-        ? true
-        : vMajor > tMajor
-          ? false
-          : vMinor < tMinor
-            ? true
-            : vMinor > tMinor
-              ? false
-              : vPatch < tPatch;
+      return vMajor < tMajor ? true : vMajor > tMajor ? false : vMinor < tMinor ? true : vMinor > tMinor ? false : vPatch < tPatch;
     case 'gte':
-      return vMajor > tMajor
-        ? true
-        : vMajor < tMajor
-          ? false
-          : vMinor > tMinor
-            ? true
-            : vMinor < tMinor
-              ? false
-              : vPatch >= tPatch;
+      return vMajor > tMajor ? true : vMajor < tMajor ? false : vMinor > tMinor ? true : vMinor < tMinor ? false : vPatch >= tPatch;
     case 'gt':
-      return vMajor > tMajor
-        ? true
-        : vMajor < tMajor
-          ? false
-          : vMinor > tMinor
-            ? true
-            : vMinor < tMinor
-              ? false
-              : vPatch > tPatch;
+      return vMajor > tMajor ? true : vMajor < tMajor ? false : vMinor > tMinor ? true : vMinor < tMinor ? false : vPatch > tPatch;
     case 'eq':
       return vMajor === tMajor && vMinor === tMinor && vPatch === tPatch;
     default:

@@ -10,16 +10,7 @@ import {
 } from '@pandino/pandino-api';
 import { LOG_READER_SERVICE_INTERFACE_KEY } from '@pandino/log-api';
 import type { LogEntry, LogListener, LogReaderService } from '@pandino/log-api';
-import {
-  BUNDLE_ID,
-  EventAdmin,
-  EventFactory,
-  LOG_EVENT_INTERFACE_KEY,
-  MESSAGE,
-  SERVICE,
-  SERVICE_OBJECTCLASS,
-  TIMESTAMP,
-} from '@pandino/event-api';
+import { BUNDLE_ID, EventAdmin, EventFactory, LOG_EVENT_INTERFACE_KEY, MESSAGE, SERVICE, SERVICE_OBJECTCLASS, TIMESTAMP } from '@pandino/event-api';
 import { AbstractAdapter } from './abstract-adapter';
 
 export class LogEventAdapter extends AbstractAdapter implements ServiceListener {

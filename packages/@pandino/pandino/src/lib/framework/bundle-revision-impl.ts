@@ -27,11 +27,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
     this.id = id;
     this.headerMap = headerMap ?? {};
 
-    const mp: ManifestParser = new ManifestParserImpl(
-      bundle.getFramework().getConfig(),
-      this,
-      this.headerMap as BundleManifestHeaders,
-    );
+    const mp: ManifestParser = new ManifestParserImpl(bundle.getFramework().getConfig(), this, this.headerMap as BundleManifestHeaders);
 
     this.manifestVersion = mp.getManifestVersion();
     this.version = mp.getBundleVersion();
@@ -49,9 +45,7 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
     if (other === undefined || other === null || !(other instanceof BundleRevisionImpl)) {
       return false;
     }
-    return (
-      this.getSymbolicName() === other.getSymbolicName() && evaluateSemver(this.getVersion(), 'eq', other.getVersion())
-    );
+    return this.getSymbolicName() === other.getSymbolicName() && evaluateSemver(this.getVersion(), 'eq', other.getVersion());
   }
 
   getBundle(): Bundle {

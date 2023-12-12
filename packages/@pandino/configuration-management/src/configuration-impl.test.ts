@@ -1,41 +1,86 @@
-import { describe, beforeEach, expect, it, vi } from 'vitest';
-import type { Bundle, BundleContext, Logger, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import { describe, beforeEach, expect, it, vi, afterEach } from 'vitest';
+import {
+  Bundle,
+  BUNDLE_ACTIVATOR,
+  BUNDLE_SYMBOLICNAME,
+  BUNDLE_VERSION,
+  BundleContext,
+  type BundleImporter,
+  BundleManifestHeaders,
+  FrameworkConfigMap,
+  LOG_LEVEL_PROP,
+  LogLevel,
+  PANDINO_BUNDLE_IMPORTER_PROP,
+  PANDINO_MANIFEST_FETCHER_PROP,
+  PROVIDE_CAPABILITY,
+  REQUIRE_CAPABILITY,
+  ServiceProperties,
+  ServiceReference,
+} from '@pandino/pandino-api';
 import { SERVICE_PID } from '@pandino/pandino-api';
 import {
+  CONFIG_ADMIN_INTERFACE_KEY,
   CONFIGURATION_LISTENER_INTERFACE_KEY,
+  ConfigurationAdmin,
   MANAGED_SERVICE_INTERFACE_KEY,
 } from '@pandino/configuration-management-api';
-import type {
-  Configuration,
-  ConfigurationEvent,
-  ConfigurationEventType,
-  ConfigurationListener,
-  ManagedService,
-} from '@pandino/configuration-management-api';
-import { evaluateFilter } from '@pandino/filters';
-import { MockBundleContext } from './__mocks__/mock-bundle-context';
-import { MockBundle } from './__mocks__/mock-bundle';
-import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
+import PMActivator from '@pandino/persistence-manager-memory';
+import type { Configuration, ConfigurationEvent, ConfigurationEventType, ConfigurationListener, ManagedService } from '@pandino/configuration-management-api';
+import Pandino from '@pandino/pandino';
 import { ConfigurationAdminImpl } from './configuration-admin-impl';
-import { ConfigurationManager } from './configuration-manager';
+import { Activator as CMActivator } from './activator';
 
 describe('ConfigurationImpl', () => {
-  let context: BundleContext;
+  let params: FrameworkConfigMap;
   let bundle: Bundle;
+  let pandino: Pandino;
+  let pandinoContext: BundleContext;
+  const pmHeaders: () => BundleManifestHeaders = () => ({
+    [BUNDLE_SYMBOLICNAME]: '@pandino/persistence-manager-memory',
+    [BUNDLE_VERSION]: '0.0.0',
+    [BUNDLE_ACTIVATOR]: new PMActivator(),
+    [PROVIDE_CAPABILITY]: '@pandino/persistence-manager;type="in-memory";objectClass="@pandino/persistence-manager/PersistenceManager"',
+  });
+  const cmHeaders: () => BundleManifestHeaders = () => ({
+    [BUNDLE_SYMBOLICNAME]: '@pandino/configuration-management',
+    [BUNDLE_VERSION]: '0.0.0',
+    [BUNDLE_ACTIVATOR]: new CMActivator(),
+    [REQUIRE_CAPABILITY]: '@pandino/persistence-manager;filter:=(objectClass=@pandino/persistence-manager/PersistenceManager)',
+    [PROVIDE_CAPABILITY]:
+      '@pandino/configuration-management;objectClass:Array="@pandino/configuration-management/ConfigurationAdmin,@pandino/configuration-management/ManagedService,@pandino/configuration-management/ConfigurationListener"',
+  });
+  const importer: BundleImporter = {
+    import: (activatorLocation: string, manifestLocation: string, deploymentRoot?: string) => {
+      // this won't be called if the activator is an instance and not a string
+      return Promise.resolve({
+        default: null as unknown as any,
+      });
+    },
+  };
   let configAdmin: ConfigurationAdminImpl;
-  let cm: ConfigurationManager;
-  let mockDebug = vi.fn();
-  let logger: Logger = {
-    debug: mockDebug,
-  } as unknown as Logger;
 
-  beforeEach(() => {
-    mockDebug.mockClear();
-    context = new MockBundleContext();
-    bundle = new MockBundle(context as MockBundleContext, 'test.bundle.location', '@test/my-bundle', '0.0.0');
-    cm = new ConfigurationManager(context, logger, evaluateFilter, new MockPersistenceManager('{}'));
-    context.addServiceListener(cm);
-    configAdmin = new ConfigurationAdminImpl(cm, bundle, logger);
+  beforeEach(async () => {
+    params = {
+      [PANDINO_MANIFEST_FETCHER_PROP]: vi.fn() as any,
+      [PANDINO_BUNDLE_IMPORTER_PROP]: importer,
+      [LOG_LEVEL_PROP]: LogLevel.WARN,
+    };
+    pandino = new Pandino(params);
+
+    await pandino.init();
+    await pandino.start();
+
+    pandinoContext = pandino.getBundleContext();
+    const [pmb, cmb] = await installDepBundles(pandinoContext);
+    bundle = pandino;
+    const ref = pandinoContext.getServiceReference<ConfigurationAdmin>(CONFIG_ADMIN_INTERFACE_KEY)!;
+    configAdmin = pandinoContext.getService(ref) as ConfigurationAdminImpl;
+  });
+
+  afterEach(() => {
+    pandino.stop();
+    pandino = undefined;
+    pandinoContext = undefined;
   });
 
   it('basic creation of configuration', () => {
@@ -61,7 +106,7 @@ describe('ConfigurationImpl', () => {
     // configuration didn't register a location
     testConfiguration(configuration, 'test.pid', undefined, undefined);
 
-    context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
+    pandinoContext.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -100,7 +145,7 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: mockUpdated,
     };
-    context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
+    pandinoContext.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -128,7 +173,7 @@ describe('ConfigurationImpl', () => {
       updated: mockUpdated,
     };
     configuration.update();
-    context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
+    pandinoContext.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -143,7 +188,7 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: mockUpdated,
     };
-    const registration = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
+    const registration = pandinoContext.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -167,7 +212,7 @@ describe('ConfigurationImpl', () => {
       prop2: 'test',
     });
 
-    expect(registration.getProperties()).toEqual({
+    expect(registration.getProperties()).toContain({
       [SERVICE_PID]: 'test.pid',
     });
   });
@@ -183,11 +228,11 @@ describe('ConfigurationImpl', () => {
     const service2: ManagedService = {
       updated: mockUpdated2,
     };
-    const registration1 = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service1, {
+    const registration1 = pandinoContext.registerService(MANAGED_SERVICE_INTERFACE_KEY, service1, {
       [SERVICE_PID]: 'test.pid',
       name: 'service1',
     });
-    const registration2 = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service2, {
+    const registration2 = pandinoContext.registerService(MANAGED_SERVICE_INTERFACE_KEY, service2, {
       [SERVICE_PID]: 'test.pid',
       name: 'service2',
     });
@@ -219,11 +264,11 @@ describe('ConfigurationImpl', () => {
       prop2: 'test',
     });
 
-    expect(registration1.getProperties()).toEqual({
+    expect(registration1.getProperties()).toContain({
       name: 'service1',
       [SERVICE_PID]: 'test.pid',
     });
-    expect(registration2.getProperties()).toEqual({
+    expect(registration2.getProperties()).toContain({
       name: 'service2',
       [SERVICE_PID]: 'test.pid',
     });
@@ -235,7 +280,7 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: mockUpdated,
     };
-    context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
+    pandinoContext.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -261,11 +306,13 @@ describe('ConfigurationImpl', () => {
   });
 
   it('events', () => {
+    const mockUpdatedEvent = vi.fn();
     const mockConfigurationEvent = vi.fn();
-    const listener: ConfigurationListener = {
+    const service: ManagedService & ConfigurationListener = {
+      updated: mockUpdatedEvent,
       configurationEvent: mockConfigurationEvent,
     };
-    context.registerService<ConfigurationListener>(CONFIGURATION_LISTENER_INTERFACE_KEY, listener, {
+    const registration = pandinoContext.registerService([MANAGED_SERVICE_INTERFACE_KEY, CONFIGURATION_LISTENER_INTERFACE_KEY], service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -273,26 +320,27 @@ describe('ConfigurationImpl', () => {
 
     testConfigurationEvent(mockConfigurationEvent, 0);
 
-    const service: ManagedService = {
-      updated: vi.fn(),
-    };
-    const registration = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
-      [SERVICE_PID]: 'test.pid',
-    });
-    const reference = registration.getReference();
+    expect(registration.getReference().hasObjectClass(MANAGED_SERVICE_INTERFACE_KEY)).toBe(true);
+    expect(registration.getReference().hasObjectClass(CONFIGURATION_LISTENER_INTERFACE_KEY)).toBe(true);
 
-    testConfigurationEvent(mockConfigurationEvent, 1, 'UPDATED', reference);
+    // const managedReference = pandinoContext.getServiceReference(MANAGED_SERVICE_INTERFACE_KEY);
+    // const listenerReference = pandinoContext.getServiceReference(CONFIGURATION_LISTENER_INTERFACE_KEY);
+
+    expect(service.updated).toHaveBeenCalledTimes(1);
+    expect(service.configurationEvent).toHaveBeenCalledTimes(0);
+    testConfigurationEvent(mockConfigurationEvent, 0, 'UPDATED', registration.getReference());
 
     configuration.update({
       prop1: true,
       prop2: 'test',
     });
 
-    testConfigurationEvent(mockConfigurationEvent, 2, 'UPDATED', reference);
+    expect(service.updated).toHaveBeenCalledTimes(2);
+    testConfigurationEvent(mockConfigurationEvent, 1, 'UPDATED', registration.getReference());
 
     configuration.delete();
 
-    testConfigurationEvent(mockConfigurationEvent, 3, 'DELETED', reference);
+    testConfigurationEvent(mockConfigurationEvent, 2, 'DELETED', registration.getReference());
   });
 
   it('targetpid matching use-case based on bundle symbolic name', () => {
@@ -301,7 +349,7 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: mockUpdated,
     };
-    const registration = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
+    const registration = pandinoContext.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -327,7 +375,7 @@ describe('ConfigurationImpl', () => {
       prop2: 'test',
     });
 
-    expect(registration.getProperties()).toEqual({
+    expect(registration.getProperties()).toContain({
       [SERVICE_PID]: 'test.pid',
     });
   });
@@ -338,7 +386,7 @@ describe('ConfigurationImpl', () => {
     const service: ManagedService = {
       updated: mockUpdated,
     };
-    const registration = context.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
+    const registration = pandinoContext.registerService(MANAGED_SERVICE_INTERFACE_KEY, service, {
       [SERVICE_PID]: 'test.pid',
     });
 
@@ -357,7 +405,7 @@ describe('ConfigurationImpl', () => {
       prop2: 'test',
     });
 
-    expect(registration.getProperties()).toEqual({
+    expect(registration.getProperties()).toContain({
       [SERVICE_PID]: 'test.pid',
     });
   });
@@ -371,12 +419,7 @@ describe('ConfigurationImpl', () => {
     }
   }
 
-  function testConfiguration(
-    configuration: Configuration,
-    pid: string,
-    location?: string,
-    properties?: ServiceProperties,
-  ): void {
+  function testConfiguration(configuration: Configuration, pid: string, location?: string, properties?: ServiceProperties): void {
     expect(configuration).toBeDefined();
     expect(configuration.getPid()).toEqual(pid);
     expect(configuration.getBundleLocation()).toEqual(location);
@@ -396,5 +439,11 @@ describe('ConfigurationImpl', () => {
       expect(event.getType()).toEqual(eventType);
       expect(event.getReference()).toEqual(reference);
     }
+  }
+
+  async function installDepBundles(ctx: BundleContext): Promise<Bundle[]> {
+    const pmb = await ctx.installBundle(pmHeaders());
+    const cmb = await ctx.installBundle(cmHeaders());
+    return [pmb, cmb];
   }
 });

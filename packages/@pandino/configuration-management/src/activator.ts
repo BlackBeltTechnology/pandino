@@ -1,13 +1,5 @@
 import { FRAMEWORK_EVALUATE_FILTER, FRAMEWORK_LOGGER, OBJECTCLASS } from '@pandino/pandino-api';
-import type {
-  BundleActivator,
-  BundleContext,
-  Logger,
-  ServiceEvent,
-  ServiceListener,
-  ServiceReference,
-  ServiceRegistration,
-} from '@pandino/pandino-api';
+import type { BundleActivator, BundleContext, Logger, ServiceEvent, ServiceListener, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
 import type { FilterEvaluator } from '@pandino/filters';
 import type { ConfigurationAdmin } from '@pandino/configuration-management-api';
 import { CONFIG_ADMIN_INTERFACE_KEY } from '@pandino/configuration-management-api';
@@ -42,9 +34,7 @@ export class Activator implements BundleActivator {
 
     if (this.persistenceManagerReference) {
       this.logger.info(
-        `Activating Configuration Management with immediate Persistence Manager Reference: ${this.persistenceManagerReference.getProperty(
-          OBJECTCLASS,
-        )}`,
+        `Activating Configuration Management with immediate Persistence Manager Reference: ${this.persistenceManagerReference.getProperty(OBJECTCLASS)}`,
       );
       this.persistenceManager = context.getService(this.persistenceManagerReference);
       if (this.persistenceManager) {
@@ -107,10 +97,7 @@ export class Activator implements BundleActivator {
     if (!this.pmUsed && this.context) {
       this.configManager = new ConfigurationManager(this.context, this.logger!, this.evaluateFilter!, pm);
       this.configAdmin = new ConfigurationAdminImpl(this.configManager, this.context.getBundle(), this.logger!);
-      this.configAdminRegistration = this.context.registerService<ConfigurationAdmin>(
-        CONFIG_ADMIN_INTERFACE_KEY,
-        this.configAdmin,
-      );
+      this.configAdminRegistration = this.context.registerService<ConfigurationAdmin>(CONFIG_ADMIN_INTERFACE_KEY, this.configAdmin);
       this.configManager.initReferencesAddedBeforeManagerActivation();
       this.context.addServiceListener(this.configManager);
     } else {

@@ -16,12 +16,7 @@ export class ConfigurationCache {
     this.cm = cm;
 
     this.persistenceManager.getProperties().forEach((props: ServiceProperties) => {
-      const configuration = new ConfigurationImpl(
-        this.cm,
-        props[SERVICE_PID],
-        this.context.getBundle().getLocation(),
-        props,
-      );
+      const configuration = new ConfigurationImpl(this.cm, props[SERVICE_PID], this.context.getBundle().getLocation(), props);
       this.cache.set(props[SERVICE_PID], configuration);
     });
   }

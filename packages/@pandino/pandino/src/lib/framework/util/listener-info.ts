@@ -8,13 +8,7 @@ export class ListenerInfo {
   private readonly listener: ServiceListener | BundleListener | FrameworkListener;
   private readonly filter?: FilterNode;
 
-  constructor(
-    bundle: Bundle,
-    context: BundleContext,
-    listener: ServiceListener | BundleListener | FrameworkListener,
-    info?: ListenerInfo,
-    filter?: string,
-  ) {
+  constructor(bundle: Bundle, context: BundleContext, listener: ServiceListener | BundleListener | FrameworkListener, info?: ListenerInfo, filter?: string) {
     if (info) {
       this.bundle = info.bundle;
       this.context = info.context;

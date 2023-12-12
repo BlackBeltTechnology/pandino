@@ -19,13 +19,7 @@ import {
   PANDINO_MANIFEST_FETCHER_PROP,
   USES_DIRECTIVE,
 } from '@pandino/pandino-api';
-import type {
-  BundleActivator,
-  BundleImporter,
-  BundleManifestHeaders,
-  FrameworkConfigMap,
-  Logger,
-} from '@pandino/pandino-api';
+import type { BundleActivator, BundleImporter, BundleManifestHeaders, FrameworkConfigMap, Logger } from '@pandino/pandino-api';
 
 describe('BundleCapabilityImpl', () => {
   const dummyActivator: BundleActivator = {
@@ -101,9 +95,7 @@ describe('BundleCapabilityImpl', () => {
     expect(capability.isAttributeMandatory('attr1')).toEqual(false);
     expect(capability.isAttributeMandatory('attr2')).toEqual(true);
     expect(capability.getUses()).toEqual(['uses']);
-    expect(capability.toString()).toEqual(
-      '[@scope/bundle: 1.2.3 (R 1)] test.namespace; attr1=111; attr2=yayy; attr3=true',
-    );
+    expect(capability.toString()).toEqual('[@scope/bundle: 1.2.3 (R 1)] test.namespace; attr1=111; attr2=yayy; attr3=true');
   });
 
   it('equals', () => {

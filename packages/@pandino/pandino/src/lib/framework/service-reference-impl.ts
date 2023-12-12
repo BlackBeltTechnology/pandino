@@ -1,10 +1,4 @@
-import {
-  SERVICE_DEFAULT_RANK,
-  SERVICE_ID,
-  SERVICE_RANKING,
-  PACKAGE_NAMESPACE,
-  OBJECTCLASS,
-} from '@pandino/pandino-api';
+import { SERVICE_DEFAULT_RANK, SERVICE_ID, SERVICE_RANKING, PACKAGE_NAMESPACE, OBJECTCLASS } from '@pandino/pandino-api';
 import type { Bundle, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 import { ServiceRegistrationImpl } from './service-registration-impl';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
@@ -154,10 +148,7 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
       const wires = wiring.getRequiredWires(undefined);
       if (Array.isArray(wires)) {
         for (const w of wires) {
-          if (
-            w.getCapability().getNamespace() === PACKAGE_NAMESPACE &&
-            w.getCapability().getAttributes()[PACKAGE_NAMESPACE] === name
-          ) {
+          if (w.getCapability().getNamespace() === PACKAGE_NAMESPACE && w.getCapability().getAttributes()[PACKAGE_NAMESPACE] === name) {
             return w;
           }
         }

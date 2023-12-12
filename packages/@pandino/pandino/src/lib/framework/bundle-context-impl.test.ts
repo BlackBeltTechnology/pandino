@@ -75,16 +75,12 @@ describe('BundleContextImpl', () => {
   const serviceChangedListener: ServiceListener = {
     serviceChanged,
   };
-  const mockGetService = vi
-    .fn()
-    .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>) => ({
-      execute: () => true,
-    }));
-  const mockUngetService = vi
-    .fn()
-    .mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>, service: MockService) => {
-      return;
-    });
+  const mockGetService = vi.fn().mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>) => ({
+    execute: () => true,
+  }));
+  const mockUngetService = vi.fn().mockImplementation((bundle: Bundle, registration: ServiceRegistration<MockService>, service: MockService) => {
+    return;
+  });
   let params: FrameworkConfigMap;
   let logger: Logger;
   let pandino: Pandino;
@@ -267,6 +263,16 @@ describe('BundleContextImpl', () => {
     expect(reference.getProperty('prop-one')).toEqual('val-one');
     expect(reference.getProperty('prop-two')).toEqual(2);
     expect(reference.getUsingBundles().length).toEqual(0);
+  });
+
+  it('getServiceReference() for multiple interfaces', () => {
+    bundleContext.registerService<MockService>(['@scope/bundle/service1', '@scope/bundle/service2'], mockService);
+    const reference1: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service1');
+    const reference2: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service2');
+
+    expect(reference1).toBeDefined();
+    expect(reference2).toBeDefined();
+    expect(reference1).toEqual(reference2);
   });
 
   it('getServiceReferences() with proper filter', () => {
