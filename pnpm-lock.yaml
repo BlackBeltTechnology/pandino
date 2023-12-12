@@ -80,6 +80,9 @@ importers:
       '@pandino/persistence-manager-api':
         specifier: workspace:^0.8.31
         version: link:../persistence-manager-api
+      '@pandino/persistence-manager-memory':
+        specifier: workspace:^0.8.31
+        version: link:../persistence-manager-memory
       '@pandino/rollup-plugin-generate-manifest':
         specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest

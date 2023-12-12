@@ -151,7 +151,7 @@ export class ComponentConfigurationImpl<S> implements ComponentConfiguration<S>,
     }
   }
 
-  private deactivate(reason: DeactivationReason) {
+  public deactivate(reason: DeactivationReason) {
     if (this.isActive) {
       try {
         // 112.5.16 Deactivation

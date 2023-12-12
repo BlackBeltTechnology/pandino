@@ -50,6 +50,7 @@
     "@pandino/pandino": "workspace:^0.8.31",
     "@pandino/pandino-api": "workspace:^0.8.31",
     "@pandino/persistence-manager-api": "workspace:^0.8.31",
+    "@pandino/persistence-manager-memory": "workspace:^0.8.31",
     "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.31",
     "dts-bundle-generator": "^8.1.2",
     "rimraf": "^5.0.5",

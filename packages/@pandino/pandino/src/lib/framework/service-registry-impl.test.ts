@@ -85,6 +85,20 @@ describe('ServiceRegistryImpl', () => {
     expect(regWelcome.getProperty(OBJECTCLASS)).toEqual('@pandino/pandino/welcome-impl');
   });
 
+  it('multiple interface implementation registration', () => {
+    const cls1 = '@pandino/pandino/one';
+    const cls2 = '@pandino/pandino/two';
+    const regMulti: ServiceRegistration<HelloService> = sr.registerService(bundle1, [cls1, cls2], helloService);
+
+    expect(sr.getRegisteredServices(bundle1).length).toEqual(1);
+
+    expect(sr.getServiceReferences(cls1).length).toEqual(1);
+    expect(sr.getServiceReferences(cls2).length).toEqual(1);
+    expect(regMulti.getProperty(OBJECTCLASS)).toEqual([cls1, cls2]);
+    expect(regMulti.getReference().hasObjectClass(cls1)).toEqual(true);
+    expect(regMulti.getReference().hasObjectClass(cls2)).toEqual(true);
+  });
+
   it('unregisterService()', () => {
     const reg: ServiceRegistration<HelloService> = sr.registerService(bundle1, '@pandino/pandino/hello-impl', helloService);
     const ref: ServiceReference<HelloService> = reg.getReference();

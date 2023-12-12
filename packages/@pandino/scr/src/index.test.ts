@@ -17,12 +17,12 @@ import {
 import type { Bundle, BundleContext, BundleImporter, BundleManifestHeaders, FrameworkConfigMap } from '@pandino/pandino-api';
 import PMActivator from '@pandino/persistence-manager-memory';
 import CMActivator from '@pandino/configuration-management';
-import { Activator as SCRActivator } from './Activator';
-import { SCR_INTERFACE_KEY } from './constants';
-import type { ComponentContext } from '@pandino/scr-api';
+import { ComponentContext, Deactivate } from '@pandino/scr-api';
 import { Activate, Component } from '@pandino/scr-api';
 import type { ConfigurationAdmin } from '@pandino/configuration-management-api';
 import { CONFIG_ADMIN_INTERFACE_KEY } from '@pandino/configuration-management-api';
+import { Activator as SCRActivator } from './Activator';
+import { SCR_INTERFACE_KEY } from './constants';
 
 const CMP_ONE_KEY = '@test/cmp-one';
 interface CmpOne {
@@ -222,6 +222,71 @@ describe('SCR', () => {
       xOne: 1,
       xTwo: false,
     });
+  });
+
+  it('@Deactivate is called when SCR Bundle is uninstalled', async () => {
+    const [pmb, cmb, scr] = await prepareSCR(pandinoContext);
+    const deActivateSpy = vi.fn();
+    let cmpCtx: ComponentContext<any> | undefined;
+
+    @Component({ name: 'test-comp-one-impl', service: CMP_ONE_KEY, property: { xOne: 1, xTwo: false } })
+    class OneImpl implements CmpOne {
+      hello(inp: string): string {
+        return inp.toUpperCase();
+      }
+
+      @Deactivate()
+      onDeactivate(componentContext: ComponentContext<CmpOne>) {
+        deActivateSpy();
+        cmpCtx = componentContext;
+      }
+    }
+
+    expect(deActivateSpy).toHaveBeenCalledTimes(0);
+
+    await pandino.uninstallBundle(scr as any);
+
+    expect(deActivateSpy).toHaveBeenCalledTimes(1);
+    expect(cmpCtx).toBeDefined();
+  });
+
+  it('@Deactivate is called when required configuration is deleted', async () => {
+    const [pmb, cmb, scr] = await prepareSCR(pandinoContext);
+    const activateSpy = vi.fn();
+    const deActivateSpy = vi.fn();
+    const configAdminRef = pandinoContext.getServiceReference<ConfigurationAdmin>(CONFIG_ADMIN_INTERFACE_KEY)!;
+    const configAdmin = pandinoContext.getService(configAdminRef)!;
+    const pid = 'custom-pid';
+
+    const config = configAdmin.getConfiguration(pid);
+    config.update({
+      yolo: 'hello',
+    });
+
+    @Component({ name: 'test-comp-one-impl', configurationPolicy: 'REQUIRE', service: CMP_ONE_KEY, configurationPid: pid })
+    class OneImpl implements CmpOne {
+      hello(inp: string): string {
+        return inp.toUpperCase();
+      }
+
+      @Activate()
+      onActivate(componentContext: ComponentContext<CmpOne>, bundleContext: BundleContext, properties?: ServiceProperties) {
+        activateSpy();
+      }
+
+      @Deactivate()
+      onDeactivate() {
+        deActivateSpy();
+      }
+    }
+
+    expect(activateSpy).toHaveBeenCalledTimes(1);
+    expect(deActivateSpy).toHaveBeenCalledTimes(0);
+
+    config.delete();
+    const asd = configAdmin.listConfigurations();
+
+    expect(deActivateSpy).toHaveBeenCalledTimes(1);
   });
 
   async function installDepBundles(ctx: BundleContext): Promise<Bundle[]> {
