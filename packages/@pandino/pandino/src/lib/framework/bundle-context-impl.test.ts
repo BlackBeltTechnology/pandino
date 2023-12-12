@@ -265,6 +265,16 @@ describe('BundleContextImpl', () => {
     expect(reference.getUsingBundles().length).toEqual(0);
   });
 
+  it('getServiceReference() for multiple interfaces', () => {
+    bundleContext.registerService<MockService>(['@scope/bundle/service1', '@scope/bundle/service2'], mockService);
+    const reference1: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service1');
+    const reference2: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service2');
+
+    expect(reference1).toBeDefined();
+    expect(reference2).toBeDefined();
+    expect(reference1).toEqual(reference2);
+  });
+
   it('getServiceReferences() with proper filter', () => {
     const otherMockService: MockService = {
       execute(): boolean {

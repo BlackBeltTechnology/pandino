@@ -1,6 +1,6 @@
 import type { BundleContext, Logger, ServiceRegistration, ServiceUtils } from '@pandino/pandino-api';
 import { SERVICE_PID } from '@pandino/pandino-api';
-import type { ConfigurationAdmin, ConfigurationListener } from '@pandino/configuration-management-api';
+import { ConfigurationAdmin, ConfigurationListener } from '@pandino/configuration-management-api';
 import { CONFIGURATION_LISTENER_INTERFACE_KEY } from '@pandino/configuration-management-api';
 import type { ComponentConfiguration, InternalMetaData } from '@pandino/scr-api';
 import { $$PANDINO_META, COMPONENT_KEY_CONFIGURATION_PID } from '@pandino/scr-api';
@@ -43,7 +43,16 @@ export class ServiceComponentRuntimeImpl implements ServiceComponentRuntime {
     }
   }
 
-  releaseComponent(component: ComponentConfiguration<any>): void {}
+  releaseComponent(config: ComponentConfiguration<any>): void {
+    const ref = config.getService();
+    if (ref) {
+      try {
+        (config as ComponentConfigurationImpl<any>).deactivate('BUNDLE_STOPPED');
+      } catch (e) {
+        this.logger.error(`Error releasing component: ${e}`);
+      }
+    }
+  }
 
   processComponents(): void {}
 

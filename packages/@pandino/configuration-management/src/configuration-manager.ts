@@ -14,7 +14,7 @@ export class ConfigurationManager implements ServiceListener {
   private readonly logger: Logger;
   private readonly evaluateFilter: FilterEvaluator;
   private readonly managedReferences: Map<string, Array<ServiceReference<ManagedService>>> = new Map<string, Array<ServiceReference<ManagedService>>>();
-  private readonly eventListeners: Map<string, ConfigurationListener[]> = new Map<string, ConfigurationListener[]>();
+  private readonly eventListeners: Map<string, ServiceReference<ConfigurationListener>[]> = new Map<string, ServiceReference<ConfigurationListener>[]>();
   private readonly configurationCache: ConfigurationCache;
 
   constructor(context: BundleContext, logger: Logger, evaluateFilter: FilterEvaluator, pm: PersistenceManager) {
@@ -75,9 +75,9 @@ export class ConfigurationManager implements ServiceListener {
           ? this.configurationCache.get(refPid)!
           : this.internalCreateConfiguration(refPid, reference.getBundle()?.getLocation());
         this.handleManagedServiceEvent(event.getType(), refPid, reference, service, config);
-      } else if (typeof (service as ConfigurationListener).configurationEvent === 'function') {
-        const configurationListener: ConfigurationListener = service;
-        this.handleConfigurationEventListenerEvent(event.getType(), refPid, configurationListener);
+      }
+      if (typeof (service as ConfigurationListener).configurationEvent === 'function') {
+        this.handleConfigurationEventListenerEvent(event, refPid);
       }
     }
   }
@@ -132,20 +132,20 @@ export class ConfigurationManager implements ServiceListener {
     }
   }
 
-  private handleConfigurationEventListenerEvent(eventType: ServiceEventType, refPid: string, configurationListener: ConfigurationListener): void {
-    if (eventType === 'REGISTERED') {
+  private handleConfigurationEventListenerEvent(event: ServiceEvent, refPid: string): void {
+    if (event.getType() === 'REGISTERED') {
       if (!this.eventListeners.has(refPid)) {
         this.eventListeners.set(refPid, []);
       }
       const listeners = this.eventListeners.get(refPid);
-      if (Array.isArray(listeners) && !listeners.includes(configurationListener)) {
-        listeners.push(configurationListener);
+      if (Array.isArray(listeners) && !listeners.includes(event.getServiceReference())) {
+        listeners.push(event.getServiceReference());
       }
-    } else if (eventType === 'UNREGISTERING') {
+    } else if (event.getType() === 'UNREGISTERING') {
       if (this.eventListeners.has(refPid)) {
         const listeners = this.eventListeners.get(refPid);
         if (Array.isArray(listeners)) {
-          const listenerIdx = listeners.findIndex((l) => l === configurationListener);
+          const listenerIdx = listeners.findIndex((l) => l === event.getServiceReference());
           if (listenerIdx > -1) {
             listeners.splice(listenerIdx, 1);
           }
@@ -192,6 +192,7 @@ export class ConfigurationManager implements ServiceListener {
 
   deleteConfiguration(pid: string): void {
     if (this.configurationCache.has(pid)) {
+      const listeners = this.eventListeners.get(pid);
       this.configurationCache.delete(pid);
       if (this.managedReferences.has(pid)) {
         const refs = this.managedReferences.get(pid);
@@ -201,8 +202,13 @@ export class ConfigurationManager implements ServiceListener {
             if (service) {
               service.updated(undefined);
             }
-            this.fireConfigurationChangeEvent('DELETED', pid, ref);
+            // this.fireConfigurationChangeEvent('DELETED', pid, ref);
           }
+        }
+      }
+      if (Array.isArray(listeners)) {
+        for (const listener of listeners) {
+          this.fireConfigurationChangeEvent('DELETED', pid, listener);
         }
       }
     }
@@ -234,17 +240,6 @@ export class ConfigurationManager implements ServiceListener {
     return new ConfigurationImpl(this, pid, bundleLocation);
   }
 
-  // private storeConfiguration(configuration: ConfigurationImpl): ConfigurationImpl {
-  //   const pid = configuration.getPid();
-  //   const existing = this.configurationCache.get(pid);
-  //   if (existing) {
-  //     return existing as ConfigurationImpl;
-  //   }
-  //
-  //   this.configurationCache.set(pid, configuration);
-  //   return configuration;
-  // }
-
   private fireConfigurationChangeEvent(type: ConfigurationEventType, pid: string, ref: ServiceReference<any>): void {
     const event: ConfigurationEvent = {
       getPid(): string {
@@ -259,7 +254,10 @@ export class ConfigurationManager implements ServiceListener {
     };
     const listeners = this.eventListeners.get(pid) || [];
     for (const listener of listeners) {
-      listener.configurationEvent(event);
+      const service = this.context.getService(listener);
+      if (service) {
+        service!.configurationEvent(event);
+      }
     }
   }
 }

@@ -156,7 +156,8 @@ describe('ConfigurationManager', function () {
     expect((cm as any).eventListeners.size).toEqual(1);
     expect((cm as any).eventListeners.has('mock.pid')).toEqual(true);
     expect((cm as any).eventListeners.get('mock.pid').length).toEqual(1);
-    expect((cm as any).eventListeners.get('mock.pid')[0]).toEqual(mockService);
+    const asd = (cm as any).eventListeners.get('mock.pid')[0];
+    expect((cm as any).eventListeners.get('mock.pid')[0]).toEqual(mockServiceReference);
 
     const unregisteringEvent: ServiceEvent = {
       getType: () => 'UNREGISTERING',
