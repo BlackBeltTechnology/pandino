@@ -12,8 +12,8 @@ importers:
         specifier: ^2.26.2
         version: 2.26.2
       '@types/node':
-        specifier: ^20.9.0
-        version: 20.9.0
+        specifier: ^20.10.6
+        version: 20.10.6
       prettier:
         specifier: ^3.1.0
         version: 3.1.0
@@ -40,7 +40,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
 
   packages/@pandino/bundle-installer-nodejs:
     devDependencies:
@@ -61,7 +61,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
 
   packages/@pandino/configuration-management:
     devDependencies:
@@ -94,7 +94,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
       vitest:
         specifier: ^0.34.6
         version: 0.34.6
@@ -118,7 +118,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
 
   packages/@pandino/event-admin:
     devDependencies:
@@ -148,7 +148,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
       vitest:
         specifier: ^0.34.6
         version: 0.34.6
@@ -169,7 +169,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
 
   packages/@pandino/filters:
     devDependencies:
@@ -184,7 +184,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
       vitest:
         specifier: ^0.34.6
         version: 0.34.6
@@ -208,7 +208,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
 
   packages/@pandino/loader-configuration-nodejs:
     devDependencies:
@@ -219,8 +219,8 @@ importers:
         specifier: workspace:^0.8.31
         version: link:../rollup-plugin-generate-manifest
       '@types/node':
-        specifier: ^20.9.0
-        version: 20.9.0
+        specifier: ^20.10.6
+        version: 20.10.6
       dts-bundle-generator:
         specifier: ^8.1.2
         version: 8.1.2
@@ -232,7 +232,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
 
   packages/@pandino/log-api:
     devDependencies:
@@ -250,7 +250,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
 
   packages/@pandino/manifest-generator: {}
 
@@ -274,7 +274,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
       vitest:
         specifier: ^0.34.6
         version: 0.34.6
@@ -292,7 +292,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
 
   packages/@pandino/persistence-manager-api:
     devDependencies:
@@ -310,7 +310,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
 
   packages/@pandino/persistence-manager-localstorage:
     devDependencies:
@@ -334,7 +334,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
       vitest:
         specifier: ^0.34.6
         version: 0.34.6
@@ -361,7 +361,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
       vitest:
         specifier: ^0.34.6
         version: 0.34.6
@@ -388,7 +388,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
 
   packages/@pandino/rollup-plugin-generate-manifest:
     dependencies:
@@ -412,7 +412,7 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.9.0)
+        version: 4.5.0(@types/node@20.10.6)
 
   packages/@pandino/webpack-plugin-generate-manifest:
     dependencies:
@@ -997,6 +997,12 @@ packages:
 
   /@types/node@12.20.55:
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
+    dev: true
+
+  /@types/node@20.10.6:
+    resolution: {integrity: sha512-Vac8H+NlRNNlAmDfGUP7b5h/KA+AtWIzuXy0E6OyP8f1tCLYAtPvKRRDJjAPqhpCb0t6U2j7/xqAuLEebW2kiw==}
+    dependencies:
+      undici-types: 5.26.5
     dev: true
 
   /@types/node@20.9.0:
@@ -2348,7 +2354,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 20.9.0
+      '@types/node': 20.10.6
       merge-stream: 2.0.0
       supports-color: 8.1.1
     dev: true
@@ -3476,6 +3482,42 @@ packages:
       - sugarss
       - supports-color
       - terser
+    dev: true
+
+  /vite@4.5.0(@types/node@20.10.6):
+    resolution: {integrity: sha512-ulr8rNLA6rkyFAlVWw2q5YJ91v098AFQ2R0PRFwPzREXOUJQPtFUG0t+/ZikhaOCDqFoDhN6/v8Sq0o4araFAw==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': '>= 14'
+      less: '*'
+      lightningcss: ^1.21.0
+      sass: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      less:
+        optional: true
+      lightningcss:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
+      '@types/node': 20.10.6
+      esbuild: 0.18.20
+      postcss: 8.4.31
+      rollup: 3.29.4
+    optionalDependencies:
+      fsevents: 2.3.3
     dev: true
 
   /vite@4.5.0(@types/node@20.9.0):
