@@ -43,7 +43,7 @@
   "devDependencies": {
     "@pandino/pandino-api": "workspace:^0.8.31",
     "@types/react": "^18.0.26",
-    "dts-bundle-generator": "^8.1.2",
+    "dts-bundle-generator": "^9.2.3",
     "react": "^18.2.0",
     "rimraf": "^5.0.5",
     "typescript": "^5.2.2",
