@@ -46,7 +46,7 @@
     "@pandino/pandino-api": "workspace:^0.8.31",
     "@pandino/rollup-plugin-generate-manifest": "workspace:^0.8.31",
     "@types/node": "^20.9.0",
-    "dts-bundle-generator": "^8.1.2",
+    "dts-bundle-generator": "^9.3.1",
     "rimraf": "^5.0.5",
     "typescript": "^5.2.2",
     "vite": "^4.5.0"
