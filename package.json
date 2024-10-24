@@ -3,9 +3,6 @@
   "version": "0.8.31",
   "license": "EPL-2.0",
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
-  "workspaces": [
-    "./packages/@pandino/*"
-  ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
@@ -17,14 +14,14 @@
     "format-examples": "prettier --config .prettierrc examples/*/packages/*/src/**/*.{ts,tsx} --write"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.26.2",
-    "@types/node": "^20.9.0",
-    "prettier": "^3.1.0",
-    "rimraf": "^5.0.5"
+    "@changesets/cli": "^2.27.9",
+    "@types/node": "^20.17.0",
+    "prettier": "^3.3.3",
+    "rimraf": "^5.0.10"
   },
   "engines": {
-    "node": ">=18",
-    "npm": ">=9",
-    "pnpm": ">=8"
+    "node": ">=20",
+    "npm": ">=10",
+    "pnpm": ">=9"
   }
 }
