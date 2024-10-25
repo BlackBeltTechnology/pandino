@@ -37,7 +37,7 @@
     "url": "https://github.com/BlackBeltTechnology/pandino/issues"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "publishConfig": {
     "access": "public"
@@ -46,11 +46,11 @@
     "dist"
   ],
   "devDependencies": {
-    "@pandino/pandino-api": "workspace:^0.8.31",
-    "reflect-metadata": "^0.1.13",
-    "rimraf": "^5.0.5",
-    "typescript": "^5.2.2",
-    "vite": "^4.5.0",
-    "vitest": "^0.34.6"
+    "@pandino/pandino-api": "workspace:^",
+    "reflect-metadata": "^0.2.2",
+    "rimraf": "^5.0.10",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.3"
   }
 }
