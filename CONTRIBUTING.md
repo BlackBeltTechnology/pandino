@@ -1,19 +1,35 @@
 # Contributing to Pandino
 
+## Environment
+
+If you don't have it already, we recommend installing [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating).
+
+Once installed, you can issue the following command to set up the appropriate NodeJS version:
+
+```bash
+nvm use
+```
+
+For package management we use [PNPM](https://pnpm.io/) instead of NPM. If you don't have it already, you can install it via:
+
+```bash
+npm i - g pnpm
+```
+
 ## CMDs
 
 ```
 # Install deps:
-npm i
+pnpm i
 
 # Format code:
-npm run format
+pnpm run format
 
 # Build all packages (excluding example project):
-npm run build
+pnpm run build
 
-# Build single package, e.g.:
-npm run build --workspace @pandino/pandino
+# Run tests
+pnpm run test
 ```
 
 ## Key Architectural Decisions
