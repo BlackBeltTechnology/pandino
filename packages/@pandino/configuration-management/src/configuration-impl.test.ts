@@ -212,7 +212,7 @@ describe('ConfigurationImpl', () => {
       prop2: 'test',
     });
 
-    expect(registration.getProperties()).toContain({
+    expect(registration.getProperties()).toMatchObject({
       [SERVICE_PID]: 'test.pid',
     });
   });
@@ -264,11 +264,11 @@ describe('ConfigurationImpl', () => {
       prop2: 'test',
     });
 
-    expect(registration1.getProperties()).toContain({
+    expect(registration1.getProperties()).toMatchObject({
       name: 'service1',
       [SERVICE_PID]: 'test.pid',
     });
-    expect(registration2.getProperties()).toContain({
+    expect(registration2.getProperties()).toMatchObject({
       name: 'service2',
       [SERVICE_PID]: 'test.pid',
     });
@@ -375,7 +375,7 @@ describe('ConfigurationImpl', () => {
       prop2: 'test',
     });
 
-    expect(registration.getProperties()).toContain({
+    expect(registration.getProperties()).toMatchObject({
       [SERVICE_PID]: 'test.pid',
     });
   });
@@ -405,7 +405,7 @@ describe('ConfigurationImpl', () => {
       prop2: 'test',
     });
 
-    expect(registration.getProperties()).toContain({
+    expect(registration.getProperties()).toMatchObject({
       [SERVICE_PID]: 'test.pid',
     });
   });

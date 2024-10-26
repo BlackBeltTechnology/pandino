@@ -49,6 +49,7 @@
     "@pandino/filters": "workspace:^",
     "@pandino/pandino": "workspace:^",
     "@pandino/pandino-api": "workspace:^",
+    "@pandino/persistence-manager-memory": "workspace:^",
     "@pandino/persistence-manager-api": "workspace:^",
     "@pandino/rollup-plugin-generate-manifest": "workspace:^",
     "dts-bundle-generator": "^9.5.1",
