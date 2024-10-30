@@ -25,3 +25,6 @@ export const REFERENCE_KEY_CARDINALITY = 'pandino:scr:Reference.cardinality';
 export const REFERENCE_KEY_POLICY = 'pandino:scr:Reference.policy';
 export const REFERENCE_KEY_POLICY_OPTION = 'pandino:scr:Reference.policyOption';
 export const REFERENCE_KEY_SCOPE = 'pandino:scr:Reference.scope';
+export const REFERENCE_KEY_BIND = 'pandino:scr:Reference.bind';
+export const REFERENCE_KEY_UPDATED = 'pandino:scr:Reference.updated';
+export const REFERENCE_KEY_UNBIND = 'pandino:scr:Reference.unbind';

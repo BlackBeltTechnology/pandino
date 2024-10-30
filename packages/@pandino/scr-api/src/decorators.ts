@@ -9,12 +9,15 @@ import {
   COMPONENT_KEY_PROPERTY,
   COMPONENT_KEY_SERVICE,
   COMPONENT_MODIFIED_KEY_METHOD,
+  REFERENCE_KEY_BIND,
   REFERENCE_KEY_CARDINALITY,
   REFERENCE_KEY_POLICY,
   REFERENCE_KEY_POLICY_OPTION,
   REFERENCE_KEY_SCOPE,
   REFERENCE_KEY_SERVICE,
   REFERENCE_KEY_TARGET,
+  REFERENCE_KEY_UNBIND,
+  REFERENCE_KEY_UPDATED,
 } from './constants';
 import type { InternalMetaData, InternalReferenceMetaData } from './internal-interfaces';
 import { decoratedQueue } from './state';
@@ -53,6 +56,7 @@ export function Component(props: ComponentProps) {
 
 /**
  * https://docs.osgi.org/specification/osgi.cmpn/7.0.0/service.component.html#service.component-field.injection
+ * https://osgi.github.io/osgi/cmpn/service.component.html#service.component-reference.policy
  *
  * @param {ReferenceProps} props
  * @constructor
@@ -65,31 +69,27 @@ export function Reference(props: ReferenceProps) {
       [REFERENCE_KEY_SERVICE]: props.service,
       [REFERENCE_KEY_CARDINALITY]: props.cardinality ? props.cardinality : 'MANDATORY',
       [REFERENCE_KEY_POLICY]: props.policy ? props.policy : 'STATIC',
-      [REFERENCE_KEY_POLICY_OPTION]: props.policyOption ? props.policyOption : 'RELUCTANT',
-      [REFERENCE_KEY_SCOPE]: props.scope ? props.scope : 'BUNDLE',
+      [REFERENCE_KEY_POLICY_OPTION]: props.policyOption ? props.policyOption : 'GREEDY',
+      [REFERENCE_KEY_SCOPE]: props.scope ? props.scope : 'SINGLETON',
     };
 
     if (props.target) {
       referenceMetaData[REFERENCE_KEY_TARGET] = props.target;
     }
 
-    internalMeta.references[key] = referenceMetaData;
+    if (props.bind) {
+      referenceMetaData[REFERENCE_KEY_BIND] = props.bind;
+    }
 
-    // let val = target[key];
-    //
-    // const getter = () => {
-    //   return val;
-    // };
-    // const setter = (next: any) => {
-    //   val = next;
-    // };
-    //
-    // Object.defineProperty(target, key, {
-    //   get: getter,
-    //   set: setter,
-    //   enumerable: true,
-    //   configurable: true,
-    // });
+    if (props.updated) {
+      referenceMetaData[REFERENCE_KEY_UPDATED] = props.updated;
+    }
+
+    if (props.unbind) {
+      referenceMetaData[REFERENCE_KEY_UNBIND] = props.unbind;
+    }
+
+    internalMeta.references[key] = referenceMetaData;
   };
 }
 

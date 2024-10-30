@@ -1,7 +1,7 @@
 import type { BundleContext, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 
 export type ConfigurationPolicy = 'IGNORE' | 'OPTIONAL' | 'REQUIRE';
-export type ReferenceCardinality = 'MANDATORY' | 'OPTIONAL';
+export type ReferenceCardinality = 'MANDATORY' | 'OPTIONAL' | 'MULTIPLE';
 
 /**
  * The static policy is the most simple policy and is the default policy.
@@ -30,7 +30,7 @@ export type ReferencePolicy = 'STATIC' | 'DYNAMIC';
  * new target service.
  */
 export type ReferencePolicyOption = 'RELUCTANT' | 'GREEDY';
-export type ReferenceScope = 'BUNDLE' | 'PROTOTYPE';
+export type ReferenceScope = 'SINGLETON' | 'BUNDLE' | 'PROTOTYPE';
 export type ComponentConfigurationState = 'UNSATISFIED_CONFIGURATION' | 'UNSATISFIED_REFERENCE' | 'SATISFIED' | 'ACTIVE' | 'FAILED_ACTIVATION';
 
 export interface ComponentConfiguration<S> {
@@ -57,12 +57,6 @@ export interface UnsatisfiedReference {
 
 export interface ComponentInstance<S> {
   /**
-   * Dispose of the component configuration for this component instance. The component configuration will be
-   * deactivated. If the component configuration has already been deactivated, this method does nothing.
-   */
-  dispose(): void;
-
-  /**
    * Returns the component instance of the activated component configuration.
    */
   getInstance(): S;
@@ -78,20 +72,6 @@ export interface ComponentInstance<S> {
  * discarded when the component configuration is deactivated.
  */
 export interface ComponentContext<S> {
-  /**
-   * Disables the specified component name. The specified component name must be in the same bundle as this component.
-   *
-   * @param {string} name
-   */
-  disableComponent(name: string): void;
-
-  /**
-   * Enables the specified component name. The specified component name must be in the same bundle as this component.
-   *
-   * @param {string} name
-   */
-  enableComponent(name: string): void;
-
   /**
    * Returns the BundleContext of the bundle which declares this component.
    *
@@ -140,8 +120,11 @@ export interface ReferenceProps {
   target?: string; // filter
   cardinality?: ReferenceCardinality; // default: MANDATORY
   policy?: ReferencePolicy; // default: STATIC
-  policyOption?: ReferencePolicyOption; // default: RELUCTANT
-  scope?: ReferenceScope; // default: BUNDLE
+  policyOption?: ReferencePolicyOption; // default: GREEDY
+  scope?: ReferenceScope; // default: SINGLETON
+  bind?: string;
+  updated?: string;
+  unbind?: string;
 }
 
 export interface ComponentRegistrar {

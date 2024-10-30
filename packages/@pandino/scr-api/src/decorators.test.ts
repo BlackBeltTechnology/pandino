@@ -57,8 +57,8 @@ describe('Decorators', () => {
     expect(guestMetaData[REFERENCE_KEY_SERVICE]).toEqual(DOES_STUFF_INTERFACE_KEY);
     expect(guestMetaData[REFERENCE_KEY_CARDINALITY]).toEqual('MANDATORY');
     expect(guestMetaData[REFERENCE_KEY_POLICY]).toEqual('STATIC');
-    expect(guestMetaData[REFERENCE_KEY_POLICY_OPTION]).toEqual('RELUCTANT');
-    expect(guestMetaData[REFERENCE_KEY_SCOPE]).toEqual('BUNDLE');
+    expect(guestMetaData[REFERENCE_KEY_POLICY_OPTION]).toEqual('GREEDY');
+    expect(guestMetaData[REFERENCE_KEY_SCOPE]).toEqual('SINGLETON');
   });
 
   it('instance info', () => {

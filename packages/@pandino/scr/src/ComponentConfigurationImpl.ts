@@ -37,12 +37,12 @@ import type {
 } from '@pandino/pandino-api';
 import { SERVICE_PID } from '@pandino/pandino-api';
 import { ComponentContextImpl } from './ComponentContextImpl';
-import type { Configuration, ConfigurationAdmin, ConfigurationEvent, ConfigurationListener } from '@pandino/configuration-management-api';
+import type { Configuration, ConfigurationAdmin, ConfigurationEvent, ConfigurationListener, ManagedService } from '@pandino/configuration-management-api';
 import { ComponentInstanceImpl } from './ComponentInstanceImpl';
 import { SatisfiedReferenceImpl } from './SatisfiedReferenceImpl';
 import { UnsatisfiedReferenceImpl } from './UnsatisfiedReferenceImpl';
 
-export class ComponentConfigurationImpl<S> implements ComponentConfiguration<S>, ConfigurationListener {
+export class ComponentConfigurationImpl<S> implements ComponentConfiguration<S>, ConfigurationListener, ManagedService {
   private readonly id: number;
   private readonly pid: string;
   private readonly internalMetaData: InternalMetaData;
@@ -101,6 +101,10 @@ export class ComponentConfigurationImpl<S> implements ComponentConfiguration<S>,
       this.updateState();
       this.setUpServiceListeners();
     }
+  }
+
+  updated(properties?: ServiceProperties): void {
+    // Do nothing, we are only interested in events in the `configurationEvent` method.
   }
 
   private updateState(): void {
@@ -247,10 +251,13 @@ export class ComponentConfigurationImpl<S> implements ComponentConfiguration<S>,
   }
 
   private invokeModifiedIfPresent(componentContext: ComponentContext<S>, bundleContext: BundleContext, properties?: ServiceProperties): void {
-    if (this.componentHasModifiedMethod()) {
+    if (this.componentHasModifiedMethod() && this.configurationPolicy !== 'IGNORE') {
       const modifiedMeta = this.getInternalModifiedMetaData()!;
       // @ts-ignore
-      this.instance.getInstance()[modifiedMeta.method as keyof S](componentContext, bundleContext, properties);
+      this.instance.getInstance()[modifiedMeta.method as keyof S](componentContext, bundleContext, {
+        ...properties,
+        ...this.getProperties(),
+      });
     }
   }
 

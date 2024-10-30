@@ -1,9 +1,18 @@
 import type { BundleContext, Logger, ServiceRegistration, ServiceUtils } from '@pandino/pandino-api';
 import { SERVICE_PID } from '@pandino/pandino-api';
-import { ConfigurationAdmin, ConfigurationListener } from '@pandino/configuration-management-api';
-import { CONFIGURATION_LISTENER_INTERFACE_KEY } from '@pandino/configuration-management-api';
-import type { ComponentConfiguration, InternalMetaData } from '@pandino/scr-api';
-import { $$PANDINO_META, COMPONENT_KEY_CONFIGURATION_PID } from '@pandino/scr-api';
+import {
+  CONFIGURATION_LISTENER_INTERFACE_KEY,
+  ConfigurationAdmin,
+  ConfigurationListener,
+  MANAGED_SERVICE_INTERFACE_KEY,
+} from '@pandino/configuration-management-api';
+import {
+  $$PANDINO_META,
+  COMPONENT_KEY_CONFIGURATION_PID,
+  COMPONENT_KEY_CONFIGURATION_POLICY,
+  ComponentConfiguration,
+  InternalMetaData,
+} from '@pandino/scr-api';
 import type { ServiceComponentRuntime } from './ServiceComponentRuntime';
 import { ComponentConfigurationImpl } from './ComponentConfigurationImpl';
 
@@ -34,11 +43,17 @@ export class ServiceComponentRuntimeImpl implements ServiceComponentRuntime {
 
       for (const p of pids) {
         const componentConfiguration = new ComponentConfigurationImpl(p, rawData, target, bundleContext, this.configAdmin, this.logger, this.serviceUtils);
-        const listenerRegistration = bundleContext.registerService(CONFIGURATION_LISTENER_INTERFACE_KEY, componentConfiguration, {
-          [SERVICE_PID]: p,
-        });
-        this.configurationListenerRegistrations.set(target, listenerRegistration);
         this.configurations.set(target, componentConfiguration);
+        if (rawData[COMPONENT_KEY_CONFIGURATION_POLICY] !== 'IGNORE') {
+          const listenerRegistration = bundleContext.registerService(
+            [MANAGED_SERVICE_INTERFACE_KEY, CONFIGURATION_LISTENER_INTERFACE_KEY],
+            componentConfiguration,
+            {
+              [SERVICE_PID]: p,
+            },
+          );
+          this.configurationListenerRegistrations.set(target, listenerRegistration);
+        }
       }
     }
   }

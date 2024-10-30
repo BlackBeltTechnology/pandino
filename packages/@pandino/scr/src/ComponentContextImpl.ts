@@ -13,14 +13,6 @@ export class ComponentContextImpl<S> implements ComponentContext<S> {
     this.instance = instance;
   }
 
-  disableComponent(name: string): void {
-    // TODO consider
-  }
-
-  enableComponent(name: string): void {
-    // TODO consider
-  }
-
   getBundleContext(): BundleContext {
     return this.context;
   }

@@ -20,7 +20,7 @@ export function registerDecoratorHandler(bundleContext: BundleContext): () => vo
       try {
         bundleContext.ungetService(registrarReference);
       } catch (e) {
-        console.error(e);
+        console.error(`An error occurred during the cleanup of registerDecoratorHandler(): ${e}`);
       }
     }
   };

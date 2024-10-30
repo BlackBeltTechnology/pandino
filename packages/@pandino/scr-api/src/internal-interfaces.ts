@@ -8,12 +8,15 @@ import {
   COMPONENT_KEY_PROPERTY,
   COMPONENT_KEY_SERVICE,
   COMPONENT_MODIFIED_KEY_METHOD,
+  REFERENCE_KEY_BIND,
   REFERENCE_KEY_CARDINALITY,
   REFERENCE_KEY_POLICY,
   REFERENCE_KEY_POLICY_OPTION,
   REFERENCE_KEY_SCOPE,
   REFERENCE_KEY_SERVICE,
   REFERENCE_KEY_TARGET,
+  REFERENCE_KEY_UNBIND,
+  REFERENCE_KEY_UPDATED,
 } from './constants';
 import type { ConfigurationPolicy, ReferenceCardinality, ReferencePolicy, ReferencePolicyOption, ReferenceScope } from './interfaces';
 
@@ -36,6 +39,9 @@ export interface InternalReferenceMetaData {
   [REFERENCE_KEY_POLICY]: ReferencePolicy;
   [REFERENCE_KEY_POLICY_OPTION]: ReferencePolicyOption;
   [REFERENCE_KEY_SCOPE]: ReferenceScope;
+  [REFERENCE_KEY_BIND]?: string;
+  [REFERENCE_KEY_UPDATED]?: string;
+  [REFERENCE_KEY_UNBIND]?: string;
 }
 
 export interface InternalActivatorMetaData {

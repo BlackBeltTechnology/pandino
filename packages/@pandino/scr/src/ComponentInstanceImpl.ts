@@ -9,10 +9,6 @@ export class ComponentInstanceImpl<S> implements ComponentInstance<S> {
     this.instance = new this.clazz();
   }
 
-  dispose(): void {
-    // TODO
-  }
-
   getInstance(): S {
     return this.instance;
   }
