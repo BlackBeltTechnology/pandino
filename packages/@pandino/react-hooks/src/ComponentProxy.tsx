@@ -10,7 +10,7 @@ interface ProxyProps {
 export const ComponentProxy: FC<ProxyProps> = ({ children, filter, ...other }) => {
   const { service: ExternalComponent } = useTrackComponent<any>(filter);
 
-  if (ExternalComponent) {
+  if (ExternalComponent && typeof ExternalComponent === 'function') {
     return <ExternalComponent {...other} />;
   }
 

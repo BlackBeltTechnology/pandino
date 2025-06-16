@@ -12,15 +12,11 @@
   },
   "scripts": {
     "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:dev": "vitest",
     "tsc": "tsc"
   },
-  "keywords": [
-    "pandino",
-    "react",
-    "helper",
-    "hook"
-  ],
+  "keywords": ["pandino", "react", "helper", "hook"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "EPL-2.0",
   "homepage": "https://github.com/BlackBeltTechnology/pandino",
@@ -38,9 +34,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "devDependencies": {
     "@pandino/pandino": "workspace:^",
     "@pandino/pandino-api": "workspace:^",

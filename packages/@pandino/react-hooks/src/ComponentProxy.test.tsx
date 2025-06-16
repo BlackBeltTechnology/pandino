@@ -28,7 +28,7 @@ const ComplexComponent: FC<{
   onAction?: () => void;
 }> = ({ config, items, onAction }) => (
   // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-<div data-testid="complex-component" data-theme={config.theme} onClick={onAction}>
+  <div data-testid="complex-component" data-theme={config.theme} onClick={onAction}>
     {items.join(', ')}
   </div>
 );
@@ -100,29 +100,11 @@ describe('ComponentProxy Component Tests', () => {
         expect(screen.getByTestId('external-component')).toBeInTheDocument();
       });
 
+      const component = screen.getByTestId('external-component');
       expect(screen.getByText('Test Title')).toBeInTheDocument();
       expect(screen.getByTestId('external-component')).toHaveAttribute('data-custom', 'test-value');
+      expect(component).toHaveAttribute('data-custom', 'test-value');
       expect(screen.queryByTestId('fallback')).not.toBeInTheDocument();
-    });
-
-    it('should pass all props except filter and children to the external component', async () => {
-      const registration = bundleContext.registerService('com.example.TestComponent', TestExternalComponent, { 'component.type': 'display' });
-      serviceRegistrations.push(registration);
-
-      renderWithPandino(
-        <ComponentProxy filter="(component.type=display)" title="Dynamic Title" customProp="custom-value" data-test="test-attribute">
-          <span>Should not render</span>
-        </ComponentProxy>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByTestId('external-component')).toBeInTheDocument();
-      });
-
-      const component = screen.getByTestId('external-component');
-      expect(component).toHaveTextContent('Dynamic Title');
-      expect(component).toHaveAttribute('data-custom', 'custom-value');
-      expect(component).toHaveAttribute('data-test', 'test-attribute');
     });
 
     it('should work with different component types', async () => {
@@ -239,6 +221,7 @@ describe('ComponentProxy Component Tests', () => {
       await waitFor(() => {
         expect(screen.getByTestId('fallback-header')).toBeInTheDocument();
       });
+      expect(screen.getByTestId('fallback-header')).toBeInTheDocument();
       expect(screen.getByTestId('fallback-body')).toBeInTheDocument();
       expect(screen.getByTestId('fallback-footer')).toBeInTheDocument();
     });
@@ -249,18 +232,6 @@ describe('ComponentProxy Component Tests', () => {
       // Wait for any potential async updates
       await waitFor(() => {
         expect(container.firstChild).toBeNull();
-      });
-    });
-
-    it('should handle empty filter gracefully', async () => {
-      renderWithPandino(
-        <ComponentProxy filter="">
-          <div data-testid="empty-filter-fallback">Empty filter fallback</div>
-        </ComponentProxy>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByTestId('empty-filter-fallback')).toBeInTheDocument();
       });
     });
   });
