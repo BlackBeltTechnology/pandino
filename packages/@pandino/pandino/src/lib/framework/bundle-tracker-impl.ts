@@ -24,7 +24,7 @@ export class BundleTrackerImpl<T> implements BundleTracker<T> {
 
     const bundles: Array<Bundle | undefined> = this.context.getBundles();
 
-    if (bundles && bundles.length) {
+    if (bundles?.length) {
       const length = bundles.length;
       for (let i = 0; i < length; i++) {
         const state = bundles[i]!.getState();

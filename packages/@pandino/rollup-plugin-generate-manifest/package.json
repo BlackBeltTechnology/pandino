@@ -4,13 +4,7 @@
   "description": "Utility plugin to help manage Pandino Manifest file generation / maintenance",
   "main": "src/index.cjs",
   "scripts": {},
-  "keywords": [
-    "pandino",
-    "rollup",
-    "plugin",
-    "manifest",
-    "generate"
-  ],
+  "keywords": ["pandino", "rollup", "plugin", "manifest", "generate"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "homepage": "https://github.com/BlackBeltTechnology/pandino",
   "repository": {

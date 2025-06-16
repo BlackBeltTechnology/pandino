@@ -105,9 +105,9 @@ export class Pandino extends BundleImpl implements Framework {
 
     this.fetcher = fetcher;
     this.importer = importer;
-    Object.keys(configMap).forEach((configKey) => {
+    for (const configKey of Object.keys(configMap)) {
       this.configMap.set(configKey, configMap[configKey]);
-    });
+    }
     if (deploymentRoot) {
       this.configMap.set(DEPLOYMENT_ROOT_PROP, deploymentRoot);
     }
@@ -197,7 +197,7 @@ export class Pandino extends BundleImpl implements Framework {
     const resolvedHeaders: BundleManifestHeaders =
       typeof locationOrHeaders === 'string' ? await this.fetcher.fetch(locationOrHeaders, this.getDeploymentRoot()) : locationOrHeaders;
     let bundle: BundleImpl;
-    let existing = this.isBundlePresent(resolvedHeaders);
+    const existing = this.isBundlePresent(resolvedHeaders);
 
     if (!existing) {
       const id = this.getNextId();
@@ -209,6 +209,7 @@ export class Pandino extends BundleImpl implements Framework {
       this.logger.info(`Installed Bundle: ${resolvedHeaders[BUNDLE_SYMBOLICNAME]}: ${resolvedHeaders[BUNDLE_VERSION]}`);
       await this.resolver.resolveOne(bundle.getCurrentRevision());
       return bundle;
+      // biome-ignore lint/style/noUselessElse: bad rule
     } else {
       try {
         await this.updateBundle(existing as BundleImpl, resolvedHeaders, origin);
@@ -223,7 +224,7 @@ export class Pandino extends BundleImpl implements Framework {
 
   async updateBundle(bundle: BundleImpl, headers: BundleManifestHeaders, origin?: Bundle): Promise<Bundle> {
     if (bundle.getState() === 'STARTING' || bundle.getState() === 'STOPPING') {
-      throw new Error('Bundle ' + bundle.getUniqueIdentifier() + ' cannot be updated, since it is either STARTING or STOPPING.');
+      throw new Error(`Bundle ${bundle.getUniqueIdentifier()} cannot be updated, since it is either STARTING or STOPPING.`);
     }
     let rethrow: Error | undefined;
     const oldState: BundleState = bundle.getState();
@@ -266,7 +267,7 @@ export class Pandino extends BundleImpl implements Framework {
     try {
       const revision = bundle.getCurrentRevision();
       const wiring = revision.getWiring() || this.resolver.createWiringForRevision(revision);
-      if (wiring && wiring.allWireProvidersInAnyState(['ACTIVE'])) {
+      if (wiring?.allWireProvidersInAnyState(['ACTIVE'])) {
         await this.activateBundle(bundle, false);
       }
     } catch (ex: any) {
@@ -334,7 +335,7 @@ export class Pandino extends BundleImpl implements Framework {
       this.dispatcher.removeListeners(bci as BundleContext);
 
       // Rethrow all other exceptions as a BundleException.
-      throw new Error('Activator start error in bundle ' + bundle + ': ' + th);
+      throw new Error(`Activator start error in bundle ${bundle}: ${th}`);
     }
   }
 
@@ -389,8 +390,8 @@ export class Pandino extends BundleImpl implements Framework {
         bundle.setState('INSTALLED');
       }
 
-      if (!!error) {
-        throw new Error('Activator stop error in bundle ' + bundle + ': ' + error);
+      if (error) {
+        throw new Error(`Activator stop error in bundle ${bundle}: ${error}`);
       }
     } finally {
     }
@@ -478,13 +479,14 @@ export class Pandino extends BundleImpl implements Framework {
     if (!desiredStates.includes(bundle.getState())) {
       if (bundle.getState() === 'UNINSTALLED') {
         throw new Error('Cannot uninstall an uninstalled bundle.');
+        // biome-ignore lint/style/noUselessElse: bad rule
       } else {
         throw new Error(`Bundle ${bundle.getUniqueIdentifier()} cannot be uninstalled because it is in an undesired state: ${bundle.getState()}`);
       }
     }
 
     if (bundle.getState() === 'STARTING' || bundle.getState() === 'STOPPING') {
-      throw new Error('Bundle ' + bundle.getUniqueIdentifier() + ' cannot be uninstalled, since it is either STARTING or STOPPING.');
+      throw new Error(`Bundle ${bundle.getUniqueIdentifier()} cannot be uninstalled, since it is either STARTING or STOPPING.`);
     }
 
     let errored = null;
@@ -541,15 +543,15 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   private async createBundleActivator(impl: BundleImpl): Promise<BundleActivator> | never {
-    let headerMap: BundleManifestHeaders = impl.getHeaders();
-    let activatorDefinition = headerMap[BUNDLE_ACTIVATOR];
+    const headerMap: BundleManifestHeaders = impl.getHeaders();
+    const activatorDefinition = headerMap[BUNDLE_ACTIVATOR];
 
     if (!activatorDefinition) {
       throw new Error('Missing mandatory Bundle Activator!');
+      // biome-ignore lint/style/noUselessElse: bad rule
     } else if (typeof activatorDefinition === 'string') {
       this.logger.debug(`Attempting to load Activator from: ${activatorDefinition}`);
 
-      let activatorInstance: any;
       const activatorModule = await this.importer.import(activatorDefinition, impl.getLocation(), impl.getDeploymentRoot());
       const bundleType: BundleType = impl.getHeaders()[BUNDLE_TYPE] || 'esm';
       const activatorResolver: ActivatorResolver = this.configMap.get(PANDINO_ACTIVATOR_RESOLVERS)[bundleType];
@@ -558,9 +560,9 @@ export class Pandino extends BundleImpl implements Framework {
         throw new Error(`No ActivatorResolver can be found in configuration for BundleType: ${bundleType}!`);
       }
 
-      activatorInstance = activatorResolver.resolve(activatorModule, impl.getHeaders());
+      const Activator: BundleActivator | undefined = activatorResolver.resolve(activatorModule, impl.getHeaders());
 
-      if (!activatorInstance) {
+      if (!Activator) {
         throw new Error(
           `Activator for ${impl
             .getCurrentRevision()
@@ -568,7 +570,9 @@ export class Pandino extends BundleImpl implements Framework {
         );
       }
 
-      return typeof activatorInstance === 'function' ? (new activatorInstance() as BundleActivator) : activatorInstance;
+      // @ts-ignore
+      return typeof Activator === 'function' ? (new Activator() as BundleActivator) : Activator;
+      // biome-ignore lint/style/noUselessElse: bad rule
     } else {
       return impl.getActivator();
     }
@@ -608,7 +612,7 @@ export class Pandino extends BundleImpl implements Framework {
   }
 
   registerService<S>(context: BundleContextImpl, identifier: string[] | string, svcObj: S | ServiceFactory<S>, dict: Record<any, any>): ServiceRegistration<S> {
-    let reg = this.registry.registerService(context.getBundle()!, identifier, svcObj, dict);
+    const reg = this.registry.registerService(context.getBundle()!, identifier, svcObj, dict);
 
     this.fireServiceEvent(new ServiceEventImpl('REGISTERED', reg.getReference()), {});
 

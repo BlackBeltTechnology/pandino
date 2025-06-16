@@ -14,15 +14,15 @@ describe('EventAdminImpl', () => {
   const matchingFilter = {
     match: () => true,
   };
-  let eventFactory = new EventFactoryImpl(evaluateFilter);
+  const eventFactory = new EventFactoryImpl(evaluateFilter);
   let eventAdmin: EventAdminImpl;
-  let mockContextGetService = vi.fn();
-  let mockContext: any = {
+  const mockContextGetService = vi.fn();
+  const mockContext: any = {
     getService: mockContextGetService,
   };
-  let mockDebugLog: any = vi.fn();
-  let mockWarnLog: any = vi.fn();
-  let mockLogger: any = {
+  const mockDebugLog: any = vi.fn();
+  const mockWarnLog: any = vi.fn();
+  const mockLogger: any = {
     debug: mockDebugLog,
     warn: mockWarnLog,
   };

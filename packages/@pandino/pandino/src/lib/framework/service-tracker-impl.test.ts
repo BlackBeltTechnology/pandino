@@ -26,7 +26,7 @@ import type {
 } from '@pandino/pandino-api';
 import { Pandino } from '../../pandino';
 import { ServiceTrackerImpl } from './service-tracker-impl';
-import { BundleContextImpl } from './bundle-context-impl';
+import type { BundleContextImpl } from './bundle-context-impl';
 
 interface TestService {
   sayHello(): string;

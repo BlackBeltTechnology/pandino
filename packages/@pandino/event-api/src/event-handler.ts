@@ -1,4 +1,4 @@
-import { Event } from './event';
+import type { Event } from './event';
 
 /**
  * Listener for Events.

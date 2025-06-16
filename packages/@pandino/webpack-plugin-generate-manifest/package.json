@@ -6,13 +6,7 @@
   "scripts": {
     "test": "webpack"
   },
-  "keywords": [
-    "pandino",
-    "webpack",
-    "plugin",
-    "manifest",
-    "generate"
-  ],
+  "keywords": ["pandino", "webpack", "plugin", "manifest", "generate"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "homepage": "https://github.com/BlackBeltTechnology/pandino",
   "repository": {

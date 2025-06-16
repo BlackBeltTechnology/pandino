@@ -1,4 +1,4 @@
-import { ServiceProperties, ServiceReference } from '@pandino/pandino-api';
+import type { ServiceProperties, ServiceReference } from '@pandino/pandino-api';
 
 /**
  * The configuration information for a ManagedService object. The Configuration Admin service uses this interface to

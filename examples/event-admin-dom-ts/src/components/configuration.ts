@@ -1,11 +1,6 @@
-import {BundleContext, ServiceReference} from "@pandino/pandino-api";
-import {
-  EVENT_ADMIN_INTERFACE_KEY,
-  EVENT_FACTORY_INTERFACE_KEY,
-  EventAdmin,
-  EventFactory
-} from "@pandino/event-api";
-import {ConfigurationChangedProperties, TOPIC} from "./configuration-changed-event";
+import type { BundleContext, ServiceReference } from '@pandino/pandino-api';
+import { EVENT_ADMIN_INTERFACE_KEY, EVENT_FACTORY_INTERFACE_KEY, type EventAdmin, type EventFactory } from '@pandino/event-api';
+import { type ConfigurationChangedProperties, TOPIC } from './configuration-changed-event';
 
 export class Configuration extends HTMLElement {
   private readonly bundleContext: BundleContext;

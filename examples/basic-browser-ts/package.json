@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "workspaces": [
-    "./packages/*"
-  ],
+  "workspaces": ["./packages/*"],
   "scripts": {
     "build": "lerna run build",
     "start": "lerna run --scope app start --stream"

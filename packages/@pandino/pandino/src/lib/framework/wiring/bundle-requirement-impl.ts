@@ -20,7 +20,7 @@ export class BundleRequirementImpl implements BundleRequirement {
     this.dirs = dirs;
     this.attrs = attrs;
     this.filter = filter ? serializeFilter(filter) : serializeFilter(convert(this.attrs));
-    this.optional = this.dirs.hasOwnProperty(RESOLUTION_DIRECTIVE) && this.dirs[RESOLUTION_DIRECTIVE] === RESOLUTION_OPTIONAL;
+    this.optional = Object.prototype.hasOwnProperty.call(this.dirs, RESOLUTION_DIRECTIVE) && this.dirs[RESOLUTION_DIRECTIVE] === RESOLUTION_OPTIONAL;
   }
 
   getAttributes(): Record<string, any> {
@@ -56,6 +56,6 @@ export class BundleRequirementImpl implements BundleRequirement {
   }
 
   toString(): string {
-    return '[' + this.revision + '] ' + this.namespace + '; ' + this.getFilter()?.toString();
+    return `[${this.revision}] ${this.namespace}; ${this.getFilter()?.toString()}`;
   }
 }

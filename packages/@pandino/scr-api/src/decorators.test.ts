@@ -27,32 +27,40 @@ describe('Decorators', () => {
     expect(classMetaData[COMPONENT_KEY_SERVICE]).toEqual('@test/Host');
     expect(classMetaData[COMPONENT_KEY_CONFIGURATION_PID]).toEqual('@test/Host');
     expect(classMetaData[COMPONENT_KEY_CONFIGURATION_POLICY]).toEqual('OPTIONAL');
-    expect(classMetaData[COMPONENT_KEY_PROPERTY]).toEqual({ [SERVICE_RANKING]: 10 });
+    expect(classMetaData[COMPONENT_KEY_PROPERTY]).toEqual({
+      [SERVICE_RANKING]: 10,
+    });
   });
 
   it('@Activate', () => {
     const classMetaData: InternalMetaData = Host.prototype[$$PANDINO_META];
     expect(classMetaData).toBeDefined();
-    expect(classMetaData[COMPONENT_ACTIVATE_KEY_METHOD]).toEqual({ method: 'onActivate' });
+    expect(classMetaData[COMPONENT_ACTIVATE_KEY_METHOD]).toEqual({
+      method: 'onActivate',
+    });
   });
 
   it('@Deactivate', () => {
     const classMetaData: InternalMetaData = Host.prototype[$$PANDINO_META];
     expect(classMetaData).toBeDefined();
-    expect(classMetaData[COMPONENT_DEACTIVATE_KEY_METHOD]).toEqual({ method: 'onDeactivate' });
+    expect(classMetaData[COMPONENT_DEACTIVATE_KEY_METHOD]).toEqual({
+      method: 'onDeactivate',
+    });
   });
 
   it('@Modified', () => {
     const classMetaData: InternalMetaData = Host.prototype[$$PANDINO_META];
     expect(classMetaData).toBeDefined();
-    expect(classMetaData[COMPONENT_MODIFIED_KEY_METHOD]).toEqual({ method: 'onModified' });
+    expect(classMetaData[COMPONENT_MODIFIED_KEY_METHOD]).toEqual({
+      method: 'onModified',
+    });
   });
 
   it('@Reference', () => {
     const classMetaData: InternalMetaData = Host.prototype[$$PANDINO_META];
     expect(classMetaData).toBeDefined();
 
-    const guestMetaData: InternalReferenceMetaData = classMetaData.references['guest'];
+    const guestMetaData: InternalReferenceMetaData = classMetaData.references.guest;
     expect(guestMetaData).toBeDefined();
     expect(guestMetaData[REFERENCE_KEY_SERVICE]).toEqual(DOES_STUFF_INTERFACE_KEY);
     expect(guestMetaData[REFERENCE_KEY_CARDINALITY]).toEqual('MANDATORY');

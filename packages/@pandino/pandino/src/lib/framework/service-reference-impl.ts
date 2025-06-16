@@ -1,8 +1,8 @@
 import { SERVICE_DEFAULT_RANK, SERVICE_ID, SERVICE_RANKING, PACKAGE_NAMESPACE, OBJECTCLASS } from '@pandino/pandino-api';
 import type { Bundle, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
-import { ServiceRegistrationImpl } from './service-registration-impl';
+import type { ServiceRegistrationImpl } from './service-registration-impl';
 import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
-import { BundleImpl } from './bundle-impl';
+import type { BundleImpl } from './bundle-impl';
 import type { BundleRevision } from './bundle-revision';
 import type { BundleCapability } from './wiring/bundle-capability';
 import type { BundleWire } from './wiring/bundle-wire';
@@ -35,6 +35,7 @@ export class ServiceReferenceImpl extends BundleCapabilityImpl implements Servic
 
     if (rank - otherRank < 0) {
       return -1;
+      // biome-ignore lint/style/noUselessElse: bad rule
     } else if (rank - otherRank > 0) {
       return 1;
     }

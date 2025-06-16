@@ -53,11 +53,10 @@ export abstract class AbstractTracked<S, T, R> {
 
   trackInitial(): void {
     while (true) {
-      let item: S;
       if (this.closed || this.initial.length === 0) {
         return;
       }
-      item = this.initial[0];
+      const item = this.initial[0];
       this.initial.splice(0, 1);
       if (this.tracked.get(item)) {
         continue;
@@ -96,7 +95,6 @@ export abstract class AbstractTracked<S, T, R> {
   }
 
   untrack(item: S, related?: R): void {
-    let object: T | undefined;
     const initialIdx = this.initial.findIndex((i) => i === item);
     if (initialIdx > -1) {
       this.initial.splice(initialIdx, 1);
@@ -107,7 +105,7 @@ export abstract class AbstractTracked<S, T, R> {
       this.adding.splice(addingIdx, 1);
       return;
     }
-    object = this.tracked.get(item);
+    const object = this.tracked.get(item);
     this.tracked.delete(item);
     if (!object) {
       return;

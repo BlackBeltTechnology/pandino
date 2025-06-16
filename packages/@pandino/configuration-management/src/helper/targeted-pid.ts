@@ -41,7 +41,7 @@ export class TargetedPID {
   }
 
   matchesTarget(reference: ServiceReference<any>): boolean {
-    let serviceBundle = reference.getBundle();
+    const serviceBundle = reference.getBundle();
     if (!serviceBundle) {
       return false;
     }
@@ -58,7 +58,7 @@ export class TargetedPID {
       return true;
     }
 
-    if (serviceBundle.getVersion() != this.version) {
+    if (serviceBundle.getVersion() !== this.version) {
       return false;
     }
 
@@ -95,6 +95,7 @@ export class TargetedPID {
   equals(obj: any): boolean {
     if (obj === null || obj === undefined) {
       return false;
+      // biome-ignore lint/style/noUselessElse: bad rule
     } else if (obj === this) {
       return true;
     }

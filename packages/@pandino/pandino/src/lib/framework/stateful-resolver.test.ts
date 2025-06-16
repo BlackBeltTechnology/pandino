@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { StatefulResolver } from './stateful-resolver';
 import type { BundleRevision } from './bundle-revision';
-import type { BundleCapability, BundleWire, BundleRequirement } from './wiring';
-import { BundleRequirementImpl, BundleCapabilityImpl } from './wiring';
 import { FILTER_DIRECTIVE } from '@pandino/pandino-api';
+import type { BundleRequirementImpl } from './wiring/bundle-requirement-impl';
+import type { BundleRequirement } from './wiring/bundle-requirement';
+import type { BundleCapability } from './wiring/bundle-capability';
+import type { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
+import type { BundleWire } from './wiring/bundle-wire';
 
 describe('StatefulResolver', () => {
   describe('static getResolvableWires()', () => {
@@ -56,7 +59,7 @@ describe('StatefulResolver', () => {
       expect(req1.getNamespace()).toEqual('req-space');
       expect(req1.getDirectives()[FILTER_DIRECTIVE]).toEqual(filter);
       expect(cap1.getNamespace()).toEqual('req-space');
-      expect(cap1.getAttributes()['type']).toEqual('dom');
+      expect(cap1.getAttributes().type).toEqual('dom');
     });
   });
 });

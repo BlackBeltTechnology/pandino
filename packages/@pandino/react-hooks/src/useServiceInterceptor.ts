@@ -25,7 +25,7 @@ export const useServiceInterceptor: InterceptorHook = <T>() => {
         console.error(e);
       }
     };
-  }, []);
+  }, [bundleContext, serviceUtilsRef]);
 
   return (filter: string, target: T) => {
     const refs = bundleContext.getServiceReferences(undefined, filter);

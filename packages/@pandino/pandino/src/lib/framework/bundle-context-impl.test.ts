@@ -7,7 +7,7 @@ import {
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
   LOG_LEVEL_PROP,
-  Logger,
+  type Logger,
   LogLevel,
   OBJECTCLASS,
   PANDINO_BUNDLE_IMPORTER_PROP,
@@ -31,9 +31,9 @@ import type {
 } from '@pandino/pandino-api';
 import { MuteLogger } from '../../__mocks__/mute-logger';
 import { BundleContextImpl } from './bundle-context-impl';
-import { BundleImpl } from './bundle-impl';
-import { BundleEventImpl } from './bundle-event-impl';
-import { ServiceEventImpl } from './service-event-impl';
+import type { BundleImpl } from './bundle-impl';
+import type { BundleEventImpl } from './bundle-event-impl';
+import type { ServiceEventImpl } from './service-event-impl';
 
 interface MockService {
   execute(): boolean;
@@ -307,7 +307,7 @@ describe('BundleContextImpl', () => {
 
   it('unGetService()', () => {
     bundleContext.registerService<MockService>('@scope/bundle/service', mockService);
-    const reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
+    let reference: ServiceReference<MockService> = bundleContext.getServiceReference('@scope/bundle/service');
     const service = bundleContext.getService<MockService>(reference);
 
     expect(reference.getUsingBundles().length).toEqual(1);
@@ -322,6 +322,14 @@ describe('BundleContextImpl', () => {
 
     expect(reference.getUsingBundles().length).toEqual(0);
     expect(secondUnGet).toEqual(false);
+
+    // Per OSGi spec: Service should still be available for retrieval since it's still registered
+    // Only the usage count was decremented to 0, the service registration itself remains active
+    reference = bundleContext.getServiceReference('@scope/bundle/service');
+    expect(reference).toBeDefined();
+    const newService = bundleContext.getService(reference);
+    expect(newService).toBeDefined();
+    expect(newService.execute()).toEqual(true);
   });
 
   it('Cross Bundle Service Access', async () => {

@@ -1,4 +1,4 @@
-import { Matcher } from './matcher';
+import type { Matcher } from './matcher';
 
 export class ClassMatcher implements Matcher {
   private readonly className: string;

@@ -1,5 +1,5 @@
 import express from 'express';
-import {fileURLToPath} from 'node:url';
+import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
 import Pandino from '@pandino/pandino';
@@ -28,15 +28,18 @@ fs.mkdirSync(deploymentRoot, { recursive: true });
   const logger = pandinoContext.getService(loggerReference);
 
   await pandinoContext.installBundle(bundleInstallerHeaders);
-  pandinoContext.addServiceListener({
-    serviceChanged: (event) => {
-      if (event.getType() === 'REGISTERED') {
-        const reference = event.getServiceReference();
-        const factory = pandino.getBundleContext().getService(reference);
-        factory.init(app);
-      }
-    }
-  }, '(objectClass=@pandino/nodejs-esm-bundle-installer/resource-manager)');
+  pandinoContext.addServiceListener(
+    {
+      serviceChanged: (event) => {
+        if (event.getType() === 'REGISTERED') {
+          const reference = event.getServiceReference();
+          const factory = pandino.getBundleContext().getService(reference);
+          factory.init(app);
+        }
+      },
+    },
+    '(objectClass=@pandino/nodejs-esm-bundle-installer/resource-manager)',
+  );
 
   app.get('/', (req, res) => {
     res.send('Hello World!');

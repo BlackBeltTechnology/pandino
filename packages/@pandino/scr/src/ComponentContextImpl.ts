@@ -1,6 +1,6 @@
 import type { ComponentContext, ComponentInstance } from '@pandino/scr-api';
 import type { BundleContext, ServiceProperties, ServiceReference } from '@pandino/pandino-api';
-import { ComponentConfigurationImpl } from './ComponentConfigurationImpl';
+import type { ComponentConfigurationImpl } from './ComponentConfigurationImpl';
 
 export class ComponentContextImpl<S> implements ComponentContext<S> {
   private readonly config: ComponentConfigurationImpl<S>;

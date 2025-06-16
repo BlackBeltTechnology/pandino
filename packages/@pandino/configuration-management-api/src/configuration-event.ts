@@ -1,4 +1,4 @@
-import { ServiceReference } from '@pandino/pandino-api';
+import type { ServiceReference } from '@pandino/pandino-api';
 
 export type ConfigurationEventType = 'UPDATED' | 'DELETED' | 'LOCATION_CHANGED';
 

@@ -66,7 +66,7 @@ export class Activator implements BundleActivator {
           }
         },
       };
-      this.logger.info(`Configuration Management activation delayed, waiting for a Persistence Manager Reference...`);
+      this.logger.info('Configuration Management activation delayed, waiting for a Persistence Manager Reference...');
       this.context.addServiceListener(this.pmListener, `(objectClass=${INTERFACE_KEY})`);
     }
   }
@@ -93,7 +93,7 @@ export class Activator implements BundleActivator {
   }
 
   private init(pm: PersistenceManager): void {
-    this.logger!.info(`Initializing Configuration Management...`);
+    this.logger!.info('Initializing Configuration Management...');
     if (!this.pmUsed && this.context) {
       this.configManager = new ConfigurationManager(this.context, this.logger!, this.evaluateFilter!, pm);
       this.configAdmin = new ConfigurationAdminImpl(this.configManager, this.context.getBundle(), this.logger!);
@@ -101,7 +101,7 @@ export class Activator implements BundleActivator {
       this.configManager.initReferencesAddedBeforeManagerActivation();
       this.context.addServiceListener(this.configManager);
     } else {
-      this.logger!.warn(`Tried to re-start Configuration Admin while is already in use. Ignoring`);
+      this.logger!.warn('Tried to re-start Configuration Admin while is already in use. Ignoring');
     }
   }
 }

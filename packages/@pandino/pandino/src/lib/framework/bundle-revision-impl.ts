@@ -1,6 +1,6 @@
 import type { ActivationPolicy, Bundle, BundleManifestHeaders } from '@pandino/pandino-api';
 import { evaluateSemver } from '@pandino/filters';
-import { BundleImpl } from './bundle-impl';
+import type { BundleImpl } from './bundle-impl';
 import { ManifestParserImpl } from './util/manifest-parser';
 import type { ManifestParser } from './util/manifest-parser';
 import type { Requirement, Capability, Resource } from './resource';
@@ -109,6 +109,6 @@ export class BundleRevisionImpl implements BundleRevision, Resource {
   }
 
   toString(): string {
-    return this.bundle + ' (R ' + this.id + ')';
+    return `${this.bundle} (R ${this.id})`;
   }
 }

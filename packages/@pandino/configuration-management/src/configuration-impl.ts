@@ -1,7 +1,7 @@
 import type { Configuration } from '@pandino/configuration-management-api';
 import { SERVICE_PID } from '@pandino/pandino-api';
 import type { ServiceProperties, ServiceReference } from '@pandino/pandino-api';
-import { ConfigurationManager } from './configuration-manager';
+import type { ConfigurationManager } from './configuration-manager';
 import { TargetedPID } from './helper/targeted-pid';
 
 export class ConfigurationImpl implements Configuration {

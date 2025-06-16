@@ -1,6 +1,6 @@
 import type { Configuration, ConfigurationAdmin } from '@pandino/configuration-management-api';
 import type { Bundle, Logger } from '@pandino/pandino-api';
-import { ConfigurationManager } from './configuration-manager';
+import type { ConfigurationManager } from './configuration-manager';
 
 export class ConfigurationAdminImpl implements ConfigurationAdmin {
   // @ts-ignore

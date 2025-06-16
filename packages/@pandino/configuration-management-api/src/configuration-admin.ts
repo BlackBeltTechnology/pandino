@@ -1,4 +1,4 @@
-import { Configuration } from './configuration';
+import type { Configuration } from './configuration';
 
 /**
  * Service for administering configuration data.

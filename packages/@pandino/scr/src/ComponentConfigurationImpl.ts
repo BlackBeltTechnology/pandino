@@ -60,7 +60,7 @@ export class ComponentConfigurationImpl<S> implements ComponentConfiguration<S>,
   private serviceRegistration?: ServiceRegistration<S>;
   private satisfiedReferences: SatisfiedReference[] = [];
   private unsatisfiedReferences: UnsatisfiedReference[] = [];
-  private isActive: boolean = false;
+  private isActive = false;
   private readonly serviceListeners: Map<string, ServiceListener> = new Map<string, ServiceListener>();
 
   constructor(
@@ -85,6 +85,7 @@ export class ComponentConfigurationImpl<S> implements ComponentConfiguration<S>,
       this.state = 'UNSATISFIED_CONFIGURATION';
       this.isActive = false;
       return;
+      // biome-ignore lint/style/noUselessElse: bad rule
     } else {
       if (this.configurationRequiredAndSatisfied() || this.configurationPolicy === 'OPTIONAL') {
         this.configuration = this.configAdmin.getConfiguration(Array.isArray(this.pid) ? this.pid[0] : this.pid);

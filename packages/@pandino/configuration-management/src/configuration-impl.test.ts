@@ -1,33 +1,33 @@
 import { describe, beforeEach, expect, it, vi, afterEach } from 'vitest';
 import {
-  Bundle,
+  type Bundle,
   BUNDLE_ACTIVATOR,
   BUNDLE_SYMBOLICNAME,
   BUNDLE_VERSION,
-  BundleContext,
+  type BundleContext,
   type BundleImporter,
-  BundleManifestHeaders,
-  FrameworkConfigMap,
+  type BundleManifestHeaders,
+  type FrameworkConfigMap,
   LOG_LEVEL_PROP,
   LogLevel,
   PANDINO_BUNDLE_IMPORTER_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
   PROVIDE_CAPABILITY,
   REQUIRE_CAPABILITY,
-  ServiceProperties,
-  ServiceReference,
+  type ServiceProperties,
+  type ServiceReference,
 } from '@pandino/pandino-api';
 import { SERVICE_PID } from '@pandino/pandino-api';
 import {
   CONFIG_ADMIN_INTERFACE_KEY,
   CONFIGURATION_LISTENER_INTERFACE_KEY,
-  ConfigurationAdmin,
+  type ConfigurationAdmin,
   MANAGED_SERVICE_INTERFACE_KEY,
 } from '@pandino/configuration-management-api';
 import PMActivator from '@pandino/persistence-manager-memory';
 import type { Configuration, ConfigurationEvent, ConfigurationEventType, ConfigurationListener, ManagedService } from '@pandino/configuration-management-api';
 import Pandino from '@pandino/pandino';
-import { ConfigurationAdminImpl } from './configuration-admin-impl';
+import type { ConfigurationAdminImpl } from './configuration-admin-impl';
 import { Activator as CMActivator } from './activator';
 
 describe('ConfigurationImpl', () => {

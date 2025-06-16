@@ -6,7 +6,7 @@ import {
   PANDINO_BUNDLE_IMPORTER_PROP,
   PANDINO_MANIFEST_FETCHER_PROP,
 } from '../pandino-constants';
-import { Logger, LogLevel } from '../logger';
+import type { Logger, LogLevel } from '../logger';
 import type { ManifestFetcher } from '../manifest-fetcher';
 import type { BundleImporter } from '../bundle-importer';
 import type { BundleType } from '../bundle';

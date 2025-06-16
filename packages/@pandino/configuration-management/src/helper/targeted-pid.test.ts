@@ -10,14 +10,14 @@ describe('TargetedPid', () => {
     const pid = 'a.b.c';
     const symbolicName = 'b1';
     const version = '0.1.0';
-    const location = 'loc:' + symbolicName;
+    const location = `loc:${symbolicName}`;
 
     const b1 = createBundle(symbolicName, version, location);
     const r1 = createServiceReference(b1, pid);
 
-    const rn = createServiceReference(createBundle(symbolicName + '_', version, location), pid);
+    const rn = createServiceReference(createBundle(`${symbolicName}_`, version, location), pid);
     const rv = createServiceReference(createBundle(symbolicName, '0.2.0', location), pid);
-    const rl = createServiceReference(createBundle(symbolicName, version, location + '_'), pid);
+    const rl = createServiceReference(createBundle(symbolicName, version, `${location}_`), pid);
     const rnone = createServiceReference(null, pid);
 
     const p1 = new TargetedPID(pid);
@@ -33,14 +33,14 @@ describe('TargetedPid', () => {
     const pid = 'a.b.c';
     const symbolicName = 'b1';
     const version = '1.0.0';
-    const location = 'loc:' + symbolicName;
+    const location = `loc:${symbolicName}`;
 
     const b1 = createBundle(symbolicName, version, location);
     const r1 = createServiceReference(b1, pid);
 
-    const rn = createServiceReference(createBundle(symbolicName + '_', version, location), pid);
+    const rn = createServiceReference(createBundle(`${symbolicName}_`, version, location), pid);
     const rv = createServiceReference(createBundle(symbolicName, '0.2.0', location), pid);
-    const rl = createServiceReference(createBundle(symbolicName, version, location + '_'), pid);
+    const rl = createServiceReference(createBundle(symbolicName, version, `${location}_`), pid);
     const rnone = createServiceReference(null, pid);
 
     const p1 = new TargetedPID(`${pid}|${symbolicName}`);
@@ -56,14 +56,14 @@ describe('TargetedPid', () => {
     const pid = 'a.b.c';
     const symbolicName = 'b1';
     const version = '1.0.0';
-    const location = 'loc:' + symbolicName;
+    const location = `loc:${symbolicName}`;
 
     const b1 = createBundle(symbolicName, version, location);
     const r1 = createServiceReference(b1, pid);
 
-    const rn = createServiceReference(createBundle(symbolicName + '_', version, location), pid);
+    const rn = createServiceReference(createBundle(`${symbolicName}_`, version, location), pid);
     const rv = createServiceReference(createBundle(symbolicName, '0.2.0', location), pid);
-    const rl = createServiceReference(createBundle(symbolicName, version, location + '_'), pid);
+    const rl = createServiceReference(createBundle(symbolicName, version, `${location}_`), pid);
     const rnone = createServiceReference(null, pid);
 
     const p1 = new TargetedPID(`${pid}|${symbolicName}|${version}`);
@@ -79,14 +79,14 @@ describe('TargetedPid', () => {
     const pid = 'a.b.c';
     const symbolicName = 'b1';
     const version = '1.0.0';
-    const location = 'loc:' + symbolicName;
+    const location = `loc:${symbolicName}`;
 
     const b1 = createBundle(symbolicName, version, location);
     const r1 = createServiceReference(b1, pid);
 
-    const rn = createServiceReference(createBundle(symbolicName + '_', version, location), pid);
+    const rn = createServiceReference(createBundle(`${symbolicName}_`, version, location), pid);
     const rv = createServiceReference(createBundle(symbolicName, '0.2.0', location), pid);
-    const rl = createServiceReference(createBundle(symbolicName, version, location + '_'), pid);
+    const rl = createServiceReference(createBundle(symbolicName, version, `${location}_`), pid);
     const rnone = createServiceReference(null, pid);
 
     const p1 = new TargetedPID(`${pid}|${symbolicName}|${version}|${location}`);
@@ -99,10 +99,10 @@ describe('TargetedPid', () => {
   });
 
   it('equals', () => {
-    const p1 = new TargetedPID(`my.pid|@scope/bundle|1.2.3|some.location`);
-    const p2 = new TargetedPID(`my.pid`);
-    const p3 = new TargetedPID(`my.pid.other`);
-    const p4 = new TargetedPID(`my.pid.other`);
+    const p1 = new TargetedPID('my.pid|@scope/bundle|1.2.3|some.location');
+    const p2 = new TargetedPID('my.pid');
+    const p3 = new TargetedPID('my.pid.other');
+    const p4 = new TargetedPID('my.pid.other');
     const p5 = 'my.pid|@scope/bundle2|3.3.3|some.other.location';
 
     expect(p1.equals(p1)).toEqual(true);
@@ -116,7 +116,7 @@ describe('TargetedPid', () => {
   });
 
   it('different representations', () => {
-    const p1 = new TargetedPID(`my.pid|@scope/bundle|1.2.3|some.location`);
+    const p1 = new TargetedPID('my.pid|@scope/bundle|1.2.3|some.location');
 
     expect(p1.toString()).toEqual('my.pid|@scope/bundle|1.2.3|some.location');
     expect(p1.getServicePid()).toEqual('my.pid');
@@ -124,10 +124,10 @@ describe('TargetedPid', () => {
   });
 
   it('bindsStronger', () => {
-    const p1 = new TargetedPID(`my.pid|@scope/bundle|1.2.3|some.location`);
-    const p2 = new TargetedPID(`my.pid|@scope/bundle|1.2.3`);
-    const p3 = new TargetedPID(`my.pid|@scope/bundle`);
-    const p4 = new TargetedPID(`my.pid`);
+    const p1 = new TargetedPID('my.pid|@scope/bundle|1.2.3|some.location');
+    const p2 = new TargetedPID('my.pid|@scope/bundle|1.2.3');
+    const p3 = new TargetedPID('my.pid|@scope/bundle');
+    const p4 = new TargetedPID('my.pid');
 
     expect(p1.bindsStronger(p2)).toEqual(true);
     expect(p2.bindsStronger(p3)).toEqual(true);

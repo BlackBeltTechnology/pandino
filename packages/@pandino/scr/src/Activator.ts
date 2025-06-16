@@ -1,4 +1,4 @@
-import { FRAMEWORK_LOGGER, FRAMEWORK_SERVICE_UTILS, ServiceUtils } from '@pandino/pandino-api';
+import { FRAMEWORK_LOGGER, FRAMEWORK_SERVICE_UTILS, type ServiceUtils } from '@pandino/pandino-api';
 import type { BundleActivator, BundleContext, Logger, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
 import type { ServiceComponentRuntime } from './ServiceComponentRuntime';
 import { ServiceComponentRuntimeImpl } from './ServiceComponentRuntimeImpl';

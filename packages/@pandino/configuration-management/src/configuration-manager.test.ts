@@ -8,13 +8,13 @@ import { MockBundle } from './__mocks__/mock-bundle';
 import { MockPersistenceManager } from './__mocks__/mock-persistence-manager';
 import { ConfigurationManager } from './configuration-manager';
 
-describe('ConfigurationManager', function () {
+describe('ConfigurationManager', () => {
   let persistenceManager: MockPersistenceManager;
   let context: BundleContext;
   let bundle: Bundle;
   let cm: ConfigurationManager;
-  let mockDebug = vi.fn();
-  let logger: Logger = {
+  const mockDebug = vi.fn();
+  const logger: Logger = {
     debug: mockDebug,
   } as unknown as Logger;
 
@@ -62,7 +62,10 @@ describe('ConfigurationManager', function () {
     });
 
     expect(config2.getPid()).toEqual('my.other.pid');
-    expect(config2.getProperties()).toEqual({ key: 'value', [SERVICE_PID]: 'my.other.pid' });
+    expect(config2.getProperties()).toEqual({
+      key: 'value',
+      [SERVICE_PID]: 'my.other.pid',
+    });
   });
 
   it('listConfigurations() with filter', () => {
@@ -89,7 +92,10 @@ describe('ConfigurationManager', function () {
     const [config2] = configurations;
 
     expect(config2.getPid()).toEqual('my.other.pid');
-    expect(config2.getProperties()).toEqual({ key: 'value', [SERVICE_PID]: 'my.other.pid' });
+    expect(config2.getProperties()).toEqual({
+      key: 'value',
+      [SERVICE_PID]: 'my.other.pid',
+    });
   });
 
   it('getConfiguration()', () => {

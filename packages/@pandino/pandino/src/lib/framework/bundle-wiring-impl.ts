@@ -1,14 +1,14 @@
 import { EFFECTIVE_DIRECTIVE, EFFECTIVE_RESOLVE, HOST_NAMESPACE, PACKAGE_NAMESPACE, RESOLUTION_DIRECTIVE } from '@pandino/pandino-api';
 import type { Bundle, BundleState } from '@pandino/pandino-api';
-import { BundleRevisionImpl } from './bundle-revision-impl';
-import { BundleImpl } from './bundle-impl';
+import type { BundleRevisionImpl } from './bundle-revision-impl';
+import type { BundleImpl } from './bundle-impl';
 import type { Requirement, Capability } from './resource';
 import type { BundleWiring } from './bundle-wiring';
 import type { BundleRevision } from './bundle-revision';
 import type { BundleCapability } from './wiring/bundle-capability';
 import type { BundleWire } from './wiring/bundle-wire';
 import type { BundleRequirement } from './wiring/bundle-requirement';
-import { StatefulResolver } from './stateful-resolver';
+import type { StatefulResolver } from './stateful-resolver';
 
 export class BundleWiringImpl implements BundleWiring {
   // @ts-ignore
@@ -50,7 +50,7 @@ export class BundleWiringImpl implements BundleWiring {
 
     for (const cap of this.revision.getDeclaredCapabilities(undefined)) {
       if (cap.getNamespace() !== PACKAGE_NAMESPACE) {
-        let effective: string = cap.getDirectives()[EFFECTIVE_DIRECTIVE];
+        const effective: string = cap.getDirectives()[EFFECTIVE_DIRECTIVE];
         if (!effective || effective === EFFECTIVE_RESOLVE) {
           capList.push(cap);
         }
@@ -115,7 +115,7 @@ export class BundleWiringImpl implements BundleWiring {
 
   getRequirements(namespace?: string): BundleRequirement[] {
     if (this.isInUse()) {
-      let searchReqs: Array<BundleRequirement> = this.resolvedReqs;
+      const searchReqs: Array<BundleRequirement> = this.resolvedReqs;
       let result: Array<BundleRequirement> = this.resolvedReqs;
 
       if (namespace) {

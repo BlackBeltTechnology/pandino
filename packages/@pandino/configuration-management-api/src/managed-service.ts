@@ -1,4 +1,4 @@
-import { ServiceProperties } from '@pandino/pandino-api';
+import type { ServiceProperties } from '@pandino/pandino-api';
 
 /**
  * A service that can receive configuration data from a Configuration Admin service.

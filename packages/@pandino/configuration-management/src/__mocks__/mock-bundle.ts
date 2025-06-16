@@ -1,5 +1,5 @@
 import type { Bundle, BundleContext, BundleManifestHeaders, BundleState, ServiceReference } from '@pandino/pandino-api';
-import { MockBundleContext } from './mock-bundle-context';
+import type { MockBundleContext } from './mock-bundle-context';
 
 export class MockBundle implements Bundle {
   private readonly context: BundleContext;
@@ -24,7 +24,7 @@ export class MockBundle implements Bundle {
   }
 
   getHeaders(): BundleManifestHeaders {
-    return undefined as any;
+    return undefined as unknown as BundleManifestHeaders;
   }
 
   getLocation(): string {
@@ -40,7 +40,7 @@ export class MockBundle implements Bundle {
   }
 
   getState(): BundleState {
-    return undefined as any;
+    return undefined as unknown as BundleState;
   }
 
   getSymbolicName(): string {

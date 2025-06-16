@@ -18,7 +18,7 @@ export class ServiceEventAdapter extends AbstractAdapter implements ServiceListe
   }
 
   serviceChanged(event: ServiceEvent): void {
-    let properties: Record<string, any> = {
+    const properties: Record<string, any> = {
       [EVENT]: event,
       [SERVICE]: event.getServiceReference(),
       [SERVICE_ID]: event.getServiceReference().getProperty(SERVICE_ID),

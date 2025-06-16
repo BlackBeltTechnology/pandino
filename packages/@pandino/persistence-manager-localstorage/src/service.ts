@@ -52,6 +52,7 @@ export class LocalstoragePersistenceManager implements PersistenceManager {
       if (this.isKeyManaged(pid)) {
         const value = this.storage.getItem(pid);
         return value ? JSON.parse(value) : undefined;
+        // biome-ignore lint/style/noUselessElse: bad rule
       } else {
         this.logger.warn(`Cannot load Configuration for PID: ${pid}, because it's not in the list of Managed Keys!`);
       }
@@ -77,7 +78,7 @@ export class LocalstoragePersistenceManager implements PersistenceManager {
       const item = this.storage.getItem(this.managedKeysKey);
       return item ? JSON.parse(item) : [];
     } catch (err) {
-      this.logger.error(`Could not load contents of Managed Keys!`);
+      this.logger.error('Could not load contents of Managed Keys!');
       return [];
     }
   }

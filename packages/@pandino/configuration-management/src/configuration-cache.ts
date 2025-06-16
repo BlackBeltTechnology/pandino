@@ -1,8 +1,8 @@
-import type { BundleContext, ServiceProperties } from '@pandino/pandino-api';
+import type { BundleContext } from '@pandino/pandino-api';
 import { SERVICE_PID } from '@pandino/pandino-api';
 import type { PersistenceManager } from '@pandino/persistence-manager-api';
 import { ConfigurationImpl } from './configuration-impl';
-import { ConfigurationManager } from './configuration-manager';
+import type { ConfigurationManager } from './configuration-manager';
 
 export class ConfigurationCache {
   private readonly cache: Map<string, ConfigurationImpl> = new Map<string, ConfigurationImpl>();
@@ -15,10 +15,10 @@ export class ConfigurationCache {
     this.persistenceManager = pm;
     this.cm = cm;
 
-    this.persistenceManager.getProperties().forEach((props: ServiceProperties) => {
+    for (const props of this.persistenceManager.getProperties()) {
       const configuration = new ConfigurationImpl(this.cm, props[SERVICE_PID], this.context.getBundle().getLocation(), props);
       this.cache.set(props[SERVICE_PID], configuration);
-    });
+    }
   }
 
   has(pid: string): boolean {

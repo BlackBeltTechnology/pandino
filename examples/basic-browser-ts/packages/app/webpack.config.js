@@ -7,7 +7,7 @@ export default {
     outputModule: true,
   },
   entry: {
-    'app': './src/index.ts',
+    app: './src/index.ts',
   },
   mode: 'development',
   devtool: 'inline-source-map',
@@ -39,9 +39,7 @@ export default {
   },
   plugins: [
     new CopyPlugin({
-      patterns: [
-        { from: "assets", to: "assets" },
-      ],
+      patterns: [{ from: 'assets', to: 'assets' }],
     }),
     new HtmlWebpackPlugin({
       title: 'Pandino - Basic Browser TS',

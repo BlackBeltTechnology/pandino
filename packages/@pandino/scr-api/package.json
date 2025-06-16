@@ -42,9 +42,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "devDependencies": {
     "@pandino/pandino-api": "workspace:^",
     "reflect-metadata": "^0.2.2",

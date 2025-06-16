@@ -18,10 +18,6 @@ export class AboutPageService implements Page {
 }
 
 export class AboutPage extends HTMLElement {
-  constructor() {
-    super();
-  }
-
   connectedCallback() {
     this.innerHTML = `
         <h1>About</h1>

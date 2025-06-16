@@ -8,12 +8,9 @@ const defaultOptions = {
 };
 
 const generateManifest = (options = defaultOptions, targetFile) => {
-  const addBundleLicenseEntry =
-    typeof options.addBundleLicenseEntry === 'boolean' ? options.addBundleLicenseEntry : true;
-  const bundleLicenseValue =
-    typeof options.bundleLicenseValue === 'string' ? options.bundleLicenseValue : 'relative-path';
-  const licenseFileRegex =
-    typeof options.licenseFileRegex === 'string' ? options.licenseFileRegex : '^LICENSE(\\.txt)?$';
+  const addBundleLicenseEntry = typeof options.addBundleLicenseEntry === 'boolean' ? options.addBundleLicenseEntry : true;
+  const bundleLicenseValue = typeof options.bundleLicenseValue === 'string' ? options.bundleLicenseValue : 'relative-path';
+  const licenseFileRegex = typeof options.licenseFileRegex === 'string' ? options.licenseFileRegex : '^LICENSE(\\.txt)?$';
   const defaultActivator = './' + targetFile.substring(targetFile.lastIndexOf(sep) + 1);
   const packageString = readFileSync(resolve('package.json')).toString('utf8');
   const packageJson = JSON.parse(packageString);
@@ -28,7 +25,7 @@ const generateManifest = (options = defaultOptions, targetFile) => {
   const lastSeparator = targetPath.lastIndexOf(sep);
   const targetFolder = lastSeparator > -1 ? targetPath.substring(0, lastSeparator) : '.';
 
-  let content = {
+  const content = {
     'Bundle-SymbolicName': packageJson.name,
     'Bundle-Version': packageJson.version,
   };
@@ -59,7 +56,9 @@ const generateManifest = (options = defaultOptions, targetFile) => {
           content['Bundle-License'] = './' + files[0];
           break;
         case 'inline':
-          content['Bundle-License'] = readFileSync(resolve(files[0]), { encoding: 'utf-8' }).toString();
+          content['Bundle-License'] = readFileSync(resolve(files[0]), {
+            encoding: 'utf-8',
+          }).toString();
           break;
         case 'package-license':
           content['Bundle-License'] = packageJson.license;
@@ -77,7 +76,9 @@ const generateManifest = (options = defaultOptions, targetFile) => {
 
   mkdirSync(targetFolder, { recursive: true }); // ensure folder is created
 
-  writeFileSync(targetPath, JSON.stringify(finalContent, null, 4), { encoding: 'utf8' });
+  writeFileSync(targetPath, JSON.stringify(finalContent, null, 4), {
+    encoding: 'utf8',
+  });
 };
 
 module.exports = {

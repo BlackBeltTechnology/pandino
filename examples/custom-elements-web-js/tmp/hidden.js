@@ -6,7 +6,7 @@ export default class HiddenActivator {
   async start(context) {
     this.reg = context.registerService('app.feature', new FeatureProvider(), {
       featureName: 'hidden',
-    })
+    });
 
     return Promise.resolve();
   }

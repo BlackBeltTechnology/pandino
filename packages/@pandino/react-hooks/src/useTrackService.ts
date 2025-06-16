@@ -1,74 +1,94 @@
 import { useBundleContext } from './PandinoContext';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import type { ServiceEvent, ServiceListener, ServiceUtils } from '@pandino/pandino-api';
-import { FRAMEWORK_SERVICE_UTILS } from '@pandino/pandino-api';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { FRAMEWORK_SERVICE_UTILS, type ServiceProperties, type ServiceReference, type ServiceTracker, type ServiceUtils } from '@pandino/pandino-api';
 
 export interface SimpleTracker<T> {
   service?: T;
+  properties?: ServiceProperties;
 }
 
 export type ServiceTrackerHook = <T>(filter: string) => SimpleTracker<T>;
 
 export const useTrackService: ServiceTrackerHook = <T>(filter: string) => {
-  const isInitialMount = useRef(true);
   const { bundleContext } = useBundleContext();
-  const getService = useCallback<(filter: string) => T | undefined>(
-    (filter: string) => {
-      const serviceUtilsRef = bundleContext.getServiceReference<ServiceUtils>(FRAMEWORK_SERVICE_UTILS)!;
-      const serviceUtils = bundleContext.getService(serviceUtilsRef)!;
-      const refs = bundleContext.getServiceReferences(undefined, filter);
-      const ref = serviceUtils.getBestServiceReference(refs);
-      if (ref) {
-        return bundleContext.getService(ref);
+  const tracker = useRef<ServiceTracker<any, any> | undefined>(undefined);
+  const activeServiceRef = useRef<ServiceReference<T> | undefined>(undefined);
+  const serviceUtilsRef = useRef<ServiceReference<ServiceUtils> | undefined>(undefined);
+  const serviceUtils = useMemo<ServiceUtils | undefined>(() => {
+    if (serviceUtilsRef.current) {
+      bundleContext.ungetService(serviceUtilsRef.current);
+      serviceUtilsRef.current = undefined;
+    }
+    serviceUtilsRef.current = bundleContext.getServiceReference<ServiceUtils>(FRAMEWORK_SERVICE_UTILS);
+    if (!serviceUtilsRef.current) return undefined;
+    const serviceUtils = bundleContext.getService(serviceUtilsRef.current);
+    if (!serviceUtils) {
+      bundleContext.ungetService(serviceUtilsRef.current);
+      return undefined;
+    }
+    return serviceUtils;
+  }, [bundleContext]);
+  const [service, setService] = useState<T | undefined>(() => {
+    const refs = bundleContext.getServiceReferences(undefined, filter);
+    if (refs.length > 0 && serviceUtils) {
+      activeServiceRef.current = serviceUtils.getBestServiceReference(refs);
+      for (const ref of refs) {
+        bundleContext.ungetService(ref);
       }
-    },
-    [filter],
-  );
-  const [tracker, setTracker] = useState<SimpleTracker<T>>({
-    service: getService(filter),
+      if (activeServiceRef.current) {
+        return bundleContext.getService(activeServiceRef.current);
+      }
+    }
+    return undefined;
   });
-  const createListener: () => ServiceListener = useCallback(() => {
-    return {
-      serviceChanged: (event: ServiceEvent) => {
-        if (event.getType() === 'REGISTERED') {
-          setTracker({
-            service: bundleContext.getService(event.getServiceReference()),
-          });
-        } else if (event.getType() === 'UNREGISTERING') {
-          setTracker({
-            service: undefined,
-          });
-        }
-      },
-    };
-  }, [filter]);
-  const [listener, setListener] = useState<ServiceListener>(createListener());
+  const [properties, setProperties] = useState<ServiceProperties | undefined>(() => {
+    // if available, should be set in the previous state
+    return activeServiceRef.current?.getProperties();
+  });
 
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      bundleContext.addServiceListener(listener, filter);
-    } else {
-      // only run this branch on updates, no at initial renders
-      setListener((prevListener) => {
-        bundleContext.removeServiceListener(prevListener);
-
-        const newListener = createListener();
-
-        bundleContext.addServiceListener(newListener, filter);
-
-        return newListener;
-      });
-
-      setTracker({
-        service: getService(filter),
-      });
+    if (tracker?.current) {
+      tracker.current.close();
+      tracker.current = undefined;
     }
 
-    return () => {
-      bundleContext.removeServiceListener(listener);
-    };
-  }, [filter]);
+    tracker.current = bundleContext.trackService(filter, {
+      addingService(reference: ServiceReference<T>): T {
+        const svc = bundleContext.getService(reference);
+        activeServiceRef.current = reference;
+        setService((prev) => {
+          return prev === svc ? prev : svc;
+        });
+        setProperties((prev) => {
+          return JSON.stringify(prev) !== JSON.stringify(reference.getProperties()) ? reference.getProperties() : prev;
+        });
+        return svc as T;
+      },
+      modifiedService(reference: ServiceReference<T>, svc: T) {
+        setService((prev) => {
+          return prev === svc ? prev : svc;
+        });
+        setProperties((prev) => {
+          return JSON.stringify(prev) !== JSON.stringify(reference.getProperties()) ? reference.getProperties() : prev;
+        });
+      },
+      removedService(_: ServiceReference<T>, __: T) {
+        bundleContext.ungetService(_);
+        activeServiceRef.current = undefined;
+        setService(undefined);
+        setProperties(undefined);
+      },
+    });
 
-  return tracker;
+    tracker.current.open();
+
+    return () => {
+      tracker.current?.close();
+      tracker.current = undefined;
+      activeServiceRef.current = undefined;
+    };
+  }, [bundleContext, filter]);
+
+  // Memoize the tracker so that its identity only changes when the service or its properties change.
+  return useMemo(() => ({ service, properties }), [service, properties]);
 };

@@ -1,16 +1,16 @@
 import {
   BUNDLE_SYMBOLICNAME,
-  BundleContext,
+  type BundleContext,
   OBJECTCLASS,
   SERVICE_ID,
   SERVICE_PID,
-  ServiceEvent,
-  ServiceListener,
-  ServiceReference,
+  type ServiceEvent,
+  type ServiceListener,
+  type ServiceReference,
 } from '@pandino/pandino-api';
 import { LOG_READER_SERVICE_INTERFACE_KEY } from '@pandino/log-api';
 import type { LogEntry, LogListener, LogReaderService } from '@pandino/log-api';
-import { BUNDLE_ID, EventAdmin, EventFactory, LOG_EVENT_INTERFACE_KEY, MESSAGE, SERVICE, SERVICE_OBJECTCLASS, TIMESTAMP } from '@pandino/event-api';
+import { BUNDLE_ID, type EventAdmin, type EventFactory, LOG_EVENT_INTERFACE_KEY, MESSAGE, SERVICE, SERVICE_OBJECTCLASS, TIMESTAMP } from '@pandino/event-api';
 import { AbstractAdapter } from './abstract-adapter';
 
 export class LogEventAdapter extends AbstractAdapter implements ServiceListener {
@@ -29,7 +29,7 @@ export class LogEventAdapter extends AbstractAdapter implements ServiceListener 
 
       const refs: ServiceReference<LogReaderService>[] = context.getServiceReferences(LOG_READER_SERVICE_INTERFACE_KEY);
 
-      if (refs && refs.length) {
+      if (refs?.length) {
         for (let i = 0; i < refs.length; i++) {
           const logReader = context.getService(refs[i]);
 
@@ -70,11 +70,11 @@ export class LogEventAdapter extends AbstractAdapter implements ServiceListener 
 
         const properties: Record<string, any> = {};
 
-        let bundle = entry.getBundle();
+        const bundle = entry.getBundle();
 
         if (bundle) {
           properties[BUNDLE_ID] = bundle.getBundleId();
-          properties['bundle'] = bundle;
+          properties.bundle = bundle;
           properties[BUNDLE_SYMBOLICNAME] = bundle.getSymbolicName();
         }
 

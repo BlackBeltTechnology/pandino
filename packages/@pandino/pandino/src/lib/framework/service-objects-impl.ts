@@ -1,6 +1,6 @@
 import type { ServiceObjects, ServiceReference } from '@pandino/pandino-api';
-import { Pandino } from '../../pandino';
-import { BundleContextImpl } from './bundle-context-impl';
+import type { Pandino } from '../../pandino';
+import type { BundleContextImpl } from './bundle-context-impl';
 
 export class ServiceObjectsImpl<S> implements ServiceObjects<S> {
   private readonly ref: ServiceReference<S>;

@@ -1,2 +1,5 @@
 packages:
-  - 'packages/@pandino/*'
+  - packages/@pandino/*
+onlyBuiltDependencies:
+  - '@biomejs/biome'
+  - esbuild

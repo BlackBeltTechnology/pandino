@@ -25,7 +25,7 @@ import type {
   ServiceRegistration,
 } from '@pandino/pandino-api';
 import { Pandino } from './pandino';
-import { BundleImpl } from './lib/framework';
+import type { BundleImpl } from './lib/framework';
 
 interface HelloService {
   sayHello(): string;
@@ -201,7 +201,7 @@ describe('Pandino', () => {
     const bundle = await installBundle({
       ...bundle1Headers,
     });
-    let bundles = pandino.getBundleContext().getBundles();
+    const bundles = pandino.getBundleContext().getBundles();
 
     expect(mockStart).toHaveBeenCalledTimes(1);
     expect(bundles.length).toEqual(1);

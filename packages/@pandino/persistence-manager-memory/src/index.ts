@@ -1,5 +1,5 @@
-import { BundleActivator, BundleContext, ServiceRegistration } from '@pandino/pandino-api';
-import { INTERFACE_KEY, PersistenceManager, SERVICE_DISCRIMINATOR_PROPERTY } from '@pandino/persistence-manager-api';
+import type { BundleActivator, BundleContext, ServiceRegistration } from '@pandino/pandino-api';
+import { INTERFACE_KEY, type PersistenceManager, SERVICE_DISCRIMINATOR_PROPERTY } from '@pandino/persistence-manager-api';
 import { InMemoryPersistenceManager } from './service';
 
 export default class Activator implements BundleActivator {

@@ -103,14 +103,14 @@ export class MockBundleContext implements BundleContext {
     };
     this.serviceMap.set(ref, service);
     this.registrations.push(reg);
-    this.serviceListeners.forEach((listener) => {
+    for (const listener of this.serviceListeners) {
       listener.serviceChanged({
         getType(): ServiceEventType {
           return 'REGISTERED';
         },
         getServiceReference: () => ref,
       });
-    });
+    }
     return reg;
   }
 

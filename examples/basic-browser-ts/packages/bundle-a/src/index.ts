@@ -1,5 +1,5 @@
-import { BundleActivator, BundleContext, ServiceReference } from '@pandino/pandino-api';
-import { STRING_INVERTER, StringInverter } from 'bundle-b';
+import type { BundleActivator, BundleContext, ServiceReference } from '@pandino/pandino-api';
+import { STRING_INVERTER, type StringInverter } from 'bundle-b';
 
 export default class BundleAActivator implements BundleActivator {
   private inverterReference: ServiceReference<StringInverter>;

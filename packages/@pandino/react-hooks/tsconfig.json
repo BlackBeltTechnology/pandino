@@ -15,8 +15,12 @@
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["vite/client", "node"],
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "skipLibCheck": true
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "../../../node_modules/.pnpm/vitest@3.1.1_@types+node@22.8.0_jsdom@26.1.0_terser@5.36.0/node_modules/vitest/globals.d.ts"
+  ],
   "exclude": ["**/*.test.ts", "node_modules", "test/**", ".history/**"]
 }

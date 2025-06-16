@@ -6,7 +6,7 @@ export default {
     outputModule: true,
   },
   entry: {
-    'app': './src/index.ts',
+    app: './src/index.ts',
   },
   mode: 'development',
   devtool: 'inline-source-map',

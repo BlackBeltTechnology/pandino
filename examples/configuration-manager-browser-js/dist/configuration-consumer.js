@@ -7,7 +7,7 @@ export default class BundleActivator {
 
     const mst = new ManagedServiceTest(this.logger);
     this.registration = context.registerService('@pandino/configuration-management/ManagedService', mst, {
-      'service.pid': 'test.pid'
+      'service.pid': 'test.pid',
     });
   }
 

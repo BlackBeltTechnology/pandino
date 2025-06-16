@@ -6,7 +6,7 @@ export default class DashboardActivator {
   async start(context) {
     this.reg = context.registerService('app.feature', new FeatureProvider(), {
       featureName: 'dashboard',
-    })
+    });
 
     return Promise.resolve();
   }
@@ -29,7 +29,7 @@ class FeatureProvider {
   getMenuInfo() {
     return {
       label: 'Dashboard',
-      path: '/'
+      path: '/',
     };
   }
 }

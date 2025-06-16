@@ -3,7 +3,7 @@ import type { ServiceEvent, ServiceListener, ServiceReference, ServiceTracker, S
 import { serializeFilter } from '@pandino/filters';
 import type { FilterNode } from '@pandino/filters';
 import { AbstractTracked } from './abstract-tracked';
-import { BundleContextImpl } from './bundle-context-impl';
+import type { BundleContextImpl } from './bundle-context-impl';
 
 export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   readonly customizer: ServiceTrackerCustomizer<S, T>;
@@ -22,13 +22,11 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   open(): void {
-    let t: Tracked<S, T>;
-
     if (this.tracked) {
       return;
     }
 
-    t = new AllTracked(this);
+    const t: Tracked<S, T> = new AllTracked(this);
 
     this.context.addServiceListener(t, this.listenerFilter);
 
@@ -72,7 +70,7 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   getServiceReferences(): Array<ServiceReference<S>> {
-    let t = this.tracked;
+    const t = this.tracked;
     if (!t) {
       return [];
     }
@@ -80,7 +78,7 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
       return [];
     }
 
-    let result: Array<ServiceReference<S>> = [];
+    const result: Array<ServiceReference<S>> = [];
     return t.copyKeys(result);
   }
 
@@ -100,15 +98,16 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   getService(): T | undefined {
-    let service = this.cachedService;
+    const service = this.cachedService;
     if (service) {
       return service;
     }
-    let reference = this.getServiceReference();
+    const reference = this.getServiceReference();
     if (!reference) {
       return undefined;
     }
-    return (this.cachedService = this.getServiceForReference(reference));
+    this.cachedService = this.getServiceForReference(reference);
+    return this.cachedService;
   }
 
   getServiceReference(): ServiceReference<S> | undefined {
@@ -143,7 +142,7 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
       if (count > 1) {
         let minId = Number.MAX_VALUE;
         for (let i = 0; i < length; i++) {
-          if (rankings[i] == maxRanking) {
+          if (rankings[i] === maxRanking) {
             const id: number = Number(references[i].getProperty(SERVICE_ID));
             if (id < minId) {
               index = i;
@@ -153,11 +152,12 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
         }
       }
     }
-    return (this.cachedReference = references[index]);
+    this.cachedReference = references[index];
+    return this.cachedReference;
   }
 
   getServiceForReference(reference: ServiceReference<S>): T | undefined {
-    let t = this.tracked;
+    const t = this.tracked;
     if (!t) {
       return undefined;
     }
@@ -165,7 +165,7 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   getServices(): T[] {
-    let t = this.tracked;
+    const t = this.tracked;
     if (!t) {
       return [];
     }
@@ -190,7 +190,7 @@ export class ServiceTrackerImpl<S, T> implements ServiceTracker<S, T> {
   }
 
   remove(reference: ServiceReference<S>): void {
-    let t = this.tracked;
+    const t = this.tracked;
     if (!t) {
       return;
     }
@@ -279,8 +279,4 @@ class Tracked<S, T> extends AbstractTracked<ServiceReference<S>, T, ServiceEvent
   }
 }
 
-class AllTracked<S, T> extends Tracked<S, T> implements ServiceListener {
-  constructor(tracker: ServiceTrackerImpl<S, T>) {
-    super(tracker);
-  }
-}
+class AllTracked<S, T> extends Tracked<S, T> implements ServiceListener {}

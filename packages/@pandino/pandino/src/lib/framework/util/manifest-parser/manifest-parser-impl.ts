@@ -170,27 +170,29 @@ export class ManifestParserImpl implements ManifestParser {
   }
 
   private static parseBundleSymbolicName(owner: BundleRevision, headerMap: Record<string, any>): BundleCapabilityImpl | never {
-    const clauses = this.normalizeCapabilityClauses(this.parseStandardHeader(headerMap[BUNDLE_SYMBOLICNAME]));
+    const clauses = ManifestParserImpl.normalizeCapabilityClauses(ManifestParserImpl.parseStandardHeader(headerMap[BUNDLE_SYMBOLICNAME]));
     if (clauses.length > 0) {
       if (clauses.length > 1) {
-        throw new Error('Cannot have multiple symbolic names: ' + headerMap[BUNDLE_SYMBOLICNAME]);
+        throw new Error(`Cannot have multiple symbolic names: ${headerMap[BUNDLE_SYMBOLICNAME]}`);
+        // biome-ignore lint/style/noUselessElse: bad rule
       } else if (clauses[0].paths.length > 1) {
-        throw new Error('Cannot have multiple symbolic names: ' + headerMap[BUNDLE_SYMBOLICNAME]);
-      } else if (clauses[0].attrs.hasOwnProperty(BUNDLE_VERSION)) {
-        throw new Error('Cannot have a bundle version: ' + headerMap[BUNDLE_VERSION]);
+        throw new Error(`Cannot have multiple symbolic names: ${headerMap[BUNDLE_SYMBOLICNAME]}`);
+        // biome-ignore lint/style/noUselessElse: bad rule
+      } else if (Object.prototype.hasOwnProperty.call(clauses[0].attrs, BUNDLE_VERSION)) {
+        throw new Error(`Cannot have a bundle version: ${headerMap[BUNDLE_VERSION]}`);
       }
 
       // Get bundle version.
-      let bundleVersion = this.EMPTY_VERSION;
+      let bundleVersion = ManifestParserImpl.EMPTY_VERSION;
       if (headerMap[BUNDLE_VERSION] !== null && headerMap[BUNDLE_VERSION] !== undefined) {
         try {
           bundleVersion = headerMap[BUNDLE_VERSION];
         } catch (ex) {
-          let mv = this.getManifestVersion(headerMap);
+          const mv = ManifestParserImpl.getManifestVersion(headerMap);
           if (mv !== null && mv !== undefined) {
             throw ex;
           }
-          bundleVersion = this.EMPTY_VERSION;
+          bundleVersion = ManifestParserImpl.EMPTY_VERSION;
         }
       }
 
@@ -219,9 +221,9 @@ export class ManifestParserImpl implements ManifestParser {
     const semiColons = header.split(';');
 
     let clause: ParsedHeaderClause | undefined;
-    let dirs: Record<string, string> = {};
-    let attrs: Record<string, any> = {};
-    let types: Record<string, string> = {};
+    const dirs: Record<string, string> = {};
+    const attrs: Record<string, any> = {};
+    const types: Record<string, string> = {};
 
     semiColons.forEach((value, index) => {
       const trimValue = value.trim();
@@ -279,10 +281,10 @@ export class ManifestParserImpl implements ManifestParser {
           } else if (type === 'SemVer') {
             clause.attrs[key] = clause.attrs[key].toString().trim();
           } else if (type.startsWith('Array')) {
-            let startIdx = type.indexOf('<');
-            let endIdx = type.indexOf('>');
+            const startIdx = type.indexOf('<');
+            const endIdx = type.indexOf('>');
             if ((startIdx > 0 && endIdx <= startIdx) || (startIdx < 0 && endIdx > 0)) {
-              throw new Error("Invalid Provide-Capability attribute list type for '" + key + "' : " + type);
+              throw new Error(`Invalid Provide-Capability attribute list type for '${key}' : ${type}`);
             }
 
             let listType = 'string';
@@ -292,7 +294,7 @@ export class ManifestParserImpl implements ManifestParser {
 
             const tokens: Array<string> = parseDelimitedString(clause.attrs[key].toString().trim(), ',', false);
             const values: Array<any> = [];
-            for (let token of tokens) {
+            for (const token of tokens) {
               if (listType === 'string') {
                 values.push(token);
               } else if (listType === 'number') {
@@ -300,12 +302,12 @@ export class ManifestParserImpl implements ManifestParser {
               } else if (listType === 'SemVer') {
                 values.push(token.trim());
               } else {
-                throw new Error("Unknown Provide-Capability attribute list type for '" + key + "' : " + type);
+                throw new Error(`Unknown Provide-Capability attribute list type for '${key}' : ${type}`);
               }
             }
             clause.attrs[key] = values;
           } else {
-            throw new Error("Unknown Provide-Capability attribute type for '" + key + "' : " + type);
+            throw new Error(`Unknown Provide-Capability attribute type for '${key}' : ${type}`);
           }
         }
       }
@@ -319,7 +321,7 @@ export class ManifestParserImpl implements ManifestParser {
       clauses.length = 0;
     } else {
       for (const clause of clauses) {
-        let value = clause.attrs[BUNDLE_VERSION_ATTRIBUTE];
+        const value = clause.attrs[BUNDLE_VERSION_ATTRIBUTE];
         if (value !== null && value !== undefined) {
           clause.attrs[BUNDLE_VERSION_ATTRIBUTE] = value.toString();
         }
@@ -356,19 +358,24 @@ export class ManifestParserImpl implements ManifestParser {
     const reqList: BundleRequirement[] = [];
     for (const clause of clauses) {
       try {
-        let filterStr = clause.dirs[FILTER_DIRECTIVE];
+        const filterStr = clause.dirs[FILTER_DIRECTIVE];
         const sf = filterStr
           ? parseFilter(filterStr.trim().replace(/"|\\"/g, '').toString())
-          : ({ attribute: undefined, operator: 'eq', value: '*', children: [] } as FilterNode);
+          : ({
+              attribute: undefined,
+              operator: 'eq',
+              value: '*',
+              children: [],
+            } as FilterNode);
         for (const path of clause.paths) {
           if (path.startsWith('pandino.wiring.')) {
-            throw new Error("Manifest cannot use Require-Capability for '" + path + "' namespace.");
+            throw new Error(`Manifest cannot use Require-Capability for '${path}' namespace.`);
           }
 
           reqList.push(new BundleRequirementImpl(owner, path, clause.dirs, clause.attrs, sf));
         }
       } catch (ex) {
-        throw new Error('Error creating requirement: ' + ex);
+        throw new Error(`Error creating requirement: ${ex}`);
       }
     }
 
@@ -380,7 +387,7 @@ export class ManifestParserImpl implements ManifestParser {
     for (const clause of clauses) {
       for (const path of clause.paths) {
         if (path.startsWith('pandino.wiring.')) {
-          throw new Error("Manifest cannot use Provide-Capability for '" + path + "' namespace.");
+          throw new Error(`Manifest cannot use Provide-Capability for '${path}' namespace.`);
         }
 
         capList.push(new BundleCapabilityImpl(owner, path, clause.dirs, clause.attrs));

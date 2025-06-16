@@ -5,20 +5,23 @@ export default class AppWire extends HTMLElement {
     this.menu = [];
 
     this.pandinoContext = pandinoContext;
-    this.pandinoContext.addServiceListener({
-      serviceChanged: (event) => {
-        if (event.getType() === 'REGISTERED') {
-          const ref = event.getServiceReference();
-          const svc = pandinoContext.getService(ref);
-          const serviceId = ref.getProperty('service.id');
-          if (typeof svc.getMenuInfo === 'function') {
-            this.addMenu(serviceId, svc.getMenuInfo());
+    this.pandinoContext.addServiceListener(
+      {
+        serviceChanged: (event) => {
+          if (event.getType() === 'REGISTERED') {
+            const ref = event.getServiceReference();
+            const svc = pandinoContext.getService(ref);
+            const serviceId = ref.getProperty('service.id');
+            if (typeof svc.getMenuInfo === 'function') {
+              this.addMenu(serviceId, svc.getMenuInfo());
+            }
+            this.addRoute(serviceId, svc.getRoutePath(), svc.getPageComponent());
+            this.paint();
           }
-          this.addRoute(serviceId, svc.getRoutePath(), svc.getPageComponent());
-          this.paint();
-        }
+        },
       },
-    }, '(objectClass=app.feature)');
+      '(objectClass=app.feature)',
+    );
 
     window.addEventListener('load', this.route.bind(this));
     window.addEventListener('hashchange', this.route.bind(this));
@@ -54,9 +57,13 @@ export default class AppWire extends HTMLElement {
         <div class="menu">
             <h3>Pandino</h3>
             <ul>
-            ${this.menu.map(m => `
+            ${this.menu
+              .map(
+                (m) => `
                 <li class="${this.menuActiveClass(m.path)}"><a href="#${m.path}">${m.label}</a></li>
-            `).join('')}
+            `,
+              )
+              .join('')}
             </ul>
         </div>
         <div class="content">
@@ -97,7 +104,7 @@ export default class AppWire extends HTMLElement {
   }
 
   getCurrentRoute() {
-    return this.routes.find(r => r.path === this.getSafeHash());
+    return this.routes.find((r) => r.path === this.getSafeHash());
   }
 
   menuActiveClass(path) {

@@ -18,15 +18,16 @@ import {
 } from '@pandino/pandino-api';
 import type { BundleManifestHeaders } from '@pandino/pandino-api';
 import { ManifestParserImpl } from './manifest-parser-impl';
-import { BundleRevisionImpl } from '../../bundle-revision-impl';
-import type { BundleCapability, BundleRequirement } from '../../wiring';
+import type { BundleRevisionImpl } from '../../bundle-revision-impl';
+import type { BundleRequirement } from '../../wiring/bundle-requirement';
+import type { BundleCapability } from '../../wiring/bundle-capability';
 
 describe('ManifestParserImp', () => {
   it('single attribute', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
       [BUNDLE_SYMBOLICNAME]: '@scope/example/attribute',
-      [REQUIRE_CAPABILITY]: `com.one;test=value`,
+      [REQUIRE_CAPABILITY]: 'com.one;test=value',
     };
     const mockBundleRevision = {
       getSymbolicName: vi.fn().mockReturnValue('@scope/example/attribute'),
@@ -34,14 +35,14 @@ describe('ManifestParserImp', () => {
     const mp: ManifestParserImpl = new ManifestParserImpl({}, mockBundleRevision, headers);
     const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
 
-    expect(rc1.getAttributes()['test']).toEqual('value');
+    expect(rc1.getAttributes().test).toEqual('value');
   });
 
   it('semver attribute', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
       [BUNDLE_SYMBOLICNAME]: '@scope/example/semver',
-      [REQUIRE_CAPABILITY]: `com.one;ver:SemVer=1.2.3`,
+      [REQUIRE_CAPABILITY]: 'com.one;ver:SemVer=1.2.3',
     };
     const mockBundleRevision = {
       getSymbolicName: vi.fn().mockReturnValue('@scope/example/semver'),
@@ -49,8 +50,8 @@ describe('ManifestParserImp', () => {
     const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
     const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
 
-    expect(rc1.getAttributes()['ver']).toEqual('1.2.3');
-    expect(rc1.getAttributes()['ver'].toString()).toEqual('1.2.3');
+    expect(rc1.getAttributes().ver).toEqual('1.2.3');
+    expect(rc1.getAttributes().ver.toString()).toEqual('1.2.3');
   });
 
   it('testIdentityCapabilityMinimal', () => {
@@ -70,7 +71,7 @@ describe('ManifestParserImp', () => {
   it('testIdentityCapabilityFull', () => {
     const headers: BundleManifestHeaders = {
       [BUNDLE_MANIFESTVERSION]: '2',
-      [BUNDLE_SYMBOLICNAME]: '@scope/abc;singleton:=true;foo=bar;' + CAPABILITY_TAGS_ATTRIBUTE + '=test',
+      [BUNDLE_SYMBOLICNAME]: `@scope/abc;singleton:=true;foo=bar;${CAPABILITY_TAGS_ATTRIBUTE}=test`,
       [BUNDLE_VERSION]: '1.2.3-something',
       [BUNDLE_COPYRIGHT]: '(c) 2022 BlackBelt Technology Ltd.',
       [BUNDLE_DESCRIPTION]: 'A bundle description',
@@ -84,7 +85,7 @@ describe('ManifestParserImp', () => {
     expect(ic.getAttributes()[CAPABILITY_TYPE_ATTRIBUTE]).toEqual(TYPE_BUNDLE);
     expect(ic.getAttributes()[CAPABILITY_COPYRIGHT_ATTRIBUTE]).toEqual('(c) 2022 BlackBelt Technology Ltd.');
     expect(ic.getAttributes()[CAPABILITY_DESCRIPTION_ATTRIBUTE]).toEqual('A bundle description');
-    expect(ic.getAttributes()['foo']).toEqual('bar');
+    expect(ic.getAttributes().foo).toEqual('bar');
 
     expect(Object.keys(ic.getDirectives()).length).toEqual(1);
     expect(ic.getDirectives()[CAPABILITY_SINGLETON_DIRECTIVE]).toEqual('true');
@@ -103,14 +104,14 @@ describe('ManifestParserImp', () => {
     const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
     const bc: BundleCapability = findCapability(mp.getCapabilities(), 'com.example');
 
-    expect(bc.getAttributes()['theNumber']).toEqual(111);
-    expect(bc.getAttributes()['theArray']).toEqual(['red', 'green', 'blue']);
-    expect(bc.getAttributes()['version']).toEqual('1.2.3');
+    expect(bc.getAttributes().theNumber).toEqual(111);
+    expect(bc.getAttributes().theArray).toEqual(['red', 'green', 'blue']);
+    expect(bc.getAttributes().version).toEqual('1.2.3');
 
     const br: BundleRequirement = findRequirement(mp.getRequirements(), 'com.example.other');
 
-    expect(br.getAttributes()['theNumber']).toEqual(999);
-    expect(br.getAttributes()['theArray']).toEqual([1, 2, 3]);
+    expect(br.getAttributes().theNumber).toEqual(999);
+    expect(br.getAttributes().theArray).toEqual([1, 2, 3]);
     expect(br.getAttributes()['com.example.other.bla']).toEqual('str');
   });
 
@@ -126,7 +127,7 @@ describe('ManifestParserImp', () => {
     const mp: ManifestParserImpl = new ManifestParserImpl(null, mockBundleRevision, headers);
     const rc1: BundleRequirement = findRequirement(mp.getRequirements(), 'com.one');
 
-    expect(rc1.getDirectives()['filter']).toEqual('(&(type=cat)(rate<=20))');
+    expect(rc1.getDirectives().filter).toEqual('(&(type=cat)(rate<=20))');
   });
 
   it('only namespace, no attributes', () => {
@@ -165,10 +166,10 @@ describe('ManifestParserImp', () => {
     const pc1: BundleCapability = findCapability(mp.getCapabilities(), 'some.cap.with.filter');
     const pc2: BundleCapability = findCapability(mp.getCapabilities(), 'some.other.cap');
 
-    expect(rc1.getDirectives()['filter']).toEqual('(&(type=cat)(rate<=20))');
-    expect(rc2.getAttributes()['test']).toEqual('value');
-    expect(pc1.getDirectives()['filter']).toEqual('(&(attr1=1)(attr2<=500))');
-    expect(pc2.getAttributes()['fine']).toEqual(1);
+    expect(rc1.getDirectives().filter).toEqual('(&(type=cat)(rate<=20))');
+    expect(rc2.getAttributes().test).toEqual('value');
+    expect(pc1.getDirectives().filter).toEqual('(&(attr1=1)(attr2<=500))');
+    expect(pc2.getAttributes().fine).toEqual(1);
   });
 });
 

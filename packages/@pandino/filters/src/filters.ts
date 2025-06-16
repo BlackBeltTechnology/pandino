@@ -4,7 +4,7 @@ import { FilterOperatorSymbolMapping } from './types';
 export const convert = (attrs: Record<string, any>): FilterNode => {
   const filters: FilterNode[] = [];
 
-  for (let [_, value] of Object.entries(attrs)) {
+  for (const [_, value] of Object.entries(attrs)) {
     filters.push(parseFilter(value.toString()));
   }
 
@@ -33,17 +33,9 @@ export function evaluateFilterNode(node: FilterNode, data: any): boolean {
 
   switch (node.operator) {
     case 'and':
-      return (
-        node.children?.every(function (child) {
-          return evaluateFilterNode(child, data);
-        }) ?? false
-      );
+      return node.children?.every((child) => evaluateFilterNode(child, data)) ?? false;
     case 'or':
-      return (
-        node.children?.some(function (child) {
-          return evaluateFilterNode(child, data);
-        }) ?? false
-      );
+      return node.children?.some((child) => evaluateFilterNode(child, data)) ?? false;
     case 'not':
       return node.children ? !evaluateFilterNode(node.children[0], data) : false;
     default:
@@ -119,13 +111,13 @@ export function parseFilter(filter: string): FilterNode | never {
 }
 
 function evaluateComparison(comparison: FilterNode, data: any): boolean {
-  let attribute = comparison.attribute;
-  let operator = comparison.operator;
-  let value = comparison.value;
+  const attribute = comparison.attribute;
+  const operator = comparison.operator;
+  const value = comparison.value;
 
   // Traverse the nested attributes to get the actual value
   // const attributePath = attribute ? attribute.split('.') : [];
-  let current = attribute ? data[attribute] : undefined;
+  const current = attribute ? data[attribute] : undefined;
   // while (attributePath.length > 0 && current) {
   //   current = current[attributePath.shift()!];
   // }
@@ -158,14 +150,18 @@ function evaluateComparison(comparison: FilterNode, data: any): boolean {
     case 'eq':
       if (arrayIncludes) {
         return (current as Array<any>).includes(typedValue);
+        // biome-ignore lint/style/noUselessElse: bad rule
       } else if (present) {
         return current !== null && current !== undefined;
+        // biome-ignore lint/style/noUselessElse: bad rule
       } else if (contains) {
         const mut = typedValue.substring(1, typedValue.length - 2);
         return current.includes(mut);
+        // biome-ignore lint/style/noUselessElse: bad rule
       } else if (startsWith) {
         const mut = typedValue.substring(0, typedValue.length - 2);
         return current.startsWith(mut);
+        // biome-ignore lint/style/noUselessElse: bad rule
       } else if (endsWith) {
         const mut = typedValue.substring(1);
         return current.endsWith(mut);
@@ -194,7 +190,7 @@ function splitNodeExpression(node: FilterNode): void {
   };
 
   if (node.expression) {
-    let trimmed = node.expression.trim();
+    const trimmed = node.expression.trim();
     for (const key in kv) {
       if (trimmed.includes(key)) {
         const split = trimmed.split(key);
@@ -203,7 +199,7 @@ function splitNodeExpression(node: FilterNode): void {
         node.attribute = split[0].trim();
         node.value = split[1].trim();
 
-        delete node.expression;
+        node.expression = undefined;
         break;
       }
     }

@@ -41,7 +41,7 @@ export class ListenerInfo {
   }
 
   public getFilter(): string | undefined {
-    if (!!this.filter) {
+    if (this.filter) {
       return serializeFilter(this.filter);
     }
     return undefined;

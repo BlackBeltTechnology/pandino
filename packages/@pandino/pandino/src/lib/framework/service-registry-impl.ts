@@ -1,12 +1,12 @@
-import { Logger, OBJECTCLASS, SCOPE_PROTOTYPE, SERVICE_ID, SERVICE_SCOPE } from '@pandino/pandino-api';
+import { type Logger, OBJECTCLASS, SCOPE_PROTOTYPE, SERVICE_ID, SERVICE_SCOPE } from '@pandino/pandino-api';
 import type { Bundle, ServiceProperties, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
 import { parseFilter } from '@pandino/filters';
 import type { FilterNode } from '@pandino/filters';
 import { ServiceRegistrationImpl } from './service-registration-impl';
 import { ServiceEventImpl } from './service-event-impl';
-import { ServiceReferenceImpl } from './service-reference-impl';
+import type { ServiceReferenceImpl } from './service-reference-impl';
 import { CapabilitySet } from './capability-set/capability-set';
-import { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
+import type { BundleCapabilityImpl } from './wiring/bundle-capability-impl';
 import { UsageCountImpl } from './usage-count-impl';
 import type { ServiceRegistryCallbacks } from './service-registry-callbacks';
 import type { Capability } from './resource';
@@ -100,10 +100,18 @@ export class ServiceRegistryImpl implements ServiceRegistry {
     if (!identifier && !filterEffective) {
       filterEffective = { attribute: undefined, operator: 'eq', value: '*' };
     } else if (identifier && !filterEffective) {
-      filterEffective = { attribute: OBJECTCLASS, operator: 'eq', value: identifier };
+      filterEffective = {
+        attribute: OBJECTCLASS,
+        operator: 'eq',
+        value: identifier,
+      };
     } else if (identifier && filterEffective) {
       const filters: Array<FilterNode> = [];
-      filters.push({ attribute: OBJECTCLASS, operator: 'eq', value: identifier });
+      filters.push({
+        attribute: OBJECTCLASS,
+        operator: 'eq',
+        value: identifier,
+      });
       filters.push(filterEffective);
       filterEffective = { operator: 'and', children: filters };
     }
@@ -112,7 +120,7 @@ export class ServiceRegistryImpl implements ServiceRegistry {
   }
 
   getUsingBundles(ref: ServiceReference<any>): Bundle[] {
-    let bundles: Bundle[] = [];
+    const bundles: Bundle[] = [];
     for (const bundle of this.inUseMap.keys()) {
       const usages = this.inUseMap.get(bundle);
       if (Array.isArray(usages)) {

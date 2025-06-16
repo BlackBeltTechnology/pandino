@@ -1,4 +1,4 @@
-import { BundleCapabilityImpl } from '../wiring/bundle-capability-impl';
+import type { BundleCapabilityImpl } from '../wiring/bundle-capability-impl';
 import type { BundleCapability } from '../wiring/bundle-capability';
 import type { Capability } from '../resource';
 import type { FilterNode, FilterOperator } from '@pandino/filters';
@@ -25,7 +25,7 @@ export class CapabilitySet {
     this.capSet.add(cap);
 
     for (const [key, _] of Object.entries(this.indices)) {
-      let value = cap.getAttributes()[key];
+      const value = cap.getAttributes()[key];
       if (value !== null && value !== undefined) {
         const index: CapabilityIndex = value;
 
@@ -46,7 +46,7 @@ export class CapabilitySet {
     this.capSet.delete(cap);
     if (hadCap) {
       for (const [key, eValue] of Object.entries(this.indices)) {
-        let value = cap.getAttributes()[key];
+        const value = cap.getAttributes()[key];
         if (value !== null && value !== undefined) {
           const index: Record<any, Set<BundleCapability>> = eValue;
 
@@ -91,10 +91,11 @@ export class CapabilitySet {
 
     if (sf.attribute !== null && sf.attribute !== undefined && sf.attribute === attrName) {
       return true;
+      // biome-ignore lint/style/noUselessElse: bad rule
     } else if (sf.operator === 'and') {
-      let list: any[] = sf.children || [];
+      const list: any[] = sf.children || [];
       for (let i = 0; i < list.length; i++) {
-        let sf2 = list[i] as FilterNode;
+        const sf2 = list[i] as FilterNode;
         if (sf2.attribute !== null && sf2.attribute !== undefined && sf2.attribute === attrName) {
           return true;
         }
@@ -122,7 +123,7 @@ export class CapabilitySet {
         case 'lte':
           return lhs === (rhs === 'true');
         default:
-          throw new Error('Unsupported comparison operator: ' + cmp);
+          throw new Error(`Unsupported comparison operator: ${cmp}`);
       }
     }
 
@@ -135,7 +136,7 @@ export class CapabilitySet {
         case 'lte':
           return lhs <= Number(rhs);
         default:
-          throw new Error('Unsupported comparison operator: ' + cmp);
+          throw new Error(`Unsupported comparison operator: ${cmp}`);
       }
     }
 
@@ -150,7 +151,7 @@ export class CapabilitySet {
         case 'lte':
           return evaluateSemver(lhs, 'lte', rhs);
         default:
-          throw new Error('Unsupported comparison operator: ' + cmp);
+          throw new Error(`Unsupported comparison operator: ${cmp}`);
       }
     }
 
@@ -161,12 +162,12 @@ export class CapabilitySet {
         case 'not':
           return lhs !== rhs;
         default:
-          throw new Error('Unsupported comparison operator: ' + cmp);
+          throw new Error(`Unsupported comparison operator: ${cmp}`);
       }
     }
 
     if (Array.isArray(lhs)) {
-      for (let a of lhs) {
+      for (const a of lhs) {
         if (CapabilitySet.compare(a, rhsUnknown, cmp)) {
           return true;
         }
@@ -191,7 +192,7 @@ export class CapabilitySet {
   }
 
   private static deindexCapability(index: CapabilityIndex, cap: BundleCapability, value: any): void {
-    let caps = index[value];
+    const caps = index[value];
 
     if (caps) {
       caps.delete(cap);
@@ -214,39 +215,53 @@ export class CapabilitySet {
     let matches: Set<Capability> = new Set<Capability>();
 
     if (sf.expression === '*') {
-      caps.forEach((c) => matches.add(c));
+      for (const c of caps) {
+        matches.add(c);
+      }
     } else if (sf.operator === 'eq' && sf.value === '*') {
-      caps.forEach((c) => matches.add(c));
+      for (const c of caps) {
+        matches.add(c);
+      }
     } else if (sf.operator === 'and') {
       const sfs: Array<FilterNode> = sf.children ?? [];
       for (let i = 0; caps.size > 0 && i < sfs.length; i++) {
         matches = this.matchCapSet(caps, sfs[i]);
+
+        // biome-ignore lint/style/noParameterAssign: we'll check this later
         caps = matches;
       }
     } else if (sf.operator === 'or') {
       const sfs: Array<FilterNode> = sf.children ?? [];
       for (let i = 0; i < sfs.length; i++) {
-        this.matchCapSet(caps, sfs[i]).forEach((c) => matches.add(c));
+        for (const c of this.matchCapSet(caps, sfs[i])) {
+          matches.add(c);
+        }
       }
     } else if (sf.operator === 'not') {
-      caps.forEach((c) => matches.add(c));
+      for (const c of caps) {
+        matches.add(c);
+      }
       const sfs: Array<FilterNode> = sf.children ?? [];
       for (let i = 0; i < sfs.length; i++) {
         const ms = this.matchCapSet(caps, sfs[i]);
-        ms.forEach((c) => matches.delete(c));
+        for (const c of ms) {
+          matches.delete(c);
+        }
       }
     } else {
       const index: Record<any, Set<BundleCapability>> = sf.attribute ? this.indices[sf.attribute] : {};
       if (sf.operator === 'eq' && index) {
         const existingCaps = sf.attribute ? index[sf.attribute] : new Set<BundleCapability>();
         if (existingCaps) {
-          existingCaps.forEach((c) => matches.add(c));
+          for (const c of existingCaps) {
+            matches.add(c);
+          }
           if (caps !== this.capSet) {
-            caps.forEach((c) => {
+            for (const c of caps) {
               if (!matches.has(c)) {
                 matches.delete(c);
               }
-            });
+            }
           }
         }
       } else {

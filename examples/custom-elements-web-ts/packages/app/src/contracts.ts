@@ -1,4 +1,4 @@
-import { MenuInfo } from '@custom-elements-web-ts/contract';
+import type { MenuInfo } from '@custom-elements-web-ts/contract';
 
 export interface Route {
   path: string;

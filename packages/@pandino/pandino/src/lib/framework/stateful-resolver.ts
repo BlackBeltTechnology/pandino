@@ -1,11 +1,11 @@
-import { BundleState, Logger, SYSTEM_BUNDLE_SYMBOLICNAME } from '@pandino/pandino-api';
-import { Pandino } from '../../pandino';
+import { type BundleState, type Logger, SYSTEM_BUNDLE_SYMBOLICNAME } from '@pandino/pandino-api';
+import type { Pandino } from '../../pandino';
 import { CapabilitySet } from './capability-set/capability-set';
-import { BundleRevisionImpl } from './bundle-revision-impl';
-import { BundleRequirementImpl } from './wiring/bundle-requirement-impl';
+import type { BundleRevisionImpl } from './bundle-revision-impl';
+import type { BundleRequirementImpl } from './wiring/bundle-requirement-impl';
 import { BundleWireImpl } from './wiring/bundle-wire-impl';
 import { BundleWiringImpl } from './bundle-wiring-impl';
-import { BundleImpl } from './bundle-impl';
+import type { BundleImpl } from './bundle-impl';
 import type { BundleWiring } from './bundle-wiring';
 import type { BundleRevision } from './bundle-revision';
 import type { ServiceRegistry } from './service-registry';

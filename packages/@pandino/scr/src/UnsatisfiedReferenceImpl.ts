@@ -1,4 +1,4 @@
-import { UnsatisfiedReference } from '@pandino/scr-api';
+import type { UnsatisfiedReference } from '@pandino/scr-api';
 
 export class UnsatisfiedReferenceImpl<S> implements UnsatisfiedReference {
   private readonly name: string;

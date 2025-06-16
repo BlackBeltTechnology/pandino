@@ -104,7 +104,9 @@ describe('Matchers', () => {
   });
 
   function testAll(matcher: Matcher, pairs: TestPair[]): void {
-    pairs.forEach(([className, assertion]) => testMatch(matcher, className, assertion));
+    for (const [className, assertion] of pairs) {
+      testMatch(matcher, className, assertion);
+    }
   }
 
   function testMatch(matcher: Matcher, className: string, assertion: boolean): void {

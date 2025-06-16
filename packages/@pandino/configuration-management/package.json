@@ -18,12 +18,7 @@
     "test:dev": "vitest",
     "tsc": "tsc"
   },
-  "keywords": [
-    "pandino",
-    "bundle",
-    "configuration",
-    "management"
-  ],
+  "keywords": ["pandino", "bundle", "configuration", "management"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "EPL-2.0",
   "homepage": "https://github.com/BlackBeltTechnology/pandino",
@@ -41,9 +36,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "devDependencies": {
     "@pandino/configuration-management-api": "workspace:^",
     "@pandino/filters": "workspace:^",

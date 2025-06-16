@@ -1,4 +1,4 @@
-import { Logger, BUNDLE_SYMBOLICNAME, BUNDLE_VERSION } from '@pandino/pandino-api';
+import { type Logger, BUNDLE_SYMBOLICNAME, BUNDLE_VERSION } from '@pandino/pandino-api';
 import type {
   Bundle,
   BundleContext,
@@ -18,9 +18,9 @@ import type {
   ServiceTrackerCustomizer,
   ServiceTracker,
 } from '@pandino/pandino-api';
-import { Pandino } from '../../pandino';
-import { BundleImpl } from './bundle-impl';
-import { ServiceReferenceImpl } from './service-reference-impl';
+import type { Pandino } from '../../pandino';
+import type { BundleImpl } from './bundle-impl';
+import type { ServiceReferenceImpl } from './service-reference-impl';
 import { ServiceObjectsImpl } from './service-objects-impl';
 import { BundleTrackerImpl } from './bundle-tracker-impl';
 import { ServiceTrackerImpl } from './service-tracker-impl';
@@ -123,7 +123,7 @@ export class BundleContextImpl implements BundleContext {
       const refs = this.getServiceReferences(identifier, undefined);
       return serviceUtilsImpl.getBestServiceReference(refs);
     } catch (ex) {
-      this.logger.error('BundleContextImpl: ' + ex);
+      this.logger.error(`BundleContextImpl: ${ex}`);
     }
     return undefined;
   }
@@ -178,7 +178,7 @@ export class BundleContextImpl implements BundleContext {
     this.valid = false;
   }
 
-  checkValidity(): void | never {
+  checkValidity(): undefined | never {
     if (this.valid) {
       switch (this.bundle.getState()) {
         case 'ACTIVE':

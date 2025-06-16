@@ -40,6 +40,6 @@ export class BundleWireImpl implements BundleWire {
   }
 
   public toString(): string {
-    return this.req + ' -> ' + '[' + this.provider + ']';
+    return `${this.req} -> [${this.provider}]`;
   }
 }

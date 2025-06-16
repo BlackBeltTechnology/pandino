@@ -1,4 +1,4 @@
-import { BundleActivator, BundleContext } from '@pandino/pandino-api';
+import type { BundleActivator, BundleContext } from '@pandino/pandino-api';
 
 export default class UMDBundle implements BundleActivator {
   async start(context: BundleContext): Promise<void> {

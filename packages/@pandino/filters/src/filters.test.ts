@@ -10,37 +10,65 @@ describe('filters', () => {
     });
 
     it('builds an equality filter', () => {
-      const out: FilterNode = { attribute: 'sn', operator: 'eq', value: 'Jones' };
+      const out: FilterNode = {
+        attribute: 'sn',
+        operator: 'eq',
+        value: 'Jones',
+      };
       expect(serializeFilter(out)).toEqual('(sn=Jones)');
     });
 
     it('builds an ends with filter', () => {
-      const out: FilterNode = { attribute: 'sn', operator: 'eq', value: '*Jones' };
+      const out: FilterNode = {
+        attribute: 'sn',
+        operator: 'eq',
+        value: '*Jones',
+      };
       expect(serializeFilter(out)).toEqual('(sn=*Jones)');
     });
 
     it('builds an starts with filter', () => {
-      const out: FilterNode = { attribute: 'sn', operator: 'eq', value: 'Jones*' };
+      const out: FilterNode = {
+        attribute: 'sn',
+        operator: 'eq',
+        value: 'Jones*',
+      };
       expect(serializeFilter(out)).toEqual('(sn=Jones*)');
     });
 
     it('builds a contains filter', () => {
-      const out: FilterNode = { attribute: 'sn', operator: 'eq', value: '*Jones*' };
+      const out: FilterNode = {
+        attribute: 'sn',
+        operator: 'eq',
+        value: '*Jones*',
+      };
       expect(serializeFilter(out)).toEqual('(sn=*Jones*)');
     });
 
     it('builds an less than or equal filter', () => {
-      const out: FilterNode = { attribute: 'sn', operator: 'lte', value: 'Smith' };
+      const out: FilterNode = {
+        attribute: 'sn',
+        operator: 'lte',
+        value: 'Smith',
+      };
       expect(serializeFilter(out)).toEqual('(sn<=Smith)');
     });
 
     it('builds an greater than or equal filter', () => {
-      const out: FilterNode = { attribute: 'sn', operator: 'gte', value: 'Smith' };
+      const out: FilterNode = {
+        attribute: 'sn',
+        operator: 'gte',
+        value: 'Smith',
+      };
       expect(serializeFilter(out)).toEqual('(sn>=Smith)');
     });
 
     it('converts number values to strings', () => {
-      const out: FilterNode = { attribute: 'age', operator: 'eq', value: '1000' };
+      const out: FilterNode = {
+        attribute: 'age',
+        operator: 'eq',
+        value: '1000',
+      };
       expect(serializeFilter(out)).toEqual('(age=1000)');
     });
   });
@@ -71,7 +99,10 @@ describe('filters', () => {
     });
 
     it('NOT filter', () => {
-      const out: FilterNode = { operator: 'not', children: [{ attribute: 'sn', operator: 'eq', value: 'Jensen' }] };
+      const out: FilterNode = {
+        operator: 'not',
+        children: [{ attribute: 'sn', operator: 'eq', value: 'Jensen' }],
+      };
 
       expect(serializeFilter(out)).toEqual('(!(sn=Jensen))');
     });

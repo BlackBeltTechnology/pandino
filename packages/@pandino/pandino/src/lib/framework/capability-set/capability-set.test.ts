@@ -8,7 +8,7 @@ import type { BundleCapability } from '../wiring/bundle-capability';
 import { BundleRevisionImpl } from '../bundle-revision-impl';
 import { BundleImpl } from '../bundle-impl';
 import { MuteLogger } from '../../../__mocks__/mute-logger';
-import { Pandino } from '../../../pandino';
+import type { Pandino } from '../../../pandino';
 import type { BundleRevision } from '../bundle-revision';
 
 describe('capability-set', () => {

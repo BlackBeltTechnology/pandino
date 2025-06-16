@@ -15,10 +15,6 @@ export class HiddenPageService implements Page {
 }
 
 export class HiddenPage extends HTMLElement {
-  constructor() {
-    super();
-  }
-
   connectedCallback() {
     this.innerHTML = `
         <h1>Super secret content!</h1>

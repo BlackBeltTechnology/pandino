@@ -27,7 +27,8 @@ export class UsageCountImpl implements UsageCount {
 
   incrementToPositiveValue(): number {
     if (this.count + 1 < 1) {
-      return (this.count = 1);
+      this.count = 1;
+      return this.count;
     }
     this.count++;
     return this.count;
@@ -35,7 +36,8 @@ export class UsageCountImpl implements UsageCount {
 
   incrementServiceObjectsCountToPositiveValue(): number {
     if (this.serviceObjectsCount <= 0) {
-      return (this.serviceObjectsCount = 1);
+      this.serviceObjectsCount = 1;
+      return this.serviceObjectsCount;
     }
     this.serviceObjectsCount++;
     return this.serviceObjectsCount;

@@ -9,7 +9,7 @@ import { TargetedPID } from './helper/targeted-pid';
 import { ConfigurationCache } from './configuration-cache';
 
 export class ConfigurationManager implements ServiceListener {
-  isSync: boolean = true;
+  isSync = true;
   private readonly context: BundleContext;
   private readonly logger: Logger;
   private readonly evaluateFilter: FilterEvaluator;
@@ -155,7 +155,7 @@ export class ConfigurationManager implements ServiceListener {
   }
 
   getConfiguration(pid: string): ConfigurationImpl | undefined {
-    let config = this.configurationCache.get(pid);
+    const config = this.configurationCache.get(pid);
     if (config) {
       this.logger.debug(`Found configuration ${pid} bound to ${config.getBundleLocation()}`);
 
@@ -166,14 +166,14 @@ export class ConfigurationManager implements ServiceListener {
 
   createConfiguration(pid: string, location?: string): ConfigurationImpl {
     let effectiveLocation = location;
-    let config = this.getConfiguration(pid);
+    const config = this.getConfiguration(pid);
     if (config) {
       return config;
     }
 
     const refs = this.managedReferences.get(pid);
 
-    if (refs && refs.length) {
+    if (refs?.length) {
       effectiveLocation = refs[0].getBundle()?.getLocation();
     }
 

@@ -1,4 +1,4 @@
-import { ConfigurationEvent } from './configuration-event';
+import type { ConfigurationEvent } from './configuration-event';
 
 /**
  * Listener for Configuration Events. When a ConfigurationEvent is fired, it is asynchronously delivered to all

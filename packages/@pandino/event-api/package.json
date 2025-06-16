@@ -16,13 +16,7 @@
     "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "tsc": "tsc"
   },
-  "keywords": [
-    "pandino",
-    "event",
-    "management",
-    "admin",
-    "api"
-  ],
+  "keywords": ["pandino", "event", "management", "admin", "api"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "EPL-2.0",
   "homepage": "https://github.com/BlackBeltTechnology/pandino",
@@ -40,9 +34,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "devDependencies": {
     "@pandino/pandino-api": "workspace:^",
     "dts-bundle-generator": "^9.5.1",

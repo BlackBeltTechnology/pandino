@@ -18,13 +18,7 @@
     "test:dev": "vitest",
     "tsc": "tsc"
   },
-  "keywords": [
-    "pandino",
-    "bundle",
-    "event",
-    "management",
-    "admin"
-  ],
+  "keywords": ["pandino", "bundle", "event", "management", "admin"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "EPL-2.0",
   "homepage": "https://github.com/BlackBeltTechnology/pandino",
@@ -42,9 +36,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "devDependencies": {
     "@pandino/event-api": "workspace:^",
     "@pandino/filters": "workspace:^",

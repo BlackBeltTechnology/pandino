@@ -44,15 +44,15 @@ export class BundleCapabilityImpl implements BundleCapability {
       }
     }
 
-    let mandatory: Set<string> = new Set<string>();
+    const mandatory: Set<string> = new Set<string>();
     value = this.dirs[MANDATORY_DIRECTIVE];
     if (value !== null && value !== undefined) {
       const names = parseDelimitedString(value, ',');
-      for (let name of names) {
-        if (this.attrs.hasOwnProperty(name)) {
+      for (const name of names) {
+        if (Object.prototype.hasOwnProperty.call(this.attrs, name)) {
           mandatory.add(name);
         } else {
-          throw new Error("Mandatory attribute '" + name + "' does not exist.");
+          throw new Error(`Mandatory attribute '${name}' does not exist.`);
         }
       }
     }
@@ -101,7 +101,7 @@ export class BundleCapabilityImpl implements BundleCapability {
     if (!this.revision) {
       return this.stringifyAttributes();
     }
-    return '[' + this.revision + '] ' + this.namespace + '; ' + this.stringifyAttributes();
+    return `[${this.revision}] ${this.namespace}; ${this.stringifyAttributes()}`;
   }
 
   private stringifyAttributes(): string {
@@ -126,7 +126,9 @@ export class BundleCapabilityImpl implements BundleCapability {
 
     let dirs: Record<string, any>;
     if (bundleCap.getDirectives()[SINGLETON_DIRECTIVE]) {
-      dirs = { [CAPABILITY_SINGLETON_DIRECTIVE]: bundleCap.getDirectives()[SINGLETON_DIRECTIVE] };
+      dirs = {
+        [CAPABILITY_SINGLETON_DIRECTIVE]: bundleCap.getDirectives()[SINGLETON_DIRECTIVE],
+      };
     } else {
       dirs = {};
     }

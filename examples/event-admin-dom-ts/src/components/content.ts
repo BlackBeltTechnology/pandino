@@ -1,17 +1,11 @@
-import {BundleContext, ServiceReference, ServiceRegistration} from "@pandino/pandino-api";
-import {
-  Event,
-  EVENT_ADMIN_INTERFACE_KEY,
-  EVENT_HANDLER_INTERFACE_KEY,
-  EventAdmin,
-  EventHandler
-} from "@pandino/event-api";
-import {TOPIC} from "./configuration-changed-event";
+import type { BundleContext, ServiceReference, ServiceRegistration } from '@pandino/pandino-api';
+import { type Event, EVENT_ADMIN_INTERFACE_KEY, EVENT_HANDLER_INTERFACE_KEY, type EventAdmin, type EventHandler } from '@pandino/event-api';
+import { TOPIC } from './configuration-changed-event';
 
 interface Entry {
-  birthDate: Date,
-  firstName: string,
-  lastName: string,
+  birthDate: Date;
+  firstName: string;
+  lastName: string;
 }
 
 type DateLocale = 'en-US' | 'hu-HU';
@@ -35,7 +29,7 @@ export class Content extends HTMLElement {
       lastName: 'Evil',
     },
     {
-      birthDate: new Date(1987, 11, 20 ),
+      birthDate: new Date(1987, 11, 20),
       firstName: 'Josh',
       lastName: 'Bertran',
     },
@@ -80,12 +74,16 @@ export class Content extends HTMLElement {
           </tr>
         </thead>
         <tbody>
-            ${this.data.map((d) => `
+            ${this.data
+              .map(
+                (d) => `
                 <tr>
                     <td>${formatter.format(d.birthDate)}</td>
                     <td>${d.lastName} ${d.firstName}</td>
                 </tr>
-            `).join('')}
+            `,
+              )
+              .join('')}
         </tbody>
       </table>
     `;

@@ -1,6 +1,6 @@
-import {BundleContext} from '@pandino/pandino-api';
-import {Content} from "./content";
-import {Configuration} from "./configuration";
+import type { BundleContext } from '@pandino/pandino-api';
+import { Content } from './content';
+import { Configuration } from './configuration';
 
 export class App extends HTMLElement {
   private readonly bundleContext: BundleContext;

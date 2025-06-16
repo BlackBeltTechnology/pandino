@@ -1,9 +1,9 @@
-import { Logger, BUNDLE_ACTIVATOR } from '@pandino/pandino-api';
+import { type Logger, BUNDLE_ACTIVATOR } from '@pandino/pandino-api';
 import type { Bundle, BundleActivator, BundleContext, BundleManifestHeaders, BundleState, ServiceReference } from '@pandino/pandino-api';
 import { evaluateSemver } from '@pandino/filters';
-import { Pandino } from '../../pandino';
+import type { Pandino } from '../../pandino';
 import { BundleRevisionImpl } from './bundle-revision-impl';
-import { BundleRevision } from './bundle-revision';
+import type { BundleRevision } from './bundle-revision';
 
 export class BundleImpl implements Bundle {
   private readonly id: number;
@@ -102,7 +102,7 @@ export class BundleImpl implements Bundle {
   }
 
   getUniqueIdentifier(): string {
-    return this.getSymbolicName() + '-' + this.getVersion().toString();
+    return `${this.getSymbolicName()}-${this.getVersion().toString()}`;
   }
 
   getActivator(): BundleActivator {
@@ -138,7 +138,7 @@ export class BundleImpl implements Bundle {
   }
 
   private createRevision(headers?: BundleManifestHeaders): BundleRevisionImpl {
-    const revision = new BundleRevisionImpl(this, this.getBundleId() + '.' + this.revisions.length, headers || this.headers);
+    const revision = new BundleRevisionImpl(this, `${this.getBundleId()}.${this.revisions.length}`, headers || this.headers);
 
     let bundleVersion = revision.getVersion();
     bundleVersion = !bundleVersion ? '0.0.0' : bundleVersion;
@@ -155,7 +155,7 @@ export class BundleImpl implements Bundle {
       }
     }
     if (collisionCandidates.length && this.installingBundle) {
-      throw new Error('Bundle symbolic name and version are not unique: ' + symName + ':' + bundleVersion);
+      throw new Error(`Bundle symbolic name and version are not unique: ${symName}:${bundleVersion}`);
     }
 
     return revision;

@@ -2,17 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { BUNDLE_ACTIVATIONPOLICY, BUNDLE_SYMBOLICNAME, BUNDLE_VERSION, PROVIDE_CAPABILITY, REQUIRE_CAPABILITY } from '@pandino/pandino-api';
 import type { ActivationPolicy, BundleManifestHeaders } from '@pandino/pandino-api';
 import { BundleRevisionImpl } from './bundle-revision-impl';
-import { BundleCapabilityImpl } from './wiring';
+import type { BundleCapabilityImpl } from './wiring';
 
 describe('BundleRevisionImpl', () => {
-  let mockConfig: Record<string, any> = {};
-  let mockFramework: any = {
+  const mockConfig: Record<string, any> = {};
+  const mockFramework: any = {
     getConfig: () => mockConfig,
   };
-  let mockBundle: any = {
+  const mockBundle: any = {
     getFramework: () => mockFramework,
   };
-  let mockId = 'test-id';
+  const mockId = 'test-id';
   const cap1 = 'test.capability;attr1=1;attr2=hello';
   const cap2 = 'other.capability;attr1=yayy';
   const req1 = 'test.requirement;attr1=2;attr2=something';
@@ -68,7 +68,10 @@ describe('BundleRevisionImpl', () => {
 
     const testCapability = caps.find((c) => c.getNamespace() === 'test.capability');
 
-    expect(testCapability.getAttributes()).toEqual({ attr1: '1', attr2: 'hello' });
+    expect(testCapability.getAttributes()).toEqual({
+      attr1: '1',
+      attr2: 'hello',
+    });
   });
 
   it('getCapabilities() with multiple capabilities', () => {
@@ -79,7 +82,10 @@ describe('BundleRevisionImpl', () => {
 
     const testCapability1 = caps.find((c) => c.getNamespace() === 'test.capability');
 
-    expect(testCapability1.getAttributes()).toEqual({ attr1: '1', attr2: 'hello' });
+    expect(testCapability1.getAttributes()).toEqual({
+      attr1: '1',
+      attr2: 'hello',
+    });
 
     const testCapability2 = caps.find((c) => c.getNamespace() === 'other.capability');
 
@@ -94,7 +100,10 @@ describe('BundleRevisionImpl', () => {
 
     const testCapability = caps.find((c) => c.getNamespace() === 'test.capability');
 
-    expect(testCapability.getAttributes()).toEqual({ attr1: '1', attr2: 'hello' });
+    expect(testCapability.getAttributes()).toEqual({
+      attr1: '1',
+      attr2: 'hello',
+    });
   });
 
   it('getCapabilities() filtered with multiple capabilities', () => {
@@ -116,7 +125,10 @@ describe('BundleRevisionImpl', () => {
 
     const testCapability = caps.find((c) => c.getNamespace() === 'test.capability');
 
-    expect(testCapability.getAttributes()).toEqual({ attr1: '1', attr2: 'hello' });
+    expect(testCapability.getAttributes()).toEqual({
+      attr1: '1',
+      attr2: 'hello',
+    });
   });
 
   it('getRequirements() for no requirements returns empty list', () => {
@@ -134,7 +146,10 @@ describe('BundleRevisionImpl', () => {
 
     const testRequirement = reqs.find((r) => r.getNamespace() === 'test.requirement');
 
-    expect(testRequirement.getAttributes()).toEqual({ attr1: '2', attr2: 'something' });
+    expect(testRequirement.getAttributes()).toEqual({
+      attr1: '2',
+      attr2: 'something',
+    });
   });
 
   it('getRequirements() with multiple getRequirements', () => {
@@ -145,7 +160,10 @@ describe('BundleRevisionImpl', () => {
 
     const testRequirement1 = reqs.find((r) => r.getNamespace() === 'test.requirement');
 
-    expect(testRequirement1.getAttributes()).toEqual({ attr1: '2', attr2: 'something' });
+    expect(testRequirement1.getAttributes()).toEqual({
+      attr1: '2',
+      attr2: 'something',
+    });
 
     const testRequirement2 = reqs.find((r) => r.getNamespace() === 'other.requirement');
 
@@ -160,7 +178,10 @@ describe('BundleRevisionImpl', () => {
 
     const testRequirement = reqs.find((r) => r.getNamespace() === 'test.requirement');
 
-    expect(testRequirement.getAttributes()).toEqual({ attr1: '2', attr2: 'something' });
+    expect(testRequirement.getAttributes()).toEqual({
+      attr1: '2',
+      attr2: 'something',
+    });
   });
 
   it('getRequirements() filtered with multiple getRequirements', () => {
@@ -182,7 +203,10 @@ describe('BundleRevisionImpl', () => {
 
     const testRequirement = reqs.find((r) => r.getNamespace() === 'test.requirement');
 
-    expect(testRequirement.getAttributes()).toEqual({ attr1: '2', attr2: 'something' });
+    expect(testRequirement.getAttributes()).toEqual({
+      attr1: '2',
+      attr2: 'something',
+    });
   });
 
   function createBundleRevision(

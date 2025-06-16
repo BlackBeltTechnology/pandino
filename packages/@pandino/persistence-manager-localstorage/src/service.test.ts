@@ -14,7 +14,10 @@ describe('InMemoryPersistenceManager', () => {
     return mockStorageValues[key];
   });
   const removeItemMock = vi.fn().mockImplementation((key: string) => delete mockStorageValues[key]);
-  const setItemMock = vi.fn().mockImplementation((key: string, value: any) => (mockStorageValues[key] = value));
+  const setItemMock = vi.fn().mockImplementation((key: string, value: any) => {
+    mockStorageValues[key] = value;
+    return mockStorageValues[key];
+  });
 
   beforeEach(() => {
     getItemMock.mockClear();

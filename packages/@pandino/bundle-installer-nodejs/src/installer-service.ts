@@ -62,7 +62,7 @@ export class InstallerService {
         recursive: false,
       },
       (eventType, filename) => {
-        if (filename && filename.endsWith('-manifest.json') && !this.processing.includes(filename)) {
+        if (filename?.endsWith('-manifest.json') && !this.processing.includes(filename)) {
           if (eventType === 'change' && !this.pathAndBundlePairs.has(filename)) {
             this.install(filename); // not awaiting on purpose
           } else if (eventType === 'rename' && this.pathAndBundlePairs.has(filename)) {
@@ -74,12 +74,12 @@ export class InstallerService {
   }
 
   stopWatch(): void {
-    if (!!this.watcher) {
+    if (this.watcher) {
       try {
         this.watcher.close();
         this.watcher = undefined;
         this.pathAndBundlePairs.clear();
-        this.logger.info(`Stopped watching.`);
+        this.logger.info('Stopped watching.');
       } catch (err) {
         this.logger.error(err);
       }
@@ -87,7 +87,9 @@ export class InstallerService {
   }
 
   private listAllManifests(): Array<string> {
-    const dirEntries = fs.readdirSync(this.deploymentRoot, { withFileTypes: true });
+    const dirEntries = fs.readdirSync(this.deploymentRoot, {
+      withFileTypes: true,
+    });
     return dirEntries.filter((de) => de.isFile() && de.name.endsWith('-manifest.json')).map((de) => de.name);
   }
 }

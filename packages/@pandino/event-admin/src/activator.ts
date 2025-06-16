@@ -5,7 +5,7 @@ import { EVENT_ADMIN_INTERFACE_KEY, EVENT_FACTORY_INTERFACE_KEY } from '@pandino
 import type { EventAdmin, EventFactory } from '@pandino/event-api';
 import { EventAdminImpl } from './event-admin-impl';
 import { EventFactoryImpl } from './event-factory-impl';
-import { AbstractAdapter, BundleEventAdapter, FrameworkEventAdapter, LogEventAdapter, ServiceEventAdapter } from './adapters';
+import { type AbstractAdapter, BundleEventAdapter, FrameworkEventAdapter, LogEventAdapter, ServiceEventAdapter } from './adapters';
 
 export class Activator implements BundleActivator {
   private eventAdminRegistration?: ServiceRegistration<EventAdmin>;
@@ -36,7 +36,9 @@ export class Activator implements BundleActivator {
   }
 
   async stop(context: BundleContext): Promise<void> {
-    this.adapters.forEach((adapter) => adapter.destroy(context));
+    for (const adapter of this.adapters) {
+      adapter.destroy(context);
+    }
     if (this.eventAdmin) {
       context.removeServiceListener(this.eventAdmin);
     }

@@ -2,7 +2,7 @@ import { describe, beforeEach, expect, it, vi } from 'vitest';
 import { BundleRequirementImpl } from './bundle-requirement-impl';
 import { BundleRevisionImpl } from '../bundle-revision-impl';
 import type { BundleRevision } from '../bundle-revision';
-import { BundleImpl } from '../bundle-impl';
+import type { BundleImpl } from '../bundle-impl';
 import { BUNDLE_SYMBOLICNAME, FILTER_DIRECTIVE } from '@pandino/pandino-api';
 import type { BundleCapability } from './bundle-capability';
 import { BundleCapabilityImpl } from './bundle-capability-impl';
@@ -11,7 +11,7 @@ describe('BundleRequirementImpl', () => {
   let revision: BundleRevision;
   let req: BundleRequirementImpl;
   let bundle: BundleImpl;
-  let mockGetConfig = vi.fn();
+  const mockGetConfig = vi.fn();
   const mockConfig = {};
 
   beforeEach(() => {

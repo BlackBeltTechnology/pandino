@@ -1,4 +1,4 @@
-import { Event } from './event';
+import type { Event } from './event';
 
 /**
  * The Event Admin service. Bundles wishing to publish events must obtain the Event Admin service and call one of the

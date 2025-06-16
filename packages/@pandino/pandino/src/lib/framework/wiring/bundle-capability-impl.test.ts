@@ -2,7 +2,7 @@ import { describe, beforeEach, expect, it, vi } from 'vitest';
 import { BundleCapabilityImpl } from './bundle-capability-impl';
 import type { BundleRevision } from '../bundle-revision';
 import { BundleRevisionImpl } from '../bundle-revision-impl';
-import { BundleImpl } from '../bundle-impl';
+import type { BundleImpl } from '../bundle-impl';
 import { MuteLogger } from '../../../__mocks__/mute-logger';
 import { Pandino } from '../../../pandino';
 import {
@@ -45,12 +45,12 @@ describe('BundleCapabilityImpl', () => {
   let bundle: BundleImpl;
   let revision: BundleRevision;
   let capability: BundleCapabilityImpl;
-  let dirs: Record<string, string> = {
+  const dirs: Record<string, string> = {
     directive1: 'content1',
     [MANDATORY_DIRECTIVE]: 'attr2,attr3',
     [USES_DIRECTIVE]: 'uses',
   };
-  let attrs: Record<string, any> = {
+  const attrs: Record<string, any> = {
     attr1: 111,
     attr2: 'yayy',
     attr3: true,

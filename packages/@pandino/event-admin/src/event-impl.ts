@@ -59,21 +59,21 @@ export class EventImpl implements Event {
   }
 
   private static validateTopicName(topic: string): void {
-    let chars: string[] = topic.split('');
+    const chars: string[] = topic.split('');
     const length = chars.length;
     if (length === 0) {
       throw new Error('empty topic');
     }
     for (let i = 0; i < length; i++) {
-      let ch = chars[i];
+      const ch = chars[i];
       if (ch === '/') {
         // Can't start or end with a '/' but anywhere else is okay
         if (i === 0 || i === length - 1) {
-          throw new Error('invalid topic: ' + topic);
+          throw new Error(`invalid topic: ${topic}`);
         }
         // Can't have "//" as that implies empty token
         if (chars[i - 1] === '/') {
-          throw new Error('invalid topic: ' + topic);
+          throw new Error(`invalid topic: ${topic}`);
         }
         continue;
       }
@@ -89,7 +89,7 @@ export class EventImpl implements Event {
       if (ch === '_' || ch === '-' || ch === '@') {
         continue;
       }
-      throw new Error('invalid topic: ' + topic);
+      throw new Error(`invalid topic: ${topic}`);
     }
   }
 }

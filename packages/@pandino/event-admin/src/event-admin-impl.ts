@@ -69,7 +69,7 @@ export class EventAdminImpl implements EventAdmin, ServiceListener {
     }
 
     if (service && !this.regs.find((reg) => reg.reference === ref)) {
-      let newReg: EventHandlerRegistrationInfo = {
+      const newReg: EventHandlerRegistrationInfo = {
         [EVENT_TOPIC]: props[EVENT_TOPIC],
         reference: ref,
         service,

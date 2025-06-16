@@ -34,10 +34,12 @@ class ResourceManager {
     this.logger.info('Adding Resource "express-list" to Express...');
     this.appExtractor(expressApp);
     expressApp.get('/list', (req, res) => {
-      res.send(JSON.stringify([
-        { id: 1, title: 'Test...' },
-        { id: 2, title: 'Hello!' },
-      ]));
+      res.send(
+        JSON.stringify([
+          { id: 1, title: 'Test...' },
+          { id: 2, title: 'Hello!' },
+        ]),
+      );
     });
   }
 }

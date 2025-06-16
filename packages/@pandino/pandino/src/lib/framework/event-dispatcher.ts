@@ -13,9 +13,9 @@ import type {
 import { evaluateFilter } from '@pandino/filters';
 import type { FilterNode } from '@pandino/filters';
 import { ListenerInfo } from './util/listener-info';
-import { BundleImpl } from './bundle-impl';
-import { BundleEventImpl } from './bundle-event-impl';
-import { FrameworkEventImpl } from './framework-event-impl';
+import type { BundleImpl } from './bundle-impl';
+import type { BundleEventImpl } from './bundle-event-impl';
+import type { FrameworkEventImpl } from './framework-event-impl';
 import { ServiceEventImpl } from './service-event-impl';
 import { CapabilitySet } from './capability-set/capability-set';
 import type { Capability } from './resource';
@@ -57,8 +57,8 @@ export class EventDispatcher {
     event: any,
     oldProps?: Record<string, any>,
   ): void {
-    for (let [_, listenerInfo] of listeners.entries()) {
-      for (let info of listenerInfo) {
+    for (const [_, listenerInfo] of listeners.entries()) {
+      for (const info of listenerInfo) {
         const bundle = info.getBundle();
         const listener = info.getListener();
         const filter = info.getFilter();
@@ -92,13 +92,13 @@ export class EventDispatcher {
       return;
     }
 
-    let matched = !filter || CapabilitySet.matches(event.getServiceReference() as unknown as Capability, filter);
+    const matched = !filter || CapabilitySet.matches(event.getServiceReference() as unknown as Capability, filter);
 
     if (matched) {
       listener.serviceChanged(event);
-    } else if (event.getType() == 'MODIFIED') {
+    } else if (event.getType() === 'MODIFIED') {
       if (!!filter && evaluateFilter(oldProps, filter)) {
-        let se = new ServiceEventImpl('MODIFIED_ENDMATCH', event.getServiceReference());
+        const se = new ServiceEventImpl('MODIFIED_ENDMATCH', event.getServiceReference());
         if (listener.isSync) {
           listener.serviceChanged(se);
         } else {
@@ -157,7 +157,7 @@ export class EventDispatcher {
     } else if (type === 'SERVICE') {
       listeners = this.svcListeners;
     } else {
-      throw new Error('Unknown listener: ' + type);
+      throw new Error(`Unknown listener: ${type}`);
     }
 
     const info: ListenerInfo = new ListenerInfo(bc.getBundle()!, bc, listener, undefined, filter);
@@ -188,14 +188,14 @@ export class EventDispatcher {
     } else if (type === 'SERVICE') {
       listeners = this.svcListeners;
     } else {
-      throw new Error('Unknown listener: ' + type);
+      throw new Error(`Unknown listener: ${type}`);
     }
 
     // Try to find the instance in our list.
-    let idx: number = -1;
-    for (let [bc, infos] of listeners.entries()) {
+    let idx = -1;
+    for (const [bc, infos] of listeners.entries()) {
       for (let i = 0; i < infos.length; i++) {
-        let info: ListenerInfo = infos[i];
+        const info: ListenerInfo = infos[i];
         if (info.getBundleContext().equals(bc) && info.getListener() === listener) {
           idx = i;
           break;
@@ -276,7 +276,7 @@ export class EventDispatcher {
     idx: number,
     info: ListenerInfo,
   ): Map<BundleContext, Array<ListenerInfo>> {
-    let copy: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(listeners);
+    const copy: Map<BundleContext, Array<ListenerInfo>> = new Map<BundleContext, Array<ListenerInfo>>(listeners);
     let infos: Array<ListenerInfo> | undefined = copy.get(info.getBundleContext());
     copy.delete(info.getBundleContext());
     if (Array.isArray(infos)) {

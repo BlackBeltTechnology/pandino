@@ -4,10 +4,10 @@ import { ServiceReferenceImpl } from './service-reference-impl';
 describe('ServiceReferenceImpl', () => {
   const mockGetProperty = vi.fn();
   let serviceReference: ServiceReferenceImpl;
-  let mockServiceRegistrationImpl: any = {
+  const mockServiceRegistrationImpl: any = {
     getProperty: mockGetProperty,
   };
-  let mockBundle: any = vi.fn(() => ({}));
+  const mockBundle: any = vi.fn(() => ({}));
 
   beforeEach(() => {
     mockGetProperty.mockClear();

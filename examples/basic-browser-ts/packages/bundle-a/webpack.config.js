@@ -30,7 +30,5 @@ module.exports = {
     umdNamedDefine: true,
     path: path.resolve(__dirname, 'dist'),
   },
-  plugins: [
-    new GenerateManifestPlugin(),
-  ],
+  plugins: [new GenerateManifestPlugin()],
 };

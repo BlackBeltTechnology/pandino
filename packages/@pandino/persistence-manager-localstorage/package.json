@@ -41,9 +41,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "devDependencies": {
     "@pandino/pandino-api": "workspace:^",
     "@pandino/persistence-manager-api": "workspace:^",

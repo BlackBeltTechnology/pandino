@@ -18,12 +18,8 @@ export class DashboardService implements Page {
 }
 
 export class DashboardPage extends HTMLElement {
-  constructor() {
-    super();
-  }
-
   connectedCallback() {
-    this.innerHTML = `<h1>Dashboard</h1><p>Content from the Dashboard, yayy!</p>`;
+    this.innerHTML = '<h1>Dashboard</h1><p>Content from the Dashboard, yayy!</p>';
   }
 }
 

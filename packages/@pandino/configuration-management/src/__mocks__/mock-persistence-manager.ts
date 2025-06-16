@@ -6,9 +6,9 @@ export class MockPersistenceManager implements PersistenceManager {
 
   constructor(json: string) {
     const parsed = JSON.parse(json || '{}');
-    Object.keys(parsed).forEach((key: string) => {
+    for (const key of Object.keys(parsed)) {
       this.map.set(key, parsed[key]);
-    });
+    }
   }
 
   delete(pid: string): void {
@@ -32,7 +32,7 @@ export class MockPersistenceManager implements PersistenceManager {
   }
 
   dump(): string {
-    let output: any = {};
+    const output: any = {};
     this.map.forEach((value: ServiceProperties, key: string) => {
       output[key] = value;
     });

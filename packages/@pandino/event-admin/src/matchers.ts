@@ -1,6 +1,7 @@
 import { ClassMatcher, MatcherAll, PackageMatcher, SEP_PCK, SEP_TOPIC, SubPackageMatcher } from './matcher';
 import type { Matcher } from './matcher';
 
+// biome-ignore lint/complexity/noStaticOnlyClass: this is fine
 export class Matchers {
   static createEventTopicMatchers(config: string[] = []): Matcher[] {
     const list: Matcher[] = [];

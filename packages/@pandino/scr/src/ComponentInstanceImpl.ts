@@ -1,7 +1,9 @@
-import { ComponentInstance } from '@pandino/scr-api';
+import type { ComponentInstance } from '@pandino/scr-api';
 
 export class ComponentInstanceImpl<S> implements ComponentInstance<S> {
-  private readonly clazz: new (...args: any[]) => S;
+  private readonly clazz: new (
+    ...args: any[]
+  ) => S;
   private readonly instance: S;
 
   constructor(clazz: new (...args: any[]) => S) {

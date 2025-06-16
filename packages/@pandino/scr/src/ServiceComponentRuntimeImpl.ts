@@ -2,16 +2,16 @@ import type { BundleContext, Logger, ServiceRegistration, ServiceUtils } from '@
 import { SERVICE_PID } from '@pandino/pandino-api';
 import {
   CONFIGURATION_LISTENER_INTERFACE_KEY,
-  ConfigurationAdmin,
-  ConfigurationListener,
+  type ConfigurationAdmin,
+  type ConfigurationListener,
   MANAGED_SERVICE_INTERFACE_KEY,
 } from '@pandino/configuration-management-api';
 import {
   $$PANDINO_META,
   COMPONENT_KEY_CONFIGURATION_PID,
   COMPONENT_KEY_CONFIGURATION_POLICY,
-  ComponentConfiguration,
-  InternalMetaData,
+  type ComponentConfiguration,
+  type InternalMetaData,
 } from '@pandino/scr-api';
 import type { ServiceComponentRuntime } from './ServiceComponentRuntime';
 import { ComponentConfigurationImpl } from './ComponentConfigurationImpl';

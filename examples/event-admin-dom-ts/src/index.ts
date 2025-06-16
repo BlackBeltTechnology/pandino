@@ -1,6 +1,6 @@
 import Pandino from '@pandino/pandino';
 import loaderConfiguration from '@pandino/loader-configuration-dom';
-import {App} from './components/app';
+import { App } from './components/app';
 
 window.addEventListener('DOMContentLoaded', async () => {
   const pandino = new Pandino({
@@ -17,5 +17,4 @@ window.addEventListener('DOMContentLoaded', async () => {
   const divApp = document.getElementById('app');
   const app = new App(pandino.getBundleContext());
   divApp.appendChild(app);
-
 });

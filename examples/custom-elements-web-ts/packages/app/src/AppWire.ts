@@ -121,7 +121,7 @@ export class AppWire extends HTMLElement {
       if (hash.startsWith('#')) {
         hash = hash.substring(1);
         if (!hash.startsWith('/')) {
-          return '/' + hash;
+          return `/${hash}`;
         }
       }
       return hash;

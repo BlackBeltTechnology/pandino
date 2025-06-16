@@ -1,5 +1,5 @@
 import type { Bundle, BundleReference } from '../bundle';
-import { ServiceProperties } from './service-properties';
+import type { ServiceProperties } from './service-properties';
 
 /**
  * A reference to a service.

@@ -1,5 +1,5 @@
-import { BundleActivator, BundleContext } from '@pandino/pandino-api';
-import { STRING_INVERTER, StringInverter } from './string-inverter';
+import type { BundleActivator, BundleContext } from '@pandino/pandino-api';
+import { STRING_INVERTER, type StringInverter } from './string-inverter';
 import { stringInverterImpl } from './string-inverter-impl';
 
 export class BundleBActivator implements BundleActivator {

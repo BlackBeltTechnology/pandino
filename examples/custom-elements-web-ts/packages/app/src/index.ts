@@ -12,9 +12,7 @@ const pandino = new Pandino({
 await pandino.init();
 await pandino.start();
 
-await pandino
-  .getBundleContext()
-  .installBundle('./bundle-installer-dom-manifest.json');
+await pandino.getBundleContext().installBundle('./bundle-installer-dom-manifest.json');
 
 pandino.getBundleContext().registerService<Page>(PAGE_INTERFACE_KEY, new DashboardService());
 

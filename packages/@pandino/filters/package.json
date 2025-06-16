@@ -18,13 +18,7 @@
     "test:dev": "vitest",
     "tsc": "tsc"
   },
-  "keywords": [
-    "pandino",
-    "filters",
-    "filter",
-    "parser",
-    "evaluator"
-  ],
+  "keywords": ["pandino", "filters", "filter", "parser", "evaluator"],
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "license": "EPL-2.0",
   "homepage": "https://github.com/BlackBeltTechnology/pandino",
@@ -42,9 +36,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "devDependencies": {
     "dts-bundle-generator": "^9.5.1",
     "rimraf": "^5.0.10",

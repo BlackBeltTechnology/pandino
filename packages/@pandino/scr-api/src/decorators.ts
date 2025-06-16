@@ -23,7 +23,7 @@ import type { InternalMetaData, InternalReferenceMetaData } from './internal-int
 import { decoratedQueue } from './state';
 
 export function Component(props: ComponentProps) {
-  return function <T extends new (...args: any[]) => any>(target: T): T {
+  return <T extends new (...args: any[]) => any>(target: T): T => {
     const originalConstructor = target;
 
     function modifiedConstructor(...args: any[]) {
@@ -36,7 +36,7 @@ export function Component(props: ComponentProps) {
 
     modifiedConstructor.prototype = originalConstructor.prototype;
 
-    let internalMeta = getOrInitInternalMetaData(modifiedConstructor.prototype);
+    const internalMeta = getOrInitInternalMetaData(modifiedConstructor.prototype);
 
     internalMeta[COMPONENT_KEY_NAME] = props.name;
     internalMeta[COMPONENT_KEY_SERVICE] =
@@ -62,7 +62,7 @@ export function Component(props: ComponentProps) {
  * @constructor
  */
 export function Reference(props: ReferenceProps) {
-  return function (target: any, key: string | symbol) {
+  return (target: any, key: string | symbol) => {
     const internalMeta = getOrInitInternalMetaData(target);
 
     const referenceMetaData: InternalReferenceMetaData = {
@@ -99,7 +99,8 @@ export function Reference(props: ReferenceProps) {
  * @constructor
  */
 export function Activate() {
-  return function (target: Object, key: string | symbol, descriptor: PropertyDescriptor) {
+  // biome-ignore lint/complexity/noBannedTypes: Object is fine here
+  return (target: Object, key: string | symbol, descriptor: PropertyDescriptor) => {
     const internalMeta = getOrInitInternalMetaData(target);
     const original = descriptor.value;
 
@@ -121,7 +122,8 @@ export function Activate() {
  * @constructor
  */
 export function Deactivate() {
-  return function (target: Object, key: string | symbol, descriptor: PropertyDescriptor) {
+  // biome-ignore lint/complexity/noBannedTypes: Object is fine here
+  return (target: Object, key: string | symbol, descriptor: PropertyDescriptor) => {
     const internalMeta = getOrInitInternalMetaData(target);
     const original = descriptor.value;
 
@@ -145,7 +147,8 @@ export function Deactivate() {
  * @constructor
  */
 export function Modified() {
-  return function (target: Object, key: string | symbol, descriptor: PropertyDescriptor) {
+  // biome-ignore lint/complexity/noBannedTypes: Object is fine here
+  return (target: Object, key: string | symbol, descriptor: PropertyDescriptor) => {
     const internalMeta = getOrInitInternalMetaData(target);
     const original = descriptor.value;
 

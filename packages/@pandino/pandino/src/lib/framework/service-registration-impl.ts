@@ -1,8 +1,8 @@
 import { OBJECTCLASS, SCOPE_SINGLETON, SERVICE_BUNDLEID, SERVICE_ID, SERVICE_SCOPE, SCOPE_BUNDLE, SCOPE_PROTOTYPE } from '@pandino/pandino-api';
 import type { Bundle, ServiceProperties, ServiceReference, ServiceRegistration, ServiceFactory } from '@pandino/pandino-api';
 import { ServiceReferenceImpl } from './service-reference-impl';
-import { ServiceRegistry } from './service-registry';
-import { ServiceRegistryImpl } from './service-registry-impl';
+import type { ServiceRegistry } from './service-registry';
+import type { ServiceRegistryImpl } from './service-registry-impl';
 
 export class ServiceRegistrationImpl implements ServiceRegistration<any> {
   private readonly registry: ServiceRegistry;
@@ -60,17 +60,16 @@ export class ServiceRegistrationImpl implements ServiceRegistration<any> {
 
   getReference(): ServiceReference<any> {
     if (!this.isValid()) {
-      throw new Error('The service registration is no longer valid for class(es): ' + JSON.stringify(this.classes));
+      throw new Error(`The service registration is no longer valid for class(es): ${JSON.stringify(this.classes)}`);
     }
     return this.ref;
   }
 
   setProperties(properties: ServiceProperties): void {
-    let oldProps: ServiceProperties | undefined;
     if (!this.isValid()) {
-      throw new Error('The service registration is no longer valid for class(es): ' + JSON.stringify(this.classes));
+      throw new Error(`The service registration is no longer valid for class(es): ${JSON.stringify(this.classes)}`);
     }
-    oldProps = this.propMap;
+    const oldProps: ServiceProperties | undefined = this.propMap;
     this.initializeProperties(properties);
     this.registry.servicePropertiesModified(this, { ...oldProps });
   }

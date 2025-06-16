@@ -6,7 +6,7 @@ export default class AboutActivator {
   async start(context) {
     this.reg = context.registerService('app.feature', new FeatureProvider(), {
       featureName: 'about',
-    })
+    });
 
     return Promise.resolve();
   }
@@ -29,7 +29,7 @@ class FeatureProvider {
   getMenuInfo() {
     return {
       label: 'About',
-      path: '/about'
+      path: '/about',
     };
   }
 }

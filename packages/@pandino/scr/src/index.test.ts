@@ -12,12 +12,12 @@ import {
   PROVIDE_CAPABILITY,
   REQUIRE_CAPABILITY,
   SERVICE_PID,
-  ServiceProperties,
+  type ServiceProperties,
 } from '@pandino/pandino-api';
 import type { Bundle, BundleContext, BundleImporter, BundleManifestHeaders, FrameworkConfigMap } from '@pandino/pandino-api';
 import PMActivator from '@pandino/persistence-manager-memory';
 import CMActivator from '@pandino/configuration-management';
-import { ComponentContext, Deactivate, Modified } from '@pandino/scr-api';
+import { type ComponentContext, Deactivate, Modified } from '@pandino/scr-api';
 import { Activate, Component } from '@pandino/scr-api';
 import type { ConfigurationAdmin } from '@pandino/configuration-management-api';
 import { CONFIG_ADMIN_INTERFACE_KEY } from '@pandino/configuration-management-api';
@@ -127,7 +127,11 @@ describe('SCR', () => {
 
     expect(pandinoContext.getServiceReference(CMP_ONE_KEY)).toBeUndefined();
 
-    @Component({ name: 'test-comp-one-impl', service: CMP_ONE_KEY, configurationPolicy: 'REQUIRE' })
+    @Component({
+      name: 'test-comp-one-impl',
+      service: CMP_ONE_KEY,
+      configurationPolicy: 'REQUIRE',
+    })
     class OneImpl implements CmpOne {
       hello(inp: string): string {
         return inp.toUpperCase();
@@ -151,7 +155,11 @@ describe('SCR', () => {
 
     expect(pandinoContext.getServiceReference(CMP_ONE_KEY)).toBeUndefined();
 
-    @Component({ name: 'test-comp-one-impl', service: CMP_ONE_KEY, configurationPolicy: 'REQUIRE' })
+    @Component({
+      name: 'test-comp-one-impl',
+      service: CMP_ONE_KEY,
+      configurationPolicy: 'REQUIRE',
+    })
     class OneImpl implements CmpOne {
       hello(inp: string): string {
         return inp.toUpperCase();
@@ -175,7 +183,11 @@ describe('SCR', () => {
 
     expect(pandinoContext.getServiceReference(CMP_ONE_KEY)).toBeUndefined();
 
-    @Component({ name: 'test-comp-one-impl', service: CMP_ONE_KEY, configurationPid: pid })
+    @Component({
+      name: 'test-comp-one-impl',
+      service: CMP_ONE_KEY,
+      configurationPid: pid,
+    })
     class OneImpl implements CmpOne {
       hello(inp: string): string {
         return inp.toUpperCase();
@@ -195,7 +207,11 @@ describe('SCR', () => {
     let bndCtx: BundleContext | undefined;
     let props: ServiceProperties | undefined;
 
-    @Component({ name: 'test-comp-one-impl', service: CMP_ONE_KEY, property: { xOne: 1, xTwo: false } })
+    @Component({
+      name: 'test-comp-one-impl',
+      service: CMP_ONE_KEY,
+      property: { xOne: 1, xTwo: false },
+    })
     class OneImpl implements CmpOne {
       hello(inp: string): string {
         return inp.toUpperCase();
@@ -229,7 +245,11 @@ describe('SCR', () => {
     const deActivateSpy = vi.fn();
     let cmpCtx: ComponentContext<any> | undefined;
 
-    @Component({ name: 'test-comp-one-impl', service: CMP_ONE_KEY, property: { xOne: 1, xTwo: false } })
+    @Component({
+      name: 'test-comp-one-impl',
+      service: CMP_ONE_KEY,
+      property: { xOne: 1, xTwo: false },
+    })
     class OneImpl implements CmpOne {
       hello(inp: string): string {
         return inp.toUpperCase();
@@ -263,7 +283,12 @@ describe('SCR', () => {
       yolo: 'hello',
     });
 
-    @Component({ name: 'test-comp-one-impl', configurationPolicy: 'REQUIRE', service: CMP_ONE_KEY, configurationPid: pid })
+    @Component({
+      name: 'test-comp-one-impl',
+      configurationPolicy: 'REQUIRE',
+      service: CMP_ONE_KEY,
+      configurationPid: pid,
+    })
     class OneImpl implements CmpOne {
       hello(inp: string): string {
         return inp.toUpperCase();
@@ -302,7 +327,11 @@ describe('SCR', () => {
       yolo: 'hello',
     });
 
-    @Component({ name: 'test-comp-one-impl', service: CMP_ONE_KEY, configurationPid: pid })
+    @Component({
+      name: 'test-comp-one-impl',
+      service: CMP_ONE_KEY,
+      configurationPid: pid,
+    })
     class OneImpl implements CmpOne {
       hello(inp: string): string {
         return inp.toUpperCase();
@@ -385,7 +414,11 @@ describe('SCR', () => {
       yolo: 'hello',
     });
 
-    @Component({ name: 'test-comp-one-impl', service: CMP_ONE_KEY, configurationPolicy: 'IGNORE' })
+    @Component({
+      name: 'test-comp-one-impl',
+      service: CMP_ONE_KEY,
+      configurationPolicy: 'IGNORE',
+    })
     class OneImpl implements CmpOne {
       hello(inp: string): string {
         return inp.toUpperCase();
@@ -411,6 +444,60 @@ describe('SCR', () => {
     config.delete();
 
     expect(modifiedSpy).toHaveBeenCalledTimes(0);
+  });
+
+  it('should register component with multiple service interfaces', async () => {
+    await prepareSCR(pandinoContext);
+
+    @Component({
+      name: 'multi-service-impl',
+      service: [CMP_ONE_KEY, CMP_TWO_KEY],
+    })
+    class MultiImpl implements CmpOne, CmpTwo {
+      hello(inp: string): string {
+        return inp.toUpperCase();
+      }
+
+      bello(inp: string): number {
+        return inp.length;
+      }
+    }
+
+    const refOne = pandinoContext.getServiceReference<CmpOne>(CMP_ONE_KEY);
+    const refTwo = pandinoContext.getServiceReference<CmpTwo>(CMP_TWO_KEY);
+
+    expect(refOne).toBeDefined();
+    expect(refTwo).toBeDefined();
+
+    const serviceOne = pandinoContext.getService(refOne);
+    const serviceTwo = pandinoContext.getService(refTwo);
+
+    expect(serviceOne.hello('test')).toBe('TEST');
+    expect(serviceTwo.bello('test')).toBe(4);
+  });
+
+  it('should activate component immediately when immediate=true', async () => {
+    await prepareSCR(pandinoContext);
+    const activateSpy = vi.fn();
+
+    @Component({
+      name: 'immediate-comp',
+      service: CMP_ONE_KEY,
+      immediate: true,
+    })
+    class ImmediateImpl implements CmpOne {
+      hello(inp: string): string {
+        return inp.toUpperCase();
+      }
+
+      @Activate()
+      onActivate() {
+        activateSpy();
+      }
+    }
+
+    // Should be called immediately without getting service reference
+    expect(activateSpy).toHaveBeenCalledTimes(1);
   });
 
   async function installDepBundles(ctx: BundleContext): Promise<Bundle[]> {

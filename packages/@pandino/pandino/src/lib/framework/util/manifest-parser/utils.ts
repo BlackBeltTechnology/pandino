@@ -1,8 +1,4 @@
-export const parseDelimitedString = (value: string, delim: string, trim = true): string[] => {
-  if (!value) {
-    value = '';
-  }
-
+export const parseDelimitedString = (value?: string, delim?: string, trim = true): string[] => {
   const list: string[] = [];
 
   const CHAR = 1;
@@ -15,12 +11,12 @@ export const parseDelimitedString = (value: string, delim: string, trim = true):
   let expecting = CHAR | DELIMITER | STARTQUOTE;
 
   let isEscaped = false;
-  for (let i = 0; i < value.length; i++) {
-    const c = value.charAt(i);
+  for (let i = 0; i < (value?.length ?? 0); i++) {
+    const c = (value ?? '').charAt(i);
 
-    const isDelimiter = delim.indexOf(c) >= 0;
+    const isDelimiter = delim ? delim.indexOf(c) >= 0 : false;
 
-    if (!isEscaped && c == '\\') {
+    if (!isEscaped && c === '\\') {
       isEscaped = true;
       continue;
     }
@@ -35,16 +31,16 @@ export const parseDelimitedString = (value: string, delim: string, trim = true):
       }
       sb = '';
       expecting = CHAR | DELIMITER | STARTQUOTE;
-    } else if (c == '"' && (expecting & STARTQUOTE) > 0) {
+    } else if (c === '"' && (expecting & STARTQUOTE) > 0) {
       sb += c;
       expecting = CHAR | ENDQUOTE;
-    } else if (c == '"' && (expecting & ENDQUOTE) > 0) {
+    } else if (c === '"' && (expecting & ENDQUOTE) > 0) {
       sb += c;
       expecting = CHAR | STARTQUOTE | DELIMITER;
     } else if ((expecting & CHAR) > 0) {
       sb += c;
     } else {
-      throw new Error('Invalid delimited string: ' + value);
+      throw new Error(`Invalid delimited string: ${value}`);
     }
 
     isEscaped = false;
