@@ -3,7 +3,7 @@
   "version": "0.8.31",
   "description": "Bundle loading configuration for the DOM",
   "module": "./dist/@pandino/loader-configuration-dom.mjs",
-  "types": "dist/@pandino/loader-configuration-dom.d.ts",
+  "types": "dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "build": "rimraf dist && tsc && vite build",
     "tsc": "tsc"
   },
   "keywords": ["pandino", "loader", "configuration", "dom"],
@@ -36,9 +36,9 @@
   "devDependencies": {
     "@pandino/pandino-api": "workspace:^",
     "@pandino/rollup-plugin-generate-manifest": "workspace:^",
-    "dts-bundle-generator": "^9.5.1",
     "rimraf": "^5.0.10",
     "typescript": "^5.6.3",
-    "vite": "^5.4.10"
+    "vite": "^5.4.10",
+    "vite-plugin-dts": "^4.5.4"
   }
 }

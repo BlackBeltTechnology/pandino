@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
+import dts from 'vite-plugin-dts';
 import generateManifest from '@pandino/rollup-plugin-generate-manifest';
 // @ts-ignore
 import packageJson from './package.json';
@@ -37,5 +38,5 @@ export default defineConfig(({ mode }) => ({
       fileName: (format) => fileName[format],
     },
   },
-  plugins: [generateManifest()],
+  plugins: [generateManifest(), dts()],
 }));

@@ -3,7 +3,7 @@
   "version": "0.8.31",
   "description": "React helpers and hooks for applications using Pandino",
   "module": "./dist/@pandino/react-hooks.mjs",
-  "types": "dist/@pandino/react-hooks.d.ts",
+  "types": "dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "build": "rimraf dist && tsc && vite build",
     "test": "vitest run",
     "test:dev": "vitest",
     "tsc": "tsc"
@@ -41,12 +41,12 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^14.3.1",
     "@types/react": "^18.3.12",
-    "dts-bundle-generator": "^9.5.1",
     "jsdom": "^26.1.0",
     "react": "^18.3.1",
     "rimraf": "^5.0.10",
     "typescript": "^5.6.3",
     "vite": "^5.4.10",
+    "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.1.1"
   }
 }

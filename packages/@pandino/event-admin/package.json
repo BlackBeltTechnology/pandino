@@ -4,7 +4,7 @@
   "description": "Reference implementation of the Pandino Event Admin API",
   "main": "./dist/@pandino/event-admin.cjs",
   "module": "./dist/@pandino/event-admin.mjs",
-  "types": "dist/@pandino/event-admin.d.ts",
+  "types": "dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
@@ -13,7 +13,7 @@
     }
   },
   "scripts": {
-    "build": "rimraf dist && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "build": "rimraf dist && tsc && vite build",
     "test": "vitest run",
     "test:dev": "vitest",
     "tsc": "tsc"
@@ -43,11 +43,11 @@
     "@pandino/log-api": "workspace:^",
     "@pandino/pandino-api": "workspace:^",
     "@pandino/rollup-plugin-generate-manifest": "workspace:^",
-    "dts-bundle-generator": "^9.5.1",
     "rimraf": "^5.0.10",
     "typescript": "^5.6.3",
     "vite": "^5.4.10",
-    "vitest": "^2.1.3"
+    "vitest": "^2.1.3",
+    "vite-plugin-dts": "^4.5.4"
   },
   "pandino": {
     "manifest": {
