@@ -12,3 +12,4 @@ export * from './bundle-state';
 export * from './bundle-tracker';
 export * from './bundle-tracker-customizer';
 export * from './bundle-type';
+export * from './install-self';

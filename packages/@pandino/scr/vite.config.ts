@@ -39,4 +39,10 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [generateManifest(), dts()],
+  define: {
+    'import.meta.env.VITE_APP_NAME': JSON.stringify(packageJson.name),
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(packageJson.version),
+    'import.meta.env.VITE_REQUIRE_CAPABILITY': JSON.stringify(packageJson.pandino.manifest["Require-Capability"]),
+    'import.meta.env.VITE_PROVIDE_CAPABILITY': JSON.stringify(packageJson.pandino.manifest["Provide-Capability"]),
+  },
 }));
