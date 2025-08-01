@@ -137,8 +137,10 @@ jobs:
         if: steps.check-tag.outputs.triggered-by-tag == 'true'
         run: |
           echo "Publishing packages for tag: ${{ steps.check-tag.outputs.tag }}"
-          pnpm --filter "@pandino/pandino" publish --access public --no-git-checks
-          pnpm --filter "@pandino/react-hooks" publish --access public --no-git-checks
+
+          # Publish packages using pnpm recursive publish
+          # This will handle workspace: dependencies correctly
+          pnpm publish -r --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_OSS_AUTOMATION_TOKEN }}
 
