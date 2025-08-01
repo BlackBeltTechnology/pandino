@@ -1,55 +1,90 @@
-# Contributing to Pandino
+# 🤝 Contributing to Pandino
 
-## CMDs
+We welcome contributions! Here's how to get started quickly.
+
+## 🚀 Quick Setup
+
+```bash
+# Clone and setup
+git clone https://github.com/BlackBeltTechnology/pandino.git
+cd pandino
+pnpm install
+
+# Build all packages
+pnpm build
+
+# Run tests
+pnpm test
+```
+
+## 📋 Development Workflow
+
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+3. **Make** your changes following our [coding standards](#-coding-standards)
+4. **Test** your changes: `pnpm test`
+5. **Commit** with conventional commits: `feat: add amazing feature`
+6. **Push** and create a **Pull Request**
+
+## 🎯 What We Accept
+
+| Type | Examples |
+|------|----------|
+| 🐛 **Bug fixes** | Fix service registration race conditions |
+| ✨ **Features** | New built-in services, bundle lifecycle improvements |
+| 📚 **Documentation** | README improvements, code examples |
+| 🔧 **Tooling** | Build improvements, test utilities |
+| ⚡ **Performance** | Bundle startup optimizations |
+
+## 📝 Coding Standards
+
+- **Tests required** - New features need unit tests
+- **Conventional commits** - Use `feat:`, `fix:`, `docs:`, etc.
+- **Code linter** - We use OXC (runs automatically)
+- **Code formatting** - We use Biome (runs automatically)
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Test specific package
+pnpm --filter @pandino/pandino test
+```
+
+## 📦 Project Structure
 
 ```
-# Install deps:
-npm i
-
-# Format code:
-npm run format
-
-# Build all packages (excluding example project):
-npm run build
-
-# Build single package, e.g.:
-npm run build --workspace @pandino/pandino
+packages/
+├── pandino/          # Core framework
+├── react-hooks/      # React integration
+└── example/          # Demo application
 ```
 
-## Key Architectural Decisions
+## 🐛 Bug Reports
 
-- Pandino is built on top of TypeScript, and TS support will always be a given for all first party packages
-- Supported platforms are: Browsers and NodeJS
-- Service decoupling is achieved via interfacing, which means that cross-bundle service references do not require
-  class imports which results in super-lean bundles.
-- Testing is paramount, but from a coverage perspective, reaching 100% coverage is not a goal. The actual goal is
-  reaching confidence
-- "Extra" Bundles may or may not contain tests, depending on how complicated they are
-- Some necessary initialization parameters such as the `BundleImporter` and `ManifestFetcher` will always rely on
-  platform specific standard solutions, e.g.: native `import` / `require` and native `fetch` depending on platform.
-- Similarly to OSGi, Pandino it self is a Bundle as well, just like any other building block
-- Configurability of the Pandino instance is paramount
+Include:
+- **Environment** - Node.js version, OS, package versions
+- **Steps to reproduce** - Minimal code example
+- **Expected vs actual behavior**
+- **Error messages** - Full stack traces
 
-## Notes
+## 💬 Questions?
 
-### Tree-shaking
-Do not export `enum`s, messes up tree-shaking, use `type`s instead!
+- 📋 **Issues** - For bugs and feature requests
+- 📧 **Email** - For security issues: [norbert.herczeg@blackbelt.hu](mailto:norbert.herczeg@blackbelt.hu)
 
-### Testing
+## 📄 License
 
-In order for IDEs to be able to provide proper breakpoints and debugging support, JEST needs a dedicated
-`tsconfig.test.json` file in every project.
+By contributing, you agree your contributions will be licensed under the [Eclipse Public License - v 2.0](LICENSE).
 
-The reason for this is that in bundle outputs we usually do not provide source-maps, but IDEs rely on them.
+---
 
-## Sources
-
-- https://docs.osgi.org/specification/osgi.core/8.0.0/framework.lifecycle.html
-- https://docs.osgi.org/specification/osgi.core/8.0.0/framework.service.html
-- https://docs.osgi.org/specification/osgi.core/8.0.0/framework.api.html
-
-## Temporary scripts
-
-```
-npx conventional-changelog-cli -p angular -i CHANGELOG.md -s -r 0
-```
+**Thanks for making Pandino better! 🎉**

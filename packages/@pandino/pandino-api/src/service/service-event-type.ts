@@ -1,1 +1,0 @@
-export type ServiceEventType = 'REGISTERED' | 'MODIFIED' | 'UNREGISTERING' | 'MODIFIED_ENDMATCH';

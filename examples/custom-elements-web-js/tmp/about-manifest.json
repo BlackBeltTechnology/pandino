@@ -1,8 +1,0 @@
-{
-  "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/custom-elements-web-js-about",
-  "Bundle-Name": "About",
-  "Bundle-Version": "0.1.0",
-  "Bundle-Activator": "./about.js",
-  "Provide-Capability": "app.feature;menu:=true,page:=true"
-}

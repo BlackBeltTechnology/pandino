@@ -1,0 +1,44 @@
+{
+    "name": "@pandino/pandino",
+    "version": "0.9.0",
+    "description": "A TypeScript implementation of the OSGi specification.",
+    "license": "EPL-2.0",
+    "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+    "main": "dist/pandino.cjs.js",
+    "module": "dist/pandino.es.js",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/pandino.es.js",
+            "require": "./dist/pandino.cjs.js"
+        }
+    },
+    "files": [
+        "dist/**/*"
+    ],
+    "scripts": {
+        "build": "tsc && vite build",
+        "build:dev": "tsc && vite build --mode development",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest --coverage",
+        "test:ui": "vitest --ui",
+        "check:fix": "biome check ./src --write"
+    },
+    "dependencies": {
+        "reflect-metadata": "^0.2.2"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.24",
+        "@vitest/coverage-v8": "^3.2.4",
+        "@vitest/ui": "^3.2.4",
+        "http-server": "^14.1.1",
+        "jsdom": "^26.1.0",
+        "typescript": "^5.0.4",
+        "vite": "^7.0.0",
+        "vite-plugin-dts": "^4.5.4",
+        "vitest": "^3.2.4"
+    }
+}

@@ -26,16 +26,16 @@ jobs:
           git config user.name "blackbelt-oss"
           git config user.email "oss@blackbelt.hu"
 
-      - name: Use Node.js 18.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 22.x
           registry-url: 'https://registry.npmjs.org'
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         with:
-          version: 8
+          version: 10
           run_install: false
 
       - name: Get pnpm store directory
@@ -59,6 +59,3 @@ jobs:
 
       - name: Test
         run: pnpm run test
-
-      - name: Publish
-        run: npx changeset publish

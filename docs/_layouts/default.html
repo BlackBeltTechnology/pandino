@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site.title | default: page.title }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/typescript.min.js"></script>
+    <style>
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+        /* Custom styling for Pandino */
+        .markdown-body h1 {
+            border-bottom: 2px solid #007ACC;
+            padding-bottom: 10px;
+        }
+        .markdown-body .highlight {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        /* Badge styling */
+        .markdown-body img[alt*="badge"] {
+            vertical-align: middle;
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+    <article class="markdown-body">
+        {{ content }}
+    </article>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
+

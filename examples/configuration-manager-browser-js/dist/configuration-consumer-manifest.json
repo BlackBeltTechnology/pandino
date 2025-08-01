@@ -1,7 +1,0 @@
-{
-  "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/examples-configuration-manager-browser-js-configuration-consumer",
-  "Bundle-Name": "Configuration Consumer",
-  "Bundle-Version": "0.1.0",
-  "Bundle-Activator": "./configuration-consumer.js"
-}

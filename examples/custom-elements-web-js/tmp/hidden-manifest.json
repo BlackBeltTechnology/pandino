@@ -1,8 +1,0 @@
-{
-  "Bundle-ManifestVersion": "1",
-  "Bundle-SymbolicName": "@pandino/custom-elements-web-js-hidden",
-  "Bundle-Name": "Hidden",
-  "Bundle-Version": "0.1.0",
-  "Bundle-Activator": "./hidden.js",
-  "Provide-Capability": "app.feature;menu:=false,page:=true"
-}
