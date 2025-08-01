@@ -57,13 +57,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install cocogitto
-        run: |
-          # Use a simpler approach - download the specific version we know works
-          curl -sSL https://github.com/cocogitto/cocogitto/releases/download/6.1.0/cocogitto-6.1.0-x86_64-unknown-linux-gnu.tar.gz | tar -xz
-          sudo mv cog /usr/local/bin/
-          cog --version
-
       - name: Check if tag-triggered release
         id: check-tag
         run: |
@@ -125,21 +118,19 @@ jobs:
             echo "Previous tag found: $PREVIOUS_TAG"
           fi
 
-          # Generate changelog entry and update CHANGELOG.md
-          cog changelog --from $PREVIOUS_TAG --to ${{ steps.check-tag.outputs.tag }} --template default || echo "No conventional commits found for this release."
+          # Generate simple release notes from git log with conventional commits
+          echo "## Release ${{ steps.check-tag.outputs.tag }}" > temp_release_notes.md
+          echo "" >> temp_release_notes.md
 
-          # Extract the release notes for this specific version from CHANGELOG.md
-          # Look for the section between the current version and the next version/end
-          TEMP_NOTES=$(awk '/^## \[${{ steps.check-tag.outputs.tag }}\]/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md || echo "Release ${{ steps.check-tag.outputs.tag }}")
+          # Get commits between tags and format them
+          git log --pretty=format:"- %s" $PREVIOUS_TAG..${{ steps.check-tag.outputs.tag }} | grep -E "^- (feat|fix|docs|style|refactor|perf|test|build|ci|chore)" >> temp_release_notes.md || echo "- Miscellaneous improvements and bug fixes" >> temp_release_notes.md
 
-          # If no content found, provide a fallback
-          if [ -z "$TEMP_NOTES" ] || [ "$(echo "$TEMP_NOTES" | xargs)" = "" ]; then
-            TEMP_NOTES="Release ${{ steps.check-tag.outputs.tag }}"
-          fi
+          # Read the generated notes
+          RELEASE_NOTES=$(cat temp_release_notes.md)
 
           # Output for GitHub release
           echo "release-notes<<EOF" >> $GITHUB_OUTPUT
-          echo "$TEMP_NOTES" >> $GITHUB_OUTPUT
+          echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Publish to NPM
