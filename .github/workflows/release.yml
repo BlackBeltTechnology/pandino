@@ -1,9 +1,16 @@
 name: release
 
 on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - master
+      - develop
   workflow_dispatch:
     branches:
       - master
+      - develop
     inputs:
       type:
         description: 'Release Type (not yet used, can be anything)'
@@ -19,7 +26,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: setup git config
         run: |
@@ -27,12 +36,12 @@ jobs:
           git config user.email "oss@blackbelt.hu"
 
       - name: Use Node.js 22.x
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22.x
           registry-url: 'https://registry.npmjs.org'
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
           version: 10
@@ -43,7 +52,7 @@ jobs:
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         name: Setup pnpm cache
         with:
           path: ${{ env.STORE_PATH }}
@@ -52,10 +61,40 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: pnpm run build
+      - name: Build packages
+        run: pnpm build
 
-      - name: Test
-        run: pnpm run test
+      - name: Run tests
+        run: pnpm test
+
+      - name: Check if tag-triggered release
+        id: check-tag
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "triggered-by-tag=true" >> $GITHUB_OUTPUT
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "triggered-by-tag=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish to NPM
+        if: steps.check-tag.outputs.triggered-by-tag == 'true'
+        run: |
+          echo "Publishing packages for tag: ${{ steps.check-tag.outputs.tag }}"
+          pnpm --filter "@pandino/pandino" publish --access public --no-git-checks
+          pnpm --filter "@pandino/react-hooks" publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_OSS_AUTOMATION_TOKEN }}
+
+      - name: Create GitHub Release
+        if: steps.check-tag.outputs.triggered-by-tag == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.OSS_PAT }}
+        with:
+          tag_name: ${{ steps.check-tag.outputs.tag }}
+          release_name: Release ${{ steps.check-tag.outputs.tag }}
+          draft: false
+          prerelease: false
