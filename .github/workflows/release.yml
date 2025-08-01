@@ -86,7 +86,7 @@ jobs:
       - name: Publish packages to NPM
         run: pnpm --recursive publish --no-git-checks
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_OSS_AUTOMATION_TOKEN }}
 
       - name: Push changes to repository
         run: |
