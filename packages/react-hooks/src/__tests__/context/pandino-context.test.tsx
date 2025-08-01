@@ -37,7 +37,7 @@ describe('PandinoContext Integration Tests', () => {
       () => {
         expect(screen.getByTestId('initialized').textContent).toBe('true');
       },
-      { timeout: 5000 } // Give more time for real framework initialization
+      { timeout: 5000 }, // Give more time for real framework initialization
     );
 
     // Check that the framework and context are provided
@@ -66,7 +66,7 @@ describe('PandinoContext Integration Tests', () => {
         // Either we get an error or successful initialization (depending on how framework handles invalid config)
         expect(errorText !== 'no-error' || initializedText === 'true').toBe(true);
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
   });
 
@@ -82,7 +82,7 @@ describe('PandinoContext Integration Tests', () => {
       () => {
         expect(screen.getByTestId('initialized').textContent).toBe('true');
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
 
     // Verify successful initialization
@@ -135,7 +135,7 @@ describe('PandinoContext Integration Tests', () => {
       () => {
         expect(screen.getByTestId('initialized').textContent).toBe('true');
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
 
     // Verify successful initialization with bundles

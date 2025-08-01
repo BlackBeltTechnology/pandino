@@ -148,6 +148,17 @@ export class ServiceComponentRuntime {
   private readonly bundleContext: BundleContext;
   private bundleComponents = new Map<number, Set<string>>();
   private readonly configAdmin!: ConfigurationAdmin | null;
+  private activationChain: string[] = [];
+
+  /**
+   * Helper method to remove a component from the activation chain
+   */
+  private removeFromActivationChain(name: string): void {
+    const index = this.activationChain.indexOf(name);
+    if (index !== -1) {
+      this.activationChain.splice(index, 1);
+    }
+  }
 
   constructor(
     private framework: any,
@@ -236,6 +247,13 @@ export class ServiceComponentRuntime {
     if (!entry) {
       throw new Error(`Component ${name} not found`);
     }
+
+    if (this.activationChain.includes(name)) {
+      console.error(`Circular reference detected: ${this.activationChain.join(' -> ')} -> ${name}`);
+      return;
+    }
+
+    this.activationChain.push(name);
 
     const { metadata } = entry;
 
@@ -326,6 +344,8 @@ export class ServiceComponentRuntime {
     if (metadata.factory) {
       entry.factoryInstances = new Map();
     }
+
+    this.removeFromActivationChain(name);
   }
 
   async deactivateComponent(name: string) {
@@ -394,7 +414,38 @@ export class ServiceComponentRuntime {
   private async satisfyReference(instance: any, ref: ReferenceDescriptor) {
     const filter = ref.target || null;
 
+    let componentName: string | undefined;
+    for (const [name, entry] of this.components.entries()) {
+      if (entry.instance === instance) {
+        componentName = name;
+        break;
+      }
+    }
+
     const serviceRefs = this.bundleContext.getServiceReferences(ref.interface, filter) ?? [];
+
+    // Check for circular dependencies
+    if (componentName && serviceRefs.length > 0) {
+      // For each service reference, check if it's a component that's currently in the activation chain
+      for (const serviceRef of serviceRefs) {
+        const serviceComponentName = serviceRef.getProperty('component.name');
+        if (serviceComponentName && this.activationChain.includes(serviceComponentName as string)) {
+          // We found a circular dependency
+          const circularChain = [...this.activationChain, componentName, serviceComponentName as string];
+          const errorMessage = `Circular reference detected: ${circularChain.join(' -> ')}. Component '${componentName}' has a ${ref.cardinality === '1..1' || ref.cardinality === '1..n' ? 'mandatory' : 'optional'} reference to interface '${ref.interface}' which leads to a circular dependency.`;
+
+          console.error(errorMessage);
+
+          // If this is a mandatory reference, we need to fail
+          if (ref.cardinality === '1..1' || ref.cardinality === '1..n') {
+            throw new Error(errorMessage);
+          }
+
+          // For optional references, we can continue but skip this particular reference
+          return;
+        }
+      }
+    }
 
     const cardinality = ref.cardinality || '0..1';
 
