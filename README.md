@@ -28,6 +28,7 @@
 | 📡 **Event System** | Tight coupling between modules | Publish-subscribe messaging with topic-based routing |
 | ⚙️ **Configuration Management** | Static application configuration | Runtime configuration updates without restarts |
 | 🏗️ **Declarative Services** | Complex service wiring boilerplate | Decorator-based dependency injection |
+| ⚛️ **React Integration** | Framework complexity in React apps | Hook-based service discovery in components |
 
 ## 🚀 Quick Concept Demo
 
