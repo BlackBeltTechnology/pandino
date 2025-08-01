@@ -59,7 +59,7 @@ jobs:
         run: pnpm test
 
       - name: Bump version in all packages
-        run: pnpm -r exec -- pnpm version ${{ github.event.inputs.version }} --no-git-tag-version --allow-same-version
+        run: pnpm -r version ${{ github.event.inputs.version }} --no-git-tag-version
 
       - name: Get new version from root package.json
         id: get_version
@@ -81,7 +81,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Publish packages to NPM
-        run: pnpm --recursive publish --no-git-checks --access public
+        run: pnpm -r publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_OSS_AUTOMATION_TOKEN }}
 
