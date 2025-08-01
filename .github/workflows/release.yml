@@ -5,9 +5,6 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
-    branches:
-      - master
-      - develop
     inputs:
       type:
         description: 'Release Type (not yet used, can be anything)'
@@ -16,9 +13,6 @@ on:
 
 jobs:
   release:
-    # Only run on master or develop branches, or when triggered by tags
-    if: github.ref_type == 'tag' || contains(fromJSON('["refs/heads/master", "refs/heads/develop"]'), github.ref)
-
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_OSS_AUTOMATION_TOKEN }}
       GH_TOKEN: ${{ secrets.OSS_PAT }}
