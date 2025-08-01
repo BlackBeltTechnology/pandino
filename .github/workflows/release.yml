@@ -63,6 +63,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install cocogitto
+        run: |
+          curl -sSL https://github.com/cocogitto/cocogitto/releases/latest/download/cocogitto-$(uname -m)-unknown-linux-gnu.tar.gz | tar -xz
+          sudo mv cog /usr/local/bin/
+          cog --version
+
       - name: Build packages
         run: pnpm build
 
@@ -79,6 +85,37 @@ jobs:
             echo "triggered-by-tag=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Generate release notes
+        if: steps.check-tag.outputs.triggered-by-tag == 'true'
+        id: release-notes
+        run: |
+          # Get the previous tag to generate changelog between tags
+          PREVIOUS_TAG=$(git tag --sort=-version:refname | grep -v "${{ steps.check-tag.outputs.tag }}" | head -n1)
+          if [ -z "$PREVIOUS_TAG" ]; then
+            # If no previous tag, use first commit
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+            echo "No previous tag found, using first commit: $PREVIOUS_TAG"
+          else
+            echo "Previous tag found: $PREVIOUS_TAG"
+          fi
+
+          # Generate changelog entry and update CHANGELOG.md
+          cog changelog --from $PREVIOUS_TAG --to ${{ steps.check-tag.outputs.tag }} --template default || echo "No conventional commits found for this release."
+
+          # Extract the release notes for this specific version from CHANGELOG.md
+          # Look for the section between the current version and the next version/end
+          TEMP_NOTES=$(awk '/^## \[${{ steps.check-tag.outputs.tag }}\]/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md || echo "Release ${{ steps.check-tag.outputs.tag }}")
+
+          # If no content found, provide a fallback
+          if [ -z "$TEMP_NOTES" ] || [ "$(echo "$TEMP_NOTES" | xargs)" = "" ]; then
+            TEMP_NOTES="Release ${{ steps.check-tag.outputs.tag }}"
+          fi
+
+          # Output for GitHub release
+          echo "release-notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$TEMP_NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Publish to NPM
         if: steps.check-tag.outputs.triggered-by-tag == 'true'
         run: |
@@ -90,11 +127,12 @@ jobs:
 
       - name: Create GitHub Release
         if: steps.check-tag.outputs.triggered-by-tag == 'true'
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.OSS_PAT }}
         with:
           tag_name: ${{ steps.check-tag.outputs.tag }}
-          release_name: Release ${{ steps.check-tag.outputs.tag }}
+          name: Release ${{ steps.check-tag.outputs.tag }}
+          body: ${{ steps.release-notes.outputs.release-notes }}
           draft: false
           prerelease: false

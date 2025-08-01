@@ -1,0 +1,33 @@
+from_latest_tag = false
+ignore_merge_commits = false
+ignore_fixup_commits = false
+disable_changelog = false
+disable_bump_commit = false
+generate_mono_repository_global_tag = true
+tag_prefix = "v"
+branch_whitelist = ["master", "develop"]
+
+[changelog]
+path = "CHANGELOG.md"
+template = "default"
+
+[commit_types]
+feat = { changelog_title = "Features" }
+fix = { changelog_title = "Bug Fixes" }
+docs = { changelog_title = "Documentation" }
+style = { changelog_title = "Styling" }
+refactor = { changelog_title = "Refactoring" }
+perf = { changelog_title = "Performance" }
+test = { changelog_title = "Testing" }
+build = { changelog_title = "Build System" }
+ci = { changelog_title = "Continuous Integration" }
+chore = { changelog_title = "Miscellaneous" }
+
+# Packages configuration for monorepo
+[packages.pandino]
+path = "packages/pandino"
+changelog_path = "packages/pandino/CHANGELOG.md"
+
+[packages.react-hooks]
+path = "packages/react-hooks"
+changelog_path = "packages/react-hooks/CHANGELOG.md"
