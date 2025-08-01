@@ -1,7 +1,10 @@
 import 'reflect-metadata';
 import type { ComponentDescriptor, ReferenceDescriptor } from './interfaces';
 
-export function getComponentMetadata(target: any): ComponentDescriptor | null {
+// Metadata keys for different types of component metadata
+export const COMPONENT_METADATA_KEY = 'osgi:component';
+
+export function getComponentMetadata<T = any>(target: any): (ComponentDescriptor & T) | null {
   if (!target) {
     return null;
   }
@@ -9,8 +12,7 @@ export function getComponentMetadata(target: any): ComponentDescriptor | null {
   // If target is an instance, get its constructor
   const constructor = typeof target === 'function' ? target : target.constructor;
 
-  // Return the component metadata if it exists
-  return constructor.__osgi_component__ || null;
+  return Reflect.getMetadata(COMPONENT_METADATA_KEY, constructor) || null;
 }
 
 export interface ComponentInfo {
@@ -93,7 +95,7 @@ export interface ReferenceFilterOptions {
 
 export function getReferenceInfo(target: any, filter?: ReferenceFilterOptions): ReferenceDescriptor[] {
   const metadata = getComponentMetadata(target);
-  let references = metadata?.references || [];
+  let references: ReferenceDescriptor[] = metadata?.references || [];
 
   if (filter) {
     if (filter.name) {

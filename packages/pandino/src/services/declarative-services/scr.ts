@@ -7,6 +7,7 @@ import type {
 } from '~/framework/interfaces';
 import { ComponentContextImpl } from './component-context';
 import type { ComponentContext, ComponentDescriptor, ReferenceDescriptor } from './interfaces';
+import { getComponentMetadata } from './reflection';
 import type { ConfigurationAdmin } from '~/services/config-admin';
 
 interface ComponentEntry {
@@ -170,7 +171,7 @@ export class ServiceComponentRuntime {
   }
 
   async registerComponent(component: any, bundleId?: number) {
-    const metadata = (component as any).__osgi_component__;
+    const metadata = getComponentMetadata(component);
     if (!metadata) {
       throw new Error('Component metadata not found');
     }
@@ -200,7 +201,7 @@ export class ServiceComponentRuntime {
 
   private getBundleIdForComponent(component: any): number {
     // Get the bundle ID from the component metadata
-    const metadata = (component as any).__osgi_component__;
+    const metadata = getComponentMetadata(component);
     if (metadata && metadata.bundleId !== undefined) {
       return metadata.bundleId;
     }
@@ -779,12 +780,6 @@ export class ServiceComponentRuntime {
     }
   }
 
-  /**
-   * Updates the configuration of a component
-   * @param bundleId The bundle ID
-   * @param componentName The component name
-   * @param configuration The new configuration
-   */
   async updateComponentConfiguration(
     bundleId: number,
     componentName: string,

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext, ServiceReference } from '~/framework/interfaces';
 import { Activate, Component, Deactivate, Modified, Reference } from './interfaces';
+import { getComponentMetadata } from './reflection';
 import { ServiceComponentRuntime } from './scr';
 
 describe('Component Lifecycle', () => {
@@ -194,7 +195,7 @@ describe('Component Lifecycle', () => {
         }
       }
 
-      const metadata = (FailingDeactivationComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(FailingDeactivationComponent);
       expect(metadata.deactivate).toBe('deactivate');
     });
 
@@ -217,7 +218,7 @@ describe('Component Lifecycle', () => {
         }
       }
 
-      const metadata = (DeactivateOnlyComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(DeactivateOnlyComponent);
       expect(metadata.activate).toBeUndefined();
       expect(metadata.deactivate).toBe('cleanup');
     });
@@ -245,7 +246,7 @@ describe('Component Lifecycle', () => {
         }
       }
 
-      const metadata = (LifecycleOrderComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(LifecycleOrderComponent);
       expect(metadata.activate).toBe('activate');
       expect(metadata.modified).toBe('modified');
       expect(metadata.deactivate).toBe('deactivate');

@@ -12,6 +12,7 @@ import {
   Scope,
   Service,
 } from './interfaces';
+import { getComponentMetadata } from './reflection';
 
 describe('Declarative Services Decorators', () => {
   describe('Basic Component Decorators', () => {
@@ -24,7 +25,7 @@ describe('Declarative Services Decorators', () => {
       })
       class TestComponent {}
 
-      const metadata = (TestComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(TestComponent);
       expect(metadata).toBeDefined();
       expect(metadata.name).toBe('test.component');
       expect(metadata.immediate).toBe(true);
@@ -38,7 +39,7 @@ describe('Declarative Services Decorators', () => {
       @Property('service.ranking', 100)
       class MultiDecoratorComponent {}
 
-      const metadata = (MultiDecoratorComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(MultiDecoratorComponent);
       expect(metadata.name).toBe('multi.decorator.component');
       expect(metadata.service.interfaces).toEqual(['TestService', 'AnotherService']);
       expect(metadata.properties['service.ranking']).toBe(100);
@@ -51,7 +52,7 @@ describe('Declarative Services Decorators', () => {
       @ConfigurationPolicy('require')
       class ConfigPolicyComponent {}
 
-      const metadata = (ConfigPolicyComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(ConfigPolicyComponent);
       expect(metadata.configurationPolicy).toBe('require');
     });
 
@@ -60,7 +61,7 @@ describe('Declarative Services Decorators', () => {
       @Factory('test.factory')
       class FactoryComponent {}
 
-      const metadata = (FactoryComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(FactoryComponent);
       expect(metadata.factory).toBe('test.factory');
     });
 
@@ -69,7 +70,7 @@ describe('Declarative Services Decorators', () => {
       @Immediate
       class ImmediateComponent {}
 
-      const metadata = (ImmediateComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(ImmediateComponent);
       expect(metadata.immediate).toBe(true);
     });
 
@@ -78,7 +79,7 @@ describe('Declarative Services Decorators', () => {
       @Scope('prototype')
       class ScopeComponent {}
 
-      const metadata = (ScopeComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(ScopeComponent);
       expect(metadata.service).toBeDefined();
       expect(metadata.service.scope).toBe('prototype');
     });
@@ -96,9 +97,9 @@ describe('Declarative Services Decorators', () => {
       @Scope('prototype')
       class PrototypeComponent {}
 
-      const singletonMetadata = (SingletonComponent as any).__osgi_component__;
-      const bundleMetadata = (BundleComponent as any).__osgi_component__;
-      const prototypeMetadata = (PrototypeComponent as any).__osgi_component__;
+      const singletonMetadata = getComponentMetadata(SingletonComponent);
+      const bundleMetadata = getComponentMetadata(BundleComponent);
+      const prototypeMetadata = getComponentMetadata(PrototypeComponent);
 
       expect(singletonMetadata.service.scope).toBe('singleton');
       expect(bundleMetadata.service.scope).toBe('bundle');
@@ -109,7 +110,7 @@ describe('Declarative Services Decorators', () => {
       @Scope('bundle')
       class StandaloneComponent {}
 
-      const metadata = (StandaloneComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(StandaloneComponent);
       expect(metadata).toBeDefined();
       expect(metadata.name).toBe('StandaloneComponent');
       expect(metadata.service).toBeDefined();
@@ -123,7 +124,7 @@ describe('Declarative Services Decorators', () => {
       @Scope('prototype')
       class ExistingServiceComponent {}
 
-      const metadata = (ExistingServiceComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(ExistingServiceComponent);
       expect(metadata.service.interfaces).toEqual(['ExistingService']); // Preserves existing interfaces
       expect(metadata.service.scope).toBe('prototype'); // Updates scope
     });
@@ -134,7 +135,7 @@ describe('Declarative Services Decorators', () => {
       @Scope('prototype') // Should override the singleton scope from @Service
       class OverrideScopeComponent {}
 
-      const metadata = (OverrideScopeComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(OverrideScopeComponent);
       expect(metadata.service.scope).toBe('prototype');
       expect(metadata.service.interfaces).toEqual(['OverrideService']);
     });
@@ -154,7 +155,7 @@ describe('Declarative Services Decorators', () => {
         modified() {}
       }
 
-      const metadata = (LifecycleComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(LifecycleComponent);
       expect(metadata.activate).toBe('activate');
       expect(metadata.deactivate).toBe('deactivate');
       expect(metadata.modified).toBe('modified');
@@ -181,7 +182,7 @@ describe('Declarative Services Decorators', () => {
         updatedLog(_service: any) {}
       }
 
-      const metadata = (ReferenceComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(ReferenceComponent);
       expect(metadata.references.length).toBe(1);
       const ref = metadata.references[0];
       expect(ref.interface).toBe('LogService');
@@ -206,7 +207,7 @@ describe('Declarative Services Decorators', () => {
         private serviceC?: any;
       }
 
-      const metadata = (MultiReferenceComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(MultiReferenceComponent);
       expect(metadata.references.length).toBe(3);
       expect(metadata.references[0].interface).toBe('ServiceA');
       expect(metadata.references[1].interface).toBe('ServiceB');
@@ -223,7 +224,7 @@ describe('Declarative Services Decorators', () => {
         private paymentProvider?: any;
       }
 
-      const metadata = (TargetReferenceComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(TargetReferenceComponent);
       expect(metadata.references.length).toBe(1);
       const ref = metadata.references[0];
       expect(ref.interface).toBe('PaymentProvider');
@@ -260,7 +261,7 @@ describe('Declarative Services Decorators', () => {
         modified() {}
       }
 
-      const metadata = (ComplexComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(ComplexComponent);
       expect(metadata.name).toBe('complex.component');
       expect(metadata.configurationPid).toBe('complex.config');
       expect(metadata.configurationPolicy).toBe('require');

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext } from '~/framework/interfaces';
 import { Activate, Component, Factory } from './interfaces';
+import { getComponentMetadata } from './reflection';
 import { ServiceComponentRuntime } from './scr';
 
 describe('Factory Components', () => {
@@ -30,7 +31,7 @@ describe('Factory Components', () => {
         }
       }
 
-      const metadata = (FactoryComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(FactoryComponent);
       expect(metadata.factory).toBe('test.factory');
     });
 
@@ -45,7 +46,7 @@ describe('Factory Components', () => {
         }
       }
 
-      const metadata = (FactoryComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(FactoryComponent);
       expect(metadata.factory).toBe('test.factory');
     });
   });

@@ -1,10 +1,8 @@
+import 'reflect-metadata';
 import type { BundleContext, ServiceReference } from '~/framework/interfaces';
+import { COMPONENT_METADATA_KEY } from './reflection';
 
-interface OSGiComponentConstructor {
-  __osgi_component__?: ComponentDescriptor;
-}
-
-type OSGiConstructor<T = {}> = (new (...args: any[]) => T) & OSGiComponentConstructor;
+type OSGiConstructor<T = {}> = new (...args: any[]) => T;
 
 export interface ComponentContext {
   getBundleContext(): BundleContext;
@@ -55,27 +53,47 @@ export interface ServiceDescriptor {
   scope?: 'singleton' | 'bundle' | 'prototype';
 }
 
+function getOrCreateMetadata(cstr: any): ComponentDescriptor {
+  let metadata = Reflect.getMetadata(COMPONENT_METADATA_KEY, cstr);
+
+  if (!metadata) {
+    metadata = {
+      name: cstr.name,
+      implementation: cstr,
+      references: [],
+    };
+  }
+
+  return metadata;
+}
+
+function saveMetadata(cstr: any, metadata: ComponentDescriptor): void {
+  Reflect.defineMetadata(COMPONENT_METADATA_KEY, metadata, cstr);
+}
+
 export function Component(options: Partial<ComponentDescriptor> = {}) {
   return <T extends OSGiConstructor>(cstr: T) => {
-    const existing = (cstr as any).__osgi_component__ || {};
+    const metadata = getOrCreateMetadata(cstr);
 
-    (cstr as any).__osgi_component__ = {
-      name: options.name || cstr.name,
+    const updatedMetadata = {
+      ...metadata,
+      name: options.name || metadata.name || cstr.name,
       implementation: cstr,
-      properties: { ...existing.properties, ...options.properties }, // Merge existing properties
-      references: existing.references || [],
-      activate: options.activate || existing.activate,
-      deactivate: options.deactivate || existing.deactivate,
-      modified: options.modified || existing.modified,
-      configurationPid: options.configurationPid || existing.configurationPid,
-      configurationPolicy: options.configurationPolicy || existing.configurationPolicy || 'optional',
-      factory: options.factory || existing.factory,
-      immediate: options.immediate || existing.immediate || false,
+      properties: { ...metadata.properties, ...options.properties },
+      references: metadata.references || [],
+      activate: options.activate || metadata.activate,
+      deactivate: options.deactivate || metadata.deactivate,
+      modified: options.modified || metadata.modified,
+      configurationPid: options.configurationPid || metadata.configurationPid,
+      configurationPolicy: options.configurationPolicy || metadata.configurationPolicy || 'optional',
+      factory: options.factory || metadata.factory,
+      immediate: options.immediate || metadata.immediate || false,
       enabled: options.enabled !== false,
-      scope: options.scope || existing.scope || 'singleton',
-      service: options.service || existing.service,
+      scope: options.scope || metadata.scope || 'singleton',
+      service: options.service || metadata.service,
     };
 
+    saveMetadata(cstr, updatedMetadata);
     return cstr;
   };
 }
@@ -83,14 +101,7 @@ export function Component(options: Partial<ComponentDescriptor> = {}) {
 export function Reference(options: Partial<ReferenceDescriptor> = {}) {
   return (target: any, propertyKey: string) => {
     const cstr = target.constructor;
-
-    if (!cstr.__osgi_component__) {
-      cstr.__osgi_component__ = {
-        name: cstr.name,
-        implementation: cstr,
-        references: [],
-      };
-    }
+    const metadata = getOrCreateMetadata(cstr);
 
     const reference: ReferenceDescriptor = {
       name: options.name || propertyKey,
@@ -107,158 +118,113 @@ export function Reference(options: Partial<ReferenceDescriptor> = {}) {
       scope: options.scope || 'bundle',
     };
 
-    cstr.__osgi_component__.references.push(reference);
+    metadata.references = metadata.references || [];
+    metadata.references.push(reference);
+
+    saveMetadata(cstr, metadata);
   };
 }
 
 export function Service(options: Partial<ServiceDescriptor> = {}) {
   return <T extends OSGiConstructor>(cstr: T) => {
-    const existing = (cstr as any).__osgi_component__ || {};
+    const metadata = getOrCreateMetadata(cstr);
+    const existingService = metadata.service || {};
 
-    if (!existing.name) {
-      (cstr as any).__osgi_component__ = {
-        name: cstr.name,
-        implementation: cstr,
-        references: [],
-      };
-    }
-
-    const existingService = (cstr as any).__osgi_component__.service || {};
-    (cstr as any).__osgi_component__.service = {
+    metadata.service = {
       interfaces: options.interfaces || existingService.interfaces || [cstr.name],
       scope: existingService.scope || options.scope || 'singleton',
     };
 
+    saveMetadata(cstr, metadata);
     return cstr;
   };
 }
 
 export function Property(key: string, value: any) {
   return <T extends OSGiConstructor>(cstr: T) => {
-    if (!(cstr as any).__osgi_component__) {
-      (cstr as any).__osgi_component__ = {
-        name: cstr.name,
-        implementation: cstr,
-        references: [],
-        properties: {},
-      };
-    }
+    const metadata = getOrCreateMetadata(cstr);
 
-    const existing = (cstr as any).__osgi_component__;
+    metadata.properties = metadata.properties || {};
+    metadata.properties[key] = value;
 
-    if (!existing.properties) {
-      existing.properties = {};
-    }
-
-    existing.properties[key] = value;
+    saveMetadata(cstr, metadata);
     return cstr;
   };
 }
 
 export function Activate(target: any, propertyKey: string, _?: PropertyDescriptor) {
   const cstr = target.constructor;
-  if (!cstr.__osgi_component__) {
-    cstr.__osgi_component__ = {
-      name: cstr.name,
-      implementation: cstr,
-      references: [],
-    };
-  }
-  cstr.__osgi_component__.activate = propertyKey;
+  const metadata = getOrCreateMetadata(cstr);
+
+  metadata.activate = propertyKey;
+
+  saveMetadata(cstr, metadata);
 }
 
 export function Deactivate(target: any, propertyKey: string, _?: PropertyDescriptor) {
   const cstr = target.constructor;
-  if (!cstr.__osgi_component__) {
-    cstr.__osgi_component__ = {
-      name: cstr.name,
-      implementation: cstr,
-      references: [],
-    };
-  }
-  cstr.__osgi_component__.deactivate = propertyKey;
+  const metadata = getOrCreateMetadata(cstr);
+
+  metadata.deactivate = propertyKey;
+
+  saveMetadata(cstr, metadata);
 }
 
 export function Modified(target: any, propertyKey: string, _?: PropertyDescriptor) {
   const cstr = target.constructor;
-  if (!cstr.__osgi_component__) {
-    cstr.__osgi_component__ = {
-      name: cstr.name,
-      implementation: cstr,
-      references: [],
-    };
-  }
-  cstr.__osgi_component__.modified = propertyKey;
+  const metadata = getOrCreateMetadata(cstr);
+
+  metadata.modified = propertyKey;
+
+  saveMetadata(cstr, metadata);
 }
 
 export function ConfigurationPolicy(policy: 'optional' | 'require' | 'ignore') {
   return <T extends OSGiConstructor>(cstr: T) => {
-    if (!cstr.__osgi_component__) {
-      cstr.__osgi_component__ = {
-        name: cstr.name,
-        implementation: cstr,
-        references: [],
-        configurationPolicy: policy,
-      };
-    } else {
-      cstr.__osgi_component__.configurationPolicy = policy;
-    }
+    const metadata = getOrCreateMetadata(cstr);
+
+    metadata.configurationPolicy = policy;
+
+    saveMetadata(cstr, metadata);
     return cstr;
   };
 }
 
 export function Factory(factoryId: string) {
   return <T extends OSGiConstructor>(cstr: T) => {
-    if (!cstr.__osgi_component__) {
-      cstr.__osgi_component__ = {
-        name: cstr.name,
-        implementation: cstr,
-        references: [],
-        factory: factoryId,
-      };
-    } else {
-      cstr.__osgi_component__.factory = factoryId;
-    }
+    const metadata = getOrCreateMetadata(cstr);
+
+    metadata.factory = factoryId;
+
+    saveMetadata(cstr, metadata);
     return cstr;
   };
 }
 
 export function Immediate(target: any) {
   const cstr = typeof target === 'function' ? target : target.constructor;
-  if (!cstr.__osgi_component__) {
-    cstr.__osgi_component__ = {
-      name: cstr.name,
-      implementation: cstr,
-      references: [],
-      immediate: true,
-    };
-  } else {
-    cstr.__osgi_component__.immediate = true;
-  }
+  const metadata = getOrCreateMetadata(cstr);
+
+  metadata.immediate = true;
+
+  saveMetadata(cstr, metadata);
   return cstr;
 }
 
 export function Scope(scope: 'singleton' | 'bundle' | 'prototype') {
   return <T extends OSGiConstructor>(cstr: T) => {
-    if (!cstr.__osgi_component__) {
-      cstr.__osgi_component__ = {
-        name: cstr.name,
-        implementation: cstr,
-        references: [],
-        service: {
-          interfaces: [cstr.name],
-          scope: scope,
-        },
-      };
-    } else if (!cstr.__osgi_component__.service) {
-      cstr.__osgi_component__.service = {
+    const metadata = getOrCreateMetadata(cstr);
+
+    if (!metadata.service) {
+      metadata.service = {
         interfaces: [cstr.name],
         scope: scope,
       };
     } else {
-      cstr.__osgi_component__.service.scope = scope;
+      metadata.service.scope = scope;
     }
 
+    saveMetadata(cstr, metadata);
     return cstr;
   };
 }

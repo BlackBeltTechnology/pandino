@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext } from '~/framework/interfaces';
 import { Component, ConfigurationPolicy, Modified, Property } from './interfaces';
+import { getComponentMetadata } from './reflection';
 import { ServiceComponentRuntime } from './scr';
 
 describe('Configuration and Properties', () => {
@@ -23,7 +24,7 @@ describe('Configuration and Properties', () => {
       @Property('custom.property', 'test-value')
       class PropertyComponent {}
 
-      const metadata = (PropertyComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(PropertyComponent);
       expect(metadata.properties['service.ranking']).toBe(100);
       expect(metadata.properties['custom.property']).toBe('test-value');
     });
@@ -40,7 +41,7 @@ describe('Configuration and Properties', () => {
         activated = false;
       }
 
-      const metadata = (ConfigRequiredComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(ConfigRequiredComponent);
       expect(metadata.configurationPolicy).toBe('require');
       expect(metadata.configurationPid).toBe('test.config');
     });
@@ -50,7 +51,7 @@ describe('Configuration and Properties', () => {
       @ConfigurationPolicy('require')
       class ConfigPolicyComponent {}
 
-      const metadata = (ConfigPolicyComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(ConfigPolicyComponent);
       expect(metadata.configurationPolicy).toBe('require');
     });
   });
@@ -91,7 +92,7 @@ describe('Configuration and Properties', () => {
         }
       }
 
-      const metadata = (ConfigurableComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(ConfigurableComponent);
       expect(metadata.configurationPid).toBe('test.pid');
       expect(metadata.modified).toBe('modified');
     });

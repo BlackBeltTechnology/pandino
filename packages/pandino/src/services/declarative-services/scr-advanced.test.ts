@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext, ServiceReference } from '~/framework/interfaces';
 import { Activate, Component, Deactivate, Reference, Service } from './interfaces';
+import { getComponentMetadata } from './reflection';
 import { ServiceComponentRuntime } from './scr';
 
 describe('SCR Advanced Functionality', () => {
@@ -396,7 +397,7 @@ describe('SCR Advanced Functionality', () => {
         }
       }
 
-      const metadata = (ConfigurableComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(ConfigurableComponent);
       metadata.modified = 'modified';
 
       const bundleId = bundleContext.getBundle().getBundleId();

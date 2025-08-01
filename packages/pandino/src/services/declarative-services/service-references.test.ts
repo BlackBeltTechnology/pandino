@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext, ServiceReference } from '~/framework/interfaces';
 import { Activate, Component, Reference } from './interfaces';
+import { getComponentMetadata } from './reflection';
 import { ServiceComponentRuntime } from './scr';
 
 describe('Service References', () => {
@@ -208,7 +209,7 @@ describe('Service References', () => {
         updatedLogger(_logger: LogService) {}
       }
 
-      const metadata = (DynamicConsumer as any).__osgi_component__;
+      const metadata = getComponentMetadata(DynamicConsumer);
       const ref = metadata.references[0];
       expect(ref.policy).toBe('dynamic');
       expect(ref.policyOption).toBe('greedy');
@@ -237,7 +238,7 @@ describe('Service References', () => {
         }
       }
 
-      const metadata = (FieldInjectionComponent as any).__osgi_component__;
+      const metadata = getComponentMetadata(FieldInjectionComponent);
       const ref = metadata.references[0];
       expect(ref.field).toBe('dataService');
       expect(ref.fieldOption).toBe('update');
