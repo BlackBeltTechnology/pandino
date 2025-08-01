@@ -59,7 +59,7 @@ jobs:
         run: pnpm test
 
       - name: Bump version in all packages
-        run: pnpm -r version ${{ github.event.inputs.version }} --no-git-tag-version
+        run: pnpm -r version ${{ github.event.inputs.version }}
 
       - name: Get new version from root package.json
         id: get_version
@@ -67,12 +67,6 @@ jobs:
 
       - name: Re-build all packages with new version
         run: pnpm build
-
-      - name: Commit and Tag new version
-        run: |
-          git add .
-          git commit -m "chore: release v${{ steps.get_version.outputs.VERSION }}"
-          git tag -a v${{ steps.get_version.outputs.VERSION }} -m "Release v${{ steps.get_version.outputs.VERSION }}"
 
       - name: Setup Node.js for publishing
         uses: actions/setup-node@v4
