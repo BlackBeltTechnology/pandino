@@ -1,6 +1,6 @@
 {
     "name": "@pandino/root",
-    "version": "0.9.12",
+    "version": "0.9.16",
     "description": "OSGi-Style Framework for TypeScript",
     "license": "EPL-2.0",
     "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
