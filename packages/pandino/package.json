@@ -1,6 +1,6 @@
 {
     "name": "@pandino/pandino",
-    "version": "0.9.0",
+    "version": "0.9.20",
     "description": "A TypeScript implementation of the OSGi specification.",
     "license": "EPL-2.0",
     "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",

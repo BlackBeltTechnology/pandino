@@ -59,7 +59,9 @@ jobs:
         run: pnpm test
 
       - name: Bump version in all packages
-        run: pnpm -r version ${{ github.event.inputs.version }}
+        run: |
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+          pnpm -r exec npm pkg set version=${{ github.event.inputs.version }}
 
       - name: Get new version from root package.json
         id: get_version
