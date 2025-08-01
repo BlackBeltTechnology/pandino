@@ -1,8 +1,5 @@
-# .github/workflows/release.yml
-
 name: Manual PNPM Release
 
-# This action is triggered manually from the Actions tab.
 on:
   workflow_dispatch:
     inputs:
@@ -61,8 +58,8 @@ jobs:
       - name: Test all packages
         run: pnpm test
 
-      - name: Bump version
-        run: pnpm version ${{ github.event.inputs.version }} --no-git-tag-version
+      - name: Bump version in all packages
+        run: pnpm -r exec -- pnpm version ${{ github.event.inputs.version }} --no-git-tag-version --allow-same-version
 
       - name: Get new version from root package.json
         id: get_version
@@ -84,7 +81,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Publish packages to NPM
-        run: pnpm --recursive publish --no-git-checks
+        run: pnpm --recursive publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_OSS_AUTOMATION_TOKEN }}
 
