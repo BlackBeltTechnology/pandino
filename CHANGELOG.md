@@ -7,6 +7,182 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.9.22 (2025-08-01)
+
+## 🚀 Overview
+
+Pandino v0.9.22 represents a complete rewrite of the framework, delivering a production-ready TypeScript implementation of OSGi-inspired modular architecture. This release introduces comprehensive service-oriented programming capabilities with first-class React integration, declarative services, and enterprise-grade built-in services.
+
+## ⭐ What's New
+
+### 🏗️ Complete Framework Architecture Rewrite
+- **Modern TypeScript Implementation**: Full rewrite using latest TypeScript features with comprehensive type safety
+- **OSGi-Inspired Service Registry**: Dynamic service discovery and dependency injection with LDAP filtering
+- **Bundle Lifecycle Management**: Complete module lifecycle with automatic dependency resolution
+- **Zero-Configuration Setup**: Sensible defaults with optional configuration for advanced use cases
+
+### 🔧 Core Framework Features
+
+#### Service Registry & Discovery
+- **Dynamic Service Registration**: Register and discover services at runtime with rich metadata
+- **LDAP Filter Support**: Advanced service filtering using industry-standard LDAP syntax
+- **Service Ranking**: Automatic service selection based on configurable ranking
+- **Service References**: Safe service access patterns preventing memory leaks
+
+#### Bundle System
+- **Self-Contained Modules**: Bundles with independent lifecycles and clean boundaries
+- **Bundle Activators**: Lifecycle hooks for startup and shutdown operations
+- **Dynamic Loading**: Runtime bundle installation and uninstallation
+- **Dependency Resolution**: Automatic service dependency resolution regardless of load order
+
+#### Advanced Service Management
+- **Service Factories**: Lazy service instantiation and prototype services
+- **Service Tracking**: Reactive service availability monitoring
+- **Configuration Integration**: Services can receive dynamic configuration updates
+- **Event-Driven Architecture**: Publish-subscribe messaging between components
+
+### 🎯 Declarative Services (SCR Support)
+
+#### Component Decorators
+- `@Component`: Define service components with metadata
+- `@Service`: Expose component interfaces as services
+- `@Reference`: Inject service dependencies with lifecycle management
+- `@Property`: Configure component properties
+- `@Activate/@Deactivate/@Modified`: Lifecycle method decorators
+
+#### Features
+- **Automatic Dependency Injection**: Zero-boilerplate service wiring
+- **Lifecycle Management**: Automatic component activation/deactivation
+- **Configuration Binding**: Dynamic configuration updates via ConfigAdmin
+- **Service Cardinality**: Support for optional, mandatory, and multiple service references
+
+### 🏢 Enterprise Built-in Services
+
+#### EventAdmin Service
+- **Topic-Based Messaging**: Hierarchical event topics with wildcard support
+- **Event Filtering**: LDAP-based event filtering for targeted message delivery
+- **Synchronous & Asynchronous**: Support for both sync and async event delivery
+- **Event Properties**: Rich event metadata for complex routing scenarios
+
+#### Configuration Admin Service
+- **Dynamic Configuration**: Runtime configuration updates without restarts
+- **Managed Services**: Automatic configuration injection into services
+- **Configuration Persistence**: Pluggable configuration storage backends
+- **Factory Configurations**: Template-based configuration for multiple instances
+
+#### Log Service
+- **Centralized Logging**: Framework-wide logging with contextual information
+- **Bundle Context**: Automatic bundle identification in log entries
+- **Multiple Log Levels**: DEBUG, INFO, WARN, ERROR with configurable filtering
+- **Structured Logging**: JSON-formatted log entries with metadata
+
+#### Service Tracker
+- **Simplified Service Discovery**: High-level API for service monitoring
+- **Lifecycle Callbacks**: React to service availability changes
+- **Multiple Service Tracking**: Track collections of related services
+- **Filter-Based Tracking**: Track services matching specific criteria
+
+### ⚛️ React Integration (`@pandino/react-hooks`)
+
+#### Provider Component
+- **PandinoProvider**: Context provider for framework integration
+- **Automatic Initialization**: Framework startup/shutdown handled automatically
+- **Bundle Loading**: Declarative bundle loading via props
+
+#### React Hooks
+- **usePandinoContext**: Access framework instance and bundle context
+- **useService**: Reactive service discovery with loading states
+- **useServiceTracker**: Track multiple services with real-time updates
+- **useBundles**: Monitor bundle states and lifecycle
+- **useRegisterService**: Register React components as services
+
+#### Features
+- **Reactive Service Updates**: Components re-render when services change
+- **Loading States**: Built-in loading indicators for service availability
+- **Error Boundaries**: Graceful handling of service failures
+- **TypeScript Support**: Full type safety for service interfaces
+
+### 🛠️ Developer Experience
+
+#### TypeScript Support
+- **Experimental Decorators**: Full decorator support for declarative services
+- **Type-Safe APIs**: Comprehensive TypeScript definitions
+- **Generic Service References**: Type-safe service discovery and injection
+- **IntelliSense Support**: Rich IDE integration with auto-completion
+
+## 🔄 Migration Guide
+
+### Breaking Changes
+- Complete API restructure
+- New package organization (`@pandino/pandino`, `@pandino/react-hooks`)
+- TypeScript decorators now require `experimentalDecorators: true`
+- Event system redesigned with new interfaces
+
+## 📦 Package Information
+
+### Core Packages
+- **@pandino/pandino**: Core framework implementation
+- **@pandino/react-hooks**: React integration hooks and components
+
+### Installation
+```bash
+npm install @pandino/pandino @pandino/react-hooks
+```
+
+### Requirements
+- TypeScript 5.0+
+- Node.js 22+
+- React 18+ (for React integration)
+
+## 🔧 Configuration
+
+### TypeScript Setup
+```json
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
+```
+
+### Basic Framework Setup
+```typescript
+import { OSGiBootstrap, LogLevel } from '@pandino/pandino';
+
+const bootstrap = new OSGiBootstrap({
+  frameworkLogLevel: LogLevel.INFO
+});
+const framework = await bootstrap.start();
+```
+
+## 🎯 Use Cases
+
+### Enterprise Applications
+- Microservice architectures
+- Plugin systems
+- Modular monoliths
+- Configuration-driven applications
+
+### React Applications
+- Micro-frontends
+- Component libraries
+- Dynamic feature loading
+- Service-oriented UIs
+
+## 🤝 Community & Support
+
+- **Examples**: Working examples for common use cases
+- **TypeScript**: Full type definitions included
+- **License**: Eclipse Public License 2.0
+
+---
+
+**Examples**: [Example Applications](./packages/example/)
+
+For questions and support, please refer to the project documentation or create an issue in the repository.
+
+
 ## 0.8.30 (2023-11-11)
 
 **Note:** Version bump only for package pandino-root
