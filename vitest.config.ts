@@ -2,7 +2,7 @@ import { defineProject } from 'vitest/config';
 
 export default defineProject({
   test: {
-    projects: ['packages/pandino', 'packages/react-hooks'],
+    projects: ['packages/*'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
