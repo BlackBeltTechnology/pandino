@@ -7,15 +7,6 @@ on:
     branches:
       - master
       - develop
-  workflow_dispatch:
-    branches:
-      - master
-      - develop
-    inputs:
-      type:
-        description: 'Release Type (not yet used, can be anything)'
-        required: true
-        default: 'patch'
 
 jobs:
   release:
