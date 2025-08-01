@@ -57,9 +57,6 @@ npm install @pandino/pandino
 
 ## 🚀 Quick Start
 
-<details>
-<summary>📖 Click to see the complete quick start example</summary>
-
 ```typescript
 import { OSGiBootstrap, LogLevel } from '@pandino/pandino';
 
@@ -96,8 +93,6 @@ console.log(greetingService.sayHello('World')); // "Hello, World!"
 await bootstrap.stop();
 ```
 
-</details>
-
 > 🎉 **That's it!** You've just created a service-oriented application where the greeting functionality is completely decoupled from the code that uses it.
 
 ## 🔧 Core Concepts
@@ -124,9 +119,6 @@ const greetingService = context.getService(serviceRef);
 ```
 
 ### Service Configuration
-
-<details>
-<summary>🔧 Advanced service configuration with metadata</summary>
 
 Unlike most DI frameworks, Pandino services carry **configuration metadata** for powerful discovery:
 
@@ -164,14 +156,9 @@ const highPriorityRefs = context.getServiceReferences<DatabaseService>(
 - ✅ Handle multiple environments
 - ✅ Automatic service ranking
 
-</details>
-
 ### Bundles: Modular Containers
 
 Bundles are self-contained modules with their own lifecycle:
-
-<details>
-<summary>📦 Complete bundle example</summary>
 
 ```typescript
 // database-bundle.ts
@@ -211,12 +198,7 @@ export default {
 };
 ```
 
-</details>
-
 ### Bundle Authoring Best Practices
-
-<details>
-<summary>📋 Use build-time environment variables for consistent bundle metadata</summary>
 
 **Recommended Approach: Environment Variables**
 
@@ -268,8 +250,6 @@ export default {
 - ✅ Type-safe bundle metadata
 - ✅ Build-time optimization (no runtime lookups)
 
-</details>
-
 ### Dynamic Dependencies: Order Doesn't Matter
 
 > 🚀 **Key Feature:** Bundle registration order doesn't matter! Dependencies resolve automatically.
@@ -284,9 +264,6 @@ await databaseBundle.start(); // ✅ Database service becomes available
 ## 📡 Built-in Services
 
 ### EventAdmin: Publish-Subscribe Messaging
-
-<details>
-<summary>📡 Event-driven communication</summary>
 
 **Publishing Events:**
 ```typescript
@@ -319,12 +296,7 @@ context.registerService('EventHandler', new UserEventHandler(), {
 | `order/created` | Specific event only |
 | `*/error` | Error events from any module |
 
-</details>
-
 ### ConfigAdmin: Dynamic Configuration Management
-
-<details>
-<summary>⚙️ Hot configuration updates</summary>
 
 **Managing Configurations:**
 ```typescript
@@ -361,12 +333,7 @@ context.registerService('DatabaseService', new DatabaseService(), {
 });
 ```
 
-</details>
-
 ### LogService: Centralized Logging Framework
-
-<details>
-<summary>📊 Bundle-aware structured logging</summary>
 
 ```typescript
 class WebServerBundleActivator implements BundleActivator {
@@ -397,12 +364,7 @@ class WebServerBundleActivator implements BundleActivator {
 - Automatic exception handling
 - Configurable log levels per bundle
 
-</details>
-
 ### ServiceTracker: Simplified Service Discovery
-
-<details>
-<summary>🎯 Automatic dependency management</summary>
 
 ServiceTracker eliminates boilerplate for dynamic service dependencies:
 
@@ -447,12 +409,9 @@ class ApiService {
 - ✅ Clean resource cleanup
 - ✅ No manual ServiceListener boilerplate
 
-</details>
-
 ## 🛠️ Advanced Features
 
-<details>
-<summary>🔍 LDAP Filtering Examples</summary>
+**LDAP Filtering Examples:**
 
 | Filter | Matches |
 |--------|---------|
@@ -461,10 +420,7 @@ class ApiService {
 | `(&(db.host=localhost)(db.port>=3000))` | Local services on ports 3000+ |
 | `(\|(category=urgent)(priority=1))` | Urgent OR priority 1 services |
 
-</details>
-
-<details>
-<summary>🔄 Service Lifecycle Management</summary>
+**Service Lifecycle Management:**
 
 ```typescript
 // Services can be replaced at runtime
@@ -477,8 +433,6 @@ const registration2 = context.registerService('CacheService', new MemoryCache(),
 // When registration2 is unregistered, clients fall back to registration1
 ```
 
-</details>
-
 ## 🏗️ Declarative Services: Component-Based Development
 
 > 🚀 **Eliminate boilerplate code** with TypeScript decorators! Transform complex BundleActivator classes into simple decorated components where the framework handles all the service registration and dependency wiring automatically.
@@ -486,9 +440,6 @@ const registration2 = context.registerService('CacheService', new MemoryCache(),
 **What this solves:** Manual service management requires significant boilerplate code - registering services, tracking dependencies, handling lifecycle events, and managing service references. DS reduces a 50-line BundleActivator to a simple decorated class.
 
 ### Basic Component Definition
-
-<details>
-<summary>🏗️ Transform complex bundle activators into simple decorated classes</summary>
 
 ```typescript
 import { Component, Service, Activate, Deactivate } from '@pandino/pandino';
@@ -529,12 +480,7 @@ class UserService {
 - ✅ Clean, declarative syntax
 - ✅ Reduced boilerplate code
 
-</details>
-
 ### Dependency Injection with References
-
-<details>
-<summary>🔗 Automatically inject service dependencies without manual ServiceTracker management</summary>
 
 ```typescript
 @Component({ name: 'order.service' })
@@ -597,12 +543,7 @@ class OrderService {
 | `1..n` | One or more services required | Waits for at least one |
 | `0..n` | Zero or more services | Activates immediately |
 
-</details>
-
 ### Dynamic Service References
-
-<details>
-<summary>🔄 Handle services that come and go with automatic rebinding</summary>
 
 ```typescript
 @Component({ name: 'api.gateway' })
@@ -652,12 +593,7 @@ class ApiGateway {
 | `static` | Services bound at activation, don't change |
 | `dynamic` | Services can be added/removed at runtime |
 
-</details>
-
 ### Configuration Management
-
-<details>
-<summary>⚙️ Components can receive dynamic configuration updates</summary>
 
 ```typescript
 @Component({
@@ -711,12 +647,7 @@ class CacheService {
 | `require` | Component waits for configuration before activating |
 | `ignore` | Component ignores configuration updates |
 
-</details>
-
 ### Factory Components
-
-<details>
-<summary>🏭 Create multiple instances of the same component with different configurations</summary>
 
 ```typescript
 @Component({ name: 'database.connection' })
@@ -768,12 +699,7 @@ const analyticsDb = await scr.createFactoryInstance('database.connection.factory
 - ✅ Feature toggles and A/B testing
 - ✅ Multi-tenant applications
 
-</details>
-
 ### Service Component Runtime (SCR)
-
-<details>
-<summary>🎯 The SCR manages your declarative components and ensures OSGi compliance</summary>
 
 **Option 1: Access SCR as a Service (Recommended)**
 
@@ -892,8 +818,6 @@ class DatabaseService {
 - ✅ Centralized component management across all bundles
 - ✅ Automatic cleanup when bundles stop
 - ✅ Follows OSGi best practices
-
-</details>
 
 ## ⚛️ React Integration
 
