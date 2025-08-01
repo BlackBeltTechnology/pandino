@@ -71,6 +71,9 @@ jobs:
             echo "triggered-by-tag=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Run build
+        run: pnpm run build
+
       - name: Run tests
         run: pnpm test
 
