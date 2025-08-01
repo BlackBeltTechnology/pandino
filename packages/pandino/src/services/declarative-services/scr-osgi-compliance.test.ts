@@ -36,9 +36,10 @@ describe('SCR OSGi Specification Compliance', () => {
       }
 
       // Register the component - it should NOT be activated yet
-      await scr.registerComponent(DependentImmediateComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(DependentImmediateComponent, bundleId);
 
-      const entry = scr.getComponent('dependent.immediate');
+      const entry = scr.getComponent(bundleId, 'dependent.immediate');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeNull(); // Should not be activated
       expect(activationTracker).toEqual([]); // No activation should have occurred
@@ -62,9 +63,10 @@ describe('SCR OSGi Specification Compliance', () => {
         }
       }
 
-      await scr.registerComponent(MultiDependentImmediateComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(MultiDependentImmediateComponent, bundleId);
 
-      const entry = scr.getComponent('multi.dependent.immediate');
+      const entry = scr.getComponent(bundleId, 'multi.dependent.immediate');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeNull();
       expect(activationTracker).toEqual([]);
@@ -107,13 +109,14 @@ describe('SCR OSGi Specification Compliance', () => {
         }
       }
 
-      await scr.registerComponent(RequiredServiceImpl);
-      await scr.activateComponent('required.service');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(RequiredServiceImpl, bundleId);
+      await scr.activateComponent(bundleId, 'required.service');
 
       // Register the immediate component - it should activate automatically
-      await scr.registerComponent(DependentImmediateComponent);
+      await scr.registerComponent(DependentImmediateComponent, bundleId);
 
-      const entry = scr.getComponent('dependent.immediate');
+      const entry = scr.getComponent(bundleId, 'dependent.immediate');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeInstanceOf(DependentImmediateComponent);
       expect(activationTracker).toEqual(['dependent-activated']);
@@ -164,15 +167,16 @@ describe('SCR OSGi Specification Compliance', () => {
       }
 
       // Register and activate the required services first
-      await scr.registerComponent(MultiService1);
-      await scr.registerComponent(MultiService2);
-      await scr.activateComponent('multi.service.1');
-      await scr.activateComponent('multi.service.2');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(MultiService1, bundleId);
+      await scr.registerComponent(MultiService2, bundleId);
+      await scr.activateComponent(bundleId, 'multi.service.1');
+      await scr.activateComponent(bundleId, 'multi.service.2');
 
       // Now register the immediate component - it should activate automatically
-      await scr.registerComponent(MultiDependentImmediateComponent);
+      await scr.registerComponent(MultiDependentImmediateComponent, bundleId);
 
-      const entry = scr.getComponent('multi.dependent.immediate');
+      const entry = scr.getComponent(bundleId, 'multi.dependent.immediate');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeInstanceOf(MultiDependentImmediateComponent);
       expect(activationTracker).toEqual(['multi-dependent-activated']);
@@ -198,9 +202,10 @@ describe('SCR OSGi Specification Compliance', () => {
       }
 
       // Register the component - it should be activated despite missing optional service
-      await scr.registerComponent(OptionalDependentImmediateComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(OptionalDependentImmediateComponent, bundleId);
 
-      const entry = scr.getComponent('optional.dependent.immediate');
+      const entry = scr.getComponent(bundleId, 'optional.dependent.immediate');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeInstanceOf(OptionalDependentImmediateComponent);
       expect(activationTracker).toEqual(['optional-dependent-activated']);
@@ -224,9 +229,10 @@ describe('SCR OSGi Specification Compliance', () => {
         }
       }
 
-      await scr.registerComponent(MultiOptionalDependentImmediateComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(MultiOptionalDependentImmediateComponent, bundleId);
 
-      const entry = scr.getComponent('multi.optional.dependent.immediate');
+      const entry = scr.getComponent(bundleId, 'multi.optional.dependent.immediate');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeInstanceOf(MultiOptionalDependentImmediateComponent);
       expect(activationTracker).toEqual(['multi-optional-dependent-activated']);
@@ -267,13 +273,14 @@ describe('SCR OSGi Specification Compliance', () => {
       }
 
       // Register the dependent component first - should not activate
-      await scr.registerComponent(DelayedDependentImmediateComponent);
-      expect(scr.getComponent('delayed.dependent.immediate')?.instance).toBeNull();
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(DelayedDependentImmediateComponent, bundleId);
+      expect(scr.getComponent(bundleId, 'delayed.dependent.immediate')?.instance).toBeNull();
       expect(activationTracker).toEqual([]);
 
       // Now register and activate the required service
-      await scr.registerComponent(DelayedRequiredService);
-      await scr.activateComponent('delayed.required.service');
+      await scr.registerComponent(DelayedRequiredService, bundleId);
+      await scr.activateComponent(bundleId, 'delayed.required.service');
 
       // Simulate service registration event to trigger dependency resolution
       const serviceRefs = bundleContext.getServiceReferences('DelayedRequiredService');
@@ -282,7 +289,7 @@ describe('SCR OSGi Specification Compliance', () => {
       }
 
       // Now the immediate component should be activated
-      const entry = scr.getComponent('delayed.dependent.immediate');
+      const entry = scr.getComponent(bundleId, 'delayed.dependent.immediate');
       expect(entry?.instance).toBeInstanceOf(DelayedDependentImmediateComponent);
       expect(activationTracker).toEqual(['delayed-dependent-activated']);
       expect(serviceBindTracker).toEqual(['service-bound']);
@@ -329,15 +336,16 @@ describe('SCR OSGi Specification Compliance', () => {
       }
 
       // Register dependent components first - neither should activate
-      await scr.registerComponent(SharedDependent1);
-      await scr.registerComponent(SharedDependent2);
-      expect(scr.getComponent('shared.dependent.1')?.instance).toBeNull();
-      expect(scr.getComponent('shared.dependent.2')?.instance).toBeNull();
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(SharedDependent1, bundleId);
+      await scr.registerComponent(SharedDependent2, bundleId);
+      expect(scr.getComponent(bundleId, 'shared.dependent.1')?.instance).toBeNull();
+      expect(scr.getComponent(bundleId, 'shared.dependent.2')?.instance).toBeNull();
       expect(activationTracker).toEqual([]);
 
       // Register and activate the shared required service
-      await scr.registerComponent(SharedRequiredService);
-      await scr.activateComponent('shared.required.service');
+      await scr.registerComponent(SharedRequiredService, bundleId);
+      await scr.activateComponent(bundleId, 'shared.required.service');
 
       // Simulate service registration event
       const serviceRefs = bundleContext.getServiceReferences('SharedRequiredService');
@@ -346,8 +354,8 @@ describe('SCR OSGi Specification Compliance', () => {
       }
 
       // Both immediate components should now be activated
-      expect(scr.getComponent('shared.dependent.1')?.instance).toBeInstanceOf(SharedDependent1);
-      expect(scr.getComponent('shared.dependent.2')?.instance).toBeInstanceOf(SharedDependent2);
+      expect(scr.getComponent(bundleId, 'shared.dependent.1')?.instance).toBeInstanceOf(SharedDependent1);
+      expect(scr.getComponent(bundleId, 'shared.dependent.2')?.instance).toBeInstanceOf(SharedDependent2);
       expect(activationTracker.sort()).toEqual(['shared-dependent-1-activated', 'shared-dependent-2-activated']);
     });
   });
@@ -369,9 +377,10 @@ describe('SCR OSGi Specification Compliance', () => {
         }
       }
 
-      await scr.registerComponent(ConfigRequiredImmediateComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(ConfigRequiredImmediateComponent, bundleId);
 
-      const entry = scr.getComponent('config.required.immediate');
+      const entry = scr.getComponent(bundleId, 'config.required.immediate');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeNull(); // Should not be activated without configuration
       expect(activationTracker).toEqual([]);
@@ -392,9 +401,10 @@ describe('SCR OSGi Specification Compliance', () => {
         }
       }
 
-      await scr.registerComponent(ConfigOptionalImmediateComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(ConfigOptionalImmediateComponent, bundleId);
 
-      const entry = scr.getComponent('config.optional.immediate');
+      const entry = scr.getComponent(bundleId, 'config.optional.immediate');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeInstanceOf(ConfigOptionalImmediateComponent);
       expect(activationTracker).toEqual(['config-optional-activated']);
@@ -440,12 +450,13 @@ describe('SCR OSGi Specification Compliance', () => {
       }
 
       // Register the immediate component first - should not activate (missing mandatory service)
-      await scr.registerComponent(MixedDependencyImmediateComponent);
-      expect(scr.getComponent('mixed.dependency.immediate')?.instance).toBeNull();
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(MixedDependencyImmediateComponent, bundleId);
+      expect(scr.getComponent(bundleId, 'mixed.dependency.immediate')?.instance).toBeNull();
 
       // Register and activate the mandatory service
-      await scr.registerComponent(MandatoryService);
-      await scr.activateComponent('mandatory.service');
+      await scr.registerComponent(MandatoryService, bundleId);
+      await scr.activateComponent(bundleId, 'mandatory.service');
 
       // Simulate service registration event
       const serviceRefs = bundleContext.getServiceReferences('MandatoryService');
@@ -454,7 +465,7 @@ describe('SCR OSGi Specification Compliance', () => {
       }
 
       // Now the component should be activated (even without optional service)
-      const entry = scr.getComponent('mixed.dependency.immediate');
+      const entry = scr.getComponent(bundleId, 'mixed.dependency.immediate');
       expect(entry?.instance).toBeInstanceOf(MixedDependencyImmediateComponent);
       expect(activationTracker).toEqual(['mixed-dependency-activated']);
       expect(boundServices).toEqual(['mandatory']); // Only mandatory service bound
@@ -474,9 +485,10 @@ describe('SCR OSGi Specification Compliance', () => {
 
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-      await scr.registerComponent(FailingImmediateComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(FailingImmediateComponent, bundleId);
 
-      const entry = scr.getComponent('failing.immediate');
+      const entry = scr.getComponent(bundleId, 'failing.immediate');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeNull(); // Should remain null after failed activation
       expect(activationAttempts).toEqual(['activation-attempt']);
@@ -502,9 +514,10 @@ describe('SCR OSGi Specification Compliance', () => {
         }
       }
 
-      await scr.registerComponent(NonImmediateComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(NonImmediateComponent, bundleId);
 
-      const entry = scr.getComponent('non.immediate');
+      const entry = scr.getComponent(bundleId, 'non.immediate');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeNull(); // Should not be activated automatically
       expect(activationTracker).toEqual([]);
@@ -521,9 +534,10 @@ describe('SCR OSGi Specification Compliance', () => {
         }
       }
 
-      await scr.registerComponent(DefaultComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(DefaultComponent, bundleId);
 
-      const entry = scr.getComponent('default.component');
+      const entry = scr.getComponent(bundleId, 'default.component');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeNull(); // Should not be activated automatically
       expect(activationTracker).toEqual([]);

@@ -46,8 +46,9 @@ describe('Service References', () => {
       bundleContext.getServiceReferences = vi.fn().mockReturnValue([mockServiceRef]);
       bundleContext.getService = vi.fn().mockReturnValue(mockService);
 
-      scr.registerComponent(ReferenceComponent);
-      await scr.activateComponent('reference.component');
+      const bundleId = 0;
+      scr.registerComponent(ReferenceComponent, bundleId);
+      await scr.activateComponent(bundleId, 'reference.component');
 
       expect(bindTracker).toEqual([mockService]);
       expect(bundleContext.getServiceReferences).toHaveBeenCalledWith('TestService', null);
@@ -87,8 +88,9 @@ describe('Service References', () => {
 
       bundleContext.getService = vi.fn().mockReturnValueOnce(mockServiceA).mockReturnValueOnce(mockServiceB);
 
-      scr.registerComponent(MultiReferenceComponent);
-      await scr.activateComponent('multi.reference.component');
+      const bundleId = 0;
+      scr.registerComponent(MultiReferenceComponent, bundleId);
+      await scr.activateComponent(bundleId, 'multi.reference.component');
 
       expect(bindTracker).toEqual(['serviceA-bound', 'serviceB-bound']);
     });
@@ -100,13 +102,14 @@ describe('Service References', () => {
         activate() {}
       }
 
-      scr.registerComponent(NoReferencesComponent);
-      await scr.activateComponent('no.references.component');
+      const bundleId = 0;
+      scr.registerComponent(NoReferencesComponent, bundleId);
+      await scr.activateComponent(bundleId, 'no.references.component');
 
       const getServiceReferencesSpy = vi.spyOn(bundleContext, 'getServiceReferences');
       getServiceReferencesSpy.mockClear();
 
-      await (scr as any).satisfyReferences('no.references.component');
+      await scr.satisfyReferences(bundleId, 'no.references.component');
 
       expect(getServiceReferencesSpy).not.toHaveBeenCalled();
     });
@@ -130,9 +133,10 @@ describe('Service References', () => {
       bundleContext.getServiceReferences = vi.fn().mockReturnValue([mockServiceRef]);
       bundleContext.getService = vi.fn().mockReturnValue(null);
 
-      scr.registerComponent(NullServiceComponent);
-      await scr.activateComponent('null.service.component');
-      await (scr as any).satisfyReferences('null.service.component');
+      const bundleId = 0;
+      scr.registerComponent(NullServiceComponent, bundleId);
+      await scr.activateComponent(bundleId, 'null.service.component');
+      await scr.satisfyReferences(bundleId, 'null.service.component');
 
       expect(bindTracker).toEqual([]);
     });
@@ -161,8 +165,9 @@ describe('Service References', () => {
       bundleContext.getServiceReferences = vi.fn().mockReturnValue([mockServiceRef]);
       bundleContext.getService = vi.fn().mockReturnValue(testService);
 
-      scr.registerComponent(MandatoryReferenceComponent);
-      await scr.activateComponent('mandatory.reference.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(MandatoryReferenceComponent, bundleId);
+      await scr.activateComponent(bundleId, 'mandatory.reference.component');
 
       expect(bundleContext.getServiceReferences).toHaveBeenCalledWith('TestService', null);
       expect(bundleContext.getService).toHaveBeenCalledWith(mockServiceRef);
@@ -261,8 +266,9 @@ describe('Service References', () => {
       bundleContext.getServiceReferences = vi.fn().mockReturnValue([mockServiceRef]);
       bundleContext.getService = vi.fn().mockReturnValue(mockService);
 
-      scr.registerComponent(EventComponent);
-      await scr.activateComponent('event.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(EventComponent, bundleId);
+      await scr.activateComponent(bundleId, 'event.component');
 
       await scr.processServiceEvent('TestService', 'unregistered');
 
@@ -302,10 +308,11 @@ describe('Service References', () => {
       bundleContext.getServiceReferences = vi.fn().mockReturnValue([mockServiceRef]);
       bundleContext.getService = vi.fn().mockReturnValue(mockService);
 
-      scr.registerComponent(EventComponent1);
-      scr.registerComponent(EventComponent2);
-      await scr.activateComponent('event.component.1');
-      await scr.activateComponent('event.component.2');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(EventComponent1, bundleId);
+      scr.registerComponent(EventComponent2, bundleId);
+      await scr.activateComponent(bundleId, 'event.component.1');
+      await scr.activateComponent(bundleId, 'event.component.2');
 
       await scr.processServiceEvent('TestService', 'unregistered');
 
@@ -325,7 +332,8 @@ describe('Service References', () => {
         }
       }
 
-      scr.registerComponent(InactiveEventComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(InactiveEventComponent, bundleId);
 
       await scr.processServiceEvent('TestService', 'unregistered');
 
@@ -348,8 +356,9 @@ describe('Service References', () => {
         }
       }
 
-      scr.registerComponent(MismatchEventComponent);
-      await scr.activateComponent('mismatch.event.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(MismatchEventComponent, bundleId);
+      await scr.activateComponent(bundleId, 'mismatch.event.component');
 
       await scr.processServiceEvent('TestService', 'unregistered');
 

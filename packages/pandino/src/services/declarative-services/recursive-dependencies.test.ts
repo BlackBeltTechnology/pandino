@@ -79,19 +79,20 @@ describe('Recursive Reference Dependencies', () => {
         }
       }
 
-      await scr.registerComponent(ComponentA);
-      await scr.registerComponent(ComponentB);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(ComponentA, bundleId);
+      await scr.registerComponent(ComponentB, bundleId);
 
-      await scr.activateComponent('component.b');
+      await scr.activateComponent(bundleId, 'component.b');
 
-      await scr.activateComponent('component.a');
+      await scr.activateComponent(bundleId, 'component.a');
 
       // Process service events to ensure bindings happen
       await scr.processServiceEvent('ServiceA', 'registered');
       await scr.processServiceEvent('ServiceB', 'registered');
 
-      const componentA = scr.getComponent('component.a')?.instance as ComponentA;
-      const componentB = scr.getComponent('component.b')?.instance as ComponentB;
+      const componentA = scr.getComponent(bundleId, 'component.a')?.instance as ComponentA;
+      const componentB = scr.getComponent(bundleId, 'component.b')?.instance as ComponentB;
 
       // Verify both components are activated
       expect(activationOrder).toContain('ComponentA');
@@ -185,11 +186,12 @@ describe('Recursive Reference Dependencies', () => {
         return null;
       });
 
-      await scr.registerComponent(MandatoryComponentB);
-      await scr.activateComponent('mandatory.b');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(MandatoryComponentB, bundleId);
+      await scr.activateComponent(bundleId, 'mandatory.b');
 
-      await scr.registerComponent(MandatoryComponentA);
-      await scr.activateComponent('mandatory.a');
+      await scr.registerComponent(MandatoryComponentA, bundleId);
+      await scr.activateComponent(bundleId, 'mandatory.a');
 
       // Manually trigger the binding since we're using mocks
       mockServiceA.bindServiceB(mockServiceB);
@@ -315,14 +317,15 @@ describe('Recursive Reference Dependencies', () => {
         return null;
       });
 
-      await scr.registerComponent(ComponentX);
-      await scr.registerComponent(ComponentY);
-      await scr.registerComponent(ComponentZ);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(ComponentX, bundleId);
+      await scr.registerComponent(ComponentY, bundleId);
+      await scr.registerComponent(ComponentZ, bundleId);
 
       // Activate all components in a specific order
-      await scr.activateComponent('component.x');
-      await scr.activateComponent('component.y');
-      await scr.activateComponent('component.z');
+      await scr.activateComponent(bundleId, 'component.x');
+      await scr.activateComponent(bundleId, 'component.y');
+      await scr.activateComponent(bundleId, 'component.z');
 
       // Manually trigger the bindings
       instanceX.bindServiceY(instanceY);
@@ -363,8 +366,9 @@ describe('Recursive Reference Dependencies', () => {
         }
       }
 
-      await scr.registerComponent(SelfReferenceComponent);
-      await scr.activateComponent('self.reference');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(SelfReferenceComponent, bundleId);
+      await scr.activateComponent(bundleId, 'self.reference');
 
       // Verify self-reference is established
       expect(selfReference).toBeDefined();

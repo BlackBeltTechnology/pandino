@@ -67,10 +67,11 @@ describe('Configuration and Properties', () => {
         }
       }
 
-      scr.registerComponent(ConfigComponent);
-      await scr.activateComponent('config.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(ConfigComponent, bundleId);
+      await scr.activateComponent(bundleId, 'config.component');
 
-      await (scr as any).updateComponentConfiguration('config.component', { updated: true });
+      await (scr as any).updateComponentConfiguration(bundleId, 'config.component', { updated: true });
 
       expect(updatedConfig).not.toBeNull();
       expect(updatedConfig!.updated).toBe(true);

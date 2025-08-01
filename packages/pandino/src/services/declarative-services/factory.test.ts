@@ -62,8 +62,9 @@ describe('Factory Components', () => {
         }
       }
 
-      scr.registerComponent(FactoryComponent);
-      await scr.activateComponent('factory.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(FactoryComponent, bundleId);
+      await scr.activateComponent(bundleId, 'factory.component');
 
       const instance = await (scr as any).createFactoryInstance('test.factory', 'instance1', { key: 'value' });
 
@@ -88,8 +89,9 @@ describe('Factory Components', () => {
         deactivate = deactivateSpy;
       }
 
-      scr.registerComponent(TestFactoryComponent);
-      await scr.activateComponent('test.factory.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(TestFactoryComponent, bundleId);
+      await scr.activateComponent(bundleId, 'test.factory.component');
 
       const instance = await scr.createFactoryInstance('TestFactory', 'instance1');
       expect(instance).toBeDefined();
@@ -101,7 +103,7 @@ describe('Factory Components', () => {
       expect(contextArg.getComponentName()).toBe('test.factory.component.instance1');
       expect(contextArg.getBundleContext()).toBe(bundleContext);
 
-      const factoryComponent = scr.getComponent('test.factory.component');
+      const factoryComponent = scr.getComponent(bundleId, 'test.factory.component');
       expect(factoryComponent?.factoryInstances?.has('instance1')).toBe(false);
     });
 
@@ -118,7 +120,8 @@ describe('Factory Components', () => {
       })
       class TestFactoryComponent {}
 
-      scr.registerComponent(TestFactoryComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(TestFactoryComponent, bundleId);
 
       await expect(scr.deleteFactoryInstance('TestFactory', 'instance1')).rejects.toThrow(
         'Factory component with factory ID TestFactory not found or not active',
@@ -132,8 +135,9 @@ describe('Factory Components', () => {
       })
       class TestFactoryComponent {}
 
-      scr.registerComponent(TestFactoryComponent);
-      await scr.activateComponent('test.factory.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(TestFactoryComponent, bundleId);
+      await scr.activateComponent(bundleId, 'test.factory.component');
 
       await expect(scr.deleteFactoryInstance('TestFactory', 'nonexistent')).rejects.toThrow(
         'Factory instance nonexistent not found',
@@ -155,8 +159,9 @@ describe('Factory Components', () => {
         }
       }
 
-      scr.registerComponent(TestFactoryComponent);
-      await scr.activateComponent('test.factory.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(TestFactoryComponent, bundleId);
+      await scr.activateComponent(bundleId, 'test.factory.component');
 
       const instance = await scr.createFactoryInstance('TestFactory', 'instance1');
       expect(instance).toBeDefined();
@@ -168,7 +173,7 @@ describe('Factory Components', () => {
         deactivateError,
       );
 
-      const factoryComponent = scr.getComponent('test.factory.component');
+      const factoryComponent = scr.getComponent(bundleId, 'test.factory.component');
       expect(factoryComponent?.factoryInstances?.has('instance1')).toBe(false);
 
       consoleSpy.mockRestore();
@@ -181,15 +186,16 @@ describe('Factory Components', () => {
       })
       class TestFactoryComponent {}
 
-      scr.registerComponent(TestFactoryComponent);
-      await scr.activateComponent('test.factory.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(TestFactoryComponent, bundleId);
+      await scr.activateComponent(bundleId, 'test.factory.component');
 
       const instance = await scr.createFactoryInstance('TestFactory', 'instance1');
       expect(instance).toBeDefined();
 
       await scr.deleteFactoryInstance('TestFactory', 'instance1');
 
-      const factoryComponent = scr.getComponent('test.factory.component');
+      const factoryComponent = scr.getComponent(bundleId, 'test.factory.component');
       expect(factoryComponent?.factoryInstances?.has('instance1')).toBe(false);
     });
 
@@ -203,15 +209,16 @@ describe('Factory Components', () => {
         deactivate = 'not a function'; // Invalid deactivate
       }
 
-      scr.registerComponent(TestFactoryComponent);
-      await scr.activateComponent('test.factory.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(TestFactoryComponent, bundleId);
+      await scr.activateComponent(bundleId, 'test.factory.component');
 
       const instance = await scr.createFactoryInstance('TestFactory', 'instance1');
       expect(instance).toBeDefined();
 
       await scr.deleteFactoryInstance('TestFactory', 'instance1');
 
-      const factoryComponent = scr.getComponent('test.factory.component');
+      const factoryComponent = scr.getComponent(bundleId, 'test.factory.component');
       expect(factoryComponent?.factoryInstances?.has('instance1')).toBe(false);
     });
 
@@ -228,8 +235,9 @@ describe('Factory Components', () => {
         deactivate = deactivateSpy;
       }
 
-      scr.registerComponent(TestFactoryComponent);
-      await scr.activateComponent('test.factory.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(TestFactoryComponent, bundleId);
+      await scr.activateComponent(bundleId, 'test.factory.component');
 
       const configuration = { configProp: 'config' };
       await scr.createFactoryInstance('TestFactory', 'instance1', configuration);
@@ -257,13 +265,14 @@ describe('Factory Components', () => {
         deactivate = deactivateSpy;
       }
 
-      scr.registerComponent(TestFactoryComponent);
-      await scr.activateComponent('test.factory.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(TestFactoryComponent, bundleId);
+      await scr.activateComponent(bundleId, 'test.factory.component');
 
       await scr.createFactoryInstance('TestFactory', 'instance1');
       await scr.createFactoryInstance('TestFactory', 'instance2');
 
-      const factoryComponent = scr.getComponent('test.factory.component');
+      const factoryComponent = scr.getComponent(bundleId, 'test.factory.component');
       expect(factoryComponent?.factoryInstances?.size).toBe(2);
 
       await scr.deleteFactoryInstance('TestFactory', 'instance1');

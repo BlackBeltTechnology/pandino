@@ -26,7 +26,8 @@ describe('Component Lifecycle', () => {
 
       scr.registerComponent(TestComponent);
 
-      const entry = scr.getComponent('test.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      const entry = scr.getComponent(bundleId, 'test.component');
       expect(entry).toBeDefined();
       expect(entry?.metadata.name).toBe('test.component');
       expect(entry?.metadata.class).toBe(TestComponent);
@@ -51,12 +52,14 @@ describe('Component Lifecycle', () => {
         }
       }
 
-      scr.registerComponent(ActivatableComponent);
-      await scr.activateComponent('activatable.component');
+      // Get the system bundle ID (0)
+      const bundleId = 0;
+      scr.registerComponent(ActivatableComponent, bundleId);
+      await scr.activateComponent(bundleId, 'activatable.component');
 
       expect(activationTracker).toEqual(['activated']);
 
-      const entry = scr.getComponent('activatable.component');
+      const entry = scr.getComponent(bundleId, 'activatable.component');
       expect(entry?.instance).toBeInstanceOf(ActivatableComponent);
     });
 
@@ -66,10 +69,11 @@ describe('Component Lifecycle', () => {
         public value = 'test';
       }
 
-      scr.registerComponent(SimpleComponent);
-      await scr.activateComponent('simple.component');
+      const bundleId = 0;
+      scr.registerComponent(SimpleComponent, bundleId);
+      await scr.activateComponent(bundleId, 'simple.component');
 
-      const entry = scr.getComponent('simple.component');
+      const entry = scr.getComponent(bundleId, 'simple.component');
       expect(entry?.instance).toBeInstanceOf(SimpleComponent);
       expect(entry?.instance.value).toBe('test');
     });
@@ -86,15 +90,17 @@ describe('Component Lifecycle', () => {
         }
       }
 
-      scr.registerComponent(AsyncComponent);
-      await scr.activateComponent('async.component');
+      const bundleId = 0;
+      scr.registerComponent(AsyncComponent, bundleId);
+      await scr.activateComponent(bundleId, 'async.component');
 
       expect(activationTracker).toEqual(['async-activated']);
     });
 
     it('should throw an error if the component is not registered', async () => {
-      await expect(scr.activateComponent('nonexistent.component')).rejects.toThrow(
-        'Component nonexistent.component not found',
+      const bundleId = 0;
+      await expect(scr.activateComponent(bundleId, 'nonexistent.component')).rejects.toThrow(
+        'Component nonexistent.component not found in bundle 0',
       );
     });
   });
@@ -116,13 +122,14 @@ describe('Component Lifecycle', () => {
         }
       }
 
-      scr.registerComponent(DeactivatableComponent);
-      await scr.activateComponent('deactivatable.component');
-      await scr.deactivateComponent('deactivatable.component');
+      const bundleId = 0;
+      scr.registerComponent(DeactivatableComponent, bundleId);
+      await scr.activateComponent(bundleId, 'deactivatable.component');
+      await scr.deactivateComponent(bundleId, 'deactivatable.component');
 
       expect(lifecycleTracker).toEqual(['activated', 'deactivated']);
 
-      const entry = scr.getComponent('deactivatable.component');
+      const entry = scr.getComponent(bundleId, 'deactivatable.component');
       expect(entry?.instance).toBeNull();
     });
 
@@ -143,9 +150,10 @@ describe('Component Lifecycle', () => {
         }
       }
 
-      scr.registerComponent(AsyncDeactivationComponent);
-      await scr.activateComponent('async.deactivation.component');
-      await scr.deactivateComponent('async.deactivation.component');
+      const bundleId = 0;
+      scr.registerComponent(AsyncDeactivationComponent, bundleId);
+      await scr.activateComponent(bundleId, 'async.deactivation.component');
+      await scr.deactivateComponent(bundleId, 'async.deactivation.component');
 
       expect(lifecycleTracker).toEqual(['activated', 'async-deactivated']);
     });
@@ -154,10 +162,11 @@ describe('Component Lifecycle', () => {
       @Component({ name: 'inactive.component' })
       class InactiveComponent {}
 
-      scr.registerComponent(InactiveComponent);
+      const bundleId = 0;
+      scr.registerComponent(InactiveComponent, bundleId);
 
-      await expect(scr.deactivateComponent('inactive.component')).rejects.toThrow(
-        'Component inactive.component not active',
+      await expect(scr.deactivateComponent(bundleId, 'inactive.component')).rejects.toThrow(
+        'Component inactive.component not active in bundle 0',
       );
     });
 
@@ -165,10 +174,11 @@ describe('Component Lifecycle', () => {
       @Component({ name: 'never.activated.component' })
       class NeverActivatedComponent {}
 
-      scr.registerComponent(NeverActivatedComponent);
+      const bundleId = 0;
+      scr.registerComponent(NeverActivatedComponent, bundleId);
 
-      await expect(scr.deactivateComponent('never.activated.component')).rejects.toThrow(
-        'Component never.activated.component not active',
+      await expect(scr.deactivateComponent(bundleId, 'never.activated.component')).rejects.toThrow(
+        'Component never.activated.component not active in bundle 0',
       );
     });
 
@@ -278,11 +288,12 @@ describe('Component Lifecycle', () => {
       } as unknown as BundleContext;
 
       const testScr = new ServiceComponentRuntime(framework, mockBundleContext);
-      testScr.registerComponent(FullLifecycleComponent);
-      await testScr.activateComponent('full.lifecycle.component');
+      const bundleId = 0;
+      testScr.registerComponent(FullLifecycleComponent, bundleId);
+      await testScr.activateComponent(bundleId, 'full.lifecycle.component');
 
       await testScr.processServiceEvent('TestService', 'unregistered');
-      await testScr.deactivateComponent('full.lifecycle.component');
+      await testScr.deactivateComponent(bundleId, 'full.lifecycle.component');
 
       expect(lifecycleTracker).toEqual(['activated', 'service-bound', 'service-unbound', 'deactivated']);
     });
@@ -306,19 +317,26 @@ describe('Component Lifecycle', () => {
       }
 
       // Test direct component registration
-      await scr.registerComponent(BundleLifecycleComponent);
-      expect((scr as any).components.has('bundle.lifecycle.component')).toBe(true);
+      const bundleId = 0;
+      await scr.registerComponent(BundleLifecycleComponent, bundleId);
+      expect(
+        (scr as any).components.has(bundleId) &&
+          (scr as any).components.get(bundleId).has('bundle.lifecycle.component'),
+      ).toBe(true);
 
       // Activate the component
-      await scr.activateComponent('bundle.lifecycle.component');
+      await scr.activateComponent(bundleId, 'bundle.lifecycle.component');
       expect(lifecycleEvents).toContain('activated');
 
       // Deactivate the component - it should still exist in registry but with null instance
-      await scr.deactivateComponent('bundle.lifecycle.component');
+      await scr.deactivateComponent(bundleId, 'bundle.lifecycle.component');
       expect(lifecycleEvents).toContain('deactivated');
-      expect((scr as any).components.has('bundle.lifecycle.component')).toBe(true); // Still registered
+      expect(
+        (scr as any).components.has(bundleId) &&
+          (scr as any).components.get(bundleId).has('bundle.lifecycle.component'),
+      ).toBe(true); // Still registered
 
-      const componentEntry = (scr as any).components.get('bundle.lifecycle.component');
+      const componentEntry = (scr as any).components.get(bundleId).get('bundle.lifecycle.component');
       expect(componentEntry.instance).toBeNull(); // But instance is null
     });
   });

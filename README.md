@@ -109,9 +109,10 @@ class OrderService {
 
 // 3. Register components with SCR
 const scr = context.getService(context.getServiceReference('ServiceComponentRuntime')!);
-await scr.registerComponent(UserServiceImpl);
-await scr.registerComponent(NotificationServiceImpl);
-await scr.registerComponent(OrderService);
+const bundleId = context.getBundle().getBundleId();
+await scr.registerComponent(UserServiceImpl, bundleId);
+await scr.registerComponent(NotificationServiceImpl, bundleId);
+await scr.registerComponent(OrderService, bundleId);
 ```
 
 **The Magic:** All three services discover each other automatically. `OrderService` gets both dependencies injected without knowing how they're implemented!

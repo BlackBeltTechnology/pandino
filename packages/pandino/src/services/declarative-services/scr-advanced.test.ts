@@ -29,10 +29,11 @@ describe('SCR Advanced Functionality', () => {
       }
 
       // Use real registerComponent instead of mocking findComponents
-      await scr.registerComponent(ImmediateComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(ImmediateComponent, bundleId);
 
       // The component should be automatically activated due to immediate: true
-      const entry = scr.getComponent('immediate.component');
+      const entry = scr.getComponent(bundleId, 'immediate.component');
       expect(entry).toBeDefined();
       expect(entry?.instance).toBeInstanceOf(ImmediateComponent);
       expect(entry!.instance.activated).toBe(true);
@@ -53,18 +54,19 @@ describe('SCR Advanced Functionality', () => {
       }
 
       // Use real component registration and activation
-      scr.registerComponent(TestComponent);
-      await scr.activateComponent('test.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(TestComponent, bundleId);
+      await scr.activateComponent(bundleId, 'test.component');
 
       // Verify component is active
-      let entry = scr.getComponent('test.component');
+      let entry = scr.getComponent(bundleId, 'test.component');
       expect(entry?.instance).toBeInstanceOf(TestComponent);
 
       // Deactivate and verify cleanup
-      await scr.deactivateComponent('test.component');
+      await scr.deactivateComponent(bundleId, 'test.component');
       expect(deactivationTracker).toEqual(['component-deactivated']);
 
-      entry = scr.getComponent('test.component');
+      entry = scr.getComponent(bundleId, 'test.component');
       expect(entry?.instance).toBeNull();
     });
 
@@ -88,16 +90,17 @@ describe('SCR Advanced Functionality', () => {
       }
 
       // Register multiple components
-      scr.registerComponent(FirstComponent);
-      scr.registerComponent(SecondComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(FirstComponent, bundleId);
+      scr.registerComponent(SecondComponent, bundleId);
 
       // Activate them manually to test order
-      await scr.activateComponent('first.component');
-      await scr.activateComponent('second.component');
+      await scr.activateComponent(bundleId, 'first.component');
+      await scr.activateComponent(bundleId, 'second.component');
 
       expect(activationOrder).toEqual(['first', 'second']);
-      expect(scr.getComponent('first.component')?.instance).toBeInstanceOf(FirstComponent);
-      expect(scr.getComponent('second.component')?.instance).toBeInstanceOf(SecondComponent);
+      expect(scr.getComponent(bundleId, 'first.component')?.instance).toBeInstanceOf(FirstComponent);
+      expect(scr.getComponent(bundleId, 'second.component')?.instance).toBeInstanceOf(SecondComponent);
     });
   });
 
@@ -116,8 +119,9 @@ describe('SCR Advanced Functionality', () => {
         }
       }
 
-      await scr.registerComponent(ServiceComponent);
-      await scr.activateComponent('service.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(ServiceComponent, bundleId);
+      await scr.activateComponent(bundleId, 'service.component');
 
       expect(registerServiceSpy).toHaveBeenCalledWith(
         ['TestService', 'AnotherService'],
@@ -125,7 +129,7 @@ describe('SCR Advanced Functionality', () => {
         expect.any(Object),
       );
 
-      const entry = scr.getComponent('service.component');
+      const entry = scr.getComponent(bundleId, 'service.component');
       expect(entry?.serviceRegistration).toBeDefined();
 
       // Test that the service method works
@@ -152,9 +156,10 @@ describe('SCR Advanced Functionality', () => {
         deactivate() {}
       }
 
-      scr.registerComponent(ServiceComponent);
-      await scr.activateComponent('service.component');
-      await scr.deactivateComponent('service.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(ServiceComponent, bundleId);
+      await scr.activateComponent(bundleId, 'service.component');
+      await scr.deactivateComponent(bundleId, 'service.component');
 
       expect(registerServiceSpy).toHaveBeenCalled();
       expect(mockServiceRegistration.unregister).toHaveBeenCalled();
@@ -172,8 +177,9 @@ describe('SCR Advanced Functionality', () => {
         }
       }
 
-      await scr.registerComponent(DiscoverableService);
-      await scr.activateComponent('discoverable.service');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(DiscoverableService, bundleId);
+      await scr.activateComponent(bundleId, 'discoverable.service');
 
       // Verify the service is actually registered and discoverable
       const serviceRefs = bundleContext.getServiceReferences('DiscoverableService');
@@ -222,14 +228,15 @@ describe('SCR Advanced Functionality', () => {
       }
 
       // Register and activate provider first
-      await scr.registerComponent(ProviderService);
-      await scr.activateComponent('provider.service');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(ProviderService, bundleId);
+      await scr.activateComponent(bundleId, 'provider.service');
 
       // Then register and activate consumer
-      await scr.registerComponent(ConsumerComponent);
-      await scr.activateComponent('consumer.component');
+      await scr.registerComponent(ConsumerComponent, bundleId);
+      await scr.activateComponent(bundleId, 'consumer.component');
 
-      const consumerEntry = scr.getComponent('consumer.component');
+      const consumerEntry = scr.getComponent(bundleId, 'consumer.component');
       const consumerInstance = consumerEntry?.instance as ConsumerComponent;
 
       expect(consumerInstance.getInjectedValue()).toBe('provided-value');
@@ -284,16 +291,17 @@ describe('SCR Advanced Functionality', () => {
       }
 
       // Register providers first
-      await scr.registerComponent(Provider1);
-      await scr.registerComponent(Provider2);
-      await scr.activateComponent('provider1');
-      await scr.activateComponent('provider2');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(Provider1, bundleId);
+      await scr.registerComponent(Provider2, bundleId);
+      await scr.activateComponent(bundleId, 'provider1');
+      await scr.activateComponent(bundleId, 'provider2');
 
       // Then register consumer
-      await scr.registerComponent(MultiConsumer);
-      await scr.activateComponent('multi.consumer');
+      await scr.registerComponent(MultiConsumer, bundleId);
+      await scr.activateComponent(bundleId, 'multi.consumer');
 
-      const consumerEntry = scr.getComponent('multi.consumer');
+      const consumerEntry = scr.getComponent(bundleId, 'multi.consumer');
       const consumerInstance = consumerEntry?.instance as MultiConsumer;
 
       expect(consumerInstance.getServiceCount()).toBe(2);
@@ -314,9 +322,10 @@ describe('SCR Advanced Functionality', () => {
         activate() {}
       }
 
-      scr.registerComponent(MandatoryConsumer);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(MandatoryConsumer, bundleId);
 
-      await expect(scr.activateComponent('mandatory.consumer')).rejects.toThrow(
+      await expect(scr.activateComponent(bundleId, 'mandatory.consumer')).rejects.toThrow(
         'Mandatory reference NonExistentService not satisfied',
       );
     });
@@ -341,13 +350,14 @@ describe('SCR Advanced Functionality', () => {
         }
       }
 
-      scr.registerComponent(FailingComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(FailingComponent, bundleId);
 
-      await expect(scr.activateComponent('failing.component')).rejects.toThrow('Activation failed');
+      await expect(scr.activateComponent(bundleId, 'failing.component')).rejects.toThrow('Activation failed');
 
       expect(unregisterSpy).toHaveBeenCalled();
 
-      const entry = scr.getComponent('failing.component');
+      const entry = scr.getComponent(bundleId, 'failing.component');
       expect(entry?.instance).toBeNull();
     });
 
@@ -357,12 +367,16 @@ describe('SCR Advanced Functionality', () => {
         class: 'not-a-function', // Invalid constructor
       };
 
-      (scr as any).components.set('invalid.component', {
+      const bundleId = 0;
+      if (!(scr as any).components.has(bundleId)) {
+        (scr as any).components.set(bundleId, new Map());
+      }
+      (scr as any).components.get(bundleId).set('invalid.component', {
         instance: null,
         metadata: invalidMetadata,
       });
 
-      await expect(scr.activateComponent('invalid.component')).rejects.toThrow(
+      await expect(scr.activateComponent(bundleId, 'invalid.component')).rejects.toThrow(
         'Component invalid.component does not have a valid constructor',
       );
     });
@@ -385,11 +399,12 @@ describe('SCR Advanced Functionality', () => {
       const metadata = (ConfigurableComponent as any).__osgi_component__;
       metadata.modified = 'modified';
 
-      scr.registerComponent(ConfigurableComponent);
-      await scr.activateComponent('configurable.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(ConfigurableComponent, bundleId);
+      await scr.activateComponent(bundleId, 'configurable.component');
 
       const newConfig = { key: 'value', updated: true };
-      await (scr as any).updateComponentConfiguration('configurable.component', newConfig);
+      await (scr as any).updateComponentConfiguration(bundleId, 'configurable.component', newConfig);
 
       expect(lastConfig).toEqual(newConfig);
     });
@@ -398,11 +413,12 @@ describe('SCR Advanced Functionality', () => {
       @Component({ name: 'inactive.config.component' })
       class InactiveConfigComponent {}
 
-      scr.registerComponent(InactiveConfigComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(InactiveConfigComponent, bundleId);
 
-      await expect((scr as any).updateComponentConfiguration('inactive.config.component', {})).rejects.toThrow(
-        'Component inactive.config.component not active',
-      );
+      await expect(
+        (scr as any).updateComponentConfiguration(bundleId, 'inactive.config.component', {}),
+      ).rejects.toThrow('Component inactive.config.component not active in bundle ' + bundleId);
     });
   });
 
@@ -434,8 +450,9 @@ describe('SCR Advanced Functionality', () => {
       bundleContext.getService = vi.fn().mockReturnValue(mockService);
       bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
 
-      scr.registerComponent(DynamicComponent);
-      await scr.activateComponent('dynamic.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(DynamicComponent, bundleId);
+      await scr.activateComponent(bundleId, 'dynamic.component');
 
       // Simulate service registration event
       await scr.processServiceEvent('DynamicService', 'registered', mockServiceRef);
@@ -471,8 +488,9 @@ describe('SCR Advanced Functionality', () => {
       bundleContext.getService = vi.fn().mockReturnValue(updatedService);
       bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
 
-      scr.registerComponent(UpdateComponent);
-      await scr.activateComponent('update.component');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(UpdateComponent, bundleId);
+      await scr.activateComponent(bundleId, 'update.component');
 
       // Simulate service modified event
       await scr.processServiceEvent('UpdateService', 'modified', mockServiceRef);

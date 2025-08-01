@@ -329,10 +329,11 @@ const activator: BundleActivator = {
     // Get SCR service from the service registry
     const scrRef = context.getServiceReference<ServiceComponentRuntime>('ServiceComponentRuntime');
     const scr = context.getService(scrRef)!;
+    const bundleId = context.getBundle().getBundleId();
 
     // Register your components
-    await scr.registerComponent(UserService);
-    await scr.registerComponent(OrderService);
+    await scr.registerComponent(UserService, bundleId);
+    await scr.registerComponent(OrderService, bundleId);
 
     console.log('Components registered with SCR');
   }

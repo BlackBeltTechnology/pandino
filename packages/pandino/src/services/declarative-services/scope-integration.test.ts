@@ -36,8 +36,9 @@ describe('Scope Decorator Integration Tests', () => {
         }
       }
 
-      scr.registerComponent(SingletonService);
-      await scr.activateComponent('singleton.service');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(SingletonService, bundleId);
+      await scr.activateComponent(bundleId, 'singleton.service');
 
       const serviceRef1 = bundleContext.getServiceReference('SingletonService');
       const serviceRef2 = bundleContext.getServiceReference('SingletonService');
@@ -73,8 +74,9 @@ describe('Scope Decorator Integration Tests', () => {
         }
       }
 
-      scr.registerComponent(SingletonCounterService);
-      await scr.activateComponent('singleton.counter');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(SingletonCounterService, bundleId);
+      await scr.activateComponent(bundleId, 'singleton.counter');
 
       const ref1 = bundleContext.getServiceReference('CounterService');
       const ref2 = bundleContext.getServiceReference('CounterService');
@@ -113,8 +115,9 @@ describe('Scope Decorator Integration Tests', () => {
         }
       }
 
-      scr.registerComponent(BundleScopedService);
-      await scr.activateComponent('bundle.scoped.service');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(BundleScopedService, bundleId);
+      await scr.activateComponent(bundleId, 'bundle.scoped.service');
 
       const serviceRef = bundleContext.getServiceReference('BundleScopedService');
       const service = bundleContext.getService(serviceRef!) as any;
@@ -146,8 +149,9 @@ describe('Scope Decorator Integration Tests', () => {
         }
       }
 
-      scr.registerComponent(BundleIsolatedService);
-      await scr.activateComponent('bundle.isolated.service');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(BundleIsolatedService, bundleId);
+      await scr.activateComponent(bundleId, 'bundle.isolated.service');
 
       const serviceRef = bundleContext.getServiceReference('IsolatedService');
       const service = bundleContext.getService(serviceRef!) as any;
@@ -191,8 +195,9 @@ describe('Scope Decorator Integration Tests', () => {
         }
       }
 
-      scr.registerComponent(PrototypeService);
-      await scr.activateComponent('prototype.service');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(PrototypeService, bundleId);
+      await scr.activateComponent(bundleId, 'prototype.service');
 
       // Get multiple service instances - now using real prototype implementation
       const serviceRef1 = bundleContext.getServiceReference('PrototypeService');
@@ -237,8 +242,9 @@ describe('Scope Decorator Integration Tests', () => {
         }
       }
 
-      scr.registerComponent(PrototypeCounterService);
-      await scr.activateComponent('prototype.counter');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(PrototypeCounterService, bundleId);
+      await scr.activateComponent(bundleId, 'prototype.counter');
 
       const ref1 = bundleContext.getServiceReference('PrototypeCounterService');
       const ref2 = bundleContext.getServiceReference('PrototypeCounterService');
@@ -309,11 +315,12 @@ describe('Scope Decorator Integration Tests', () => {
         return singletonInstance;
       });
 
-      scr.registerComponent(SingletonDependency);
-      scr.registerComponent(ConsumerService);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(SingletonDependency, bundleId);
+      scr.registerComponent(ConsumerService, bundleId);
 
-      await scr.activateComponent('singleton.dependency');
-      await scr.activateComponent('consumer.service');
+      await scr.activateComponent(bundleId, 'singleton.dependency');
+      await scr.activateComponent(bundleId, 'consumer.service');
 
       // Multiple consumers should get the same singleton instance
       bundleContext.getServiceReference('ConsumerService');
@@ -346,7 +353,8 @@ describe('Scope Decorator Integration Tests', () => {
         }
       }
 
-      scr.registerComponent(PrototypeFactoryComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(PrototypeFactoryComponent, bundleId);
 
       // Simulate multiple factory instances (prototype behavior)
       const instance1 = new PrototypeFactoryComponent({ env: 'dev' });
@@ -379,8 +387,9 @@ describe('Scope Decorator Integration Tests', () => {
         }
       }
 
-      scr.registerComponent(DefaultScopeService);
-      await scr.activateComponent('default.scope.service');
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(DefaultScopeService, bundleId);
+      await scr.activateComponent(bundleId, 'default.scope.service');
 
       const serviceRef1 = bundleContext.getServiceReference('DefaultScopeService');
       const serviceRef2 = bundleContext.getServiceReference('DefaultScopeService');
@@ -405,10 +414,11 @@ describe('Scope Decorator Integration Tests', () => {
         }
       }
 
-      scr.registerComponent(FailingPrototypeService);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(FailingPrototypeService, bundleId);
 
       // For prototype scope, activation just registers the service factory - no error yet
-      await scr.activateComponent('failing.prototype.service');
+      await scr.activateComponent(bundleId, 'failing.prototype.service');
 
       // The error occurs when someone tries to get a service instance
       const serviceRef = bundleContext.getServiceReference('FailingPrototypeService');
@@ -428,10 +438,13 @@ describe('Scope Decorator Integration Tests', () => {
         }
       }
 
-      scr.registerComponent(FailingSingletonService);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(FailingSingletonService, bundleId);
 
       // For singleton scope, the error occurs during component activation
-      await expect(scr.activateComponent('failing.singleton.service')).rejects.toThrow('Singleton activation failed');
+      await expect(scr.activateComponent(bundleId, 'failing.singleton.service')).rejects.toThrow(
+        'Singleton activation failed',
+      );
     });
 
     it('should handle scope mismatch in service dependencies', async () => {
@@ -465,11 +478,12 @@ describe('Scope Decorator Integration Tests', () => {
         }
       }
 
-      scr.registerComponent(SingletonProviderService);
-      scr.registerComponent(PrototypeConsumerService);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      scr.registerComponent(SingletonProviderService, bundleId);
+      scr.registerComponent(PrototypeConsumerService, bundleId);
 
-      await scr.activateComponent('singleton.provider');
-      await scr.activateComponent('prototype.consumer');
+      await scr.activateComponent(bundleId, 'singleton.provider');
+      await scr.activateComponent(bundleId, 'prototype.consumer');
 
       // This should work fine - prototype can depend on singleton
       expect(true).toBe(true);

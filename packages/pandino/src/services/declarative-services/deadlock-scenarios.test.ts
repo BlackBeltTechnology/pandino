@@ -59,17 +59,20 @@ describe('Deadlock Scenarios', () => {
         }
       }
 
-      await scr.registerComponent(DeadlockComponentA);
-      await scr.registerComponent(DeadlockComponentB);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(DeadlockComponentA, bundleId);
+      await scr.registerComponent(DeadlockComponentB, bundleId);
 
       // This should fail with a deadlock error
       // We'll try to activate A first, which will wait for B
       // But B can't be activated because it's waiting for A
-      await expect(scr.activateComponent('deadlock.a')).rejects.toThrow('Mandatory reference DeadlockB not satisfied');
+      await expect(scr.activateComponent(bundleId, 'deadlock.a')).rejects.toThrow(
+        'Mandatory reference DeadlockB not satisfied',
+      );
 
       // In the current implementation, the component instance might be created
       // but not fully activated, so we'll just verify the activation fails
-      const componentA = scr.getComponent('deadlock.a');
+      const componentA = scr.getComponent(bundleId, 'deadlock.a');
       expect(componentA).toBeDefined();
 
       getServiceReferencesSpy.mockRestore();
@@ -120,14 +123,15 @@ describe('Deadlock Scenarios', () => {
         }
       }
 
-      await scr.registerComponent(GreedyComponentA);
-      await scr.registerComponent(GreedyComponentB);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(GreedyComponentA, bundleId);
+      await scr.registerComponent(GreedyComponentB, bundleId);
 
       // Activate B first (which doesn't have mandatory dependencies)
-      await scr.activateComponent('greedy.b');
+      await scr.activateComponent(bundleId, 'greedy.b');
 
       // Then activate A (which can now satisfy its mandatory dependency on B)
-      await scr.activateComponent('greedy.a');
+      await scr.activateComponent(bundleId, 'greedy.a');
 
       // Verify both components are active in the correct order
       expect(activationOrder).toEqual(['GreedyB', 'GreedyA']);
@@ -186,11 +190,12 @@ describe('Deadlock Scenarios', () => {
         }
       }
 
-      await scr.registerComponent(DelayedComponentA);
-      await scr.registerComponent(DelayedComponentB);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(DelayedComponentA, bundleId);
+      await scr.registerComponent(DelayedComponentB, bundleId);
 
-      const activatePromiseA = scr.activateComponent('delayed.a');
-      const activatePromiseB = scr.activateComponent('delayed.b');
+      const activatePromiseA = scr.activateComponent(bundleId, 'delayed.a');
+      const activatePromiseB = scr.activateComponent(bundleId, 'delayed.b');
 
       delayedBindingResolve!();
 
@@ -253,14 +258,15 @@ describe('Deadlock Scenarios', () => {
         }
       }
 
-      await scr.registerComponent(ServiceOne);
-      await scr.registerComponent(ServiceTwo);
-      await scr.registerComponent(MultiDependentComponent);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(ServiceOne, bundleId);
+      await scr.registerComponent(ServiceTwo, bundleId);
+      await scr.registerComponent(MultiDependentComponent, bundleId);
 
-      await scr.activateComponent('service.one');
-      await scr.activateComponent('service.two');
+      await scr.activateComponent(bundleId, 'service.one');
+      await scr.activateComponent(bundleId, 'service.two');
 
-      await scr.activateComponent('multi.dependent');
+      await scr.activateComponent(bundleId, 'multi.dependent');
 
       expect(activationOrder).toContain('ServiceOne');
       expect(activationOrder).toContain('ServiceTwo');
@@ -331,16 +337,19 @@ describe('Deadlock Scenarios', () => {
         }
       }
 
-      await scr.registerComponent(ChainComponentA);
-      await scr.registerComponent(ChainComponentB);
-      await scr.registerComponent(ChainComponentC);
+      const bundleId = bundleContext.getBundle().getBundleId();
+      await scr.registerComponent(ChainComponentA, bundleId);
+      await scr.registerComponent(ChainComponentB, bundleId);
+      await scr.registerComponent(ChainComponentC, bundleId);
 
       // This should fail with a deadlock error
-      await expect(scr.activateComponent('chain.a')).rejects.toThrow('Mandatory reference ChainB not satisfied');
+      await expect(scr.activateComponent(bundleId, 'chain.a')).rejects.toThrow(
+        'Mandatory reference ChainB not satisfied',
+      );
 
       // In the current implementation, the component instance might be created
       // but not fully activated, so we'll just verify the activation fails with the expected error
-      const componentA = scr.getComponent('chain.a');
+      const componentA = scr.getComponent(bundleId, 'chain.a');
       expect(componentA).toBeDefined();
 
       getServiceReferencesSpy.mockRestore();

@@ -46,10 +46,12 @@ export class ComponentContextImpl implements ComponentContext {
   }
 
   disableComponent(name: string): void {
-    this.scr.deactivateComponent(name);
+    const bundleId = this.bundleContext.getBundle().getBundleId();
+    this.scr.deactivateComponent(bundleId, name);
   }
 
   enableComponent(name: string): void {
-    this.scr.activateComponent(name);
+    const bundleId = this.bundleContext.getBundle().getBundleId();
+    this.scr.activateComponent(bundleId, name);
   }
 }

@@ -265,8 +265,9 @@ export class GreetingServiceBundleActivator implements BundleActivator {
     console.log('Greeting Service Bundle started');
     this.scrRef = context.getServiceReference<ServiceComponentRuntime>('ServiceComponentRuntime')!;
     const scr = context.getService(this.scrRef)!;
+    const bundleId = context.getBundle().getBundleId();
 
-    await scr.registerComponent(GreetingServiceComponent);
+    await scr.registerComponent(GreetingServiceComponent, bundleId);
   }
 
   async stop(context: BundleContext): Promise<void> {

@@ -144,17 +144,14 @@ class BundleScopeServiceFactory implements ServiceFactory<any> {
 }
 
 export class ServiceComponentRuntime {
-  private components = new Map<string, ComponentEntry>();
+  // Map of bundle ID -> component name -> component entry
+  private components = new Map<number, Map<string, ComponentEntry>>();
   private readonly bundleContext: BundleContext;
-  private bundleComponents = new Map<number, Set<string>>();
   private readonly configAdmin!: ConfigurationAdmin | null;
   private activationChain: string[] = [];
 
-  /**
-   * Helper method to remove a component from the activation chain
-   */
-  private removeFromActivationChain(name: string): void {
-    const index = this.activationChain.indexOf(name);
+  private removeFromActivationChain(componentId: string): void {
+    const index = this.activationChain.indexOf(componentId);
     if (index !== -1) {
       this.activationChain.splice(index, 1);
     }
@@ -172,44 +169,73 @@ export class ServiceComponentRuntime {
     }
   }
 
-  async registerComponent(component: any) {
+  async registerComponent(component: any, bundleId?: number) {
     const metadata = (component as any).__osgi_component__;
     if (!metadata) {
       throw new Error('Component metadata not found');
     }
-    this.components.set(metadata.name, {
+
+    // If bundleId is not provided, get it from the current bundle context
+    if (bundleId === undefined) {
+      bundleId = this.bundleContext.getBundle().getBundleId();
+    }
+
+    // Store the bundle ID in the component metadata
+    metadata.bundleId = bundleId;
+
+    if (!this.components.has(bundleId)) {
+      this.components.set(bundleId, new Map<string, ComponentEntry>());
+    }
+
+    this.components.get(bundleId)!.set(metadata.name, {
       instance: null,
       metadata: { ...metadata, class: component },
     });
 
     // For immediate components, check if they can be activated
     if (metadata.immediate) {
-      await this.tryActivateImmediate(metadata.name);
+      await this.tryActivateImmediate(bundleId, metadata.name);
     }
+  }
+
+  private getBundleIdForComponent(component: any): number {
+    // Get the bundle ID from the component metadata
+    const metadata = (component as any).__osgi_component__;
+    if (metadata && metadata.bundleId !== undefined) {
+      return metadata.bundleId;
+    }
+
+    // If not found in metadata, use the current bundle's ID
+    return this.bundleContext.getBundle().getBundleId();
   }
 
   /**
    * Attempts to activate an immediate component if all requirements are met
    * according to OSGi SCR specification
    */
-  private async tryActivateImmediate(name: string): Promise<void> {
+  private async tryActivateImmediate(bundleId: number, name: string): Promise<void> {
     try {
       // Check if component can be activated (all mandatory references satisfied)
-      if (await this.canActivateComponent(name)) {
-        await this.activateComponent(name);
+      if (await this.canActivateComponent(bundleId, name)) {
+        await this.activateComponent(bundleId, name);
       }
       // If not ready yet, it will be activated later when dependencies become available
     } catch (error) {
       // Immediate components that fail to activate should log but not throw
-      console.warn(`Failed to activate immediate component ${name}: ${error}`);
+      console.warn(`Failed to activate immediate component ${name} from bundle ${bundleId}: ${error}`);
     }
   }
 
   /**
    * Checks if a component can be activated according to OSGi SCR rules
    */
-  private async canActivateComponent(name: string): Promise<boolean> {
-    const entry = this.components.get(name);
+  private async canActivateComponent(bundleId: number, name: string): Promise<boolean> {
+    const bundleComponents = this.components.get(bundleId);
+    if (!bundleComponents) {
+      return false;
+    }
+
+    const entry = bundleComponents.get(name);
     if (!entry) {
       return false;
     }
@@ -238,22 +264,36 @@ export class ServiceComponentRuntime {
     return true;
   }
 
-  getComponent(name: string) {
-    return this.components.get(name);
+  getComponent(bundleId: number, name: string): ComponentEntry | undefined {
+    const bundleComponents = this.components.get(bundleId);
+    if (!bundleComponents) {
+      return undefined;
+    }
+    return bundleComponents.get(name);
   }
 
-  async activateComponent(name: string) {
-    const entry = this.components.get(name);
-    if (!entry) {
-      throw new Error(`Component ${name} not found`);
+  async activateComponent(bundleId: number, name: string): Promise<void> {
+    let entry: ComponentEntry | undefined;
+    const componentId = `${bundleId}:${name}`;
+
+    let bundleComponents = this.components.get(bundleId);
+    if (!bundleComponents) {
+      // Create an empty bundle entry if it doesn't exist
+      bundleComponents = new Map<string, ComponentEntry>();
+      this.components.set(bundleId, bundleComponents);
     }
 
-    if (this.activationChain.includes(name)) {
-      console.error(`Circular reference detected: ${this.activationChain.join(' -> ')} -> ${name}`);
+    entry = bundleComponents.get(name);
+    if (!entry) {
+      throw new Error(`Component ${name} not found in bundle ${bundleId}`);
+    }
+
+    if (this.activationChain.includes(componentId)) {
+      console.error(`Circular reference detected: ${this.activationChain.join(' -> ')} -> ${componentId}`);
       return;
     }
 
-    this.activationChain.push(name);
+    this.activationChain.push(componentId);
 
     const { metadata } = entry;
 
@@ -264,7 +304,8 @@ export class ServiceComponentRuntime {
     const ComponentClass = metadata.class || metadata;
 
     if (typeof ComponentClass !== 'function') {
-      throw new Error(`Component ${name} does not have a valid constructor`);
+      const componentName = metadata.name;
+      throw new Error(`Component ${componentName} does not have a valid constructor`);
     }
 
     const scope = metadata.service?.scope || 'singleton';
@@ -338,20 +379,27 @@ export class ServiceComponentRuntime {
         }
       }
 
-      await this.satisfyReferences(name);
+      await this.satisfyReferences(bundleId, name);
     }
 
     if (metadata.factory) {
       entry.factoryInstances = new Map();
     }
 
-    this.removeFromActivationChain(name);
+    this.removeFromActivationChain(componentId);
   }
 
-  async deactivateComponent(name: string) {
-    const entry = this.components.get(name);
+  async deactivateComponent(bundleId: number, name: string): Promise<void> {
+    let entry: ComponentEntry | undefined;
+
+    const bundleComponents = this.components.get(bundleId);
+    if (!bundleComponents) {
+      throw new Error(`Bundle ${bundleId} not found`);
+    }
+
+    entry = bundleComponents.get(name);
     if (!entry || (!entry.instance && !entry.bundleInstances)) {
-      throw new Error(`Component ${name} not active`);
+      throw new Error(`Component ${name} not active in bundle ${bundleId}`);
     }
 
     const { metadata, context } = entry;
@@ -399,10 +447,17 @@ export class ServiceComponentRuntime {
     entry.context = undefined;
   }
 
-  async satisfyReferences(name: string) {
-    const entry = this.components.get(name);
+  async satisfyReferences(bundleId: number, name: string): Promise<void> {
+    let entry: ComponentEntry | undefined;
+
+    const bundleComponents = this.components.get(bundleId);
+    if (!bundleComponents) {
+      throw new Error(`Bundle ${bundleId} not found`);
+    }
+
+    entry = bundleComponents.get(name);
     if (!entry || !entry.instance) {
-      throw new Error(`Component ${name} not active`);
+      throw new Error(`Component ${name} not active in bundle ${bundleId}`);
     }
 
     const { instance, metadata } = entry;
@@ -415,24 +470,46 @@ export class ServiceComponentRuntime {
     const filter = ref.target || null;
 
     let componentName: string | undefined;
-    for (const [name, entry] of this.components.entries()) {
-      if (entry.instance === instance) {
-        componentName = name;
-        break;
+    let bundleId: number | undefined;
+
+    for (const [currentBundleId, bundleComponents] of this.components.entries()) {
+      let found = false;
+
+      for (const [currentName, entry] of bundleComponents.entries()) {
+        if (entry.instance === instance) {
+          componentName = currentName;
+          bundleId = currentBundleId;
+          found = true;
+          break;
+        }
       }
+
+      if (found) break;
     }
 
     const serviceRefs = this.bundleContext.getServiceReferences(ref.interface, filter) ?? [];
 
     // Check for circular dependencies
-    if (componentName && serviceRefs.length > 0) {
+    if (componentName && bundleId !== undefined && serviceRefs.length > 0) {
+      const componentId = `${bundleId}:${componentName}`;
+
       // For each service reference, check if it's a component that's currently in the activation chain
       for (const serviceRef of serviceRefs) {
         const serviceComponentName = serviceRef.getProperty('component.name');
-        if (serviceComponentName && this.activationChain.includes(serviceComponentName as string)) {
+        const serviceBundleId = serviceRef.getProperty('component.bundle.id');
+
+        let serviceComponentId: string;
+        if (serviceBundleId !== undefined) {
+          serviceComponentId = `${serviceBundleId}:${serviceComponentName}`;
+        } else {
+          // For backward compatibility, if no bundle ID is specified
+          serviceComponentId = serviceComponentName as string;
+        }
+
+        if (serviceComponentId && this.activationChain.includes(serviceComponentId)) {
           // We found a circular dependency
-          const circularChain = [...this.activationChain, componentName, serviceComponentName as string];
-          const errorMessage = `Circular reference detected: ${circularChain.join(' -> ')}. Component '${componentName}' has a ${ref.cardinality === '1..1' || ref.cardinality === '1..n' ? 'mandatory' : 'optional'} reference to interface '${ref.interface}' which leads to a circular dependency.`;
+          const circularChain = [...this.activationChain, componentId, serviceComponentId];
+          const errorMessage = `Circular reference detected: ${circularChain.join(' -> ')}. Component '${componentName}' in bundle ${bundleId} has a ${ref.cardinality === '1..1' || ref.cardinality === '1..n' ? 'mandatory' : 'optional'} reference to interface '${ref.interface}' which leads to a circular dependency.`;
 
           console.error(errorMessage);
 
@@ -489,39 +566,41 @@ export class ServiceComponentRuntime {
 
   async processServiceEvent(interfaceName: string, eventType: string, serviceRef?: ServiceReference<any>) {
     // First handle existing active components
-    for (const [_name, entry] of this.components.entries()) {
-      const { instance, metadata } = entry;
-      if (!instance) continue;
+    for (const [_bundleId, bundleComponents] of this.components.entries()) {
+      for (const [_componentName, entry] of bundleComponents.entries()) {
+        const { instance, metadata } = entry;
+        if (!instance) continue;
 
-      for (const ref of metadata.references || []) {
-        if (ref.interface === interfaceName) {
-          if (eventType === 'registered' && ref.bind && serviceRef) {
-            const service = this.bundleContext.getService(serviceRef);
-            if (service) {
-              instance[ref.bind](service);
+        for (const ref of metadata.references || []) {
+          if (ref.interface === interfaceName) {
+            if (eventType === 'registered' && ref.bind && serviceRef) {
+              const service = this.bundleContext.getService(serviceRef);
+              if (service) {
+                instance[ref.bind](service);
 
-              if (ref.field && ref.fieldOption === 'update') {
-                if (ref.cardinality === '1..1' || ref.cardinality === '0..1') {
-                  instance[ref.field] = service;
-                } else if (Array.isArray(instance[ref.field])) {
-                  instance[ref.field] = [...instance[ref.field], service];
+                if (ref.field && ref.fieldOption === 'update') {
+                  if (ref.cardinality === '1..1' || ref.cardinality === '0..1') {
+                    instance[ref.field] = service;
+                  } else if (Array.isArray(instance[ref.field])) {
+                    instance[ref.field] = [...instance[ref.field], service];
+                  }
                 }
               }
-            }
-          } else if (eventType === 'unregistered' && ref.unbind) {
-            instance[ref.unbind]();
+            } else if (eventType === 'unregistered' && ref.unbind) {
+              instance[ref.unbind]();
 
-            if (ref.field) {
-              if (ref.cardinality === '1..1' || ref.cardinality === '0..1') {
-                instance[ref.field] = null;
-              } else if (Array.isArray(instance[ref.field])) {
-                instance[ref.field] = [];
+              if (ref.field) {
+                if (ref.cardinality === '1..1' || ref.cardinality === '0..1') {
+                  instance[ref.field] = null;
+                } else if (Array.isArray(instance[ref.field])) {
+                  instance[ref.field] = [];
+                }
               }
-            }
-          } else if (eventType === 'modified' && ref.updated && serviceRef) {
-            const service = this.bundleContext.getService(serviceRef);
-            if (service) {
-              instance[ref.updated](service);
+            } else if (eventType === 'modified' && ref.updated && serviceRef) {
+              const service = this.bundleContext.getService(serviceRef);
+              if (service) {
+                instance[ref.updated](service);
+              }
             }
           }
         }
@@ -539,23 +618,34 @@ export class ServiceComponentRuntime {
    * and tries to activate them if their dependencies are now satisfied
    */
   private async checkPendingImmediateComponents(): Promise<void> {
-    for (const [name, entry] of this.components.entries()) {
-      const { metadata, instance } = entry;
+    for (const [bundleId, bundleComponents] of this.components.entries()) {
+      for (const [componentName, entry] of bundleComponents.entries()) {
+        const { metadata, instance } = entry;
 
-      // Only check immediate components that are not yet active
-      if (metadata.immediate && !instance) {
-        await this.tryActivateImmediate(name);
+        // Only check immediate components that are not yet active
+        if (metadata.immediate && !instance) {
+          await this.tryActivateImmediate(bundleId, componentName);
+        }
       }
     }
   }
 
   async createFactoryInstance(factoryName: string, instanceName: string, configuration: Record<string, any> = {}) {
-    const factoryComponent = Array.from(this.components.values()).find(
-      (entry) => entry.metadata.factory === factoryName,
-    );
+    // Find the factory component across all bundles
+    let factoryComponent: ComponentEntry | undefined;
+
+    for (const [_bundleId, bundleComponents] of this.components.entries()) {
+      for (const [_componentName, entry] of bundleComponents.entries()) {
+        if (entry.metadata.factory === factoryName) {
+          factoryComponent = entry;
+          break;
+        }
+      }
+      if (factoryComponent) break;
+    }
 
     if (!factoryComponent) {
-      throw new Error(`Factory component with factory ID ${factoryName} not found`);
+      throw new Error(`Factory component with factory ID ${factoryName} not found in any bundle`);
     }
 
     const { metadata } = factoryComponent;
@@ -588,12 +678,21 @@ export class ServiceComponentRuntime {
   }
 
   async deleteFactoryInstance(factoryName: string, instanceName: string) {
-    const factoryComponent = Array.from(this.components.values()).find(
-      (entry) => entry.metadata.factory === factoryName,
-    );
+    // Find the factory component across all bundles
+    let factoryComponent: ComponentEntry | undefined;
+
+    for (const [_bundleId, bundleComponents] of this.components.entries()) {
+      for (const [_componentName, entry] of bundleComponents.entries()) {
+        if (entry.metadata.factory === factoryName) {
+          factoryComponent = entry;
+          break;
+        }
+      }
+      if (factoryComponent) break;
+    }
 
     if (!factoryComponent || !factoryComponent.factoryInstances) {
-      throw new Error(`Factory component with factory ID ${factoryName} not found or not active`);
+      throw new Error(`Factory component with factory ID ${factoryName} not found or not active in any bundle`);
     }
 
     const instanceData = factoryComponent.factoryInstances.get(instanceName);
@@ -621,23 +720,6 @@ export class ServiceComponentRuntime {
     }
 
     factoryComponent.factoryInstances.delete(instanceName);
-  }
-
-  async updateComponentConfiguration(name: string, configuration: Record<string, any>) {
-    const entry = this.components.get(name);
-    if (!entry || !entry.instance) {
-      throw new Error(`Component ${name} not active`);
-    }
-
-    const { instance, metadata, context } = entry;
-
-    if (context) {
-      (context as any).properties = { ...metadata.properties, ...configuration };
-    }
-
-    if (metadata.modified && typeof instance[metadata.modified] === 'function') {
-      await instance[metadata.modified](configuration, context);
-    }
   }
 
   private hasConfiguration(configPid?: string): boolean {
@@ -694,6 +776,33 @@ export class ServiceComponentRuntime {
           instance[ref.field] = [...instance[ref.field], ...services];
         }
       }
+    }
+  }
+
+  /**
+   * Updates the configuration of a component
+   * @param bundleId The bundle ID
+   * @param componentName The component name
+   * @param configuration The new configuration
+   */
+  async updateComponentConfiguration(
+    bundleId: number,
+    componentName: string,
+    configuration: Record<string, any>,
+  ): Promise<void> {
+    const bundleComponents = this.components.get(bundleId);
+    if (!bundleComponents) {
+      throw new Error(`Bundle ${bundleId} not found`);
+    }
+
+    const entry = bundleComponents.get(componentName);
+    if (!entry || !entry.instance) {
+      throw new Error(`Component ${componentName} not active in bundle ${bundleId}`);
+    }
+
+    const { metadata, instance } = entry;
+    if (metadata.modified && typeof instance[metadata.modified] === 'function') {
+      await instance[metadata.modified](configuration);
     }
   }
 }
