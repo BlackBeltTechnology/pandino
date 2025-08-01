@@ -47,6 +47,7 @@ export type {
 } from './services/declarative-services/interfaces';
 export { ServiceComponentRuntime } from './services/declarative-services/scr';
 
-// Service exports
+export { getDecoratorInfo } from './services/declarative-services/reflection';
+
 export { LogLevel } from './services/log-service/interfaces';
 export type { LogService } from './services/log-service/interfaces';

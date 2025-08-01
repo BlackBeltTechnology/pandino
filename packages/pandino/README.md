@@ -21,8 +21,7 @@ To use Pandino's decorators (`@Component`, `@Service`, `@Reference`, etc.), you 
 {
   "compilerOptions": {
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    // ...existing code...
+    "emitDecoratorMetadata": true
   }
 }
 ```
@@ -261,6 +260,36 @@ class ApiService {
 ## Declarative Services
 
 Eliminate boilerplate with TypeScript decorators:
+
+### Reflection Helpers
+
+Pandino provides a comprehensive API to retrieve decorator data from components. The main function `getDecoratorInfo()` returns a complete structured
+representation of all decorator information:
+
+```typescript
+import {
+  Component, Service, Reference,
+  getDecoratorInfo
+} from '@pandino/pandino';
+
+@Component({
+  name: 'example.component',
+  immediate: true,
+  configurationPid: 'example.config'
+})
+@Service({ interfaces: ['ExampleService'] })
+class ExampleComponent {
+  @Reference({ interface: 'LogService' })
+  private logger?: any;
+}
+
+// Get ALL decorator information in a single call
+const info = getDecoratorInfo(ExampleComponent);
+```
+
+#### Complete Decorator Information Structure
+
+The `getDecoratorInfo()` function returns a comprehensive `DecoratorInfo` object.
 
 ### Basic Component Definition
 
