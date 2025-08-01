@@ -19,10 +19,12 @@ describe('OSGiBootstrap', () => {
       const configAdminRef = context.getServiceReference('ConfigurationAdmin');
       const eventAdminRef = context.getServiceReference('EventAdmin');
       const scrRef = context.getServiceReference('ServiceComponentRuntime');
+      const serviceTrackerRef = context.getServiceReference('ServiceTracker');
 
       expect(configAdminRef).toBeDefined();
       expect(eventAdminRef).toBeDefined();
       expect(scrRef).toBeDefined();
+      expect(serviceTrackerRef).toBeDefined();
     });
 
     it('should stop framework cleanly', async () => {

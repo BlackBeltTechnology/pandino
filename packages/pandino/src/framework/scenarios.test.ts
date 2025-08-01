@@ -582,8 +582,8 @@ describe('Complex Bundle and Service Lifecycle', () => {
         }
       })();
 
-      (bundle1 as any).setActivator(activator1);
-      (bundle2 as any).setActivator(activator2);
+      (bundle1 as any).activator = activator1;
+      (bundle2 as any).activator = activator2;
 
       await bundle1.start();
       await bundle2.start();

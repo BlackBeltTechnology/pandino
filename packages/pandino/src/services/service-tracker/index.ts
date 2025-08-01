@@ -1,6 +1,7 @@
 import type { BundleContext, Filter, ServiceEvent, ServiceListener, ServiceReference } from '~/framework/interfaces';
 import type { ServiceTrackerCustomizer, TrackedService } from '~/services/service-tracker/interfaces';
 import { SERVICE_EVENT_TYPES } from '~/types/constants';
+export { default } from './bundle';
 
 export class ServiceTracker<S, T = S> implements ServiceListener {
   private readonly className?: string;

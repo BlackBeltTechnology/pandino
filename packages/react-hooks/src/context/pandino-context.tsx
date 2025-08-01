@@ -1,7 +1,6 @@
 import type { BootstrapConfig, BundleContext, BundleModule, OSGiFramework } from '@pandino/pandino';
 import { OSGiBootstrap } from '@pandino/pandino';
 import { createContext, type FC, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
-import { findBundleBySymbolicName } from '~/utils/bundle-utils';
 
 // Define the context type
 export interface PandinoContextType {
@@ -51,12 +50,8 @@ export const PandinoProvider: FC<PandinoProviderProps> = ({ children, bootstrapC
         setFramework(fw);
         frameworkRef.current = fw;
 
-        // Get the system bundle context
-        const systemBundle = findBundleBySymbolicName(fw, 'system.core-services');
-        if (!systemBundle) {
-          throw new Error('System bundle not found');
-        }
-        const context = systemBundle.getContext();
+        // Get the bundle context directly from the framework
+        const context = fw.getBundleContext();
         setBundleContext(context);
 
         // Install and start additional bundles

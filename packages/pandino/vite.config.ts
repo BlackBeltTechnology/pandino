@@ -4,7 +4,7 @@ import dts from 'vite-plugin-dts';
 import { readFileSync } from 'node:fs';
 
 // Read package.json to get the version and name
-const packageJson = JSON.parse(readFileSync(resolve('package.json'), 'utf-8'));
+const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'));
 
 export default defineConfig(({ mode }) => {
   const isModeNotDev = mode !== 'development';

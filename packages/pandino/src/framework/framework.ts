@@ -20,7 +20,7 @@ import {
 import { LDAPFilter } from './ldap-filter';
 import { LdapFilterServiceImpl } from './ldap-filter-service';
 
-export class OSGiFramework extends EventEmitter {
+export class OSGiFramework extends EventEmitter implements BundleActivator {
   private bundles = new Map<number, BundleImpl>();
   private services = new Map<number, ServiceRegistrationImpl<any>>();
   private bundleCounter = 0;
@@ -95,6 +95,9 @@ export class OSGiFramework extends EventEmitter {
 
     const ldapFilterService = new LdapFilterServiceImpl();
     systemContext.registerService('LdapFilterService', ldapFilterService);
+
+    // Register the framework itself as a service (OSGi-compliant)
+    systemContext.registerService('OSGiFramework', this);
   }
 
   async installBundle(
@@ -247,13 +250,18 @@ export class OSGiFramework extends EventEmitter {
     return this.frameworkProperties.get(key);
   }
 
+  static isServiceFactory(service: any): boolean {
+    return typeof service?.getService === 'function' && typeof service?.ungetService === 'function';
+  }
+
   registerService<S>(
     bundle: Bundle,
     clazz: string | string[] | Function,
     service: S | ServiceFactory<S>,
     properties: Record<string, any> = {},
   ): ServiceRegistration<S> {
-    if (typeof (service as any)?.getService === 'function') {
+    // Check if this is a ServiceFactory using the reusable utility method
+    if (OSGiFramework.isServiceFactory(service)) {
       properties['service.factory'] = true;
     }
 
@@ -698,7 +706,7 @@ class BundleContextImpl implements BundleContextInternal {
 
   registerService<S>(clazz: string | Function, service: S, properties?: Record<string, any>): ServiceRegistration<S> {
     this.checkValid();
-    return this.framework.registerService(this.bundle, clazz, service, properties);
+    return this.framework.registerService(this.bundle, clazz, service, properties || {});
   }
 
   getServiceReference<S>(clazz: string | Function): ServiceReference<S> | null {
@@ -886,7 +894,7 @@ class ServiceRegistrationImpl<S> implements ServiceRegistration<S> {
   }
 
   private isServiceFactory(): boolean {
-    return typeof (this.service as any)?.getService === 'function';
+    return OSGiFramework.isServiceFactory(this.service);
   }
 }
 

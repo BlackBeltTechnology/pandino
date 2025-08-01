@@ -1,11 +1,13 @@
-import { ConfigurationAdminImpl } from '~/services/config-admin/configuration-admin';
-import { ServiceComponentRuntime } from '~/services/declarative-services/scr';
-import { EventAdminImpl } from '~/services/event-admin/event-admin';
-import { ConsoleLogService } from '~/services/log-service/console-log-service';
-import { LogLevel } from '~/services/log-service/interfaces';
+import { LogLevel, type LogService } from '~/services/log-service/interfaces';
 import type { BundleModule } from '~/types/bundle-metadata';
 import { BootstrapConfig, DEFAULT_BOOTSTRAP_CONFIG } from './bootstrap-config';
 import { OSGiFramework } from './framework';
+
+import ConfigAdminBundle from '~/services/config-admin/bundle';
+import EventAdminBundle from '~/services/event-admin/bundle';
+import LogServiceBundle from '~/services/log-service/bundle';
+import ServiceComponentRuntimeBundle from '~/services/declarative-services/bundle';
+import ServiceTrackerBundle from '~/services/service-tracker/bundle';
 
 export class OSGiBootstrap {
   private readonly framework: OSGiFramework;
@@ -19,49 +21,51 @@ export class OSGiBootstrap {
   async start(): Promise<OSGiFramework> {
     await this.framework.start();
 
-    const systemBundle = await this.installSystemBundle();
-    await systemBundle.start();
+    await this.installSystemBundle();
+    // No need to start the system bundle as each service bundle is started individually
 
     return this.framework;
   }
 
   private async installSystemBundle() {
-    // Create a system bundle module
-    const systemBundleModule: Promise<BundleModule> = Promise.resolve({
-      default: {
-        headers: {
-          bundleSymbolicName: 'system.core-services',
-          bundleVersion: '1.0.0',
-          bundleName: 'System Core Services',
-          bundleDescription: 'Provides core system services',
-        },
-        activator: {
-          start: async (context) => {
-            const configAdmin = new ConfigurationAdminImpl(this.framework);
-            context.registerService('ConfigurationAdmin', configAdmin);
-
-            const eventAdmin = new EventAdminImpl(this.framework);
-            context.registerService('EventAdmin', eventAdmin);
-
-            const logService = new ConsoleLogService();
-            // Apply the configured log level to the log service
-            logService.setLogLevel(this.config.frameworkLogLevel || LogLevel.INFO);
-            context.registerService('LogService', logService);
-
-            const scr = new ServiceComponentRuntime(this.framework, context);
-            context.registerService('ServiceComponentRuntime', scr);
-          },
-          stop: async () => {
-            // Cleanup will be handled automatically when services are unregistered
-          },
-        },
-      },
+    // Install Log Service first as other services might need logging
+    const logServiceBundleModule: Promise<BundleModule> = Promise.resolve({
+      default: LogServiceBundle,
     });
+    const logServiceBundle = await this.framework.installBundle(logServiceBundleModule);
+    await logServiceBundle.start();
 
-    const systemBundle = await this.framework.installBundle(systemBundleModule);
-    await systemBundle.start();
+    const logServiceRef = this.framework.getBundleContext().getServiceReference<LogService>('LogService');
+    if (logServiceRef) {
+      const logService = this.framework.getBundleContext().getService(logServiceRef);
+      if (logService) {
+        logService.setLogLevel(this.config.frameworkLogLevel || LogLevel.INFO);
+      }
+    }
 
-    return systemBundle;
+    const configAdminBundleModule: Promise<BundleModule> = Promise.resolve({
+      default: ConfigAdminBundle,
+    });
+    const configAdminBundle = await this.framework.installBundle(configAdminBundleModule);
+    await configAdminBundle.start();
+
+    const eventAdminBundleModule: Promise<BundleModule> = Promise.resolve({
+      default: EventAdminBundle,
+    });
+    const eventAdminBundle = await this.framework.installBundle(eventAdminBundleModule);
+    await eventAdminBundle.start();
+
+    const scrBundleModule: Promise<BundleModule> = Promise.resolve({
+      default: ServiceComponentRuntimeBundle,
+    });
+    const scrBundle = await this.framework.installBundle(scrBundleModule);
+    await scrBundle.start();
+
+    const serviceTrackerBundleModule: Promise<BundleModule> = Promise.resolve({
+      default: ServiceTrackerBundle,
+    });
+    const serviceTrackerBundle = await this.framework.installBundle(serviceTrackerBundleModule);
+    await serviceTrackerBundle.start();
   }
 
   async stop(): Promise<void> {
