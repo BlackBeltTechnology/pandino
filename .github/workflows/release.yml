@@ -80,29 +80,8 @@ jobs:
       - name: Bump package versions to tag
         if: steps.check-tag.outputs.triggered-by-tag == 'true'
         run: |
-          echo "Updating all package.json files to version: ${{ steps.check-tag.outputs.version }}"
-
-          # Update root package.json
-          npm version ${{ steps.check-tag.outputs.version }} --no-git-tag-version
-
-          # Update all package.json files in packages/*
-          for package_dir in packages/*/; do
-            if [ -f "${package_dir}package.json" ]; then
-              echo "Updating version in ${package_dir}package.json"
-              cd "$package_dir"
-              npm version ${{ steps.check-tag.outputs.version }} --no-git-tag-version
-              cd - > /dev/null
-            fi
-          done
-
-          # Show updated versions for verification
-          echo "Updated versions:"
-          echo "Root: $(grep '"version"' package.json)"
-          for package_dir in packages/*/; do
-            if [ -f "${package_dir}package.json" ]; then
-              echo "${package_dir}: $(grep '"version"' ${package_dir}package.json)"
-            fi
-          done
+          pnpm version ${{ steps.check-tag.outputs.version }} --no-git-tag-version
+          pnpm build
 
       - name: Generate release notes
         if: steps.check-tag.outputs.triggered-by-tag == 'true'
