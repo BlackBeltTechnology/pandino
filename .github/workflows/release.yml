@@ -1,4 +1,4 @@
-name: Manual PNPM Release
+name: Release
 
 on:
   workflow_dispatch:
