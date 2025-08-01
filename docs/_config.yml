@@ -1,6 +1,7 @@
-# GitHub Pages Jekyll configuration
-title: "Pandino: OSGi-Style Framework for TypeScript"
-description: "A lightweight TypeScript framework that brings modular architecture to your applications"
+title: Pandino Documentation
+description: A modular JavaScript framework inspired by OSGi
+baseurl: "/pandino"
+url: "blackbelttechnology.github.io"
 
 # Use a GitHub Pages supported theme
 theme: minima
@@ -15,10 +16,6 @@ plugins:
   - jekyll-sitemap
   - jekyll-seo-tag
 
-# Navigation
-header_pages:
-  - README.md
-
 # Repository info for SEO
 repository: BlackBeltTechnology/pandino
 github_username: noherczeg
@@ -27,3 +24,12 @@ github_username: noherczeg
 kramdown:
   syntax_highlighter_opts:
     default_lang: typescript
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
