@@ -244,7 +244,7 @@ export class ServiceComponentRuntime {
     const { metadata } = entry;
 
     // Check configuration policy
-    if (metadata.configurationPolicy === 'require' && !this.hasConfiguration(metadata.configurationPid)) {
+    if (metadata.configurationPolicy === 'require' && !(await this.hasConfiguration(metadata.configurationPid))) {
       return false;
     }
 
@@ -298,7 +298,7 @@ export class ServiceComponentRuntime {
 
     const { metadata } = entry;
 
-    if (metadata.configurationPolicy === 'require' && !this.hasConfiguration(metadata.configurationPid)) {
+    if (metadata.configurationPolicy === 'require' && !(await this.hasConfiguration(metadata.configurationPid))) {
       return;
     }
 
@@ -723,7 +723,7 @@ export class ServiceComponentRuntime {
     factoryComponent.factoryInstances.delete(instanceName);
   }
 
-  private hasConfiguration(configPid?: string): boolean {
+  private async hasConfiguration(configPid?: string): Promise<boolean> {
     if (!configPid) {
       return true; // No configuration PID specified, so no configuration required
     }
@@ -732,10 +732,14 @@ export class ServiceComponentRuntime {
       return false; // Configuration required but no ConfigAdmin available
     }
 
-    // TODO: In a real implementation, this would check with ConfigAdmin
-    // For now, return false to properly handle 'require' policy
-    // This should be implemented to actually check for configuration existence
-    return false;
+    try {
+      const filter = `(service.pid=${configPid})`;
+      const configs = await this.configAdmin.listConfigurations(filter);
+      return configs !== null && configs.length > 0;
+    } catch (error) {
+      console.error(`Error checking configuration existence for PID ${configPid}:`, error);
+      return false;
+    }
   }
 
   satisfyReferenceForInstance(instance: any, ref: ReferenceDescriptor) {
