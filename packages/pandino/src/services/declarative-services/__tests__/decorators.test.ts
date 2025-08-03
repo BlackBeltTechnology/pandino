@@ -11,7 +11,7 @@ import {
   Reference,
   Scope,
   Service,
-} from '../interfaces';
+} from '@pandino/decorators';
 import { getComponentMetadata } from '../reflection';
 
 describe('Declarative Services Decorators', () => {

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext } from '~/framework/interfaces';
-import { Activate, Component, Reference, Service } from '../interfaces';
+import { Activate, Component, Reference, Service } from '@pandino/decorators';
 import { ServiceComponentRuntime } from '../scr';
 
 describe('Deadlock Scenarios', () => {

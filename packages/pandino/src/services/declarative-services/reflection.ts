@@ -1,8 +1,5 @@
 import 'reflect-metadata';
-import type { ComponentDescriptor, ReferenceDescriptor } from './interfaces';
-
-// Metadata keys for different types of component metadata
-export const COMPONENT_METADATA_KEY = 'osgi:component';
+import { COMPONENT_METADATA_KEY, type ComponentDescriptor, type ReferenceDescriptor } from '@pandino/decorators';
 
 export function getComponentMetadata<T = any>(target: any): (ComponentDescriptor & T) | null {
   if (!target) {

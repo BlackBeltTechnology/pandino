@@ -3,7 +3,7 @@ import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext } from '~/framework/interfaces';
 import { ServiceComponentRuntime } from '../scr';
 import type { ConfigurationAdmin } from '~/services/config-admin/interfaces';
-import { Activate, Component } from '../interfaces';
+import { Activate, Component } from '@pandino/decorators';
 
 describe('SCR Configuration Integration', () => {
   let framework: OSGiFramework;

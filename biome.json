@@ -18,5 +18,12 @@
   },
   "linter": {
     "enabled": false
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   }
 }

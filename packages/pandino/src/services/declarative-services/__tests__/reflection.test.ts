@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { Activate, Component, ConfigurationPolicy, Deactivate, Property, Reference, Service } from '../interfaces';
 import { getDecoratorInfo } from '../reflection';
+import {
+  Activate,
+  Component,
+  ConfigurationPolicy,
+  Deactivate,
+  Property,
+  Reference,
+  Service,
+} from '@pandino/decorators';
 
 describe('Reflection Helpers', () => {
   describe('getDecoratorInfo', () => {

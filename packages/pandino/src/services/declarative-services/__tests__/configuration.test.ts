@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext } from '~/framework/interfaces';
-import { Component, ConfigurationPolicy, Modified, Property } from '../interfaces';
+import { Component, ConfigurationPolicy, Modified, Property } from '@pandino/decorators';
 import { getComponentMetadata } from '../reflection';
 import { ServiceComponentRuntime } from '../scr';
 

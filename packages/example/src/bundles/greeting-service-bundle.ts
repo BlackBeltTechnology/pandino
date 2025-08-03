@@ -1,5 +1,6 @@
-import { Component, Service, Activate, Deactivate, ServiceComponentRuntime, ServiceReference } from '@pandino/pandino';
+import { ServiceComponentRuntime, ServiceReference } from '@pandino/pandino';
 import type { ComponentContext, BundleActivator, BundleContext } from '@pandino/pandino';
+import { Activate, Component, Deactivate, Service } from '@pandino/decorators';
 
 export interface GreetingService {
   greet(name: string): string;

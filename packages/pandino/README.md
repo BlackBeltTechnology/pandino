@@ -15,7 +15,7 @@ npm install @pandino/pandino
 
 ## ⚙️ TypeScript Configuration
 
-To use Pandino's decorators (`@Component`, `@Service`, `@Reference`, etc.), you must enable experimental decorators in your `tsconfig.json`:
+To use Pandino's decorators (`@Component`, `@Service`, `@Reference`, etc.) from the `@pandino/decorators` package, you must enable experimental decorators in your `tsconfig.json`:
 
 ```json
 {
@@ -27,6 +27,8 @@ To use Pandino's decorators (`@Component`, `@Service`, `@Reference`, etc.), you 
 ```
 
 > ⚠️ **Important:** Without these settings, decorators will not work and you'll get TypeScript compilation errors.
+>
+> For more information about available decorators, see the [decorators package documentation](../decorators/README.md).
 
 ## Quick Start
 
@@ -261,6 +263,8 @@ class ApiService {
 
 Eliminate boilerplate with TypeScript decorators:
 
+> **Note:** Decorators have been moved to a dedicated package `@pandino/decorators`. See the [decorators package documentation](../decorators/README.md) for installation and available decorators.
+
 ### Reflection Helpers
 
 Pandino provides a comprehensive API to retrieve decorator data from components. The main function `getDecoratorInfo()` returns a complete structured
@@ -268,9 +272,9 @@ representation of all decorator information:
 
 ```typescript
 import {
-  Component, Service, Reference,
-  getDecoratorInfo
-} from '@pandino/pandino';
+  Component, Service, Reference
+} from '@pandino/decorators';
+import { getDecoratorInfo } from '@pandino/pandino';
 
 @Component({
   name: 'example.component',
@@ -294,7 +298,7 @@ The `getDecoratorInfo()` function returns a comprehensive `DecoratorInfo` object
 ### Basic Component Definition
 
 ```typescript
-import { Component, Service, Activate, Deactivate } from '@pandino/pandino';
+import { Component, Service, Activate, Deactivate } from '@pandino/decorators';
 
 @Component({ name: 'user.service' })
 @Service({ interfaces: ['UserService'] })

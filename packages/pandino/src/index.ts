@@ -29,22 +29,7 @@ export type { BundleMetadata, BundleModule } from './types/bundle-metadata';
 export { BUNDLE_STATES, SERVICE_EVENT_TYPES } from './types/constants';
 
 // Declarative Services exports
-export {
-  Component,
-  Service,
-  Reference,
-  Property,
-  Activate,
-  Deactivate,
-  Modified,
-  ConfigurationPolicy,
-} from './services/declarative-services/interfaces';
-export type {
-  ComponentContext,
-  ComponentDescriptor,
-  ReferenceDescriptor,
-  ServiceDescriptor,
-} from './services/declarative-services/interfaces';
+export type { ComponentContext } from './services/declarative-services/interfaces';
 export { ServiceComponentRuntime } from './services/declarative-services/scr';
 
 export { getDecoratorInfo } from './services/declarative-services/reflection';

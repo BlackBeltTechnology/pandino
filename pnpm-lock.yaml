@@ -27,8 +27,45 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@20.19.9)(@vitest/ui@3.2.4)(jsdom@26.1.0)
 
+  packages/decorators:
+    dependencies:
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.24
+        version: 20.19.9
+      '@vitest/coverage-v8':
+        specifier: ^3.2.4
+        version: 3.2.4(vitest@3.2.4)
+      '@vitest/ui':
+        specifier: ^3.2.4
+        version: 3.2.4(vitest@3.2.4)
+      http-server:
+        specifier: ^14.1.1
+        version: 14.1.1
+      jsdom:
+        specifier: ^26.1.0
+        version: 26.1.0
+      typescript:
+        specifier: ^5.0.4
+        version: 5.8.3
+      vite:
+        specifier: ^7.0.0
+        version: 7.0.6(@types/node@20.19.9)
+      vite-plugin-dts:
+        specifier: ^4.5.4
+        version: 4.5.4(@types/node@20.19.9)(rollup@4.46.2)(typescript@5.8.3)(vite@7.0.6(@types/node@20.19.9))
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@20.19.9)(@vitest/ui@3.2.4)(jsdom@26.1.0)
+
   packages/example:
     dependencies:
+      '@pandino/decorators':
+        specifier: workspace:*
+        version: link:../decorators
       '@pandino/pandino':
         specifier: workspace:*
         version: link:../pandino
@@ -75,6 +112,9 @@ importers:
 
   packages/pandino:
     dependencies:
+      '@pandino/decorators':
+        specifier: workspace:^
+        version: link:../decorators
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2

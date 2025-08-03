@@ -6,9 +6,10 @@ import type {
   ServiceRegistration,
 } from '~/framework/interfaces';
 import { ComponentContextImpl } from './component-context';
-import type { ComponentContext, ComponentDescriptor, ReferenceDescriptor } from './interfaces';
 import { getComponentMetadata } from './reflection';
 import type { ConfigurationAdmin } from '~/services/config-admin';
+import type { ComponentDescriptor, ReferenceDescriptor } from '@pandino/decorators';
+import type { ComponentContext } from './interfaces';
 
 interface ComponentEntry {
   instance: any;

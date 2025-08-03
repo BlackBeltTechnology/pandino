@@ -1,18 +1,18 @@
 {
-    "name": "@pandino/pandino",
+    "name": "@pandino/decorators",
     "version": "0.9.20",
-    "description": "A TypeScript implementation of the OSGi specification.",
+    "description": "Decorators for the Pandino framework.",
     "license": "EPL-2.0",
     "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
-    "main": "dist/pandino.cjs.js",
-    "module": "dist/pandino.es.js",
+    "main": "dist/decorators.cjs.js",
+    "module": "dist/decorators.es.js",
     "types": "dist/index.d.ts",
     "type": "module",
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
-            "import": "./dist/pandino.es.js",
-            "require": "./dist/pandino.cjs.js"
+            "import": "./dist/decorators.es.js",
+            "require": "./dist/decorators.cjs.js"
         }
     },
     "files": [
@@ -29,7 +29,6 @@
         "check:fix": "biome check ./src --write"
     },
     "peerDependencies": {
-        "@pandino/decorators": "workspace:^",
         "reflect-metadata": "^0.2.2"
     },
     "devDependencies": {
