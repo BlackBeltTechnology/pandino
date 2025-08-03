@@ -1,10 +1,7 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
-import { readFileSync } from 'node:fs';
-
-// Read package.json to get the version and name
-const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'));
+import pkg from './package.json';
 
 export default defineConfig(({ mode }) => {
   const isModeNotDev = mode !== 'development';
@@ -17,8 +14,8 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       // Inject package version and name as environment variables
-      'import.meta.env.VITE_PANDINO_VERSION': JSON.stringify(packageJson.version),
-      'import.meta.env.VITE_PANDINO_NAME': JSON.stringify(packageJson.name),
+      'import.meta.env.VITE_PANDINO_VERSION': JSON.stringify(pkg.version),
+      'import.meta.env.VITE_PANDINO_NAME': JSON.stringify(pkg.name),
     },
     build: {
       lib: {
@@ -29,8 +26,7 @@ export default defineConfig(({ mode }) => {
       minify: isModeNotDev,
       sourcemap: isModeNotDev,
       rollupOptions: {
-        // Bundle everything - no external dependencies
-        external: [],
+        external: Object.keys(pkg.peerDependencies || {}),
         output: {
           // Disable chunking completely for a single artifact
           manualChunks: undefined,

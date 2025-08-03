@@ -28,7 +28,7 @@
         "test:ui": "vitest --ui",
         "check:fix": "biome check ./src --write"
     },
-    "dependencies": {
+    "peerDependencies": {
         "reflect-metadata": "^0.2.2"
     },
     "devDependencies": {

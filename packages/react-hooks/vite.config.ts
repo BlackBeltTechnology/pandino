@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
+import pkg from './package.json';
 
 export default defineConfig(({ mode }) => {
   const isModeNotDev = mode !== 'development';
@@ -21,8 +22,7 @@ export default defineConfig(({ mode }) => {
       minify: isModeNotDev,
       sourcemap: isModeNotDev,
       rollupOptions: {
-        // Mark React as external since it's a peer dependency
-        external: ['react', 'react-dom', '@pandino/pandino'],
+        external: Object.keys(pkg.peerDependencies || {}),
         output: {
           // Disable chunking completely for a single artifact
           manualChunks: undefined,
