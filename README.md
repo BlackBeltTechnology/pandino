@@ -161,6 +161,16 @@ await apiBundle.start();      // ✅ Starts immediately
 await databaseBundle.start(); // ✅ API bundle automatically gets database service
 ```
 
+### Extender Pattern
+A pattern where a dedicated bundle (extender) monitors other bundles and provides functionality based on their metadata:
+
+[→ Extender Pattern Documentation](./docs/extender-pattern.md)
+
+### Whiteboard Pattern
+A service-oriented pattern that promotes loose coupling through a central service registry:
+
+[→ Whiteboard Pattern Documentation](./docs/whiteboard-pattern.md)
+
 ## Use Cases
 
 | Scenario | Traditional Approach | Pandino Approach |
