@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext, ServiceReference } from '~/framework/interfaces';
-import { Activate, Component, Deactivate, Reference, Service } from './interfaces';
-import { getComponentMetadata } from './reflection';
-import { ServiceComponentRuntime } from './scr';
+import { Activate, Component, Deactivate, Reference, Service } from '../interfaces';
+import { getComponentMetadata } from '../reflection';
+import { ServiceComponentRuntime } from '../scr';
 
 describe('SCR Advanced Functionality', () => {
   let framework: OSGiFramework;

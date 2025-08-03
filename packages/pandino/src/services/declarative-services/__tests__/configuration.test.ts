@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext } from '~/framework/interfaces';
-import { Component, ConfigurationPolicy, Modified, Property } from './interfaces';
-import { getComponentMetadata } from './reflection';
-import { ServiceComponentRuntime } from './scr';
+import { Component, ConfigurationPolicy, Modified, Property } from '../interfaces';
+import { getComponentMetadata } from '../reflection';
+import { ServiceComponentRuntime } from '../scr';
 
 describe('Configuration and Properties', () => {
   let framework: OSGiFramework;

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext } from '~/framework/interfaces';
-import { ServiceComponentRuntime } from './scr';
+import { ServiceComponentRuntime } from '../scr';
 import type { ConfigurationAdmin } from '~/services/config-admin/interfaces';
-import { Activate, Component } from './interfaces';
+import { Activate, Component } from '../interfaces';
 
 describe('SCR Configuration Integration', () => {
   let framework: OSGiFramework;
@@ -102,6 +102,7 @@ describe('SCR Configuration Integration', () => {
 
       try {
         await scr.activateComponent(bundleId, 'config.required.component');
+        // oxlint-disable-next-line no-unused-vars
       } catch (e) {
         // Ignore any errors
       }

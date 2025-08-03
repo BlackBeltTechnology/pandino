@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext, ServiceReference } from '~/framework/interfaces';
-import { Activate, Component, Reference } from './interfaces';
-import { getComponentMetadata } from './reflection';
-import { ServiceComponentRuntime } from './scr';
+import { Activate, Component, Reference } from '../interfaces';
+import { getComponentMetadata } from '../reflection';
+import { ServiceComponentRuntime } from '../scr';
 
 describe('Service References', () => {
   let framework: OSGiFramework;

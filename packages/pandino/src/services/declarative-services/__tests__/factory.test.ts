@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
 import type { BundleContext } from '~/framework/interfaces';
-import { Activate, Component, Factory } from './interfaces';
-import { getComponentMetadata } from './reflection';
-import { ServiceComponentRuntime } from './scr';
+import { Activate, Component, Factory } from '../interfaces';
+import { getComponentMetadata } from '../reflection';
+import { ServiceComponentRuntime } from '../scr';
 
 describe('Factory Components', () => {
   let framework: OSGiFramework;
@@ -110,7 +110,7 @@ describe('Factory Components', () => {
 
     it('should throw error when factory component not found', async () => {
       await expect(scr.deleteFactoryInstance('NonExistentFactory', 'instance1')).rejects.toThrow(
-        'Factory component with factory ID NonExistentFactory not found or not active',
+        'Factory component with factory ID NonExistentFactory not active in any bundle',
       );
     });
 
@@ -125,7 +125,7 @@ describe('Factory Components', () => {
       scr.registerComponent(TestFactoryComponent, bundleId);
 
       await expect(scr.deleteFactoryInstance('TestFactory', 'instance1')).rejects.toThrow(
-        'Factory component with factory ID TestFactory not found or not active',
+        'Factory component with factory ID TestFactory not active in any bundle',
       );
     });
 

@@ -1,6 +1,10 @@
 import 'reflect-metadata';
-import type { BundleContext, ServiceReference } from '~/framework/interfaces';
+import type { BundleConfiguration, BundleContext, ServiceReference } from '~/framework/interfaces';
 import { COMPONENT_METADATA_KEY } from './reflection';
+
+export interface SCRBundleConfiguration extends BundleConfiguration {
+  components?: any[];
+}
 
 type OSGiConstructor<T = {}> = new (...args: any[]) => T;
 

@@ -11,8 +11,8 @@ import {
   Reference,
   Scope,
   Service,
-} from './interfaces';
-import { getComponentMetadata } from './reflection';
+} from '../interfaces';
+import { getComponentMetadata } from '../reflection';
 
 describe('Declarative Services Decorators', () => {
   describe('Basic Component Decorators', () => {

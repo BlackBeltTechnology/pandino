@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LogLevel } from './interfaces';
+import { LogLevel } from '../interfaces';
 
 describe('LogLevel', () => {
   it('should have correct numeric values', () => {

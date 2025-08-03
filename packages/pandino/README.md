@@ -350,6 +350,25 @@ class OrderService {
 
 ### Service Component Runtime (SCR)
 
+SCR automatically detects and registers components from bundle configurations:
+
+```typescript
+// bundle.ts - Automatic component registration
+export default {
+  headers: {
+    bundleSymbolicName: 'com.example.services',
+    bundleVersion: '1.0.0',
+  },
+  // Components are automatically registered by SCR
+  components: [UserService, OrderService]
+};
+```
+
+SCR acts as an extender for Pandino, tracking bundle lifecycle and managing registered components accordingly. When a bundle's state changes (resolved, active,
+stopping, uninstalled), SCR automatically handles component registration, deactivation, and removal.
+
+For manual registration, use the SCR service directly:
+
 ```typescript
 import type { BundleActivator, BundleContext, ServiceComponentRuntime } from '@pandino/pandino';
 

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ConsoleLogService } from './console-log-service';
-import { LogLevel, type LogListener } from './interfaces';
+import { ConsoleLogService } from '../console-log-service';
+import { LogLevel, type LogListener } from '../interfaces';
 
 describe('ConsoleLogService', () => {
   let logService: ConsoleLogService;

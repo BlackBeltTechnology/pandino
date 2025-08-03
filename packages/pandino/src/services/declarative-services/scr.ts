@@ -693,7 +693,7 @@ export class ServiceComponentRuntime {
     }
 
     if (!factoryComponent || !factoryComponent.factoryInstances) {
-      throw new Error(`Factory component with factory ID ${factoryName} not found or not active in any bundle`);
+      throw new Error(`Factory component with factory ID ${factoryName} not active in any bundle`);
     }
 
     const instanceData = factoryComponent.factoryInstances.get(instanceName);
@@ -803,5 +803,45 @@ export class ServiceComponentRuntime {
     if (metadata.modified && typeof instance[metadata.modified] === 'function') {
       await instance[metadata.modified](configuration);
     }
+  }
+
+  /**
+   * Deactivates all components for a specific bundle
+   * Called when a bundle is stopping
+   */
+  async deactivateBundleComponents(bundleId: number): Promise<void> {
+    const bundleComponents = this.components.get(bundleId);
+    if (!bundleComponents) {
+      return; // No components for this bundle
+    }
+
+    // Deactivate all components in this bundle
+    const componentNames = Array.from(bundleComponents.keys());
+    for (const componentName of componentNames) {
+      try {
+        await this.deactivateComponent(bundleId, componentName);
+      } catch (error) {
+        console.error(`Failed to deactivate component ${componentName} from bundle ${bundleId}:`, error);
+      }
+    }
+  }
+
+  /**
+   * Removes all components for a specific bundle
+   * Called when a bundle is uninstalled
+   */
+  async removeBundleComponents(bundleId: number): Promise<void> {
+    const bundleComponents = this.components.get(bundleId);
+    if (!bundleComponents) {
+      return; // No components for this bundle
+    }
+
+    // First deactivate all components
+    await this.deactivateBundleComponents(bundleId);
+
+    // Then remove the entire bundle entry
+    this.components.delete(bundleId);
+
+    console.debug(`Removed all components for bundle ${bundleId}`);
   }
 }
