@@ -595,7 +595,7 @@ class BundleImpl implements Bundle {
     }
 
     // Add any additional properties from metadata
-    Object.keys(this.metadata).forEach((key) => {
+    for (const key of Object.keys(this.metadata)) {
       if (
         key !== 'bundleSymbolicName' &&
         key !== 'bundleVersion' &&
@@ -606,7 +606,7 @@ class BundleImpl implements Bundle {
       ) {
         headers[key] = this.metadata[key];
       }
-    });
+    }
 
     return headers;
   }
@@ -735,9 +735,9 @@ class BundleImpl implements Bundle {
   private cleanupFactoryServices(): void {
     const bundleInstances = this.framework.getFactoryServiceInstances(this.bundleId);
     if (bundleInstances) {
-      bundleInstances.forEach((_, registration) => {
+      for (const [_, registration] of bundleInstances.entries()) {
         (registration as ServiceRegistrationImpl<any>).ungetService(this);
-      });
+      }
       this.framework.clearFactoryServiceInstances(this.bundleId);
     }
   }

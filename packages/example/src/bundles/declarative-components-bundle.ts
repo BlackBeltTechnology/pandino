@@ -213,7 +213,7 @@ export class AuthorizationServiceImpl implements AuthorizationService {
     // Add some sample permissions
     const users = this.userService.getAllUsers();
 
-    users.forEach((user) => {
+    for (const user of users) {
       if (user.role === 'admin') {
         this.grantPermission(user.id, 'user:create');
         this.grantPermission(user.id, 'user:read');
@@ -222,7 +222,7 @@ export class AuthorizationServiceImpl implements AuthorizationService {
       } else {
         this.grantPermission(user.id, 'user:read');
       }
-    });
+    }
   }
 
   @Modified

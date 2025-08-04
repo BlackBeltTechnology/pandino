@@ -97,17 +97,19 @@ class EventListenerServiceImpl implements EventListenerService {
   }
 
   clearEvents(): void {
-    this.eventHandlers.forEach((handler) => handler.clearEvents());
+    for (const handler of this.eventHandlers) {
+      handler.clearEvents();
+    }
   }
 
   getEventStats(): { totalEvents: number; eventsByTopic: Record<string, number> } {
     const events = this.getAllEvents();
     const eventsByTopic: Record<string, number> = {};
 
-    events.forEach((event) => {
+    for (const event of events) {
       const topic = event.topic;
       eventsByTopic[topic] = (eventsByTopic[topic] || 0) + 1;
-    });
+    }
 
     return {
       totalEvents: events.length,

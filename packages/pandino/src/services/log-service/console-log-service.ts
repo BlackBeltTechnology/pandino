@@ -93,7 +93,7 @@ export class ConsoleLogService implements LogService {
   }
 
   private notifyListeners(entry: LogEntry): void {
-    this.listeners.forEach((listener) => {
+    for (const listener of this.listeners) {
       try {
         listener.logged(entry);
       } catch (error) {
@@ -101,6 +101,6 @@ export class ConsoleLogService implements LogService {
         // if the error is in the logger itself, so we use console directly
         console.error('Error in log listener:', error);
       }
-    });
+    }
   }
 }

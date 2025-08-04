@@ -424,13 +424,17 @@ describe('BundleModule support', () => {
           serviceRegistrations.push(service1, service2);
         }),
         stop: vi.fn().mockImplementation(() => {
-          serviceRegistrations.forEach((reg) => reg.unregister());
+          for (const reg of serviceRegistrations) {
+            reg.unregister();
+          }
           serviceRegistrations.length = 0;
         }),
       };
 
       const deactivator = vi.fn().mockImplementation((_context: BundleContext) => {
-        cleanupTasks.forEach((task) => task());
+        for (const task of cleanupTasks) {
+          task();
+        }
         cleanupTasks.length = 0;
       });
 

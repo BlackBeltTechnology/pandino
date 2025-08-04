@@ -23,7 +23,9 @@ export class SimpleEventEmitter {
   emit(event: string, ...args: any[]): void {
     const eventListeners = this.listeners.get(event);
     if (eventListeners) {
-      eventListeners.forEach((listener) => listener(...args));
+      for (const listener of eventListeners) {
+        listener(...args);
+      }
     }
   }
 

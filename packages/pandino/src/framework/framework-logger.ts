@@ -12,9 +12,9 @@ export class FrameworkLogger {
   setLogService(logService: LogService): void {
     if (logService && this.logListeners.size > 0) {
       const listeners = Array.from(this.logListeners);
-      listeners.forEach((listener) => {
+      for (const listener of listeners) {
         logService.addLogListener(listener);
-      });
+      }
       this.logListeners.clear();
     }
 
@@ -55,13 +55,13 @@ export class FrameworkLogger {
           context: frameworkContext,
         };
 
-        this.logListeners.forEach((listener) => {
+        for (const listener of this.logListeners) {
           try {
             listener.logged(entry);
           } catch (error) {
             console.error('Error in log listener', error);
           }
-        });
+        }
       }
     }
   }
