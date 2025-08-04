@@ -13,11 +13,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@pandino/pandino": "workspace:*",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.2.0",
+    "@mui/material": "^7.2.0",
     "@pandino/decorators": "workspace:*",
+    "@pandino/pandino": "workspace:*",
     "@pandino/react-hooks": "workspace:*",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.7.1",
+    "react-syntax-highlighter": "^15.6.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",

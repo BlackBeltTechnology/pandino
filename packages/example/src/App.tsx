@@ -1,80 +1,45 @@
-import { useState } from 'react';
-import { useService } from '@pandino/react-hooks';
-import { usePandinoContext } from '@pandino/react-hooks';
-import './App.css';
-import Greeting from './components/Greeting';
-import BundleInfo from './components/BundleInfo';
-import type { GreetingService } from './bundles/greeting-service-bundle';
+import React, { Suspense } from 'react';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { CssBaseline, ThemeProvider, CircularProgress, Box } from '@mui/material';
+import theme from './theme';
+import Layout from './components/Layout';
+
+const Home = React.lazy(() => import('./pages/Home'));
+const ServiceRegistry = React.lazy(() => import('./pages/ServiceRegistry'));
+const BundleSystem = React.lazy(() => import('./pages/BundleSystem'));
+const EventSystem = React.lazy(() => import('./pages/EventSystem'));
+const ConfigAdmin = React.lazy(() => import('./pages/ConfigAdmin'));
+const DeclarativeServices = React.lazy(() => import('./pages/DeclarativeServices'));
+const ReactIntegration = React.lazy(() => import('./pages/ReactIntegration'));
+const DynamicDependencies = React.lazy(() => import('./pages/DynamicDependencies'));
+
+const LoadingFallback = () => (
+  <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+    <CircularProgress />
+  </Box>
+);
 
 function App() {
-  const [name, setName] = useState('Pandino User');
-  const { bundleContext } = usePandinoContext();
-  const { service: greetingService } = useService<GreetingService>('GreetingService');
-
   return (
-    <div className="app">
-      <div className="hero-section">
-        <h1 className="app-title">
-          <span className="gradient-text">Pandino</span>
-          <span className="subtitle">Dynamic Service Example</span>
-        </h1>
-        <p className="app-description">Experience dynamic service component runtime with elegant React integration</p>
-      </div>
-
-      <div className="main-content">
-        <div className="status-card">
-          <div className="status-indicator">
-            <div className={`status-dot ${bundleContext ? 'connected' : 'disconnected'}`}></div>
-            <span className="status-text">Framework: {bundleContext ? 'Connected' : 'Initializing...'}</span>
-          </div>
-          <div className="status-indicator">
-            <div className={`status-dot ${greetingService ? 'connected' : 'disconnected'}`}></div>
-            <span className="status-text">Greeting Service: {greetingService ? 'Available' : 'Loading...'}</span>
-          </div>
-        </div>
-
-        <div className="card">
-          <Greeting name={name} />
-
-          <div className="input-group">
-            <label htmlFor="name" className="input-label">
-              Your name:
-            </label>
-            <div className="input-wrapper">
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your name"
-                className="styled-input"
-              />
-              <div className="input-focus-ring"></div>
-            </div>
-          </div>
-
-          <div className="feature-grid">
-            <div className="feature-item">
-              <div className="feature-icon">🚀</div>
-              <h3>Dynamic Loading</h3>
-              <p>Services loaded at runtime via bundle system</p>
-            </div>
-            <div className="feature-item">
-              <div className="feature-icon">⚡</div>
-              <h3>React Hooks</h3>
-              <p>Seamless integration with React components</p>
-            </div>
-            <div className="feature-item">
-              <div className="feature-icon">🔧</div>
-              <h3>Service Registry</h3>
-              <p>Modular service-oriented architecture</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <BundleInfo />
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <Layout>
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/service-registry" element={<ServiceRegistry />} />
+              <Route path="/bundle-system" element={<BundleSystem />} />
+              <Route path="/event-system" element={<EventSystem />} />
+              <Route path="/config-admin" element={<ConfigAdmin />} />
+              <Route path="/declarative-services" element={<DeclarativeServices />} />
+              <Route path="/react-integration" element={<ReactIntegration />} />
+              <Route path="/dynamic-dependencies" element={<DynamicDependencies />} />
+            </Routes>
+          </Suspense>
+        </Layout>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
