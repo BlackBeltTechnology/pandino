@@ -30,9 +30,11 @@ export interface BundleModule {
       bundleName?: string;
       bundleDescription?: string;
       bundleManifestVersion?: string;
+      fragmentHost?: string;
       [key: string]: any;
     };
-    activator: BundleActivator;
-    components?: any[];
+    activator?: BundleActivator;
+    components?: (new (...args: any[]) => any)[];
+    resources?: { [logicalPath: string]: string };
   };
 }

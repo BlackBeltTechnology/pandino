@@ -11,6 +11,7 @@ import {
   BundleEvent,
   type BundleListener,
   type Filter,
+  type FragmentResourceProcessor,
   ServiceEvent,
   type ServiceFactory,
   type ServiceListener,
@@ -19,16 +20,20 @@ import {
 } from './interfaces';
 import { LDAPFilter } from './ldap-filter';
 import { LdapFilterServiceImpl } from './ldap-filter-service';
+import { parseFragmentHost, versionMatches } from './version-utils';
+import { globToRegExp } from './glob-utils';
 
 export class OSGiFramework extends EventEmitter implements BundleActivator {
-  private bundles = new Map<number, BundleImpl>();
+  private bundles = new Map<number, Bundle>();
   private services = new Map<number, ServiceRegistrationImpl<any>>();
   private bundleCounter = 0;
   private serviceCounter = 0;
   private frameworkProperties = new Map<string, string>();
   private running = false;
-  private systemBundle: BundleImpl | null = null;
+  private systemBundle: Bundle | null = null;
   private factoryServiceInstances = new Map<number, Map<ServiceRegistration<any>, any>>();
+  private hostToFragmentsMap = new Map<number, Set<number>>();
+  private resourceProcessors = new Map<string, FragmentResourceProcessor>();
   private readonly logger: FrameworkLogger;
 
   constructor(logLevel: LogLevel = LogLevel.INFO) {
@@ -47,7 +52,7 @@ export class OSGiFramework extends EventEmitter implements BundleActivator {
         bundleVersion: import.meta.env.VITE_PANDINO_VERSION,
       };
       this.systemBundle = new BundleImpl(0, 'system:', systemMetadata, this);
-      this.systemBundle.setState(BUNDLE_STATES.ACTIVE);
+      (this.systemBundle as BundleImpl).setState(BUNDLE_STATES.ACTIVE);
       this.bundles.set(0, this.systemBundle);
     }
 
@@ -113,8 +118,7 @@ export class OSGiFramework extends EventEmitter implements BundleActivator {
     if (typeof modulePromiseOrLocation === 'string') {
       // Handle string location parameter
       originalLocation = modulePromiseOrLocation;
-      const location = modulePromiseOrLocation;
-      const symbolicName = location.replace(/^.*?:\/\//, '');
+      const symbolicName = modulePromiseOrLocation.replace(/^.*?:\/\//, '');
 
       // Create a default bundle module from the location
       bundleModule = {
@@ -190,7 +194,9 @@ export class OSGiFramework extends EventEmitter implements BundleActivator {
     // Store the bundle module for component discovery
     bundle.setBundleModule(bundleModule);
 
-    bundle.setActivator(activator);
+    if (activator) {
+      bundle.setActivator(activator);
+    }
 
     if (config?.deactivator) {
       (bundle as any).setDeactivator(config.deactivator);
@@ -208,6 +214,37 @@ export class OSGiFramework extends EventEmitter implements BundleActivator {
   }
 
   private async resolveBundle(bundle: BundleImpl): Promise<void> {
+    if (this.isFragment(bundle)) {
+      const hostBundle = this.findHostBundle(bundle);
+
+      if (hostBundle) {
+        this.logger.info(`Resolved fragment ${bundle.getBundleId()} for host ${hostBundle.getBundleId()}`, undefined, {
+          fragmentId: bundle.getBundleId(),
+          fragmentSymbolicName: bundle.getSymbolicName(),
+          hostId: hostBundle.getBundleId(),
+          hostSymbolicName: hostBundle.getSymbolicName(),
+        });
+
+        if (hostBundle.getState() === BUNDLE_STATES.RESOLVED || hostBundle.getState() === BUNDLE_STATES.ACTIVE) {
+          this.attachFragmentToHost(bundle, hostBundle);
+        }
+      } else {
+        this.logger.warn(`Fragment ${bundle.getBundleId()} has no matching host bundle`, undefined, {
+          fragmentId: bundle.getBundleId(),
+          fragmentSymbolicName: bundle.getSymbolicName(),
+          fragmentHost: bundle.getBundleModule()?.default.headers.fragmentHost,
+        });
+      }
+    } else {
+      const fragments = Array.from(this.bundles.values()).filter(
+        (b) => this.isFragment(b) && this.findHostBundle(b) === bundle,
+      );
+
+      for (const fragment of fragments) {
+        this.attachFragmentToHost(fragment, bundle);
+      }
+    }
+
     bundle.setState(BUNDLE_STATES.RESOLVED);
     this.emit('bundle-event', new BundleEvent(BUNDLE_STATES.RESOLVED, bundle));
   }
@@ -352,8 +389,145 @@ export class OSGiFramework extends EventEmitter implements BundleActivator {
     return new LDAPFilter(filterString);
   }
 
-  getLogger(): FrameworkLogger {
+  getLogger(): LogService {
     return this.logger;
+  }
+
+  registerResourceProcessor(processor: FragmentResourceProcessor): void {
+    const resourceType = processor.getResourceType();
+    this.resourceProcessors.set(resourceType, processor);
+    this.logger.debug(`Registered resource processor for type: ${resourceType}`);
+  }
+
+  getResourceProcessor(resourceType: string): FragmentResourceProcessor | undefined {
+    return this.resourceProcessors.get(resourceType);
+  }
+
+  getResourceProcessors(): FragmentResourceProcessor[] {
+    return Array.from(this.resourceProcessors.values());
+  }
+
+  isFragment(bundle: Bundle): boolean {
+    const bundleModule = bundle.getBundleModule();
+    if (!bundleModule || !bundleModule.default || !bundleModule.default.headers) {
+      return false;
+    }
+    return !!bundleModule.default.headers.fragmentHost;
+  }
+
+  private findHostBundle(fragment: Bundle): Bundle | null {
+    const bundleModule = fragment.getBundleModule();
+    if (!bundleModule || !bundleModule.default || !bundleModule.default.headers) {
+      return null;
+    }
+
+    const fragmentHost = bundleModule.default.headers.fragmentHost;
+    if (!fragmentHost) {
+      return null;
+    }
+
+    const [symbolicName, versionRange] = parseFragmentHost(fragmentHost);
+
+    const candidates = Array.from(this.bundles.values()).filter((bundle) => bundle.getSymbolicName() === symbolicName);
+
+    if (versionRange) {
+      const matchingCandidates = candidates.filter((bundle) => {
+        const bundleVersion = bundle.getVersion();
+        return versionMatches(bundleVersion, versionRange);
+      });
+
+      return matchingCandidates.length > 0 ? (matchingCandidates[0] as BundleImpl) : null;
+    }
+
+    return candidates.length > 0 ? (candidates[0] as BundleImpl) : null;
+  }
+
+  getFragmentsForHost(host: Bundle): Bundle[] {
+    const hostId = host.getBundleId();
+    const fragmentIds = this.hostToFragmentsMap.get(hostId) || new Set<number>();
+
+    return Array.from(fragmentIds)
+      .map((id) => this.bundles.get(id))
+      .filter((bundle): bundle is Bundle => bundle !== undefined);
+  }
+
+  attachFragmentToHost(fragment: Bundle, host: Bundle): void {
+    const hostId = host.getBundleId();
+    const fragmentId = fragment.getBundleId();
+
+    if (!this.hostToFragmentsMap.has(hostId)) {
+      this.hostToFragmentsMap.set(hostId, new Set<number>());
+    }
+
+    this.hostToFragmentsMap.get(hostId)!.add(fragmentId);
+
+    (fragment as any).attachedToHost = hostId;
+
+    this.processFragmentResources(host, fragment);
+
+    this.logger.info(`Fragment ${fragmentId} attached to host ${hostId}`, undefined, {
+      fragmentId,
+      fragmentSymbolicName: fragment.getSymbolicName(),
+      hostId,
+      hostSymbolicName: host.getSymbolicName(),
+    });
+  }
+
+  detachFragmentFromHost(fragment: Bundle, host: Bundle): void {
+    const hostId = host.getBundleId();
+    const fragmentId = fragment.getBundleId();
+
+    if (this.hostToFragmentsMap.has(hostId)) {
+      this.hostToFragmentsMap.get(hostId)!.delete(fragmentId);
+    }
+
+    delete (fragment as any).attachedToHost;
+
+    this.logger.info(`Fragment ${fragmentId} detached from host ${hostId}`, undefined, {
+      fragmentId,
+      fragmentSymbolicName: fragment.getSymbolicName(),
+      hostId,
+      hostSymbolicName: host.getSymbolicName(),
+    });
+  }
+
+  private processFragmentResources(host: Bundle, fragment: Bundle): void {
+    const processors = this.getResourceProcessors();
+
+    if (processors.length === 0) {
+      this.logger.debug('No resource processors registered, fragment resources will not be processed');
+      return;
+    }
+
+    let resourcesProcessed = false;
+
+    for (const processor of processors) {
+      try {
+        const processed = processor.processResources(host, fragment);
+        if (processed) {
+          this.logger.debug(
+            `Processed resources of type '${processor.getResourceType()}' from fragment ${fragment.getBundleId()}`,
+          );
+          resourcesProcessed = true;
+        }
+      } catch (error) {
+        this.logger.error(
+          `Error processing resources of type '${processor.getResourceType()}' from fragment ${fragment.getBundleId()}`,
+          error as Error,
+          {
+            fragmentId: fragment.getBundleId(),
+            fragmentSymbolicName: fragment.getSymbolicName(),
+            hostId: host.getBundleId(),
+            hostSymbolicName: host.getSymbolicName(),
+            resourceType: processor.getResourceType(),
+          },
+        );
+      }
+    }
+
+    if (!resourcesProcessed) {
+      this.logger.debug(`No resources processed for fragment ${fragment.getBundleId()}`);
+    }
   }
 }
 
@@ -363,7 +537,7 @@ class BundleImpl implements Bundle {
   private activator: BundleActivator | null = null;
   private deactivator: ((context: BundleContext) => void | Promise<void>) | null = null;
   private registeredServices = new Set<number>();
-  private bundleModule: any = null; // Store the bundle module for component discovery
+  private bundleModule: BundleModule | null = null; // Store the bundle module for component discovery
 
   constructor(
     private bundleId: number,
@@ -448,6 +622,10 @@ class BundleImpl implements Bundle {
   }
 
   async start(): Promise<void> {
+    if ((this.framework as OSGiFramework).isFragment(this)) {
+      throw new Error(`Cannot start fragment bundle ${this.bundleId}: fragments cannot be started directly`);
+    }
+
     if (this.state === BUNDLE_STATES.UNINSTALLED) {
       throw new Error(`Cannot start bundle ${this.bundleId}: uninstalled`);
     }
@@ -475,6 +653,15 @@ class BundleImpl implements Bundle {
         await this.activator.start(this.context);
       }
 
+      const fragments = (this.framework as OSGiFramework).getFragmentsForHost(this);
+      for (const fragment of fragments) {
+        // The fragment's resources should already be merged with the host's during resolution,
+        // but we'll make sure they're attached here as well
+        if (!(fragment as any).attachedToHost) {
+          (this.framework as OSGiFramework).attachFragmentToHost(fragment, this);
+        }
+      }
+
       this.state = BUNDLE_STATES.ACTIVE;
       this.framework.emit('bundle-event', new BundleEvent(BUNDLE_STATES.ACTIVE, this));
     } catch (error) {
@@ -489,6 +676,11 @@ class BundleImpl implements Bundle {
     this.state = BUNDLE_STATES.STOPPING;
 
     try {
+      const fragments = (this.framework as OSGiFramework).getFragmentsForHost(this);
+      for (const fragment of fragments) {
+        (this.framework as OSGiFramework).detachFragmentFromHost(fragment, this);
+      }
+
       if (this.activator && this.context) {
         try {
           await this.activator.stop(this.context);
@@ -631,12 +823,72 @@ class BundleImpl implements Bundle {
     }
   }
 
-  setBundleModule(bundleModule: any): void {
+  setBundleModule(bundleModule: BundleModule): void {
     this.bundleModule = bundleModule;
   }
 
-  getBundleModule(): any {
+  getBundleModule(): BundleModule | null {
     return this.bundleModule;
+  }
+
+  getResource(path: string): string | null {
+    const bundleModule = this.getBundleModule();
+    if (!bundleModule || !bundleModule.default || !bundleModule.default.resources) {
+      if (!(this.framework as OSGiFramework).isFragment(this)) {
+        const fragments = (this.framework as OSGiFramework).getFragmentsForHost(this);
+        for (const fragment of fragments) {
+          const resource = fragment.getResource(path);
+          if (resource) {
+            return resource;
+          }
+        }
+      }
+      return null;
+    }
+
+    const resources = bundleModule.default.resources;
+    if (resources[path]) {
+      return resources[path];
+    }
+
+    if (!(this.framework as OSGiFramework).isFragment(this)) {
+      const fragments = (this.framework as OSGiFramework).getFragmentsForHost(this);
+      for (const fragment of fragments) {
+        const resource = fragment.getResource(path);
+        if (resource) {
+          return resource;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  findResources(basePath: string, pattern: string): string[] {
+    const results: string[] = [];
+
+    const regexPattern = globToRegExp(basePath, pattern);
+
+    const bundleModule = this.getBundleModule();
+    if (bundleModule?.default?.resources) {
+      const resources = bundleModule.default.resources;
+
+      for (const [path, url] of Object.entries(resources)) {
+        if (regexPattern.test(path)) {
+          results.push(url);
+        }
+      }
+    }
+
+    if (!(this.framework as OSGiFramework).isFragment(this)) {
+      const fragments = (this.framework as OSGiFramework).getFragmentsForHost(this);
+      for (const fragment of fragments) {
+        const fragmentResources = fragment.findResources(basePath, pattern);
+        results.push(...fragmentResources);
+      }
+    }
+
+    return results;
   }
 }
 
@@ -800,7 +1052,7 @@ class BundleContextImpl implements BundleContextInternal {
 }
 
 class ServiceRegistrationImpl<S> implements ServiceRegistration<S> {
-  private reference: ServiceReferenceImpl<S>;
+  private readonly reference: ServiceReferenceImpl<S>;
   private unregistered = false;
   private serviceInstances = new Map<number, S>(); // Track per-bundle instances
 

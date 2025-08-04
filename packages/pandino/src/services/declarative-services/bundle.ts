@@ -10,6 +10,7 @@ import { BUNDLE_STATES } from '~/types/constants';
 import type { OSGiFramework } from '~/framework/framework';
 import { ServiceComponentRuntime } from './scr';
 import { SCRBundleConfiguration } from './interfaces';
+import { ComponentResourceProcessor } from './component-resource-processor';
 
 export class ServiceComponentRuntimeBundleActivator implements BundleActivator, BundleListener {
   private serviceRegistration: ServiceRegistration<any> | null = null;
@@ -24,6 +25,10 @@ export class ServiceComponentRuntimeBundleActivator implements BundleActivator, 
 
     this.scr = new ServiceComponentRuntime(framework, context);
     this.serviceRegistration = context.registerService('ServiceComponentRuntime', this.scr);
+
+    // Register the ComponentResourceProcessor with the framework
+    // This processor will handle merging components from fragments with their host bundles
+    framework.registerResourceProcessor(new ComponentResourceProcessor());
 
     context.addBundleListener(this);
 

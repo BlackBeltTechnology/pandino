@@ -1,14 +1,23 @@
-import { type LogLevel, type LogService } from '~/services/log-service/interfaces';
+import { type LogLevel, type LogService, type LogListener, type LogEntry } from '~/services/log-service/interfaces';
 
 export class FrameworkLogger {
   private logService: LogService | null = null;
   private defaultLogLevel: LogLevel;
+  private logListeners: Set<LogListener> = new Set();
 
   constructor(defaultLogLevel: LogLevel) {
     this.defaultLogLevel = defaultLogLevel;
   }
 
   setLogService(logService: LogService): void {
+    if (logService && this.logListeners.size > 0) {
+      const listeners = Array.from(this.logListeners);
+      listeners.forEach((listener) => {
+        logService.addLogListener(listener);
+      });
+      this.logListeners.clear();
+    }
+
     this.logService = logService;
 
     // Apply the default log level to the log service if it's available
@@ -34,9 +43,26 @@ export class FrameworkLogger {
     if (this.logService) {
       this.logService.log(level, message, exception, context);
     } else {
-      // Fallback to console if log service is not available
       const frameworkContext = { ...context, __framework: true };
       this.logToConsole(level, message, exception, frameworkContext);
+
+      if (this.logListeners.size > 0) {
+        const entry: LogEntry = {
+          level,
+          message,
+          timestamp: Date.now(),
+          exception,
+          context: frameworkContext,
+        };
+
+        this.logListeners.forEach((listener) => {
+          try {
+            listener.logged(entry);
+          } catch (error) {
+            console.error('Error in log listener', error);
+          }
+        });
+      }
     }
   }
 
@@ -58,6 +84,22 @@ export class FrameworkLogger {
 
   isLoggable(level: LogLevel): boolean {
     return this.logService ? this.logService.isLoggable(level) : level <= this.defaultLogLevel;
+  }
+
+  addLogListener(listener: LogListener): void {
+    if (this.logService) {
+      this.logService.addLogListener(listener);
+    } else {
+      this.logListeners.add(listener);
+    }
+  }
+
+  removeLogListener(listener: LogListener): void {
+    if (this.logService) {
+      this.logService.removeLogListener(listener);
+    } else {
+      this.logListeners.delete(listener);
+    }
   }
 
   /**

@@ -1,6 +1,14 @@
 import type { OSGiFramework } from '~/framework/framework';
-import type { LdapFilterService } from '~/framework/interfaces';
-import type { Configuration, ConfigurationAdmin, ManagedService, ManagedServiceFactory } from './interfaces';
+import { LdapFilterService } from '~/framework/interfaces';
+import {
+  Configuration,
+  ConfigurationAdmin,
+  ManagedService,
+  ManagedServiceFactory,
+  ConfigurationEvent,
+  ConfigurationListener,
+  ConfigurationEventType,
+} from './interfaces';
 
 export class SimpleEventEmitter {
   private listeners = new Map<string, Function[]>();
@@ -30,11 +38,32 @@ export class SimpleEventEmitter {
   }
 }
 
+class ConfigurationEventImpl implements ConfigurationEvent {
+  constructor(
+    private pid: string,
+    private factoryPid: string | null,
+    private type: ConfigurationEventType,
+  ) {}
+
+  getPid(): string {
+    return this.pid;
+  }
+
+  getFactoryPid(): string | null {
+    return this.factoryPid;
+  }
+
+  getType(): ConfigurationEventType {
+    return this.type;
+  }
+}
+
 export class ConfigurationAdminImpl extends SimpleEventEmitter implements ConfigurationAdmin {
   private configurations = new Map<string, ConfigurationImpl>();
   private factoryConfigurations = new Map<string, ConfigurationImpl>();
   private configCounter = 0;
-  private ldapFilterService: LdapFilterService | null = null;
+  private readonly ldapFilterService: LdapFilterService | null = null;
+  private configListeners: ConfigurationListener[] = [];
 
   constructor(private framework: OSGiFramework) {
     super();
@@ -42,6 +71,60 @@ export class ConfigurationAdminImpl extends SimpleEventEmitter implements Config
     if (serviceRef) {
       this.ldapFilterService = this.framework.getBundleContext().getService(serviceRef);
     }
+
+    this.framework.getBundleContext().addServiceListener(
+      {
+        serviceChanged: (event) => {
+          const objectClass = event.getServiceReference().getProperty('objectClass');
+          const isConfigListener = Array.isArray(objectClass)
+            ? objectClass.includes('ConfigurationListener')
+            : objectClass === 'ConfigurationListener';
+
+          if (isConfigListener) {
+            if (event.getType() === 1) {
+              // REGISTERED
+              const listener = this.framework
+                .getBundleContext()
+                .getService<ConfigurationListener>(event.getServiceReference());
+              if (listener) {
+                this.configListeners.push(listener);
+              }
+            } else if (event.getType() === 2) {
+              // UNREGISTERING
+              const listener = this.framework
+                .getBundleContext()
+                .getService<ConfigurationListener>(event.getServiceReference());
+              if (listener) {
+                const index = this.configListeners.indexOf(listener);
+                if (index !== -1) {
+                  this.configListeners.splice(index, 1);
+                }
+              }
+            }
+          }
+        },
+      },
+      '(objectClass=ConfigurationListener)',
+    );
+
+    const listenerRefs = this.framework.getBundleContext().getServiceReferences('ConfigurationListener');
+
+    if (listenerRefs) {
+      for (const ref of listenerRefs) {
+        const listener = this.framework.getBundleContext().getService<ConfigurationListener>(ref);
+        if (listener) {
+          this.configListeners.push(listener);
+        }
+      }
+    }
+  }
+
+  setConfiguration(pid: string, config: ConfigurationImpl): void {
+    this.configurations.set(pid, config);
+  }
+
+  setFactoryConfiguration(pid: string, config: ConfigurationImpl): void {
+    this.factoryConfigurations.set(pid, config);
   }
 
   async getConfiguration(pid: string, location?: string): Promise<Configuration> {
@@ -79,6 +162,33 @@ export class ConfigurationAdminImpl extends SimpleEventEmitter implements Config
       this.configurations.delete(pid);
       this.factoryConfigurations.delete(pid);
       this.deliverConfiguration(config, null);
+
+      this.notifyConfigurationListeners(config.getPid(), config.getFactoryPid(), ConfigurationEventType.DELETED);
+    }
+  }
+
+  notifyConfigurationListeners(pid: string, factoryPid: string | null, type: ConfigurationEventType): void {
+    const event = new ConfigurationEventImpl(pid, factoryPid, type);
+
+    if (this.configListeners.length === 0) {
+      const listenerRefs = this.framework.getBundleContext().getServiceReferences('ConfigurationListener');
+
+      if (listenerRefs && listenerRefs.length > 0) {
+        for (const ref of listenerRefs) {
+          const listener = this.framework.getBundleContext().getService<ConfigurationListener>(ref);
+          if (listener) {
+            this.configListeners.push(listener);
+          }
+        }
+      }
+    }
+
+    for (const listener of this.configListeners) {
+      try {
+        listener.configurationEvent(event);
+      } catch (error) {
+        console.error(`[DEBUG_LOG] Error notifying ConfigurationListener:`, error);
+      }
     }
   }
 
@@ -190,6 +300,12 @@ class ConfigurationImpl implements Configuration {
     await this.persist();
 
     await this.configAdmin.deliverConfiguration(this, this.properties);
+
+    (this.configAdmin as ConfigurationAdminImpl).notifyConfigurationListeners(
+      this.pid,
+      this.factoryPid,
+      ConfigurationEventType.UPDATED,
+    );
   }
 
   async delete(): Promise<void> {
@@ -208,5 +324,14 @@ class ConfigurationImpl implements Configuration {
     await this.persist();
   }
 
-  private async persist(): Promise<void> {}
+  private async persist(): Promise<void> {
+    // Store configuration in memory
+    // In a real implementation, this would persist to disk or database
+    // For this example, we'll just ensure the configuration is stored in the ConfigurationAdmin
+    if (this.factoryPid) {
+      (this.configAdmin as ConfigurationAdminImpl).setFactoryConfiguration(this.pid, this);
+    } else {
+      (this.configAdmin as ConfigurationAdminImpl).setConfiguration(this.pid, this);
+    }
+  }
 }

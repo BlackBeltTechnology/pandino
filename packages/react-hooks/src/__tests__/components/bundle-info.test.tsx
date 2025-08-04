@@ -107,6 +107,9 @@ describe('BundleInfo', () => {
         getServicesInUse: vi.fn(),
         getHeaders: vi.fn(),
         getContext: vi.fn(),
+        getBundleModule: vi.fn(),
+        getResource: vi.fn(),
+        findResources: vi.fn(),
       };
 
       // Mock the useBundle hook to return a bundle
@@ -151,6 +154,9 @@ describe('BundleInfo', () => {
         getRegisteredServices: vi.fn(),
         getServicesInUse: vi.fn(),
         getContext: vi.fn(),
+        getBundleModule: vi.fn(),
+        getResource: vi.fn(),
+        findResources: vi.fn(),
       };
 
       // Mock the useBundle hook to return a bundle

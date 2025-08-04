@@ -171,6 +171,11 @@ A service-oriented pattern that promotes loose coupling through a central servic
 
 [→ Whiteboard Pattern Documentation](./docs/whiteboard-pattern.md)
 
+### Fragment Pattern
+A pattern that allows a bundle (fragment) to attach to another bundle (host) and contribute its resources directly to the host:
+
+[→ Fragment Pattern Documentation](./docs/fragment-pattern.md)
+
 ## Use Cases
 
 | Scenario | Traditional Approach | Pandino Approach |

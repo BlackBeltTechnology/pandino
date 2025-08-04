@@ -36,6 +36,9 @@ export interface Bundle {
   getRegisteredServices(): ServiceReference<any>[];
   getServicesInUse(): ServiceReference<any>[];
   getContext(): BundleContext;
+  getBundleModule(): BundleModule | null;
+  getResource(path: string): string | null;
+  findResources(basePath: string, pattern: string): string[];
 }
 
 export interface BundleContext {
@@ -129,4 +132,9 @@ export class BundleEvent {
 export interface ServiceFactory<S> {
   getService(bundle: Bundle, registration: ServiceRegistration<S>): S;
   ungetService(bundle: Bundle, registration: ServiceRegistration<S>, service: S): void;
+}
+
+export interface FragmentResourceProcessor {
+  getResourceType(): string;
+  processResources(host: Bundle, fragment: Bundle): boolean;
 }

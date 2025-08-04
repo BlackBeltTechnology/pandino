@@ -25,6 +25,9 @@ const mockBundle1 = {
   getRegisteredServices: vi.fn().mockReturnValue([]),
   getServicesInUse: vi.fn().mockReturnValue([]),
   getContext: vi.fn(),
+  getBundleModule: vi.fn(),
+  getResource: vi.fn(),
+  findResources: vi.fn(),
 };
 
 const mockBundle2 = {

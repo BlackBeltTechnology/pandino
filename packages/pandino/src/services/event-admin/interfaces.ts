@@ -17,6 +17,10 @@ export class Event {
     return this.properties[name];
   }
 
+  getProperties(): Record<string, any> {
+    return { ...this.properties };
+  }
+
   getPropertyNames(): string[] {
     return Object.keys(this.properties);
   }

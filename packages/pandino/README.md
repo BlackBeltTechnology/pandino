@@ -149,6 +149,41 @@ export default {
 };
 ```
 
+### Fragment Bundles
+
+Fragments are special bundles that attach to a host bundle and contribute their resources directly to the host:
+
+```typescript
+// localization-fragment.ts
+import GermanTranslations from './translations/de.json';
+
+export default {
+  headers: {
+    bundleSymbolicName: 'com.example.database.german',
+    bundleVersion: '1.0.0',
+    // Specify the host bundle this fragment attaches to
+    fragmentHost: 'com.example.database'
+  },
+  // Activator is ignored for fragments
+  activator: {
+    start: async () => {},
+    stop: async () => {}
+  },
+  // Components will be merged with the host's components
+  components: [
+    { name: 'GermanTranslations', translations: GermanTranslations }
+  ]
+};
+```
+
+Fragments are useful for:
+- **Localization**: Adding language packs to a host bundle
+- **Platform-specific code**: Providing different implementations for different environments
+- **Adding components**: Extending a bundle with new services without modifying its code
+- **Theming**: Applying different visual styles to UI components
+
+For more details, see the [Fragment Pattern Documentation](../../docs/fragment-pattern.md).
+
 ### Dynamic Dependencies
 
 > 🚀 Bundle registration order doesn't matter! Dependencies resolve automatically.

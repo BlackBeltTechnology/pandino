@@ -12,7 +12,6 @@ describe('ServiceComponentRuntimeBundleActivator', () => {
   let bundleContext: BundleContext;
   let activator: ServiceComponentRuntimeBundleActivator;
 
-  // Helper function to cast service with proper typing
   function getSCRService(bundleContext: BundleContext): ServiceComponentRuntime {
     const scrServiceRef = bundleContext.getServiceReference('ServiceComponentRuntime')!;
     return bundleContext.getService(scrServiceRef) as any;
@@ -325,6 +324,8 @@ describe('ServiceComponentRuntimeBundleActivator', () => {
       getRegisteredServices: () => [],
       getServicesInUse: () => [],
       getContext: () => bundleContext,
+      getResource: () => null,
+      findResources: () => [],
     } as Bundle;
   }
 });

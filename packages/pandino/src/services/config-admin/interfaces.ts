@@ -23,3 +23,18 @@ export interface ManagedServiceFactory {
   updated(pid: string, properties: Record<string, any>): void | Promise<void>;
   deleted(pid: string): void | Promise<void>;
 }
+
+export enum ConfigurationEventType {
+  UPDATED = 1,
+  DELETED = 2,
+}
+
+export interface ConfigurationEvent {
+  getPid(): string;
+  getFactoryPid(): string | null;
+  getType(): ConfigurationEventType;
+}
+
+export interface ConfigurationListener {
+  configurationEvent(event: ConfigurationEvent): void;
+}
