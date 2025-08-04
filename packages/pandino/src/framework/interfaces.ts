@@ -17,9 +17,6 @@ export interface BundleConfiguration {
     [key: string]: string | undefined;
   };
   activator?: BundleActivator | (() => BundleActivator);
-  deactivator?:
-    | ((context: BundleContext) => void | Promise<void>)
-    | (() => (context: BundleContext) => void | Promise<void>);
 }
 
 export interface Bundle {

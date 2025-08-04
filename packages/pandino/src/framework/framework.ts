@@ -198,10 +198,6 @@ export class OSGiFramework extends EventEmitter implements BundleActivator {
       bundle.setActivator(activator);
     }
 
-    if (config?.deactivator) {
-      (bundle as any).setDeactivator(config.deactivator);
-    }
-
     this.emit('bundle-event', new BundleEvent(BUNDLE_STATES.INSTALLED, bundle));
 
     await this.resolveBundle(bundle);
@@ -535,7 +531,6 @@ class BundleImpl implements Bundle {
   private state: BundleState = BUNDLE_STATES.INSTALLED;
   private context: BundleContextImpl | null = null;
   private activator: BundleActivator | null = null;
-  private deactivator: ((context: BundleContext) => void | Promise<void>) | null = null;
   private registeredServices = new Set<number>();
   private bundleModule: BundleModule | null = null; // Store the bundle module for component discovery
 
@@ -692,17 +687,6 @@ class BundleImpl implements Bundle {
         }
       }
 
-      if (this.deactivator && this.context) {
-        try {
-          await this.deactivator(this.context);
-        } catch (error) {
-          this.framework.getLogger().error('Error in deactivator', error as Error, {
-            bundleId: this.bundleId,
-            symbolicName: this.getSymbolicName(),
-          });
-        }
-      }
-
       this.cleanupFactoryServices();
 
       for (const serviceId of this.registeredServices) {
@@ -735,7 +719,7 @@ class BundleImpl implements Bundle {
   private cleanupFactoryServices(): void {
     const bundleInstances = this.framework.getFactoryServiceInstances(this.bundleId);
     if (bundleInstances) {
-      for (const [_, registration] of bundleInstances.entries()) {
+      for (const registration of bundleInstances.keys()) {
         (registration as ServiceRegistrationImpl<any>).ungetService(this);
       }
       this.framework.clearFactoryServiceInstances(this.bundleId);
@@ -767,60 +751,6 @@ class BundleImpl implements Bundle {
 
   setActivator(activator: BundleActivator): void {
     this.activator = activator;
-  }
-
-  setDeactivator(deactivator: BundleConfiguration['deactivator']): void {
-    if (typeof deactivator === 'function') {
-      let parameterCount = deactivator.length;
-
-      if (typeof (deactivator as any).getMockImplementation === 'function') {
-        const mockImpl = (deactivator as any).getMockImplementation();
-        if (mockImpl) {
-          parameterCount = mockImpl.length;
-        }
-      }
-
-      // Check if this is a factory function (no parameters) vs a direct deactivator (has parameters)
-      if (parameterCount === 0) {
-        try {
-          const result = (deactivator as () => any)();
-
-          // Handle both sync and async factory functions
-          if (result && typeof result.then === 'function') {
-            if (typeof (deactivator as any).getMockImplementation === 'function') {
-              this.deactivator = deactivator as (context: BundleContext) => void | Promise<void>;
-              return;
-            }
-
-            result
-              .then((asyncResult: any) => {
-                if (typeof asyncResult === 'function') {
-                  this.deactivator = asyncResult;
-                } else {
-                  throw new Error('Async factory function must resolve to a deactivator function');
-                }
-              })
-              .catch((error: any) => {
-                throw new Error(`Failed to resolve async deactivator factory: ${error}`);
-              });
-            return;
-          } else if (typeof result === 'function') {
-            this.deactivator = result;
-            return;
-          } else {
-            throw new Error('Factory function must return a deactivator function');
-          }
-        } catch (error) {
-          if (typeof (deactivator as any).getMockImplementation === 'function') {
-            this.deactivator = deactivator as (context: BundleContext) => void | Promise<void>;
-            return;
-          }
-          throw new Error(`Failed to call deactivator factory function: ${error}`);
-        }
-      } else {
-        this.deactivator = deactivator as (context: BundleContext) => void | Promise<void>;
-      }
-    }
   }
 
   setBundleModule(bundleModule: BundleModule): void {

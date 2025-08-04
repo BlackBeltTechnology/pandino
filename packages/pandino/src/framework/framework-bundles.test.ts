@@ -272,150 +272,9 @@ describe('BundleModule support', () => {
     });
   });
 
-  describe('bundle deactivators', () => {
-    it('should call deactivator during bundle stop', async () => {
-      const activatorStart = vi.fn();
-      const activatorStop = vi.fn();
-      const deactivator = vi.fn((_context: BundleContext) => {});
-
-      const config: BundleConfiguration = {
-        headers: {
-          bundleSymbolicName: 'com.example.deactivator-bundle',
-          bundleVersion: '1.0.0',
-        },
-        activator: {
-          start: activatorStart,
-          stop: activatorStop,
-        },
-        deactivator,
-      };
-
-      const bundle = await framework.installBundle('test://deactivator-bundle', config);
-      await bundle.start();
-
-      expect(activatorStart).toHaveBeenCalledWith(bundle.getContext());
-      expect(deactivator).not.toHaveBeenCalled();
-
-      await bundle.stop();
-
-      expect(activatorStop).toHaveBeenCalledWith(bundle.getContext());
-      expect(deactivator).toHaveBeenCalledWith(bundle.getContext());
-    });
-
-    it('should call deactivator after activator stop', async () => {
-      const callOrder: string[] = [];
-
-      const activator: BundleActivator = {
-        start: vi.fn(),
-        stop: vi.fn().mockImplementation(() => {
-          callOrder.push('activator-stop');
-        }),
-      };
-
-      const deactivator = vi.fn((_context: BundleContext) => {
-        callOrder.push('deactivator');
-      });
-
-      const config: BundleConfiguration = {
-        activator,
-        deactivator,
-      };
-
-      const bundle = await framework.installBundle('test://order-test', config);
-      await bundle.start();
-      await bundle.stop();
-
-      expect(callOrder).toEqual(['activator-stop', 'deactivator']);
-    });
-
-    it('should support async deactivator', async () => {
-      const deactivator = vi.fn((_context: BundleContext) => {}).mockResolvedValue(undefined);
-
-      const config: BundleConfiguration = {
-        activator: {
-          start: vi.fn(),
-          stop: vi.fn(),
-        },
-        deactivator,
-      };
-
-      const bundle = await framework.installBundle('test://async-deactivator', config);
-      await bundle.start();
-      await bundle.stop();
-
-      expect(deactivator).toHaveBeenCalledWith(bundle.getContext());
-    });
-
-    it('should handle deactivator without activator', async () => {
-      const deactivator = vi.fn((_context: BundleContext) => {});
-
-      const config: BundleConfiguration = {
-        headers: {
-          bundleSymbolicName: 'com.example.deactivator-only',
-          bundleVersion: '1.0.0',
-        },
-        deactivator,
-      };
-
-      const bundle = await framework.installBundle('test://deactivator-only', config);
-      await bundle.start();
-      await bundle.stop();
-
-      expect(deactivator).toHaveBeenCalledWith(bundle.getContext());
-    });
-
-    it('should handle deactivator errors gracefully', async () => {
-      // Use a simple function that throws an error instead of a mock
-      const deactivator = (_context: BundleContext) => {
-        throw new Error('Deactivator failed');
-      };
-
-      const config: BundleConfiguration = {
-        activator: {
-          start: () => {},
-          stop: () => {},
-        },
-        deactivator,
-      };
-
-      const bundle = await framework.installBundle('test://failing-deactivator', config);
-      await bundle.start();
-
-      // Stop should complete despite deactivator error
-      await bundle.stop();
-
-      // Verify the bundle is in the RESOLVED state after stopping
-      expect(bundle.getState()).toBe(BUNDLE_STATES.RESOLVED);
-    });
-
-    it('should support deactivator factory functions', async () => {
-      const actualDeactivator = vi.fn();
-      const deactivatorFactory = vi.fn().mockReturnValue(actualDeactivator);
-
-      const config: BundleConfiguration = {
-        activator: {
-          start: vi.fn(),
-          stop: vi.fn(),
-        },
-        deactivator: deactivatorFactory,
-      };
-
-      const bundle = await framework.installBundle('test://deactivator-factory', config);
-
-      // Factory should be called during installation
-      expect(deactivatorFactory).toHaveBeenCalled();
-
-      await bundle.start();
-      await bundle.stop();
-
-      expect(actualDeactivator).toHaveBeenCalledWith(bundle.getContext());
-    });
-  });
-
   describe('complete bundle lifecycle', () => {
-    it('should handle full lifecycle with headers, activator, and deactivator', async () => {
+    it('should handle full lifecycle with headers and activator', async () => {
       const serviceRegistrations: ServiceRegistration<unknown>[] = [];
-      const cleanupTasks: (() => void)[] = [];
 
       const activator: BundleActivator = {
         start: vi.fn().mockImplementation((context) => {
@@ -431,13 +290,6 @@ describe('BundleModule support', () => {
         }),
       };
 
-      const deactivator = vi.fn().mockImplementation((_context: BundleContext) => {
-        for (const task of cleanupTasks) {
-          task();
-        }
-        cleanupTasks.length = 0;
-      });
-
       const config: BundleConfiguration = {
         headers: {
           bundleSymbolicName: 'com.example.full-lifecycle',
@@ -447,7 +299,6 @@ describe('BundleModule support', () => {
           'Custom-Property': 'test-value',
         },
         activator,
-        deactivator,
       };
 
       const bundle = await framework.installBundle('test://full-lifecycle', config);
@@ -470,7 +321,6 @@ describe('BundleModule support', () => {
       await bundle.stop();
       expect(bundle.getState()).toBe(BUNDLE_STATES.RESOLVED);
       expect(activator.stop).toHaveBeenCalledWith(bundle.getContext());
-      expect(deactivator).toHaveBeenCalledWith(bundle.getContext());
 
       // Verify services are no longer available
       expect(context.getServiceReference('Service1')).toBeNull();
@@ -482,7 +332,6 @@ describe('BundleModule support', () => {
         start: vi.fn(),
         stop: vi.fn(),
       };
-      const deactivator = vi.fn((_context: BundleContext) => {});
 
       const config: BundleConfiguration = {
         headers: {
@@ -490,7 +339,6 @@ describe('BundleModule support', () => {
           bundleVersion: '1.0.0',
         },
         activator,
-        deactivator,
       };
 
       const bundle = await framework.installBundle('test://uninstall-test', config);
@@ -504,7 +352,6 @@ describe('BundleModule support', () => {
       // After uninstall, getState() throws an error, so we can't check the state directly
       expect(() => bundle.getState()).toThrow(`Bundle ${bundleId} has been uninstalled`);
       expect(activator.stop).toHaveBeenCalled();
-      expect(deactivator).toHaveBeenCalled();
       expect(framework.getBundle(bundleId)).toBeNull();
     });
   });
@@ -626,28 +473,6 @@ describe('BundleModule support', () => {
 
       await bundle.stop();
       expect(activator.stop).toHaveBeenCalledWith(bundle.getContext());
-    });
-
-    it('should handle configuration with only deactivator', async () => {
-      const deactivator = vi.fn((_context: BundleContext) => {});
-
-      const config: BundleConfiguration = {
-        deactivator,
-      };
-
-      const bundle = await framework.installBundle('test://deactivator-only', config);
-
-      // Deactivator should not be called during installation or start
-      expect(deactivator).not.toHaveBeenCalled();
-
-      await bundle.start();
-      expect(deactivator).not.toHaveBeenCalled();
-
-      await bundle.stop();
-
-      // Verify deactivator was called at least once with a context
-      expect(deactivator).toHaveBeenCalledWith(expect.any(Object));
-      expect(deactivator.mock.calls.length).toBeGreaterThanOrEqual(1);
     });
   });
 
