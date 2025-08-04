@@ -22,7 +22,7 @@ importers:
         version: 1.9.0
       typescript:
         specifier: ^5.0.4
-        version: 5.8.3
+        version: 5.9.2
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@20.19.9)(@vitest/ui@3.2.4)(jsdom@26.1.0)
@@ -50,13 +50,13 @@ importers:
         version: 26.1.0
       typescript:
         specifier: ^5.0.4
-        version: 5.8.3
+        version: 5.9.2
       vite:
         specifier: ^7.0.0
         version: 7.0.6(@types/node@20.19.9)
       vite-plugin-dts:
         specifier: ^4.5.4
-        version: 4.5.4(@types/node@20.19.9)(rollup@4.46.2)(typescript@5.8.3)(vite@7.0.6(@types/node@20.19.9))
+        version: 4.5.4(@types/node@20.19.9)(rollup@4.46.2)(typescript@5.9.2)(vite@7.0.6(@types/node@20.19.9))
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@20.19.9)(@vitest/ui@3.2.4)(jsdom@26.1.0)
@@ -102,7 +102,7 @@ importers:
         version: 26.1.0
       typescript:
         specifier: ^5.2.2
-        version: 5.8.3
+        version: 5.9.2
       vite:
         specifier: ^5.2.0
         version: 5.4.19(@types/node@20.19.9)
@@ -136,13 +136,13 @@ importers:
         version: 26.1.0
       typescript:
         specifier: ^5.0.4
-        version: 5.8.3
+        version: 5.9.2
       vite:
         specifier: ^7.0.0
         version: 7.0.6(@types/node@20.19.9)
       vite-plugin-dts:
         specifier: ^4.5.4
-        version: 4.5.4(@types/node@20.19.9)(rollup@4.46.2)(typescript@5.8.3)(vite@7.0.6(@types/node@20.19.9))
+        version: 4.5.4(@types/node@20.19.9)(rollup@4.46.2)(typescript@5.9.2)(vite@7.0.6(@types/node@20.19.9))
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@20.19.9)(@vitest/ui@3.2.4)(jsdom@26.1.0)
@@ -191,13 +191,13 @@ importers:
         version: 26.1.0
       typescript:
         specifier: ^5.0.4
-        version: 5.8.3
+        version: 5.9.2
       vite:
         specifier: ^7.0.0
         version: 7.0.6(@types/node@20.19.9)
       vite-plugin-dts:
         specifier: ^4.5.4
-        version: 4.5.4(@types/node@20.19.9)(rollup@4.46.2)(typescript@5.8.3)(vite@7.0.6(@types/node@20.19.9))
+        version: 4.5.4(@types/node@20.19.9)(rollup@4.46.2)(typescript@5.9.2)(vite@7.0.6(@types/node@20.19.9))
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@20.19.9)(@vitest/ui@3.2.4)(jsdom@26.1.0)
@@ -2022,8 +2022,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typescript@5.8.3:
-    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
+  typescript@5.9.2:
+    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -2981,7 +2981,7 @@ snapshots:
       de-indent: 1.0.2
       he: 1.2.0
 
-  '@vue/language-core@2.2.0(typescript@5.8.3)':
+  '@vue/language-core@2.2.0(typescript@5.9.2)':
     dependencies:
       '@volar/language-core': 2.4.22
       '@vue/compiler-dom': 3.5.18
@@ -2992,7 +2992,7 @@ snapshots:
       muggle-string: 0.4.1
       path-browserify: 1.0.1
     optionalDependencies:
-      typescript: 5.8.3
+      typescript: 5.9.2
 
   '@vue/shared@3.5.18': {}
 
@@ -4052,7 +4052,7 @@ snapshots:
 
   typescript@5.8.2: {}
 
-  typescript@5.8.3: {}
+  typescript@5.9.2: {}
 
   ufo@1.6.1: {}
 
@@ -4097,18 +4097,18 @@ snapshots:
       - tsx
       - yaml
 
-  vite-plugin-dts@4.5.4(@types/node@20.19.9)(rollup@4.46.2)(typescript@5.8.3)(vite@7.0.6(@types/node@20.19.9)):
+  vite-plugin-dts@4.5.4(@types/node@20.19.9)(rollup@4.46.2)(typescript@5.9.2)(vite@7.0.6(@types/node@20.19.9)):
     dependencies:
       '@microsoft/api-extractor': 7.52.9(@types/node@20.19.9)
       '@rollup/pluginutils': 5.2.0(rollup@4.46.2)
       '@volar/typescript': 2.4.22
-      '@vue/language-core': 2.2.0(typescript@5.8.3)
+      '@vue/language-core': 2.2.0(typescript@5.9.2)
       compare-versions: 6.1.1
       debug: 4.4.1
       kolorist: 1.8.0
       local-pkg: 1.1.1
       magic-string: 0.30.17
-      typescript: 5.8.3
+      typescript: 5.9.2
     optionalDependencies:
       vite: 7.0.6(@types/node@20.19.9)
     transitivePeerDependencies:
