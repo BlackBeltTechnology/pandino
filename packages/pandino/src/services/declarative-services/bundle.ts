@@ -26,9 +26,9 @@ export class ServiceComponentRuntimeBundleActivator implements BundleActivator, 
     this.scr = new ServiceComponentRuntime(framework, context);
     this.serviceRegistration = context.registerService('ServiceComponentRuntime', this.scr);
 
-    // Register the ComponentResourceProcessor with the framework
+    // Register the ComponentResourceProcessor as a service
     // This processor will handle merging components from fragments with their host bundles
-    framework.registerResourceProcessor(new ComponentResourceProcessor());
+    context.registerService('FragmentResourceProcessor', new ComponentResourceProcessor());
 
     context.addBundleListener(this);
 

@@ -9,7 +9,7 @@ export class ResourceManagementBundleActivator implements BundleActivator {
     this.frameworkReference = context.getServiceReference<OSGiFramework>('OSGiFramework')!;
     const framework = context.getService(this.frameworkReference)!;
 
-    framework.registerResourceProcessor(new ResourceMapProcessor());
+    context.registerService('FragmentResourceProcessor', new ResourceMapProcessor());
 
     framework.getLogger().info('Resource Management service started');
   }

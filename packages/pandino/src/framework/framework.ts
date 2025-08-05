@@ -33,7 +33,6 @@ export class OSGiFramework extends EventEmitter implements BundleActivator {
   private systemBundle: Bundle | null = null;
   private factoryServiceInstances = new Map<number, Map<ServiceRegistration<any>, any>>();
   private hostToFragmentsMap = new Map<number, Set<number>>();
-  private resourceProcessors = new Map<string, FragmentResourceProcessor>();
   private readonly logger: FrameworkLogger;
 
   constructor(logLevel: LogLevel = LogLevel.INFO) {
@@ -389,20 +388,6 @@ export class OSGiFramework extends EventEmitter implements BundleActivator {
     return this.logger;
   }
 
-  registerResourceProcessor(processor: FragmentResourceProcessor): void {
-    const resourceType = processor.getResourceType();
-    this.resourceProcessors.set(resourceType, processor);
-    this.logger.debug(`Registered resource processor for type: ${resourceType}`);
-  }
-
-  getResourceProcessor(resourceType: string): FragmentResourceProcessor | undefined {
-    return this.resourceProcessors.get(resourceType);
-  }
-
-  getResourceProcessors(): FragmentResourceProcessor[] {
-    return Array.from(this.resourceProcessors.values());
-  }
-
   isFragment(bundle: Bundle): boolean {
     const bundleModule = bundle.getBundleModule();
     if (!bundleModule || !bundleModule.default || !bundleModule.default.headers) {
@@ -488,16 +473,20 @@ export class OSGiFramework extends EventEmitter implements BundleActivator {
   }
 
   private processFragmentResources(host: Bundle, fragment: Bundle): void {
-    const processors = this.getResourceProcessors();
+    const systemContext = this.getBundleContext();
+    const processorRefs = systemContext.getServiceReferences<FragmentResourceProcessor>('FragmentResourceProcessor');
 
-    if (processors.length === 0) {
+    if (!processorRefs || processorRefs.length === 0) {
       this.logger.debug('No resource processors registered, fragment resources will not be processed');
       return;
     }
 
     let resourcesProcessed = false;
 
-    for (const processor of processors) {
+    for (const ref of processorRefs) {
+      const processor = systemContext.getService<FragmentResourceProcessor>(ref);
+      if (!processor) continue;
+
       try {
         const processed = processor.processResources(host, fragment);
         if (processed) {
@@ -518,6 +507,9 @@ export class OSGiFramework extends EventEmitter implements BundleActivator {
             resourceType: processor.getResourceType(),
           },
         );
+      } finally {
+        // Unget the service when done
+        systemContext.ungetService(ref);
       }
     }
 

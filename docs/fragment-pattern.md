@@ -445,17 +445,14 @@ export class ThemeResourceProcessor implements FragmentResourceProcessor {
 
 ### Registering a Resource Processor
 
-To register a custom resource processor, get the OSGiFramework service and call its `registerResourceProcessor` method:
+Resource processors are registered as services via their interface, just like any other service in the framework:
 
 ```typescript
 // In your bundle activator
 async start(context: BundleContext): Promise<void> {
-  const frameworkRef = context.getServiceReference<OSGiFramework>('OSGiFramework')!;
-  const framework = context.getService(frameworkRef)!;
-
-  // Register your custom resource processor
-  framework.registerResourceProcessor(new TranslationResourceProcessor());
-  framework.registerResourceProcessor(new ThemeResourceProcessor());
+  // Register your custom resource processors as services
+  context.registerService('FragmentResourceProcessor', new TranslationResourceProcessor());
+  context.registerService('FragmentResourceProcessor', new ThemeResourceProcessor());
 }
 ```
 

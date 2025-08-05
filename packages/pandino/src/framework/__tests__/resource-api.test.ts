@@ -16,8 +16,8 @@ describe('Resource API', () => {
     await framework.start();
     systemContext = framework.getBundleContext();
 
-    // Register the ResourceMapProcessor
-    framework.registerResourceProcessor(new ResourceMapProcessor());
+    // Register the ResourceMapProcessor as a service
+    systemContext.registerService('FragmentResourceProcessor', new ResourceMapProcessor());
 
     // Create a host bundle with resources
     hostBundle = await systemContext.installBundle('host-bundle', {

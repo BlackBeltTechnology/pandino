@@ -14,7 +14,7 @@ describe('Fragment Feature', () => {
     await framework.start();
     systemContext = framework.getBundleContext();
 
-    framework.registerResourceProcessor(new ComponentResourceProcessor());
+    systemContext.registerService('FragmentResourceProcessor', new ComponentResourceProcessor());
   });
 
   afterEach(async () => {
