@@ -1,7 +1,6 @@
 {
   "name": "@pandino/example",
   "description": "Example application demonstrating Pandino's dynamic service component runtime with React integration",
-  "private": true,
   "version": "0.9.20",
   "license": "EPL-2.0",
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
