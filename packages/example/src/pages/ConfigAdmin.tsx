@@ -1,39 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Settings as SettingsIcon,
-  Refresh as RefreshIcon,
-  Edit as EditIcon,
-  Save as SaveIcon,
-  Delete as DeleteIcon,
-  History as HistoryIcon,
-} from '@mui/icons-material';
-import {
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  Grid,
-  Button,
-  useTheme,
-  alpha,
-  Paper,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Tooltip,
-  Alert,
-  CircularProgress,
-  Tabs,
-  Tab,
-  TextField,
-  Switch,
-  FormControlLabel,
-} from '@mui/material';
+import SettingsIcon from '@mui/icons-material/Settings';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import DeleteIcon from '@mui/icons-material/Delete';
+import HistoryIcon from '@mui/icons-material/History';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import { alpha, useTheme } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import Chip from '@mui/material/Chip';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import TextField from '@mui/material/TextField';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { useFeatureToggle } from '../contexts/FeatureToggleContext';
 import { usePandinoContext } from '@pandino/react-hooks';
 import { ConfigManagerService } from '../bundles/config-manager-bundle';

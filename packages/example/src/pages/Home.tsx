@@ -1,13 +1,17 @@
 import React from 'react';
-import { Typography, Box, Card, CardContent, Grid, Button, useTheme, alpha } from '@mui/material';
-import {
-  Api as ApiIcon,
-  Extension as ExtensionIcon,
-  Notifications as NotificationsIcon,
-  Settings as SettingsIcon,
-  Code as CodeIcon,
-  ViewModule as ViewModuleIcon,
-} from '@mui/icons-material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import { alpha, useTheme } from '@mui/material/styles';
+import ApiIcon from '@mui/icons-material/Api';
+import ExtensionIcon from '@mui/icons-material/Extension';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import SettingsIcon from '@mui/icons-material/Settings';
+import CodeIcon from '@mui/icons-material/Code';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import { useFeatureToggle, Feature } from '../contexts/FeatureToggleContext';
 import { Link as RouterLink } from 'react-router-dom';
 import { featureColors, heroStyles } from '../theme';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ViewModule as ViewModuleIcon } from '@mui/icons-material';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import FeaturePlaceholder from './FeaturePlaceholder';
 import { featureColors } from '../theme';
 

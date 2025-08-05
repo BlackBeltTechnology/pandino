@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
-  Alert,
-  Button,
-  useTheme,
-  alpha,
-} from '@mui/material';
-import { History as HistoryIcon, Refresh as RefreshIcon } from '@mui/icons-material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Chip from '@mui/material/Chip';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import { alpha, useTheme } from '@mui/material/styles';
+import HistoryIcon from '@mui/icons-material/History';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { usePandinoContext } from '@pandino/react-hooks';
 import { ConfigConsumerService } from '../bundles/config-consumer-bundle';
 

@@ -1,5 +1,12 @@
 import React from 'react';
-import { Typography, Box, Card, CardContent, useTheme, alpha, Paper, Divider, Alert } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import { alpha, useTheme } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import Divider from '@mui/material/Divider';
+import Alert from '@mui/material/Alert';
 import { useFeatureToggle, Feature } from '../contexts/FeatureToggleContext';
 import { heroStyles } from '../theme';
 import CodeBlock from '../components/CodeBlock';

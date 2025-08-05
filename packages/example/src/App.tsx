@@ -1,6 +1,9 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import { CssBaseline, ThemeProvider, CircularProgress, Box } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import theme from './theme';
 import Layout from './components/Layout';
 

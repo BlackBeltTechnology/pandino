@@ -26,14 +26,16 @@ export default defineConfig({
             ? 'bundles/[name].js'
             : 'assets/[name]-[hash].js';
         },
-        manualChunks: {
-          'react-syntax-highlighter': ['react-syntax-highlighter'],
-          'react': ['react'],
-          'react-dom': ['react-dom'],
-          'react-router-dom': ['react-router-dom'],
-          'mui-material': ['@mui/material'],
-          'mui-icons': ['@mui/icons-material'],
-        }
+        // Remove manual chunks to prevent duplicate React instances
+        // This ensures that React is properly shared across all components
+        // manualChunks: {
+        //   'react-syntax-highlighter': ['react-syntax-highlighter'],
+        //   'react': ['react'],
+        //   'react-dom': ['react-dom'],
+        //   'react-router-dom': ['react-router-dom'],
+        //   'mui-material': ['@mui/material'],
+        //   'mui-icons': ['@mui/icons-material'],
+        // }
       },
     },
   },

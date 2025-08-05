@@ -1,45 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Extension as ExtensionIcon,
-  PlayArrow as PlayArrowIcon,
-  Stop as StopIcon,
-  Refresh as RefreshIcon,
-  Info as InfoIcon,
-  Link as LinkIcon,
-  Code as CodeIcon,
-  Timeline as TimelineIcon,
-  Check as CheckIcon,
-} from '@mui/icons-material';
-import {
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  Grid,
-  Button,
-  useTheme,
-  alpha,
-  Paper,
-  Divider,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Tooltip,
-  Alert,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  CircularProgress,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from '@mui/material';
+import ExtensionIcon from '@mui/icons-material/Extension';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import StopIcon from '@mui/icons-material/Stop';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import InfoIcon from '@mui/icons-material/Info';
+import LinkIcon from '@mui/icons-material/Link';
+import CodeIcon from '@mui/icons-material/Code';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import CheckIcon from '@mui/icons-material/Check';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import { alpha, useTheme } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import Divider from '@mui/material/Divider';
+import Chip from '@mui/material/Chip';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Alert from '@mui/material/Alert';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import CircularProgress from '@mui/material/CircularProgress';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useFeatureToggle } from '../contexts/FeatureToggleContext';
 import { usePandinoContext } from '@pandino/react-hooks';

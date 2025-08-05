@@ -1,5 +1,5 @@
 import React from 'react';
-import { Code as CodeIcon } from '@mui/icons-material';
+import CodeIcon from '@mui/icons-material/Code';
 import FeaturePlaceholder from './FeaturePlaceholder';
 import { featureColors } from '../theme';
 

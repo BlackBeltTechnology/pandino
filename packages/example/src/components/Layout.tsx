@@ -1,36 +1,31 @@
 import React, { useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  Typography,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  IconButton,
-  Divider,
-  Container,
-  Switch,
-  FormControlLabel,
-  Tooltip,
-  useTheme,
-  alpha,
-} from '@mui/material';
-import {
-  Menu as MenuIcon,
-  Home as HomeIcon,
-  Api as ApiIcon,
-  Extension as ExtensionIcon,
-  Notifications as NotificationsIcon,
-  Settings as SettingsIcon,
-  Code as CodeIcon,
-  ViewModule as ViewModuleIcon,
-  ToggleOn as ToggleOnIcon,
-} from '@mui/icons-material';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import Divider from '@mui/material/Divider';
+import Container from '@mui/material/Container';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Tooltip from '@mui/material/Tooltip';
+import { alpha, useTheme } from '@mui/material/styles';
+import MenuIcon from '@mui/icons-material/Menu';
+import HomeIcon from '@mui/icons-material/Home';
+import ApiIcon from '@mui/icons-material/Api';
+import ExtensionIcon from '@mui/icons-material/Extension';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import SettingsIcon from '@mui/icons-material/Settings';
+import CodeIcon from '@mui/icons-material/Code';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import { useFeatureToggle, Feature, featureDescriptions } from '../contexts/FeatureToggleContext';
 import { featureColors } from '../theme';
 
