@@ -49,7 +49,7 @@ export class EventAdminImpl implements EventAdmin {
         try {
           handler.handleEvent(event);
         } catch (error) {
-          console.error('Error in event handler:', error);
+          this.framework.getLogger().error('Error in event handler:', error as Error);
         }
       }
     }

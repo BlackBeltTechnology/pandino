@@ -148,7 +148,21 @@ describe('Factory Components', () => {
 
     it('should continue cleanup even if deactivate method throws error', async () => {
       const deactivateError = new Error('Deactivation failed');
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const mockLogger = {
+        log: vi.fn(),
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+        isLoggable: vi.fn().mockReturnValue(true),
+        setLogLevel: vi.fn(),
+        getLogLevel: vi.fn(),
+        addLogListener: vi.fn(),
+        removeLogListener: vi.fn(),
+      };
+
+      const getLoggerSpy = vi.spyOn(framework, 'getLogger').mockReturnValue(mockLogger);
 
       @Component({
         name: 'test.factory.component',
@@ -170,7 +184,7 @@ describe('Factory Components', () => {
 
       await scr.deleteFactoryInstance('TestFactory', 'instance1');
 
-      expect(consoleSpy).toHaveBeenCalledWith(
+      expect(mockLogger.error).toHaveBeenCalledWith(
         'Error during deactivation of factory instance instance1:',
         deactivateError,
       );
@@ -178,7 +192,7 @@ describe('Factory Components', () => {
       const factoryComponent = scr.getComponent(bundleId, 'test.factory.component');
       expect(factoryComponent?.factoryInstances?.has('instance1')).toBe(false);
 
-      consoleSpy.mockRestore();
+      getLoggerSpy.mockRestore();
     });
 
     it('should handle component without deactivate method', async () => {

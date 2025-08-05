@@ -107,12 +107,14 @@ export class ServiceComponentRuntimeBundleActivator implements BundleActivator, 
           try {
             this.scr.registerComponent(component, bundleId);
           } catch (error) {
-            console.error(`Failed to register component from bundle ${bundleId}:`, error);
+            this.context
+              ?.getLogService()
+              ?.error(`Failed to register component from bundle ${bundleId}:`, error as Error);
           }
         }
       }
     } catch (error) {
-      console.error('Error processing bundle for components:', error);
+      this.context?.getLogService()?.error('Error processing bundle for components:', error as Error);
     }
   }
 
@@ -123,7 +125,7 @@ export class ServiceComponentRuntimeBundleActivator implements BundleActivator, 
     try {
       await this.scr.deactivateBundleComponents(bundleId);
     } catch (error) {
-      console.error(`Error deactivating components for bundle ${bundleId}:`, error);
+      this.context?.getLogService()?.error(`Error deactivating components for bundle ${bundleId}:`, error as Error);
     }
   }
 
@@ -133,9 +135,9 @@ export class ServiceComponentRuntimeBundleActivator implements BundleActivator, 
 
     try {
       await this.scr.removeBundleComponents(bundleId);
-      console.debug(`Removed all components for bundle ${bundleId}`);
+      this.context?.getLogService()?.debug(`Removed all components for bundle ${bundleId}`);
     } catch (error) {
-      console.error(`Error removing components for bundle ${bundleId}:`, error);
+      this.context?.getLogService()?.error(`Error removing components for bundle ${bundleId}:`, error as Error);
     }
   }
 }

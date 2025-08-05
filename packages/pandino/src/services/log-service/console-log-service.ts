@@ -1,18 +1,20 @@
 import { type LogEntry, LogLevel, type LogListener, type LogService } from './interfaces';
+import type { BundleHeader } from '~/framework/interfaces';
 
 export class ConsoleLogService implements LogService {
   private currentLevel: LogLevel = LogLevel.INFO;
   private listeners: LogListener[] = [];
+  private __bundle?: BundleHeader;
 
   log(level: LogLevel, message: string, exception?: Error, context?: Record<string, unknown>): void {
     if (!this.isLoggable(level)) {
       return;
     }
 
-    // Extract bundle info if present
-    const bundleInfo = context?.__bundle as any;
-    const cleanContext = bundleInfo ? { ...context } : context || {};
-    if (bundleInfo && cleanContext) {
+    const contextBundleInfo = context?.__bundle as BundleHeader | undefined;
+    const bundleInfo = contextBundleInfo || this.__bundle;
+    const cleanContext = contextBundleInfo ? { ...context } : context || {};
+    if (contextBundleInfo && cleanContext) {
       delete cleanContext.__bundle;
     }
 

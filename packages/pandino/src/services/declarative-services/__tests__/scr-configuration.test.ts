@@ -64,19 +64,32 @@ describe('SCR Configuration Integration', () => {
     it('should return false when ConfigAdmin throws an error', async () => {
       mockConfigAdmin.listConfigurations = vi.fn().mockRejectedValue(new Error('Test error'));
 
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const mockLogger = {
+        log: vi.fn(),
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+        isLoggable: vi.fn().mockReturnValue(true),
+        setLogLevel: vi.fn(),
+        getLogLevel: vi.fn(),
+        addLogListener: vi.fn(),
+        removeLogListener: vi.fn(),
+      };
+
+      const getLoggerSpy = vi.spyOn(framework, 'getLogger').mockReturnValue(mockLogger);
 
       const result = await (scr as any).hasConfiguration('test.pid');
       expect(result).toBe(false);
 
       expect(mockConfigAdmin.listConfigurations).toHaveBeenCalledWith('(service.pid=test.pid)');
 
-      expect(consoleSpy).toHaveBeenCalledWith(
+      expect(mockLogger.error).toHaveBeenCalledWith(
         expect.stringContaining('Error checking configuration existence for PID test.pid:'),
         expect.any(Error),
       );
 
-      consoleSpy.mockRestore();
+      getLoggerSpy.mockRestore();
     });
   });
 

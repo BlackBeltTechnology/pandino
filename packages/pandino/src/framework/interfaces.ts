@@ -7,15 +7,17 @@ export interface BundleActivator {
   stop(context: BundleContext): void | Promise<void>;
 }
 
+export interface BundleHeader {
+  bundleSymbolicName?: string;
+  bundleVersion?: string;
+  bundleName?: string;
+  bundleDescription?: string;
+  bundleManifestVersion?: string;
+  [key: string]: string | undefined;
+}
+
 export interface BundleConfiguration {
-  headers?: {
-    bundleSymbolicName?: string;
-    bundleVersion?: string;
-    bundleName?: string;
-    bundleDescription?: string;
-    bundleManifestVersion?: string;
-    [key: string]: string | undefined;
-  };
+  headers?: BundleHeader;
   activator?: BundleActivator | (() => BundleActivator);
 }
 

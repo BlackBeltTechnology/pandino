@@ -189,7 +189,7 @@ export class ConfigurationAdminImpl extends SimpleEventEmitter implements Config
       try {
         listener.configurationEvent(event);
       } catch (error) {
-        console.error(`[DEBUG_LOG] Error notifying ConfigurationListener:`, error);
+        this.framework.getLogger().error(`Error notifying ConfigurationListener:`, error as Error);
       }
     }
   }
@@ -227,7 +227,9 @@ export class ConfigurationAdminImpl extends SimpleEventEmitter implements Config
               await factory.updated(pid, properties);
             }
           } catch (error) {
-            console.error(`Error delivering factory configuration to ${factoryPid}:`, error);
+            this.framework
+              .getLogger()
+              .error(`Error delivering factory configuration to ${factoryPid}:`, error as Error);
           }
         }
       }
@@ -245,7 +247,9 @@ export class ConfigurationAdminImpl extends SimpleEventEmitter implements Config
           try {
             await service.updated(properties);
           } catch (error) {
-            console.error(`Error delivering factory configuration to ManagedService ${factoryPid}:`, error);
+            this.framework
+              .getLogger()
+              .error(`Error delivering factory configuration to ManagedService ${factoryPid}:`, error as Error);
           }
         }
       }
@@ -265,7 +269,7 @@ export class ConfigurationAdminImpl extends SimpleEventEmitter implements Config
           try {
             await service.updated(properties);
           } catch (error) {
-            console.error(`Error delivering configuration to ${pid}:`, error);
+            this.framework.getLogger().error(`Error delivering configuration to ${pid}:`, error as Error);
           }
         }
       }

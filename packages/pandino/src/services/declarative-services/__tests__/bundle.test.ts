@@ -257,15 +257,32 @@ describe('ServiceComponentRuntimeBundleActivator', () => {
         })
         .mockImplementationOnce(() => Promise.resolve());
 
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const mockLogService = {
+        log: vi.fn(),
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+        isLoggable: vi.fn().mockReturnValue(true),
+        setLogLevel: vi.fn(),
+        getLogLevel: vi.fn(),
+        addLogListener: vi.fn(),
+        removeLogListener: vi.fn(),
+      };
+
+      const getLogServiceSpy = vi.spyOn(bundleContext, 'getLogService').mockReturnValue(mockLogService);
 
       (activator as any).processBundle(mockBundle);
 
       expect(registerComponentSpy).toHaveBeenCalledTimes(2);
-      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-      expect(consoleErrorSpy.mock.calls[0][0]).toContain('Failed to register component from bundle 1');
 
-      consoleErrorSpy.mockRestore();
+      expect(mockLogService.error).toHaveBeenCalledTimes(1);
+      expect(mockLogService.error).toHaveBeenCalledWith(
+        'Failed to register component from bundle 1:',
+        expect.any(Error),
+      );
+
+      getLogServiceSpy.mockRestore();
     });
 
     it('should handle errors when processing bundle', async () => {
@@ -276,15 +293,28 @@ describe('ServiceComponentRuntimeBundleActivator', () => {
         },
       } as any;
 
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const mockLogService = {
+        log: vi.fn(),
+        error: vi.fn(),
+        warn: vi.fn(),
+        info: vi.fn(),
+        debug: vi.fn(),
+        isLoggable: vi.fn().mockReturnValue(true),
+        setLogLevel: vi.fn(),
+        getLogLevel: vi.fn(),
+        addLogListener: vi.fn(),
+        removeLogListener: vi.fn(),
+      };
+
+      const getLogServiceSpy = vi.spyOn(bundleContext, 'getLogService').mockReturnValue(mockLogService);
 
       await activator.start(bundleContext);
       (activator as any).processBundle(mockBundle);
 
-      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-      expect(consoleErrorSpy.mock.calls[0][0]).toBe('Error processing bundle for components:');
+      expect(mockLogService.error).toHaveBeenCalledTimes(1);
+      expect(mockLogService.error).toHaveBeenCalledWith('Error processing bundle for components:', expect.any(Error));
 
-      consoleErrorSpy.mockRestore();
+      getLogServiceSpy.mockRestore();
     });
 
     it('should do nothing if no components are found', async () => {

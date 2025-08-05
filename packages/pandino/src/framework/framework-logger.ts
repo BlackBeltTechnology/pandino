@@ -113,7 +113,7 @@ export class FrameworkLogger {
     const timestamp = new Date().toISOString();
     const levelName = this.getLevelName(level);
     const contextStr = context ? ` ${JSON.stringify(context)}` : '';
-    const logMessage = `[${timestamp}] [FRAMEWORK] ${levelName}: ${message}${contextStr}`;
+    const logMessage = `[${timestamp}] [${import.meta.env.VITE_PANDINO_NAME}] ${levelName}: ${message}${contextStr}`;
 
     switch (level) {
       case 1: // ERROR

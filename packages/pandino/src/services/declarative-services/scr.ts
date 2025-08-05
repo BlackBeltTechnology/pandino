@@ -10,6 +10,7 @@ import { getComponentMetadata } from './reflection';
 import type { ConfigurationAdmin } from '~/services/config-admin';
 import type { ComponentDescriptor, ReferenceDescriptor } from '@pandino/decorators';
 import type { ComponentContext } from './interfaces';
+import { OSGiFramework } from '~/framework/framework';
 
 interface ComponentEntry {
   instance: any;
@@ -42,7 +43,10 @@ class PrototypeServiceFactory implements ServiceFactory<any> {
       try {
         instance[this.metadata.activate](context);
       } catch (error) {
-        console.error(`Failed to activate prototype instance: ${error}`);
+        this.scr
+          .getFramework()
+          .getLogger()
+          .error(`Failed to activate prototype instance: ${error}`, error as Error);
         throw error;
       }
     }
@@ -68,7 +72,10 @@ class PrototypeServiceFactory implements ServiceFactory<any> {
       try {
         service[this.metadata.deactivate]();
       } catch (error) {
-        console.error(`Failed to deactivate prototype instance: ${error}`);
+        this.scr
+          .getFramework()
+          .getLogger()
+          .error(`Failed to deactivate prototype instance: ${error}`, error as Error);
       }
     }
   }
@@ -78,7 +85,10 @@ class PrototypeServiceFactory implements ServiceFactory<any> {
       try {
         this.scr.satisfyReferenceForInstance(instance, ref);
       } catch (error) {
-        console.error(`Failed to satisfy reference ${ref.interface} for prototype instance: ${error}`);
+        this.scr
+          .getFramework()
+          .getLogger()
+          .error(`Failed to satisfy reference ${ref.interface} for prototype instance: ${error}`, error as Error);
       }
     }
   }
@@ -119,7 +129,10 @@ class BundleScopeServiceFactory implements ServiceFactory<any> {
       try {
         instance[this.metadata.activate](context);
       } catch (error) {
-        console.error(`Failed to activate bundle-scoped instance: ${error}`);
+        this.scr
+          .getFramework()
+          .getLogger()
+          .error(`Failed to activate bundle-scoped instance: ${error}`, error as Error);
         throw error;
       }
     }
@@ -139,7 +152,10 @@ class BundleScopeServiceFactory implements ServiceFactory<any> {
       try {
         this.scr.satisfyReferenceForInstance(instance, ref);
       } catch (error) {
-        console.error(`Failed to satisfy reference ${ref.interface} for bundle-scoped instance: ${error}`);
+        this.scr
+          .getFramework()
+          .getLogger()
+          .error(`Failed to satisfy reference ${ref.interface} for bundle-scoped instance: ${error}`, error as Error);
       }
     }
   }
@@ -160,7 +176,7 @@ export class ServiceComponentRuntime {
   }
 
   constructor(
-    private framework: any,
+    private framework: OSGiFramework,
     bundleContext: BundleContext,
   ) {
     this.bundleContext = bundleContext;
@@ -224,7 +240,9 @@ export class ServiceComponentRuntime {
       // If not ready yet, it will be activated later when dependencies become available
     } catch (error) {
       // Immediate components that fail to activate should log but not throw
-      console.warn(`Failed to activate immediate component ${name} from bundle ${bundleId}: ${error}`);
+      this.framework
+        .getLogger()
+        .warn(`Failed to activate immediate component ${name} from bundle ${bundleId}: ${error}`, error as Error);
     }
   }
 
@@ -266,6 +284,10 @@ export class ServiceComponentRuntime {
     return true;
   }
 
+  getFramework(): OSGiFramework {
+    return this.framework;
+  }
+
   getComponent(bundleId: number, name: string): ComponentEntry | undefined {
     const bundleComponents = this.components.get(bundleId);
     if (!bundleComponents) {
@@ -291,7 +313,9 @@ export class ServiceComponentRuntime {
     }
 
     if (this.activationChain.includes(componentId)) {
-      console.error(`Circular reference detected: ${this.activationChain.join(' -> ')} -> ${componentId}`);
+      this.framework
+        .getLogger()
+        .error(`Circular reference detected: ${this.activationChain.join(' -> ')} -> ${componentId}`);
       return;
     }
 
@@ -513,7 +537,7 @@ export class ServiceComponentRuntime {
           const circularChain = [...this.activationChain, componentId, serviceComponentId];
           const errorMessage = `Circular reference detected: ${circularChain.join(' -> ')}. Component '${componentName}' in bundle ${bundleId} has a ${ref.cardinality === '1..1' || ref.cardinality === '1..n' ? 'mandatory' : 'optional'} reference to interface '${ref.interface}' which leads to a circular dependency.`;
 
-          console.error(errorMessage);
+          this.framework.getLogger().error(errorMessage);
 
           // If this is a mandatory reference, we need to fail
           if (ref.cardinality === '1..1' || ref.cardinality === '1..n') {
@@ -717,7 +741,9 @@ export class ServiceComponentRuntime {
       try {
         await instance[metadata.deactivate](context);
       } catch (error) {
-        console.error(`Error during deactivation of factory instance ${instanceName}:`, error);
+        this.framework
+          .getLogger()
+          .error(`Error during deactivation of factory instance ${instanceName}:`, error as Error);
       }
     }
 
@@ -738,7 +764,7 @@ export class ServiceComponentRuntime {
       const configs = await this.configAdmin.listConfigurations(filter);
       return configs !== null && configs.length > 0;
     } catch (error) {
-      console.error(`Error checking configuration existence for PID ${configPid}:`, error);
+      this.framework.getLogger().error(`Error checking configuration existence for PID ${configPid}:`, error as Error);
       return false;
     }
   }
@@ -822,7 +848,9 @@ export class ServiceComponentRuntime {
       try {
         await this.deactivateComponent(bundleId, componentName);
       } catch (error) {
-        console.error(`Failed to deactivate component ${componentName} from bundle ${bundleId}:`, error);
+        this.framework
+          .getLogger()
+          .error(`Failed to deactivate component ${componentName} from bundle ${bundleId}:`, error as Error);
       }
     }
   }
@@ -843,6 +871,6 @@ export class ServiceComponentRuntime {
     // Then remove the entire bundle entry
     this.components.delete(bundleId);
 
-    console.debug(`Removed all components for bundle ${bundleId}`);
+    this.framework.getLogger().debug(`Removed all components for bundle ${bundleId}`);
   }
 }
