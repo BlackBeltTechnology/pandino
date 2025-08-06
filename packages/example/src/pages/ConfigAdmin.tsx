@@ -122,7 +122,6 @@ const ConfigAdmin: React.FC = () => {
         setConfigurations(configs);
 
         const history = configConsumerService.getConfigurationHistory();
-        console.log(`[DEBUG_LOG] ConfigAdmin component received history with ${history.length} items:`, history);
         setConfigHistory(history);
 
         setLoading(false);

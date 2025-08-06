@@ -67,10 +67,6 @@ const ConfigHistoryDisplay: React.FC = () => {
         setLoading(true);
 
         const history = configConsumerService.getConfigurationHistory();
-        console.log(
-          `[DEBUG_LOG] ConfigHistoryDisplay component received history with ${history.length} items:`,
-          history,
-        );
         setConfigHistory(history);
 
         setLoading(false);

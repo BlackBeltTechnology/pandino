@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useService } from '@pandino/react-hooks';
+import { useServiceTracker } from '@pandino/react-hooks';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -30,8 +30,12 @@ const DynamicDependencies: React.FC = () => {
     }
   }, [enableFeature, isFeatureEnabled]);
 
-  const { service: loggerService } = useService<LoggerService>('LoggerService');
-  const { service: taskManagerService } = useService<TaskManagerService>('TaskManagerService');
+  const { services: loggerServices, loading: loggerLoading } = useServiceTracker<LoggerService>('LoggerService');
+  const { services: taskManagerServices, loading: taskManagerLoading } =
+    useServiceTracker<TaskManagerService>('TaskManagerService');
+
+  const loggerService = loggerServices[0];
+  const taskManagerService = taskManagerServices[0];
 
   const [taskName, setTaskName] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
@@ -39,102 +43,92 @@ const DynamicDependencies: React.FC = () => {
   const [logs, setLogs] = useState<Array<{ level: string; message: string; timestamp: number }>>([]);
 
   useEffect(() => {
-    console.log('[DEBUG_LOG] DynamicDependencies useEffect called');
-    console.log('[DEBUG_LOG] taskManagerService available:', !!taskManagerService);
-    console.log('[DEBUG_LOG] loggerService available:', !!loggerService);
-
-    if (taskManagerService) {
-      const allTasks = taskManagerService.getAllTasks();
-      console.log('[DEBUG_LOG] All tasks:', allTasks);
-      setTasks(allTasks);
-    }
-
     if (loggerService) {
+      loggerService.debug('DynamicDependencies useEffect called');
+      loggerService.debug(`taskManagerService available: ${!!taskManagerService}`);
+      loggerService.debug(`loggerService available: ${!!loggerService}`);
+
       const allLogs = loggerService.getLogs();
-      console.log('[DEBUG_LOG] All logs from loggerService:', allLogs);
+      loggerService.debug('All logs from loggerService:', allLogs);
       setLogs(allLogs);
     }
 
-    const interval = setInterval(() => {
-      console.log('[DEBUG_LOG] Interval tick');
-
-      if (taskManagerService) {
-        const allTasks = taskManagerService.getAllTasks();
-        console.log('[DEBUG_LOG] All tasks (interval):', allTasks);
-        setTasks(allTasks);
-      }
-
+    if (taskManagerService) {
+      const allTasks = taskManagerService.getAllTasks();
       if (loggerService) {
-        const allLogs = loggerService.getLogs();
-        console.log('[DEBUG_LOG] All logs from loggerService (interval):', allLogs);
-        setLogs(allLogs);
+        loggerService.debug('All tasks:', allTasks);
       }
-    }, 1000);
-
-    return () => clearInterval(interval);
+      setTasks(allTasks);
+    }
   }, [taskManagerService, loggerService]);
 
   const handleCreateTask = () => {
-    console.log('[DEBUG_LOG] handleCreateTask called', { taskName, taskDescription });
-    console.log('[DEBUG_LOG] taskManagerService available:', !!taskManagerService);
-    console.log('[DEBUG_LOG] loggerService available:', !!loggerService);
+    if (loggerService) {
+      loggerService.debug(`handleCreateTask called with name: ${taskName}, description: ${taskDescription}`);
+      loggerService.debug(`taskManagerService available: ${!!taskManagerService}`);
+      loggerService.debug(`loggerService available: ${!!loggerService}`);
+    }
 
     if (taskManagerService && loggerService && taskName.trim() && taskDescription.trim()) {
-      console.log('[DEBUG_LOG] About to create task');
+      loggerService.debug('About to create task');
       taskManagerService.createTask(taskName, taskDescription);
       setTaskName('');
       setTaskDescription('');
 
-      console.log('[DEBUG_LOG] About to get logs after task creation');
+      loggerService.debug('About to get logs after task creation');
       const updatedLogs = loggerService.getLogs();
-      console.log('[DEBUG_LOG] Updated logs after task creation:', updatedLogs);
+      loggerService.debug('Updated logs after task creation:', updatedLogs);
       setLogs(updatedLogs);
 
-      console.log('[DEBUG_LOG] About to get tasks after task creation');
+      loggerService.debug('About to get tasks after task creation');
       const updatedTasks = taskManagerService.getAllTasks();
-      console.log('[DEBUG_LOG] Updated tasks after task creation:', updatedTasks);
+      loggerService.debug('Updated tasks after task creation:', updatedTasks);
       setTasks(updatedTasks);
     }
   };
 
   const handleUpdateTaskStatus = (taskId: string, newStatus: 'pending' | 'in-progress' | 'completed') => {
-    console.log('[DEBUG_LOG] handleUpdateTaskStatus called', { taskId, newStatus });
-    console.log('[DEBUG_LOG] taskManagerService available:', !!taskManagerService);
-    console.log('[DEBUG_LOG] loggerService available:', !!loggerService);
+    if (loggerService) {
+      loggerService.debug(`handleUpdateTaskStatus called with id: ${taskId}, newStatus: ${newStatus}`);
+      loggerService.debug(`taskManagerService available: ${!!taskManagerService}`);
+      loggerService.debug(`loggerService available: ${!!loggerService}`);
+    }
 
     if (taskManagerService && loggerService) {
-      console.log('[DEBUG_LOG] About to update task status');
+      loggerService.debug('About to update task status');
       taskManagerService.updateTaskStatus(taskId, newStatus);
 
-      console.log('[DEBUG_LOG] About to get logs after task update');
+      loggerService.debug('About to get logs after task update');
       const updatedLogs = loggerService.getLogs();
-      console.log('[DEBUG_LOG] Updated logs after task update:', updatedLogs);
+      loggerService.debug('Updated logs after task update:', updatedLogs);
       setLogs(updatedLogs);
 
-      console.log('[DEBUG_LOG] About to get tasks after task update');
+      loggerService.debug('About to get tasks after task update');
       const updatedTasks = taskManagerService.getAllTasks();
-      console.log('[DEBUG_LOG] Updated tasks after task update:', updatedTasks);
+      loggerService.debug('Updated tasks after task update:', updatedTasks);
       setTasks(updatedTasks);
     }
   };
 
   const handleDeleteTask = (taskId: string) => {
-    console.log('[DEBUG_LOG] handleDeleteTask called', { taskId });
-    console.log('[DEBUG_LOG] taskManagerService available:', !!taskManagerService);
-    console.log('[DEBUG_LOG] loggerService available:', !!loggerService);
+    if (loggerService) {
+      loggerService.debug(`handleDeleteTask called with id: ${taskId}`);
+      loggerService.debug(`taskManagerService available: ${!!taskManagerService}`);
+      loggerService.debug(`loggerService available: ${!!loggerService}`);
+    }
 
     if (taskManagerService && loggerService) {
-      console.log('[DEBUG_LOG] About to delete task');
+      loggerService.debug('About to delete task');
       taskManagerService.deleteTask(taskId);
 
-      console.log('[DEBUG_LOG] About to get logs after task deletion');
+      loggerService.debug('About to get logs after task deletion');
       const updatedLogs = loggerService.getLogs();
-      console.log('[DEBUG_LOG] Updated logs after task deletion:', updatedLogs);
+      loggerService.debug('Updated logs after task deletion:', updatedLogs);
       setLogs(updatedLogs);
 
-      console.log('[DEBUG_LOG] About to get tasks after task deletion');
+      loggerService.debug('About to get tasks after task deletion');
       const updatedTasks = taskManagerService.getAllTasks();
-      console.log('[DEBUG_LOG] Updated tasks after task deletion:', updatedTasks);
+      loggerService.debug('Updated tasks after task deletion:', updatedTasks);
       setTasks(updatedTasks);
     }
   };
