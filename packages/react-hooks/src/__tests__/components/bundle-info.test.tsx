@@ -1,10 +1,9 @@
+import { BUNDLE_STATES } from '@pandino/pandino';
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BundleInfo, bundleStateToString } from '~/components/bundle-info';
 import * as useBundleModule from '~/hooks/use-bundle';
-import { BUNDLE_STATES } from '@pandino/pandino';
 
-// Mock the useBundle hook
 vi.mock('~/hooks/use-bundle', () => ({
   useBundle: vi.fn(),
 }));
@@ -46,22 +45,18 @@ describe('BundleInfo', () => {
 
   describe('default renderer', () => {
     it('should render loading state', () => {
-      // Mock the useBundle hook to return loading state
       vi.mocked(useBundleModule.useBundle).mockReturnValue({
         bundle: null,
         loading: true,
         error: null,
       });
 
-      // Render the component
       render(<BundleInfo bundleIdOrName={1} />);
 
-      // Verify that the loading state is rendered
       expect(screen.getByText('Loading bundle information...')).toBeInTheDocument();
     });
 
     it('should render error state', () => {
-      // Mock the useBundle hook to return error state
       const mockError = new Error('Test error');
       vi.mocked(useBundleModule.useBundle).mockReturnValue({
         bundle: null,
@@ -69,30 +64,24 @@ describe('BundleInfo', () => {
         error: mockError,
       });
 
-      // Render the component
       render(<BundleInfo bundleIdOrName={1} />);
 
-      // Verify that the error state is rendered
       expect(screen.getByText('Error loading bundle: Test error')).toBeInTheDocument();
     });
 
     it('should render not found state', () => {
-      // Mock the useBundle hook to return not found state
       vi.mocked(useBundleModule.useBundle).mockReturnValue({
         bundle: null,
         loading: false,
         error: null,
       });
 
-      // Render the component
       render(<BundleInfo bundleIdOrName={1} />);
 
-      // Verify that the not found state is rendered
       expect(screen.getByText('Bundle not found')).toBeInTheDocument();
     });
 
     it('should render bundle information', () => {
-      // Mock bundle
       const mockBundle = {
         getBundleId: vi.fn().mockReturnValue(1),
         getSymbolicName: vi.fn().mockReturnValue('test-bundle'),
@@ -112,17 +101,14 @@ describe('BundleInfo', () => {
         findResources: vi.fn(),
       };
 
-      // Mock the useBundle hook to return a bundle
       vi.mocked(useBundleModule.useBundle).mockReturnValue({
         bundle: mockBundle,
         loading: false,
         error: null,
       });
 
-      // Render the component
       render(<BundleInfo bundleIdOrName={1} />);
 
-      // Verify that the bundle information is rendered
       expect(screen.getByText('Bundle Information')).toBeInTheDocument();
       expect(screen.getByText('ID:')).toBeInTheDocument();
       expect(screen.getByText('1')).toBeInTheDocument();
@@ -139,7 +125,6 @@ describe('BundleInfo', () => {
 
   describe('custom renderer', () => {
     it('should use custom renderer when provided', () => {
-      // Mock bundle
       const mockBundle = {
         getBundleId: vi.fn().mockReturnValue(1),
         getSymbolicName: vi.fn().mockReturnValue('test-bundle'),
@@ -159,14 +144,12 @@ describe('BundleInfo', () => {
         findResources: vi.fn(),
       };
 
-      // Mock the useBundle hook to return a bundle
       vi.mocked(useBundleModule.useBundle).mockReturnValue({
         bundle: mockBundle,
         loading: false,
         error: null,
       });
 
-      // Render the component with a custom renderer
       render(
         <BundleInfo bundleIdOrName={1}>
           {({ bundle, loading, error, stateToString }) => (
@@ -184,7 +167,6 @@ describe('BundleInfo', () => {
         </BundleInfo>,
       );
 
-      // Verify that the custom renderer is used
       expect(screen.queryByText('Bundle Information')).not.toBeInTheDocument();
       expect(screen.getByTestId('custom-bundle')).toBeInTheDocument();
       expect(screen.getByTestId('bundle-id').textContent).toBe('1');
@@ -192,26 +174,22 @@ describe('BundleInfo', () => {
     });
 
     it('should pass loading state to custom renderer', () => {
-      // Mock the useBundle hook to return loading state
       vi.mocked(useBundleModule.useBundle).mockReturnValue({
         bundle: null,
         loading: true,
         error: null,
       });
 
-      // Render the component with a custom renderer
       render(
         <BundleInfo bundleIdOrName={1}>
           {({ loading }) => <div>{loading && <span data-testid="custom-loading">Custom Loading...</span>}</div>}
         </BundleInfo>,
       );
 
-      // Verify that the custom loading state is rendered
       expect(screen.getByTestId('custom-loading')).toBeInTheDocument();
     });
 
     it('should pass error state to custom renderer', () => {
-      // Mock the useBundle hook to return error state
       const mockError = new Error('Test error');
       vi.mocked(useBundleModule.useBundle).mockReturnValue({
         bundle: null,
@@ -219,14 +197,12 @@ describe('BundleInfo', () => {
         error: mockError,
       });
 
-      // Render the component with a custom renderer
       render(
         <BundleInfo bundleIdOrName={1}>
           {({ error }) => <div>{error && <span data-testid="custom-error">Custom Error: {error.message}</span>}</div>}
         </BundleInfo>,
       );
 
-      // Verify that the custom error state is rendered
       expect(screen.getByTestId('custom-error')).toBeInTheDocument();
       expect(screen.getByTestId('custom-error').textContent).toBe('Custom Error: Test error');
     });

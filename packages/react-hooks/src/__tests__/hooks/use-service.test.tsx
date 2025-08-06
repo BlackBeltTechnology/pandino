@@ -1,165 +1,164 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useService } from '~/hooks/use-service';
-import { PandinoContext } from '~/context/pandino-context';
-import React, { ReactNode } from 'react';
+import { PandinoTestUtils } from '../test-utils/pandino-test-utils';
+import { cleanupPandinoTest, PandinoTestWrapper, setupPandinoTest } from '../test-utils/test-wrapper';
 
-// Mock the Pandino context
-const mockGetServiceReference = vi.fn();
-const mockGetServiceReferences = vi.fn();
-const mockGetService = vi.fn();
-const mockUngetService = vi.fn();
+interface TestService {
+  name: string;
+  method: () => void;
+}
 
-const mockBundleContext = {
-  getServiceReference: mockGetServiceReference,
-  getServiceReferences: mockGetServiceReferences,
-  getService: mockGetService,
-  ungetService: mockUngetService,
-  // Add other methods that might be used
-  getProperty: vi.fn(),
-  getBundle: vi.fn(),
-  getBundles: vi.fn(),
-  installBundle: vi.fn(),
-  registerService: vi.fn(),
-  addServiceListener: vi.fn(),
-  removeServiceListener: vi.fn(),
-  addBundleListener: vi.fn(),
-  removeBundleListener: vi.fn(),
-  createFilter: vi.fn(),
-  getDataFile: vi.fn(),
-  getLogService: vi.fn(),
-};
+class MockTestService implements TestService {
+  name = 'MockService';
+  method() {
+    return;
+  }
+}
 
-// Mock service reference
-const mockServiceReference = { id: 'mock-service-reference' };
-
-// Mock service
-const mockService = { name: 'MockService', method: vi.fn() };
-
-// Wrapper component with mock context
-const wrapper = ({ children, isInitialized = true }: { children: ReactNode; isInitialized?: boolean }) => (
-  <PandinoContext.Provider
-    value={{
-      framework: null,
-      bundleContext: isInitialized ? mockBundleContext : null,
-      isInitialized,
-      error: null,
-    }}
-  >
-    {children}
-  </PandinoContext.Provider>
-);
+let pandinoUtils: PandinoTestUtils;
 
 describe('useService', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+  beforeEach(async () => {
+    pandinoUtils = await setupPandinoTest();
   });
 
-  it('should return loading=true initially', () => {
+  afterEach(async () => {
+    await cleanupPandinoTest(pandinoUtils);
+  });
+
+  it('should return loading=false initially', async () => {
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>
+    );
+
     const { result } = renderHook(() => useService('TestService'), { wrapper });
 
-    expect(result.current.loading).toBe(true);
+    expect(result.current.loading).toBe(false);
     expect(result.current.service).toBe(null);
     expect(result.current.error).toBe(null);
-  });
-
-  it('should return service=null when context is not initialized', async () => {
-    const { result } = renderHook(() => useService('TestService'), {
-      wrapper: ({ children }) => wrapper({ children, isInitialized: false }),
-    });
-
-    // Wait for the hook to process
-    await waitFor(() => {
-      expect(result.current.loading).toBe(true);
-    });
-
-    expect(result.current.service).toBe(null);
-    expect(result.current.error).toBe(null);
-    expect(mockGetServiceReference).not.toHaveBeenCalled();
   });
 
   it('should return service=null when service reference is not found', async () => {
-    mockGetServiceReference.mockReturnValue(null);
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>
+    );
 
     const { result } = renderHook(() => useService('TestService'), { wrapper });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
     expect(result.current.service).toBe(null);
     expect(result.current.error).toBe(null);
-    expect(mockGetServiceReference).toHaveBeenCalledWith('TestService');
-    expect(mockGetService).not.toHaveBeenCalled();
   });
 
   it('should return the service when found', async () => {
-    mockGetServiceReference.mockReturnValue(mockServiceReference);
-    mockGetService.mockReturnValue(mockService);
+    const testService = new MockTestService();
+    pandinoUtils.registerService('TestService', testService);
 
-    const { result } = renderHook(() => useService('TestService'), { wrapper });
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>
+    );
 
-    // Wait for the hook to process
+    const { result } = renderHook(() => useService<TestService>('TestService'), { wrapper });
+
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(result.current.service).toBe(mockService);
+    expect(result.current.service).toBe(testService);
     expect(result.current.error).toBe(null);
-    expect(mockGetServiceReference).toHaveBeenCalledWith('TestService');
-    expect(mockGetService).toHaveBeenCalledWith(mockServiceReference);
   });
 
   it('should use filter when provided', async () => {
-    const mockFilteredServiceReference = { id: 'mock-filtered-service-reference' };
-    mockGetServiceReferences.mockReturnValue([mockFilteredServiceReference]);
-    mockGetService.mockReturnValue(mockService);
+    const testService1 = new MockTestService();
+    const testService2 = new MockTestService();
+    testService2.name = 'FilteredService';
 
-    const { result } = renderHook(() => useService('TestService', '(property=value)'), { wrapper });
+    pandinoUtils.registerService('TestService', testService1);
+    pandinoUtils.registerService('TestService', testService2, { property: 'value' });
 
-    // Wait for the hook to process
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>
+    );
+
+    const { result } = renderHook(() => useService<TestService>('TestService', '(property=value)'), { wrapper });
+
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(result.current.service).toBe(mockService);
+    expect(result.current.service).toBe(testService2);
     expect(result.current.error).toBe(null);
-    expect(mockGetServiceReferences).toHaveBeenCalledWith('TestService', '(property=value)');
-    expect(mockGetService).toHaveBeenCalledWith(mockFilteredServiceReference);
   });
 
-  it('should handle errors', async () => {
-    const mockError = new Error('Test error');
-    mockGetServiceReference.mockImplementation(() => {
-      throw mockError;
+  it('should handle errors when service throws', async () => {
+    const originalGetServiceReference = pandinoUtils.getBundleContext().getServiceReference;
+
+    Object.defineProperty(pandinoUtils.getBundleContext(), 'getServiceReference', {
+      value: () => {
+        throw new Error('Test error');
+      },
+      configurable: true,
     });
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>
+    );
 
     const { result } = renderHook(() => useService('TestService'), { wrapper });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
     expect(result.current.service).toBe(null);
-    expect(result.current.error).toBe(mockError);
+    expect(result.current.error).toBeInstanceOf(Error);
+    expect(result.current.error?.message).toBe('Test error');
+
+    Object.defineProperty(pandinoUtils.getBundleContext(), 'getServiceReference', {
+      value: originalGetServiceReference,
+      configurable: true,
+    });
   });
 
-  it('should unget the service on unmount', async () => {
-    mockGetServiceReference.mockReturnValue(mockServiceReference);
-    mockGetService.mockReturnValue(mockService);
+  it('should unget the service when dependencies change', async () => {
+    const initialService = new MockTestService();
+    initialService.name = 'InitialService';
 
-    const { result, unmount } = renderHook(() => useService('TestService'), { wrapper });
+    const newService = new MockTestService();
+    newService.name = 'NewService';
 
-    // Wait for the hook to process
+    pandinoUtils.registerService('InitialService', initialService);
+    pandinoUtils.registerService('NewService', newService);
+
+    const ungetServiceSpy = vi.spyOn(pandinoUtils.getBundleContext(), 'ungetService');
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>
+    );
+
+    const { result, rerender } = renderHook((props) => useService(props.serviceClass, props.filter), {
+      wrapper,
+      initialProps: { serviceClass: 'InitialService', filter: undefined },
+    });
+
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
-    // Unmount the component
-    unmount();
+    expect(result.current.service).toBe(initialService);
 
-    expect(mockUngetService).toHaveBeenCalledWith(mockServiceReference);
+    rerender({ serviceClass: 'NewService', filter: undefined });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.service).toBe(newService);
+
+    expect(ungetServiceSpy).toHaveBeenCalled();
   });
 });

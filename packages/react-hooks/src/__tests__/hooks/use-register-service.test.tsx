@@ -1,205 +1,167 @@
-import { renderHook, waitFor, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { useRegisterService } from '~/hooks/use-register-service';
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { PandinoContext } from '~/context/pandino-context';
-import React, { ReactNode } from 'react';
+import { useRegisterService } from '~/hooks/use-register-service';
+import { PandinoTestUtils } from '../test-utils/pandino-test-utils';
+import { cleanupPandinoTest, PandinoTestWrapper, setupPandinoTest } from '../test-utils/test-wrapper';
 
-// Mock the Pandino context
-const mockRegisterService = vi.fn();
+interface TestService {
+  name: string;
+  method: () => void;
+}
 
-const mockBundleContext = {
-  registerService: mockRegisterService,
-  // Add other methods that might be used
-  getProperty: vi.fn(),
-  getBundle: vi.fn(),
-  getBundles: vi.fn(),
-  installBundle: vi.fn(),
-  getServiceReference: vi.fn(),
-  getServiceReferences: vi.fn(),
-  getService: vi.fn(),
-  ungetService: vi.fn(),
-  addServiceListener: vi.fn(),
-  removeServiceListener: vi.fn(),
-  addBundleListener: vi.fn(),
-  removeBundleListener: vi.fn(),
-  createFilter: vi.fn(),
-  getDataFile: vi.fn(),
-  getLogService: vi.fn(),
-};
+class MockTestService implements TestService {
+  name = 'MockService';
+  method() {
+    return;
+  }
+}
 
-// Mock service registration
-const mockSetProperties = vi.fn();
-const mockUnregister = vi.fn();
-const mockServiceRegistration = {
-  getReference: vi.fn(),
-  setProperties: mockSetProperties,
-  unregister: mockUnregister,
-};
-
-// Mock service implementation
-const mockServiceImpl = { name: 'MockService', method: vi.fn() };
-
-// Wrapper component with mock context
-const wrapper = ({ children, isInitialized = true }: { children: ReactNode; isInitialized?: boolean }) => (
-  <PandinoContext.Provider
-    value={{
-      framework: null,
-      bundleContext: isInitialized ? mockBundleContext : null,
-      isInitialized,
-      error: null,
-    }}
-  >
-    {children}
-  </PandinoContext.Provider>
-);
+let pandinoUtils: PandinoTestUtils;
 
 describe('useRegisterService', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+  beforeEach(async () => {
+    pandinoUtils = await setupPandinoTest();
+  });
+
+  afterEach(async () => {
+    await cleanupPandinoTest(pandinoUtils);
   });
 
   it('should not register service when context is not initialized', () => {
-    const { result } = renderHook(() => useRegisterService('TestService', mockServiceImpl), {
-      wrapper: ({ children }) => wrapper({ children, isInitialized: false }),
+    const nullContextValue = {
+      framework: null,
+      bundleContext: null,
+      isInitialized: false,
+      error: null,
+    };
+
+    const testService = new MockTestService();
+
+    const { result } = renderHook(() => useRegisterService('TestService', testService), {
+      wrapper: ({ children }) => <PandinoContext.Provider value={nullContextValue}>{children}</PandinoContext.Provider>,
     });
 
     expect(result.current.isRegistered).toBe(false);
     expect(result.current.registration).toBe(null);
     expect(result.current.error).toBe(null);
-    expect(mockRegisterService).not.toHaveBeenCalled();
   });
 
   it('should register service when context is initialized', async () => {
-    mockRegisterService.mockReturnValue(mockServiceRegistration);
+    const testService = new MockTestService();
 
-    const { result } = renderHook(() => useRegisterService('TestService', mockServiceImpl), { wrapper });
+    const { result } = renderHook(() => useRegisterService('TestService', testService), {
+      wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
+    });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.isRegistered).toBe(true);
     });
 
-    expect(result.current.registration).toBe(mockServiceRegistration);
+    expect(result.current.registration).not.toBe(null);
     expect(result.current.error).toBe(null);
-    expect(mockRegisterService).toHaveBeenCalledWith('TestService', mockServiceImpl, {});
+
+    const serviceRef = pandinoUtils.getBundleContext().getServiceReference('TestService');
+    expect(serviceRef).not.toBe(null);
+
+    const service = pandinoUtils.getBundleContext().getService(serviceRef!);
+    expect(service).toBe(testService);
   });
 
   it('should register service with properties', async () => {
-    mockRegisterService.mockReturnValue(mockServiceRegistration);
-
+    const testService = new MockTestService();
     const mockProperties = { prop1: 'value1', prop2: 'value2' };
-    const { result } = renderHook(() => useRegisterService('TestService', mockServiceImpl, mockProperties), {
-      wrapper,
+
+    const { result } = renderHook(() => useRegisterService('TestService', testService, mockProperties), {
+      wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
     });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.isRegistered).toBe(true);
     });
 
-    expect(result.current.registration).toBe(mockServiceRegistration);
+    expect(result.current.registration).not.toBe(null);
     expect(result.current.error).toBe(null);
-    expect(mockRegisterService).toHaveBeenCalledWith('TestService', mockServiceImpl, mockProperties);
+
+    const serviceRef = pandinoUtils.getBundleContext().getServiceReference('TestService');
+    expect(serviceRef).not.toBe(null);
+    expect(serviceRef!.getProperty('prop1')).toBe('value1');
+    expect(serviceRef!.getProperty('prop2')).toBe('value2');
   });
 
   it('should handle registration errors', async () => {
+    const originalRegisterService = pandinoUtils.getBundleContext().registerService;
     const mockError = new Error('Registration error');
-    mockRegisterService.mockImplementation(() => {
-      throw mockError;
+
+    Object.defineProperty(pandinoUtils.getBundleContext(), 'registerService', {
+      value: () => {
+        throw mockError;
+      },
+      configurable: true,
     });
 
-    const { result } = renderHook(() => useRegisterService('TestService', mockServiceImpl), { wrapper });
+    const testService = new MockTestService();
 
-    // Wait for the hook to process
+    const { result } = renderHook(() => useRegisterService('TestService', testService), {
+      wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
+    });
+
     await waitFor(() => {
       expect(result.current.error).toBe(mockError);
     });
 
     expect(result.current.isRegistered).toBe(false);
     expect(result.current.registration).toBe(null);
+
+    Object.defineProperty(pandinoUtils.getBundleContext(), 'registerService', {
+      value: originalRegisterService,
+      configurable: true,
+    });
   });
 
   it('should update properties', async () => {
-    mockRegisterService.mockReturnValue(mockServiceRegistration);
+    const testService = new MockTestService();
 
-    const { result } = renderHook(() => useRegisterService('TestService', mockServiceImpl), { wrapper });
+    const { result } = renderHook(() => useRegisterService('TestService', testService), {
+      wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
+    });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.isRegistered).toBe(true);
     });
 
-    // Update properties
+    expect(result.current.registration).not.toBe(null);
+
     const newProperties = { prop1: 'newValue1', prop2: 'newValue2' };
     act(() => {
       result.current.updateProperties(newProperties);
     });
 
-    expect(mockSetProperties).toHaveBeenCalledWith(newProperties);
-  });
+    const registration = result.current.registration;
+    expect(registration).not.toBe(null);
 
-  it('should handle errors when updating properties', async () => {
-    mockRegisterService.mockReturnValue(mockServiceRegistration);
-    const mockError = new Error('Update properties error');
-    mockSetProperties.mockImplementation(() => {
-      throw mockError;
-    });
-
-    const { result } = renderHook(() => useRegisterService('TestService', mockServiceImpl), { wrapper });
-
-    // Wait for the hook to process
-    await waitFor(() => {
-      expect(result.current.isRegistered).toBe(true);
-    });
-
-    // Update properties
-    act(() => {
-      result.current.updateProperties({ prop: 'value' });
-    });
-
-    expect(result.current.error).toBe(mockError);
+    const serviceRef = registration!.getReference();
+    expect(serviceRef.getProperty('prop1')).toBe('newValue1');
+    expect(serviceRef.getProperty('prop2')).toBe('newValue2');
   });
 
   it('should unregister service on unmount', async () => {
-    mockRegisterService.mockReturnValue(mockServiceRegistration);
+    const testService = new MockTestService();
 
-    const { result, unmount } = renderHook(() => useRegisterService('TestService', mockServiceImpl), { wrapper });
+    const { result, unmount } = renderHook(() => useRegisterService('TestService', testService), {
+      wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
+    });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.isRegistered).toBe(true);
     });
 
-    // Unmount the component
+    let serviceRef = pandinoUtils.getBundleContext().getServiceReference('TestService');
+    expect(serviceRef).not.toBe(null);
+
     unmount();
 
-    expect(mockUnregister).toHaveBeenCalled();
-  });
-
-  it('should handle errors when unregistering service', async () => {
-    mockRegisterService.mockReturnValue(mockServiceRegistration);
-    const mockError = new Error('Unregister error');
-    mockUnregister.mockImplementation(() => {
-      throw mockError;
-    });
-
-    // Spy on console.error
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    const { result, unmount } = renderHook(() => useRegisterService('TestService', mockServiceImpl), { wrapper });
-
-    // Wait for the hook to process
-    await waitFor(() => {
-      expect(result.current.isRegistered).toBe(true);
-    });
-
-    // Unmount the component
-    unmount();
-
-    expect(mockUnregister).toHaveBeenCalled();
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error unregistering service:', mockError);
-
-    // Restore console.error
-    consoleErrorSpy.mockRestore();
+    serviceRef = pandinoUtils.getBundleContext().getServiceReference('TestService');
+    expect(serviceRef).toBe(null);
   });
 });

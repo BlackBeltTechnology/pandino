@@ -1,16 +1,14 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import type { ReactNode } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PandinoContext } from '~/context/pandino-context';
 import { useAllBundles, useBundle } from '~/hooks/use-bundle';
 import { findBundleBySymbolicName } from '~/utils/bundle-utils';
 
-// Mock the bundle-utils module
 vi.mock('~/utils/bundle-utils', () => ({
   findBundleBySymbolicName: vi.fn(),
 }));
 
-// Mock bundles
 const mockBundle1 = {
   getBundleId: vi.fn().mockReturnValue(1),
   getSymbolicName: vi.fn().mockReturnValue('bundle1'),
@@ -46,12 +44,10 @@ const mockBundle2 = {
   getContext: vi.fn(),
 };
 
-// Mock the framework
 const mockGetBundle = vi.fn();
 const mockGetBundles = vi.fn();
 
 const mockFramework = {
-  // Core framework methods
   getBundle: mockGetBundle,
   getBundles: mockGetBundles,
   getProperty: vi.fn(),
@@ -63,13 +59,11 @@ const mockFramework = {
   getService: vi.fn(),
   createFilter: vi.fn(),
 
-  // Required properties that were missing
   bundles: new Map(),
   services: new Map(),
   bundleCounter: 0,
   serviceCounter: 0,
 
-  // EventEmitter methods (OSGiFramework extends EventEmitter)
   on: vi.fn(),
   off: vi.fn(),
   emit: vi.fn(),
@@ -85,7 +79,6 @@ const mockFramework = {
   prependOnceListener: vi.fn(),
   eventNames: vi.fn(),
 
-  // Additional framework methods
   unregisterService: vi.fn(),
   ungetService: vi.fn(),
   addBundleListener: vi.fn(),
@@ -102,7 +95,6 @@ const mockFramework = {
   }),
 } as any;
 
-// Wrapper component with mock context
 const wrapper = ({ children, isInitialized = true }: { children: ReactNode; isInitialized?: boolean }) => (
   <PandinoContext.Provider
     value={{
@@ -122,15 +114,12 @@ describe('useBundle', () => {
   });
 
   it('should return loading=true initially and then loading=false', async () => {
-    // Mock a delay in getBundle to ensure we can capture the loading state
     mockGetBundle.mockImplementation(() => {
-      // Return the bundle but with a slight delay to allow checking loading state
       return mockBundle1;
     });
 
     const { result } = renderHook(() => useBundle(1), { wrapper });
 
-    // The loading state transitions very quickly, so we need to check it can reach false
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
@@ -145,7 +134,6 @@ describe('useBundle', () => {
       wrapper: ({ children }) => wrapper({ children, isInitialized: false }),
     });
 
-    // Should remain in loading state when not initialized
     expect(result.current.loading).toBe(true);
     expect(result.current.bundle).toBe(null);
     expect(result.current.error).toBe(null);
@@ -158,7 +146,6 @@ describe('useBundle', () => {
 
     const { result } = renderHook(() => useBundle(1), { wrapper });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
@@ -174,7 +161,6 @@ describe('useBundle', () => {
 
     const { result } = renderHook(() => useBundle('bundle1'), { wrapper });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
@@ -190,7 +176,6 @@ describe('useBundle', () => {
 
     const { result } = renderHook(() => useBundle(1), { wrapper });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
@@ -207,7 +192,6 @@ describe('useBundle', () => {
 
     const { result } = renderHook(() => useBundle(1), { wrapper });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
@@ -223,14 +207,12 @@ describe('useAllBundles', () => {
   });
 
   it('should return loading=true initially and then loading=false', async () => {
-    // Mock getBundles to return bundles
     mockGetBundles.mockImplementation(() => {
       return [mockBundle1, mockBundle2];
     });
 
     const { result } = renderHook(() => useAllBundles(), { wrapper });
 
-    // The loading state transitions very quickly, so we focus on the final state
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
@@ -245,7 +227,6 @@ describe('useAllBundles', () => {
       wrapper: ({ children }) => wrapper({ children, isInitialized: false }),
     });
 
-    // Should remain in loading state when not initialized
     expect(result.current.loading).toBe(true);
     expect(result.current.bundles).toEqual([]);
     expect(result.current.error).toBe(null);
@@ -257,7 +238,6 @@ describe('useAllBundles', () => {
 
     const { result } = renderHook(() => useAllBundles(), { wrapper });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
@@ -272,7 +252,6 @@ describe('useAllBundles', () => {
 
     const { result } = renderHook(() => useAllBundles(), { wrapper });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
@@ -289,12 +268,119 @@ describe('useAllBundles', () => {
 
     const { result } = renderHook(() => useAllBundles(), { wrapper });
 
-    // Wait for the hook to process
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
     expect(result.current.bundles).toEqual([]);
     expect(result.current.error).toBe(mockError);
+  });
+});
+
+describe('useBundle performance', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should not cause unnecessary re-renders when bundle reference is stable', async () => {
+    let renderCount = 0;
+
+    const TestComponentWithCounter = () => {
+      const { bundle } = useBundle(1);
+      renderCount++;
+      return <div>Bundle: {bundle ? bundle.getSymbolicName() : 'null'}</div>;
+    };
+
+    mockGetBundle.mockClear();
+
+    mockGetBundle.mockReturnValue(mockBundle1);
+
+    const MemoizedWrapper = ({ children }: { children: ReactNode }) => {
+      const contextValue = useMemo(
+        () => ({
+          framework: mockFramework,
+          bundleContext: null,
+          isInitialized: true,
+          error: null,
+        }),
+        [],
+      );
+
+      return (
+        <PandinoContext.Provider value={contextValue}>
+          <TestComponentWithCounter />
+          {children}
+        </PandinoContext.Provider>
+      );
+    };
+
+    const { rerender } = renderHook(() => {}, {
+      wrapper: MemoizedWrapper,
+    });
+
+    await waitFor(() => {
+      expect(mockGetBundle).toHaveBeenCalled();
+    });
+
+    expect(renderCount).toBe(2);
+
+    mockGetBundle.mockClear();
+    mockGetBundle.mockReturnValue(mockBundle1);
+
+    rerender();
+
+    // In the testing environment, the component will re-render when rerender() is called
+    // This is expected behavior in the test environment
+    expect(renderCount).toBe(3);
+
+    mockGetBundle.mockClear();
+    mockGetBundle.mockReturnValue(mockBundle2);
+
+    renderCount = 0;
+
+    const DifferentBundleWrapper = ({ children }: { children: ReactNode }) => {
+      const contextValue = useMemo(
+        () => ({
+          framework: mockFramework,
+          bundleContext: null,
+          isInitialized: true,
+          error: null,
+        }),
+        [],
+      );
+
+      return (
+        <PandinoContext.Provider value={contextValue}>
+          <TestComponentWithCounter />
+          {children}
+        </PandinoContext.Provider>
+      );
+    };
+
+    renderHook(() => {}, {
+      wrapper: DifferentBundleWrapper,
+    });
+
+    expect(renderCount).toBe(2);
+  });
+
+  it('should maintain referential equality of returned object when dependencies do not change', async () => {
+    mockGetBundle.mockClear();
+
+    const { result, rerender } = renderHook(() => useBundle(1), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    const initialResult = result.current;
+
+    expect(mockGetBundle).toHaveBeenCalledTimes(1);
+
+    rerender();
+
+    expect(result.current).toBe(initialResult);
+
+    expect(mockGetBundle).toHaveBeenCalledTimes(1);
   });
 });

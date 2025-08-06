@@ -1,15 +1,7 @@
-import { useState, useEffect } from 'react';
-import { ServiceRegistration } from '@pandino/pandino';
-import { usePandinoContext } from '../context/pandino-context';
+import type { ServiceRegistration } from '@pandino/pandino';
+import { useEffect, useState } from 'react';
+import { usePandinoContext } from '~/context';
 
-/**
- * Hook to register a service with the Pandino service registry
- *
- * @param serviceClass The class or interface name of the service to register
- * @param serviceImpl The service implementation
- * @param properties Optional properties for the service
- * @returns The service registration, registration state, and any error
- */
 export function useRegisterService<T>(
   serviceClass: string | string[] | Function,
   serviceImpl: T,
@@ -25,7 +17,6 @@ export function useRegisterService<T>(
   const [isRegistered, setIsRegistered] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Function to update service properties
   const updateProperties = (newProperties: Record<string, any>) => {
     if (registration) {
       try {
@@ -42,13 +33,11 @@ export function useRegisterService<T>(
     }
 
     try {
-      // Register the service
       const reg = bundleContext.registerService<T>(serviceClass, serviceImpl, properties || {});
 
       setRegistration(reg);
       setIsRegistered(true);
 
-      // Return a cleanup function to unregister the service
       return () => {
         try {
           reg.unregister();

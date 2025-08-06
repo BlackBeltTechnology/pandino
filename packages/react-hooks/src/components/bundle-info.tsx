@@ -2,18 +2,8 @@ import { BUNDLE_STATES } from '@pandino/pandino';
 import type { ReactNode } from 'react';
 import { useBundle } from '~/hooks';
 
-/**
- * Props for the BundleInfo component
- */
 export interface BundleInfoProps {
-  /**
-   * The bundle ID or symbolic name
-   */
   bundleIdOrName: number | string;
-
-  /**
-   * Custom renderer for the bundle information
-   */
   children?: (props: {
     bundle: any;
     loading: boolean;
@@ -22,9 +12,6 @@ export interface BundleInfoProps {
   }) => ReactNode;
 }
 
-/**
- * Helper function to convert bundle state to string
- */
 export function bundleStateToString(state: number): string {
   switch (state) {
     case BUNDLE_STATES.INSTALLED:
@@ -44,18 +31,9 @@ export function bundleStateToString(state: number): string {
   }
 }
 
-/**
- * Component for displaying information about a bundle
- *
- * @example
- * ```tsx
- * <BundleInfo bundleIdOrName="system.core-services" />
- * ```
- */
 export function BundleInfo({ bundleIdOrName, children }: BundleInfoProps): ReactNode {
   const { bundle, loading, error } = useBundle(bundleIdOrName);
 
-  // Default renderer if no children provided
   if (!children) {
     if (loading) return <div>Loading bundle information...</div>;
     if (error) return <div>Error loading bundle: {error.message}</div>;
@@ -92,6 +70,5 @@ export function BundleInfo({ bundleIdOrName, children }: BundleInfoProps): React
     );
   }
 
-  // Custom renderer
   return <>{children({ bundle, loading, error, stateToString: bundleStateToString })}</>;
 }

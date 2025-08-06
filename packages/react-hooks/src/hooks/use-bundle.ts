@@ -1,14 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Bundle } from '@pandino/pandino';
-import { usePandinoContext } from '../context/pandino-context';
-import { findBundleBySymbolicName } from '../utils/bundle-utils';
+import type { Bundle } from '@pandino/pandino';
+import { useEffect, useMemo, useState } from 'react';
+import { usePandinoContext } from '~/context';
+import { findBundleBySymbolicName } from '~/utils/bundle-utils';
 
-/**
- * Hook to get a bundle by ID or symbolic name
- *
- * @param bundleIdOrName The bundle ID or symbolic name
- * @returns The bundle, loading state, and any error
- */
 export function useBundle(bundleIdOrName: number | string): {
   bundle: Bundle | null;
   loading: boolean;
@@ -28,10 +22,8 @@ export function useBundle(bundleIdOrName: number | string): {
       let foundBundle: Bundle | null = null;
 
       if (typeof bundleIdOrName === 'number') {
-        // Get bundle by ID
         foundBundle = framework.getBundle(bundleIdOrName);
       } else {
-        // Get bundle by symbolic name
         foundBundle = findBundleBySymbolicName(framework, bundleIdOrName);
       }
 
@@ -43,14 +35,9 @@ export function useBundle(bundleIdOrName: number | string): {
     }
   }, [framework, bundleIdOrName, isInitialized]);
 
-  return { bundle, loading, error };
+  return useMemo(() => ({ bundle, loading, error }), [bundle, loading, error]);
 }
 
-/**
- * Hook to get all bundles in the framework
- *
- * @returns An array of bundles, loading state, and any error
- */
 export function useAllBundles(): {
   bundles: Bundle[];
   loading: boolean;
@@ -76,5 +63,5 @@ export function useAllBundles(): {
     }
   }, [framework, isInitialized]);
 
-  return { bundles, loading, error };
+  return useMemo(() => ({ bundles, loading, error }), [bundles, loading, error]);
 }

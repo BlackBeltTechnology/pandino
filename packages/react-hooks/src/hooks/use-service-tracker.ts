@@ -1,6 +1,6 @@
 import type { ServiceReference, ServiceTrackerCustomizer } from '@pandino/pandino';
 import { ServiceTracker } from '@pandino/pandino';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePandinoContext } from '~/context';
 
 export interface UseServiceTrackerResult<T = any> {
@@ -9,12 +9,6 @@ export interface UseServiceTrackerResult<T = any> {
   error: Error | null;
 }
 
-/**
- * Hook to track services using Pandino's ServiceTracker
- * @param serviceClass - The service class name or interface to track
- * @param filter - Optional LDAP filter string to further filter services
- * @returns Object containing tracked services, loading state, and error state
- */
 export function useServiceTracker<T = any>(serviceClass: string, filter?: string): UseServiceTrackerResult<T> {
   const { bundleContext, isInitialized } = usePandinoContext();
   const [services, setServices] = useState<T[]>([]);
@@ -32,7 +26,6 @@ export function useServiceTracker<T = any>(serviceClass: string, filter?: string
   }, []);
 
   const modifiedService = useCallback((reference: ServiceReference<T>, service: T, _tracked: T): void => {
-    // Update the existing service in the map with the new service object
     serviceMapRef.current.set(reference, service);
     setServices(Array.from(serviceMapRef.current.values()));
   }, []);
@@ -42,7 +35,6 @@ export function useServiceTracker<T = any>(serviceClass: string, filter?: string
       serviceMapRef.current.delete(reference);
       setServices(Array.from(serviceMapRef.current.values()));
 
-      // Unget the service reference
       if (bundleContext) {
         bundleContext.ungetService(reference);
       }
@@ -60,29 +52,23 @@ export function useServiceTracker<T = any>(serviceClass: string, filter?: string
     setError(null);
 
     try {
-      // Clear previous services
       serviceMapRef.current.clear();
       setServices([]);
 
-      // Create the customizer object with the callbacks
       const customizer: ServiceTrackerCustomizer<T, T> = {
         addingService,
         modifiedService,
         removedService,
       };
 
-      // Determine what to use as the filter parameter
       let filterParam: string | any;
       if (filter) {
-        // Create a combined filter that includes both the service class and the custom filter
         const combinedFilter = `(&(objectClass=${serviceClass})${filter})`;
         filterParam = bundleContext.createFilter(combinedFilter);
       } else {
-        // Use the service class directly
         filterParam = serviceClass;
       }
 
-      // Create and start the tracker
       const tracker = new ServiceTracker<T, T>(bundleContext, filterParam, customizer);
       trackerRef.current = tracker;
 
@@ -93,16 +79,21 @@ export function useServiceTracker<T = any>(serviceClass: string, filter?: string
       setLoading(false);
     }
 
-    // Cleanup function
     return () => {
       if (trackerRef.current && typeof trackerRef.current.close === 'function') {
-        trackerRef.current.close();
-        trackerRef.current = null;
+        try {
+          trackerRef.current.close();
+        } catch (err) {
+          // Ignore errors when closing the tracker, which can happen if the BundleContext is no longer valid
+          console.error('Error closing service tracker:', err);
+        } finally {
+          trackerRef.current = null;
+        }
       }
       serviceMapRef.current.clear();
       setServices([]);
     };
   }, [isInitialized, bundleContext, serviceClass, filter, addingService, modifiedService, removedService]);
 
-  return { services, loading, error };
+  return useMemo(() => ({ services, loading, error }), [services, loading, error]);
 }
