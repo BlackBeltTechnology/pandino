@@ -1,0 +1,54 @@
+.features {
+  display: flex;
+  align-items: center;
+  padding: 4rem 0;
+  width: 100%;
+  background-color: var(--ifm-background-surface-color);
+}
+
+.featuresTitle {
+  text-align: center;
+  margin-bottom: 3rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.featureEmoji {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.feature {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  background-color: var(--ifm-card-background-color);
+}
+
+.feature h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.feature p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ifm-color-content-secondary);
+}
+
+@media screen and (max-width: 996px) {
+  .feature {
+    padding: 1rem;
+  }
+
+  .featureEmoji {
+    font-size: 2.5rem;
+  }
+}

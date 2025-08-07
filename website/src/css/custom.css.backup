@@ -1,0 +1,555 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* Modern Developer-Oriented Theme */
+
+/* Import modern developer-friendly fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Base variables for both light and dark modes */
+:root {
+  /* Typography */
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --ifm-heading-font-weight: 600;
+  --ifm-font-weight-semibold: 600;
+  --ifm-code-font-size: 90%;
+  --ifm-line-height-base: 1.6;
+
+  /* Spacing and layout */
+  --ifm-spacing-horizontal: 1.5rem;
+  --ifm-navbar-padding-horizontal: 1.5rem;
+  --ifm-navbar-height: 3.75rem;
+
+  /* Border radius */
+  --ifm-global-radius: 0.25rem;
+  --ifm-button-border-radius: 0.125rem;
+  --ifm-code-border-radius: 0.125rem;
+  --ifm-menu-border-radius: 0;
+
+  /* Shadows */
+  --ifm-global-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  /* Light mode colors */
+  --ifm-color-primary: #4f46e5; /* Indigo */
+  --ifm-color-primary-dark: #4338ca;
+  --ifm-color-primary-darker: #3730a3;
+  --ifm-color-primary-darkest: #312e81;
+  --ifm-color-primary-light: #6366f1;
+  --ifm-color-primary-lighter: #818cf8;
+  --ifm-color-primary-lightest: #a5b4fc;
+
+  --ifm-color-secondary: #64748b; /* Slate */
+  --ifm-color-secondary-dark: #475569; /* Darker Slate */
+  --ifm-color-secondary-darker: #334155; /* Even Darker Slate */
+  --ifm-color-secondary-darkest: #1e293b; /* Darkest Slate */
+  --ifm-color-secondary-light: #94a3b8; /* Lighter Slate */
+  --ifm-color-secondary-lighter: #cbd5e1; /* Even Lighter Slate */
+  --ifm-color-secondary-lightest: #f1f5f9; /* Lightest Slate */
+
+  --ifm-color-success: #10b981; /* Emerald */
+  --ifm-color-info: #0ea5e9; /* Sky */
+  --ifm-color-warning: #f59e0b; /* Amber */
+  --ifm-color-danger: #ef4444; /* Red */
+
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f8fafc;
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.8);
+  --ifm-footer-background-color: #f1f5f9;
+
+  --ifm-color-content: #334155;
+  --ifm-color-content-secondary: #64748b;
+
+  --ifm-code-background: #f1f5f9;
+  --docusaurus-highlighted-code-line-bg: rgba(79, 70, 229, 0.08);
+
+  /* Menu colors */
+  --ifm-menu-color-background-hover: rgba(79, 70, 229, 0.05);
+  --ifm-menu-color-background-active: rgba(79, 70, 229, 0.1);
+  --ifm-menu-shadow-active: 0 0 1px rgba(0, 0, 0, 0.3);
+
+  /* Card and container styling */
+  --ifm-card-background-color: #ffffff;
+  --ifm-toc-border-color: #e2e8f0;
+}
+
+/* Dark mode colors */
+[data-theme='dark'] {
+  --ifm-color-primary: #818cf8; /* Lighter Indigo */
+  --ifm-color-primary-dark: #6366f1;
+  --ifm-color-primary-darker: #4f46e5;
+  --ifm-color-primary-darkest: #4338ca;
+  --ifm-color-primary-light: #a5b4fc;
+  --ifm-color-primary-lighter: #c7d2fe;
+  --ifm-color-primary-lightest: #e0e7ff;
+
+  --ifm-color-secondary: #94a3b8; /* Lighter Slate */
+  --ifm-color-secondary-dark: #64748b;
+  --ifm-color-secondary-darker: #475569;
+  --ifm-color-secondary-darkest: #334155;
+  --ifm-color-secondary-light: #cbd5e1;
+  --ifm-color-secondary-lighter: #e2e8f0;
+  --ifm-color-secondary-lightest: #f8fafc;
+
+  --ifm-color-success: #34d399; /* Lighter Emerald */
+  --ifm-color-info: #38bdf8; /* Lighter Sky */
+  --ifm-color-warning: #fbbf24; /* Lighter Amber */
+  --ifm-color-danger: #f87171; /* Lighter Red */
+
+  --ifm-background-color: #0f172a; /* Dark blue */
+  --ifm-background-surface-color: #1e293b;
+  --ifm-navbar-background-color: rgba(15, 23, 42, 0.8);
+  --ifm-footer-background-color: #0f172a;
+
+  --ifm-color-content: #e2e8f0;
+  --ifm-color-content-secondary: #cbd5e1;
+
+  --ifm-code-background: #1e293b;
+  --docusaurus-highlighted-code-line-bg: rgba(129, 140, 248, 0.12);
+
+  /* Menu colors */
+  --ifm-menu-color-background-hover: rgba(129, 140, 248, 0.05);
+  --ifm-menu-color-background-active: rgba(129, 140, 248, 0.1);
+  --ifm-menu-shadow-active: 0 0 1px rgba(255, 255, 255, 0.2);
+
+  /* Card and container styling */
+  --ifm-card-background-color: #1e293b;
+  --ifm-toc-border-color: #334155;
+}
+
+/* Enhanced UI Elements */
+
+/* Navbar styling */
+.navbar {
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+/* Apply menu border radius to all menu links */
+.menu__link,
+.dropdown__link,
+.navbar__item {
+  border-radius: var(--ifm-menu-border-radius);
+}
+
+/* Fix for chevron display in collapsible menu items */
+.menu__link--sublist {
+  position: relative;
+}
+
+/* Style the chevron for collapsible menu items */
+.menu__link--sublist:after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--ifm-color-content);
+  border-bottom: 2px solid var(--ifm-color-content);
+  transform: translateY(-50%) rotate(45deg);
+  transition: transform 0.2s linear;
+}
+
+/* Rotate chevron when menu is collapsed/expanded */
+/* For Docusaurus 3.x, both class names are included for compatibility */
+.menu__list-item--collapsed .menu__link--sublist:after,
+.menu__list-item-collapsible--collapsed .menu__link--sublist:after {
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+/* Dark mode chevron styling */
+[data-theme='dark'] .menu__link--sublist:after {
+  border-right: 2px solid var(--ifm-color-content);
+  border-bottom: 2px solid var(--ifm-color-content);
+}
+
+/* Ensure chevron is visible when menu item is hovered */
+.menu__link--sublist:hover:after {
+  border-right-color: var(--ifm-color-primary);
+  border-bottom-color: var(--ifm-color-primary);
+}
+
+/* Ensure chevron is visible when menu item is active */
+.menu__link--sublist.menu__link--active:after {
+  border-right-color: var(--ifm-color-primary);
+  border-bottom-color: var(--ifm-color-primary);
+}
+
+.navbar__logo {
+  height: 2rem;
+}
+
+.navbar__link {
+  font-weight: 500;
+}
+
+.navbar__link--active {
+  font-weight: 600;
+}
+
+/* Sidebar styling */
+.menu {
+  padding: 1rem 0.75rem;
+}
+
+.menu__link {
+  border-radius: 0;
+  transition: all 0.15s linear;
+  border-left: 2px solid transparent;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  border-left: 3px solid var(--ifm-color-primary);
+  font-weight: 600;
+  background-color: var(--ifm-menu-color-background-active);
+  box-shadow: -1px 0 0 var(--ifm-color-primary), var(--ifm-menu-shadow-active);
+  position: relative;
+}
+
+.menu__link--active:not(.menu__link--sublist)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 3px;
+  height: 100%;
+  background-color: var(--ifm-color-primary-darker);
+}
+
+.menu__list-item-collapsible:hover {
+  background: transparent;
+}
+
+.menu__list-item-collapsible .menu__link:hover,
+.menu__list-item .menu__link:hover {
+  background-color: var(--ifm-menu-color-background-hover);
+  border-left-color: var(--ifm-color-primary-dark);
+  box-shadow: var(--ifm-menu-shadow-active);
+  position: relative;
+}
+
+.menu__list-item-collapsible .menu__link:hover::after,
+.menu__list-item .menu__link:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background-color: var(--ifm-color-primary-lighter);
+}
+
+/* Table of contents */
+.table-of-contents {
+  font-size: 0.85rem;
+}
+
+.table-of-contents__link {
+  border-left: 2px solid transparent;
+  transition: all 0.15s linear;
+  padding-left: 8px;
+  margin-left: -8px;
+  position: relative;
+}
+
+.table-of-contents__link:hover {
+  color: var(--ifm-color-primary);
+  border-left-color: var(--ifm-color-primary-dark);
+  box-shadow: var(--ifm-menu-shadow-active);
+}
+
+.table-of-contents__link:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background-color: var(--ifm-color-primary-lighter);
+}
+
+.table-of-contents__link--active {
+  font-weight: 600;
+  border-left-color: var(--ifm-color-primary);
+  box-shadow: -1px 0 0 var(--ifm-color-primary), var(--ifm-menu-shadow-active);
+}
+
+.table-of-contents__link--active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background-color: var(--ifm-color-primary-darker);
+}
+
+/* Code blocks */
+.prism-code {
+  border-radius: var(--ifm-code-border-radius);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: var(--ifm-code-font-size);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+:not(pre) > code {
+  border-radius: var(--ifm-code-border-radius);
+  padding: 0.2rem 0.4rem;
+  font-size: 85%;
+  vertical-align: 0.1em;
+}
+
+/* Cards */
+.card {
+  border: 1px solid var(--ifm-toc-border-color);
+  box-shadow: var(--ifm-global-shadow-md);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Buttons */
+.button {
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button--primary {
+  background-color: var(--ifm-color-primary);
+  border-color: var(--ifm-color-primary);
+}
+
+.button--primary:hover {
+  background-color: var(--ifm-color-primary-dark);
+  border-color: var(--ifm-color-primary-dark);
+}
+
+.button--secondary {
+  background-color: var(--ifm-color-secondary);
+  border-color: var(--ifm-color-secondary);
+}
+
+.button--secondary:hover {
+  background-color: var(--ifm-color-secondary-dark);
+  border-color: var(--ifm-color-secondary-dark);
+}
+
+/* Admonitions (callouts) */
+.admonition {
+  border-radius: var(--ifm-global-radius);
+  border-left-width: 6px;
+  box-shadow: var(--ifm-global-shadow-md);
+}
+
+/* Tabs */
+.tabs {
+  border-radius: var(--ifm-global-radius);
+  overflow: hidden;
+}
+
+.tabs__item {
+  font-weight: 500;
+  padding: 0.75rem 1.25rem;
+}
+
+.tabs__item--active {
+  font-weight: 600;
+}
+
+/* Footer */
+.footer {
+  padding: 3rem 0;
+}
+
+.footer__link-item {
+  font-weight: 500;
+}
+
+.footer__title {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Pagination */
+.pagination-nav__link {
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: var(--ifm-global-radius);
+  transition: all 0.2s ease;
+}
+
+.pagination-nav__link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ifm-global-shadow-md);
+}
+
+/* Search */
+.DocSearch-Button {
+  border-radius: var(--ifm-global-radius) !important;
+  padding: 0 12px !important;
+  height: 36px !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 996px) {
+  :root {
+    --ifm-spacing-horizontal: 1rem;
+    --ifm-navbar-padding-horizontal: 1rem;
+  }
+
+  .navbar__items--right > * {
+    margin-left: 0.5rem;
+  }
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .navbar {
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+[data-theme='dark'] .card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Ensure menu styling is consistent in dark mode */
+[data-theme='dark'] .menu__link--active:not(.menu__link--sublist)::after,
+[data-theme='dark'] .table-of-contents__link--active::after {
+  background-color: var(--ifm-color-primary-darkest);
+}
+
+[data-theme='dark'] .menu__list-item-collapsible .menu__link:hover::after,
+[data-theme='dark'] .menu__list-item .menu__link:hover::after,
+[data-theme='dark'] .table-of-contents__link:hover::after {
+  background-color: var(--ifm-color-primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ifm-background-surface-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ifm-color-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ifm-color-primary);
+}
+
+/* Code block line numbers */
+.prism-code .token-line {
+  line-height: 1.5;
+}
+
+/* Markdown content */
+.markdown {
+  --ifm-h1-font-size: 2.5rem;
+  --ifm-h2-font-size: 2rem;
+  --ifm-h3-font-size: 1.5rem;
+  --ifm-h4-font-size: 1.25rem;
+}
+
+.markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.markdown p {
+  margin-bottom: 1.25rem;
+  line-height: 1.7;
+}
+
+.markdown img {
+  border-radius: var(--ifm-global-radius);
+  box-shadow: var(--ifm-global-shadow-md);
+}
+
+.markdown blockquote {
+  border-left-width: 4px;
+  border-radius: 0 var(--ifm-global-radius) var(--ifm-global-radius) 0;
+  background-color: var(--ifm-code-background);
+  margin: 1.5rem 0;
+  padding: 1rem;
+  color: var(--ifm-color-content-secondary);
+}
+
+.markdown hr {
+  margin: 2rem 0;
+  border-color: var(--ifm-toc-border-color);
+}
+
+.markdown table {
+  display: table;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--ifm-global-radius);
+  overflow: hidden;
+  box-shadow: var(--ifm-global-shadow-md);
+}
+
+.markdown table thead tr {
+  background-color: var(--ifm-color-primary);
+  color: white;
+}
+
+.markdown table th, .markdown table td {
+  padding: 0.75rem 1rem;
+  border: none;
+}
+
+.markdown table tr {
+  background-color: var(--ifm-card-background-color);
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.markdown table tr:last-child {
+  border-bottom: none;
+}
+
+/* API Reference styling */
+.api-method {
+  border-radius: var(--ifm-global-radius);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: var(--ifm-global-shadow-md);
+}
+
+.api-method-title {
+  font-weight: 600;
+  padding: 1rem;
+  background-color: var(--ifm-color-primary);
+  color: white;
+}
+
+.api-method-path {
+  font-family: var(--ifm-font-family-monospace);
+  padding: 0.5rem 1rem;
+  background-color: var(--ifm-background-surface-color);
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.api-method-description {
+  padding: 1rem;
+  background-color: var(--ifm-card-background-color);
+}

@@ -1,0 +1,71 @@
+name: Deploy Website to GitHub Pages
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+    paths:
+      - 'website/**'
+      - 'docs/**'
+      - '.github/workflows/deploy-website.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git config
+        run: |
+          git config user.name "blackbelt-oss"
+          git config user.email "oss@blackbelt.hu"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.x
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: |
+          cd website
+          pnpm install --frozen-lockfile
+
+      - name: Build website
+        run: |
+          cd website
+          pnpm run build
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: website/build
+          branch: gh-pages
+          clean: true

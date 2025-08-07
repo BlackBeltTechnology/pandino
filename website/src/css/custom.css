@@ -1,0 +1,116 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* Modern Developer-Oriented Theme - Fonts and Colors Only */
+
+/* Import modern developer-friendly fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Base variables for both light and dark modes */
+:root {
+  /* Typography */
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --ifm-heading-font-weight: 600;
+  --ifm-font-weight-semibold: 600;
+  --ifm-code-font-size: 90%;
+  --ifm-line-height-base: 1.6;
+
+  /* Light mode colors */
+  --ifm-color-primary: #007ACC; /* TypeScript Blue */
+  --ifm-color-primary-dark: #0062a3;
+  --ifm-color-primary-darker: #00548c;
+  --ifm-color-primary-darkest: #004674;
+  --ifm-color-primary-light: #0092e6;
+  --ifm-color-primary-lighter: #00a8ff;
+  --ifm-color-primary-lightest: #33b8ff;
+
+  --ifm-color-secondary: #5c6773; /* Cool Gray */
+  --ifm-color-secondary-dark: #4a5460;
+  --ifm-color-secondary-darker: #3d4752;
+  --ifm-color-secondary-darkest: #2f3841;
+  --ifm-color-secondary-light: #6e7a86;
+  --ifm-color-secondary-lighter: #8c97a1;
+  --ifm-color-secondary-lightest: #adb5bd;
+
+  --ifm-color-success: #2ea043; /* GitHub Green */
+  --ifm-color-info: #58a6ff; /* GitHub Blue */
+  --ifm-color-warning: #d29922; /* GitHub Yellow */
+  --ifm-color-danger: #f85149; /* GitHub Red */
+
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f6f8fa; /* GitHub Light Surface */
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.8);
+  --ifm-footer-background-color: #f6f8fa;
+
+  --ifm-color-content: #24292f; /* GitHub Dark Gray */
+  --ifm-color-content-secondary: #57606a; /* GitHub Medium Gray */
+
+  --ifm-code-background: #f6f8fa;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 122, 204, 0.08);
+
+  /* Menu colors */
+  --ifm-menu-color-background-hover: rgba(0, 122, 204, 0.05);
+  --ifm-menu-color-background-active: rgba(0, 122, 204, 0.1);
+
+  /* Card and container styling */
+  --ifm-card-background-color: #ffffff;
+  --ifm-toc-border-color: #d0d7de; /* GitHub Border */
+}
+
+/* Dark mode colors */
+[data-theme='dark'] {
+  --ifm-color-primary: #58a6ff; /* Lighter TypeScript Blue */
+  --ifm-color-primary-dark: #3993ff;
+  --ifm-color-primary-darker: #1a80ff;
+  --ifm-color-primary-darkest: #006ae6;
+  --ifm-color-primary-light: #77b9ff;
+  --ifm-color-primary-lighter: #96cbff;
+  --ifm-color-primary-lightest: #b5ddff;
+
+  --ifm-color-secondary: #8c97a1; /* Lighter Cool Gray */
+  --ifm-color-secondary-dark: #6e7a86;
+  --ifm-color-secondary-darker: #5c6773;
+  --ifm-color-secondary-darkest: #4a5460;
+  --ifm-color-secondary-light: #adb5bd;
+  --ifm-color-secondary-lighter: #ced4da;
+  --ifm-color-secondary-lightest: #e9ecef;
+
+  --ifm-color-success: #56d364; /* Lighter GitHub Green */
+  --ifm-color-info: #79c0ff; /* Lighter GitHub Blue */
+  --ifm-color-warning: #e3b341; /* Lighter GitHub Yellow */
+  --ifm-color-danger: #ff7b72; /* Lighter GitHub Red */
+
+  --ifm-background-color: #0d1117; /* GitHub Dark */
+  --ifm-background-surface-color: #161b22; /* GitHub Dark Surface */
+  --ifm-navbar-background-color: rgba(13, 17, 23, 0.8);
+  --ifm-footer-background-color: #0d1117;
+
+  --ifm-color-content: #c9d1d9;
+  --ifm-color-content-secondary: #8b949e;
+
+  --ifm-code-background: #161b22;
+  --docusaurus-highlighted-code-line-bg: rgba(88, 166, 255, 0.12);
+
+  /* Menu colors */
+  --ifm-menu-color-background-hover: rgba(88, 166, 255, 0.05);
+  --ifm-menu-color-background-active: rgba(88, 166, 255, 0.1);
+
+  /* Card and container styling */
+  --ifm-card-background-color: #161b22;
+  --ifm-toc-border-color: #30363d;
+}
+
+/* Basic styling for code blocks to ensure proper font display */
+.prism-code {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: var(--ifm-code-font-size);
+}
+
+:not(pre) > code {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 85%;
+}
