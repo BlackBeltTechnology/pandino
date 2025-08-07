@@ -3,43 +3,56 @@ import { ServiceTracker } from '@pandino/pandino';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePandinoContext } from '~/context';
 
+export interface ServiceTrackerEntry<T = any> {
+  service: T;
+  serviceReference: ServiceReference<T>;
+}
+
 export interface UseServiceTrackerResult<T = any> {
-  services: T[];
+  services: ServiceTrackerEntry<T>[];
   loading: boolean;
   error: Error | null;
 }
 
 export function useServiceTracker<T = any>(serviceClass: string, filter?: string): UseServiceTrackerResult<T> {
   const { bundleContext, isInitialized } = usePandinoContext();
-  const [services, setServices] = useState<T[]>([]);
+  const [services, setServices] = useState<ServiceTrackerEntry<T>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const trackerRef = useRef<ServiceTracker<T, T> | null>(null);
   const serviceMapRef = useRef<Map<ServiceReference<T>, T>>(new Map());
 
+  // Helper function to convert the map to an array of ServiceTrackerEntry objects
+  const mapToEntries = useCallback(() => {
+    return Array.from(serviceMapRef.current.entries()).map(([reference, service]) => ({
+      serviceReference: reference,
+      service,
+    }));
+  }, []);
+
   // Create customizer callbacks
   const addingService = useCallback((reference: ServiceReference<T>, service: T): T | null => {
     serviceMapRef.current.set(reference, service);
-    setServices(Array.from(serviceMapRef.current.values()));
+    setServices(mapToEntries());
     return service;
-  }, []);
+  }, [mapToEntries]);
 
   const modifiedService = useCallback((reference: ServiceReference<T>, service: T, _tracked: T): void => {
     serviceMapRef.current.set(reference, service);
-    setServices(Array.from(serviceMapRef.current.values()));
-  }, []);
+    setServices(mapToEntries());
+  }, [mapToEntries]);
 
   const removedService = useCallback(
     (reference: ServiceReference<T>, _service: T, _tracked: T): void => {
       serviceMapRef.current.delete(reference);
-      setServices(Array.from(serviceMapRef.current.values()));
+      setServices(mapToEntries());
 
       if (bundleContext) {
         bundleContext.ungetService(reference);
       }
     },
-    [bundleContext],
+    [bundleContext, mapToEntries],
   );
 
   useEffect(() => {
@@ -93,7 +106,7 @@ export function useServiceTracker<T = any>(serviceClass: string, filter?: string
       serviceMapRef.current.clear();
       setServices([]);
     };
-  }, [isInitialized, bundleContext, serviceClass, filter, addingService, modifiedService, removedService]);
+  }, [isInitialized, bundleContext, serviceClass, filter, addingService, modifiedService, removedService, mapToEntries]);
 
   return useMemo(() => ({ services, loading, error }), [services, loading, error]);
 }
