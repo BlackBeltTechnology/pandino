@@ -30,8 +30,8 @@ const DynamicDependencies: React.FC = () => {
     }
   }, [enableFeature, isFeatureEnabled]);
 
-  const { services: loggerServices, loading: loggerLoading } = useServiceTracker<LoggerService>('LoggerService');
-  const { services: taskManagerServices, loading: taskManagerLoading } =
+  const { services: loggerServices, loading: _loggerLoading } = useServiceTracker<LoggerService>('LoggerService');
+  const { services: taskManagerServices, loading: _taskManagerLoading } =
     useServiceTracker<TaskManagerService>('TaskManagerService');
 
   const loggerService = loggerServices[0];
