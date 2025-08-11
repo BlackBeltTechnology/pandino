@@ -27,12 +27,6 @@ import { useFeatureToggle } from '../contexts/FeatureToggleContext';
 import { featureColors, heroStyles } from '../theme';
 import CodeBlock from '../components/CodeBlock';
 
-// Mock service for the demo
-interface GreetingService {
-  greet(name: string): string;
-  getRandomGreeting(name: string): string;
-}
-
 const ReactIntegration: React.FC = () => {
   const theme = useTheme();
   const { isFeatureEnabled, enableFeature } = useFeatureToggle();
