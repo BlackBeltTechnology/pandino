@@ -6,11 +6,13 @@ import type {
   ServiceRegistration,
 } from '~/framework/interfaces';
 import { ComponentContextImpl } from './component-context';
-import { getComponentMetadata } from './reflection';
+import { getComponentMetadata, getDecoratorInfo } from './reflection';
 import type { ConfigurationAdmin } from '~/services/config-admin';
 import type { ComponentDescriptor, ReferenceDescriptor } from '@pandino/decorators';
 import type { ComponentContext } from './interfaces';
 import { OSGiFramework } from '~/framework/framework';
+import { Event } from '~/services/event-admin/interfaces';
+import type { EventAdmin } from '~/services/event-admin/interfaces';
 
 interface ComponentEntry {
   instance: any;
@@ -166,6 +168,7 @@ export class ServiceComponentRuntime {
   private components = new Map<number, Map<string, ComponentEntry>>();
   private readonly bundleContext: BundleContext;
   private readonly configAdmin!: ConfigurationAdmin | null;
+  private readonly eventAdmin!: EventAdmin | null;
   private activationChain: string[] = [];
 
   private removeFromActivationChain(componentId: string): void {
@@ -184,6 +187,13 @@ export class ServiceComponentRuntime {
     const configAdminRefs = this.bundleContext.getServiceReferences('ConfigurationAdmin');
     if (configAdminRefs && configAdminRefs.length > 0) {
       this.configAdmin = this.bundleContext.getService<ConfigurationAdmin>(configAdminRefs[0]);
+    }
+
+    const eventAdminRefs = this.bundleContext.getServiceReferences('EventAdmin');
+    if (eventAdminRefs && eventAdminRefs.length > 0) {
+      this.eventAdmin = this.bundleContext.getService<EventAdmin>(eventAdminRefs[0]);
+    } else {
+      this.eventAdmin = null;
     }
   }
 
@@ -208,6 +218,12 @@ export class ServiceComponentRuntime {
     this.components.get(bundleId)!.set(metadata.name, {
       instance: null,
       metadata: { ...metadata, class: component },
+    });
+
+    this.publishScrEvent('scr/component/registered', {
+      'bundle.id': bundleId,
+      'component.name': metadata.name,
+      decorators: getDecoratorInfo(component),
     });
 
     // For immediate components, check if they can be activated
@@ -294,6 +310,15 @@ export class ServiceComponentRuntime {
       return undefined;
     }
     return bundleComponents.get(name);
+  }
+
+  private publishScrEvent(topic: string, properties: Record<string, any>): void {
+    if (!this.eventAdmin) return;
+    try {
+      this.eventAdmin.postEvent(new Event(topic, properties));
+    } catch (e) {
+      this.framework.getLogger().error(`Failed to publish SCR event ${topic}:`, e as Error);
+    }
   }
 
   async activateComponent(bundleId: number, name: string): Promise<void> {
@@ -412,6 +437,12 @@ export class ServiceComponentRuntime {
       entry.factoryInstances = new Map();
     }
 
+    this.publishScrEvent('scr/component/activated', {
+      'bundle.id': bundleId,
+      'component.name': metadata.name,
+      decorators: getDecoratorInfo(metadata.class || ComponentClass),
+    });
+
     this.removeFromActivationChain(componentId);
   }
 
@@ -471,6 +502,12 @@ export class ServiceComponentRuntime {
 
     entry.instance = null;
     entry.context = undefined;
+
+    this.publishScrEvent('scr/component/deactivated', {
+      'bundle.id': bundleId,
+      'component.name': metadata.name,
+      decorators: getDecoratorInfo(entry.metadata.class || entry.metadata),
+    });
   }
 
   async satisfyReferences(bundleId: number, name: string): Promise<void> {
@@ -830,6 +867,13 @@ export class ServiceComponentRuntime {
     if (metadata.modified && typeof instance[metadata.modified] === 'function') {
       await instance[metadata.modified](configuration);
     }
+
+    this.publishScrEvent('scr/component/config-updated', {
+      'bundle.id': bundleId,
+      'component.name': componentName,
+      configuration,
+      decorators: getDecoratorInfo(entry.metadata.class || entry.metadata),
+    });
   }
 
   /**
@@ -867,6 +911,20 @@ export class ServiceComponentRuntime {
 
     // First deactivate all components
     await this.deactivateBundleComponents(bundleId);
+
+    for (const [componentName, entry] of bundleComponents.entries()) {
+      try {
+        this.publishScrEvent('scr/component/removed', {
+          'bundle.id': bundleId,
+          'component.name': componentName,
+          decorators: getDecoratorInfo(entry.metadata.class || entry.metadata),
+        });
+      } catch (e) {
+        this.framework
+          .getLogger()
+          .error(`Failed to publish removed for ${componentName} from bundle ${bundleId}:`, e as Error);
+      }
+    }
 
     // Then remove the entire bundle entry
     this.components.delete(bundleId);

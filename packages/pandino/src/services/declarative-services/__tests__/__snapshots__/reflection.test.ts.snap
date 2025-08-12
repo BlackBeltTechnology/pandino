@@ -19,6 +19,9 @@ exports[`Reflection Helpers > getDecoratorInfo > should retrieve all decorator i
       "service.ranking": 100,
     },
   },
+  "customDecorators": {},
+  "customFieldDecorators": {},
+  "customMethodDecorators": {},
   "lifecycle": {
     "activate": "activate",
     "deactivate": "deactivate",
@@ -104,6 +107,9 @@ exports[`Reflection Helpers > getDecoratorInfo > should work with non-component 
     "policy": "optional",
     "properties": {},
   },
+  "customDecorators": {},
+  "customFieldDecorators": {},
+  "customMethodDecorators": {},
   "lifecycle": {
     "activate": null,
     "deactivate": null,

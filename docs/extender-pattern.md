@@ -126,3 +126,6 @@ In this example, SCR (the extender) handles:
 ## Conclusion
 
 The Extender Pattern, implemented through SCR in Pandino, brings the power of OSGi's dynamic modularity to TypeScript and browser environments. It enables a declarative approach to service components, reducing boilerplate code and allowing developers to focus on business logic while the framework handles the complex service lifecycle management.
+
+## See also
+- Creating Decorator Extenders (Micro‑Extenders): ./creating-decorator-extenders.md
