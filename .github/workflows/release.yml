@@ -10,6 +10,8 @@ on:
 
 jobs:
   release:
+    permissions:
+      contents: write
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_OSS_AUTOMATION_TOKEN }}
       GH_TOKEN: ${{ secrets.OSS_PAT }}
