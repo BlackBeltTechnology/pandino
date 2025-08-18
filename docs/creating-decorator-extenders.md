@@ -7,7 +7,10 @@ What you use:
 - EventAdmin — SCR posts component lifecycle events carrying DecoratorInfo.
 - Custom metadata — read your own reflect‑metadata without hard‑coding names.
 
-See also: docs/extender-pattern.md (concepts) and docs/whiteboard-pattern.md (EventAdmin).
+See also:
+
+- [docs/extender-pattern.md]() (concepts)
+- [docs/whiteboard-pattern.md]() (EventAdmin)
 
 ## Event‑driven micro‑extender
 Subscribe to SCR topics so your extender reacts as components appear/change without re‑scanning.
