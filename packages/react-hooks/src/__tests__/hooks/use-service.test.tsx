@@ -161,4 +161,143 @@ describe('useService', () => {
 
     expect(ungetServiceSpy).toHaveBeenCalled();
   });
+
+  it('should re-render once when service becomes available (via filter change)', async () => {
+    // Register a service that matches property=value
+    const svc = new MockTestService();
+    pandinoUtils.registerService('TrackedService', svc, { property: 'value' });
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>
+    );
+
+    let renders = 0;
+    const { result, rerender } = renderHook(
+      (props: { serviceClass: string; filter?: string }) => {
+        renders += 1;
+        return useService<TestService>(props.serviceClass, props.filter);
+      },
+      { wrapper, initialProps: { serviceClass: 'TrackedService', filter: '(property=other)' } },
+    );
+
+    // Initially: no match
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.service).toBe(null);
+    const rendersAfterInitial = renders;
+
+    // Change filter to match -> expect exactly one additional render
+    rerender({ serviceClass: 'TrackedService', filter: '(property=value)' });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.service).toBe(svc);
+    expect(renders - rendersAfterInitial).toBe(1);
+  });
+
+  it('should re-render once when switching between two matching services (service change)', async () => {
+    const svc1 = new MockTestService();
+    svc1.name = 'one';
+    const svc2 = new MockTestService();
+    svc2.name = 'two';
+
+    pandinoUtils.registerService('TrackedService', svc1, { tag: 'one' });
+    pandinoUtils.registerService('TrackedService', svc2, { tag: 'two' });
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>
+    );
+
+    let renders = 0;
+    const { result, rerender } = renderHook(
+      (props: { serviceClass: string; filter?: string }) => {
+        renders += 1;
+        return useService<TestService>(props.serviceClass, props.filter);
+      },
+      { wrapper, initialProps: { serviceClass: 'TrackedService', filter: '(tag=one)' } },
+    );
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.service).toBe(svc1);
+    const beforeSwitch = renders;
+
+    // Switch filter to the other matching service
+    rerender({ serviceClass: 'TrackedService', filter: '(tag=two)' });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.service).toBe(svc2);
+    expect(renders - beforeSwitch).toBe(1);
+  });
+
+  it('should re-render once when switching to non-matching filter (no capable service)', async () => {
+    const svc = new MockTestService();
+    pandinoUtils.registerService('TrackedService', svc, { flag: 'yes' });
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>
+    );
+
+    let renders = 0;
+    const { result, rerender } = renderHook(
+      (props: { serviceClass: string; filter?: string }) => {
+        renders += 1;
+        return useService<TestService>(props.serviceClass, props.filter);
+      },
+      { wrapper, initialProps: { serviceClass: 'TrackedService', filter: '(flag=yes)' } },
+    );
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.service).toBe(svc);
+    const beforeNonMatch = renders;
+
+    // Now change to a non-matching filter -> expect one render to null
+    rerender({ serviceClass: 'TrackedService', filter: '(flag=no)' });
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.service).toBe(null);
+    expect(renders - beforeNonMatch).toBe(1);
+  });
+
+  it('should not re-render for service registrations that do not match serviceClass/filter', async () => {
+    const svc = new MockTestService();
+    pandinoUtils.registerService('TrackedService', svc, { key: 'main' });
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>
+    );
+
+    let renders = 0;
+    const { result } = renderHook(
+      (props: { serviceClass: string; filter?: string }) => {
+        renders += 1;
+        return useService<TestService>(props.serviceClass, props.filter);
+      },
+      { wrapper, initialProps: { serviceClass: 'TrackedService', filter: '(key=main)' } },
+    );
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.service).toBe(svc);
+    const beforeIrrelevant = renders;
+
+    // Register an unrelated service that should not affect our hook (different serviceClass)
+    const other = new MockTestService();
+    pandinoUtils.registerService('OtherService', other, { key: 'main' });
+
+    // Give a small delay to simulate async environment; hook has no subscription -> no re-render expected
+    await new Promise((r) => setTimeout(r, 200));
+
+    expect(renders).toBe(beforeIrrelevant);
+  });
 });

@@ -71,30 +71,39 @@ describe('useServiceTracker', () => {
     expect(result.current.error).toBe(null);
   });
 
-  it('should track services with filter when filter is provided', async () => {
-    const { result } = renderHook(() => useServiceTracker<TestService>('TestService', '(property=value)'), {
-      wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
-    });
+  it('should track services with filter when filter is provided (render only on matching registration)', async () => {
+    let renders = 0;
+    const { result } = renderHook(
+      () => {
+        renders += 1;
+        return useServiceTracker<TestService>('TestService', '(property=value)');
+      },
+      {
+        wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
+      },
+    );
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
     expect(result.current.services.length).toBe(0);
+    const rendersAfterInitial = renders;
 
     await act(async () => {
       const testService = new TestServiceImpl(1, 'Service 1');
-      pandinoUtils.registerService('TestService', testService, { property: 'value' });
+      pandinoUtils.registerService('TestService', testService, { property: 'value' }); // matching -> should cause 1 render
 
       const testService2 = new TestServiceImpl(2, 'Service 2');
-      pandinoUtils.registerService('TestService', testService2);
+      pandinoUtils.registerService('TestService', testService2); // non-matching -> should not render
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     expect(result.current.services.length).toBe(1);
     expect(result.current.services[0].id).toBe(1);
     expect(result.current.services[0].name).toBe('Service 1');
+    expect(renders - rendersAfterInitial).toBe(1);
   });
 
   it('should close tracker on unmount', async () => {
@@ -115,25 +124,40 @@ describe('useServiceTracker', () => {
     expect(result.current.services.length).toBe(1);
   });
 
-  it('should track services when they are registered', async () => {
-    const { result } = renderHook(() => useServiceTracker<TestService>('TestService'), {
-      wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
-    });
+  it('should track services when they are registered (one render per registration)', async () => {
+    let renders = 0;
+    const { result } = renderHook(
+      () => {
+        renders += 1;
+        return useServiceTracker<TestService>('TestService');
+      },
+      {
+        wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
+      },
+    );
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
     expect(result.current.services.length).toBe(0);
+    const rendersAfterInitial = renders;
 
     await act(async () => {
       const service1 = new TestServiceImpl(1, 'Service 1');
-      const service2 = new TestServiceImpl(2, 'Service 2');
       pandinoUtils.registerService('TestService', service1);
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(renders - rendersAfterInitial).toBe(1);
+
+    await act(async () => {
+      const service2 = new TestServiceImpl(2, 'Service 2');
       pandinoUtils.registerService('TestService', service2);
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(renders - rendersAfterInitial).toBe(2);
 
     expect(result.current.services.length).toBe(2);
 
@@ -144,7 +168,7 @@ describe('useServiceTracker', () => {
     expect(serviceNames).toEqual(['Service 1', 'Service 2']);
   });
 
-  it('should remove services when they are unregistered', async () => {
+  it('should remove services when they are unregistered (one render per removal)', async () => {
     const existingRefs = pandinoUtils.getBundleContext().getServiceReferences('TestService');
     if (existingRefs) {
       for (const ref of existingRefs) {
@@ -165,34 +189,46 @@ describe('useServiceTracker', () => {
       reg2 = pandinoUtils.getBundleContext().registerService('TestService', service2);
     });
 
-    const { result } = renderHook(() => useServiceTracker<TestService>('TestService'), {
-      wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
-    });
+    let renders = 0;
+    const { result } = renderHook(
+      () => {
+        renders += 1;
+        return useServiceTracker<TestService>('TestService');
+      },
+      {
+        wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
+      },
+    );
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     expect(result.current.services.length).toBe(2);
+    const rendersAfterInitial = renders;
 
     await act(async () => {
       if (reg1) reg1.unregister();
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     expect(result.current.services.length).toBe(1);
     expect(result.current.services[0].id).toBe(2);
     expect(result.current.services[0].name).toBe('Service 2');
+    expect(renders - rendersAfterInitial).toBe(1);
 
     await act(async () => {
       if (reg2) reg2.unregister();
     });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(renders - rendersAfterInitial).toBe(2);
   });
 
-  it('should update tracked services when properties are modified', async () => {
+  it('should update tracked services when properties are modified (two renders: remove + add)', async () => {
     const existingRefs = pandinoUtils.getBundleContext().getServiceReferences('TestService');
     if (existingRefs) {
       for (const ref of existingRefs) {
@@ -209,30 +245,47 @@ describe('useServiceTracker', () => {
       reg = pandinoUtils.getBundleContext().registerService('TestService', service1);
     });
 
-    const { result } = renderHook(() => useServiceTracker<TestService>('TestService'), {
-      wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
-    });
+    let renders = 0;
+    const { result } = renderHook(
+      () => {
+        renders += 1;
+        return useServiceTracker<TestService>('TestService');
+      },
+      {
+        wrapper: ({ children }) => <PandinoTestWrapper pandinoUtils={pandinoUtils}>{children}</PandinoTestWrapper>,
+      },
+    );
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     expect(result.current.services.length).toBe(1);
     expect(result.current.services[0].name).toBe('Service 1');
+    const rendersAfterInitial = renders;
 
     await act(async () => {
       if (reg) reg.unregister();
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    expect(result.current.services.length).toBe(0);
+    expect(renders - rendersAfterInitial).toBe(1);
+
+    await act(async () => {
       const updatedService = new TestServiceImpl(1, 'Modified Service 1');
       reg = pandinoUtils.getBundleContext().registerService('TestService', updatedService);
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     expect(result.current.services.length).toBe(1);
     expect(result.current.services[0].id).toBe(1);
     expect(result.current.services[0].name).toBe('Modified Service 1');
+    expect(renders - rendersAfterInitial).toBe(2);
 
     await act(async () => {
       if (reg) reg.unregister();
