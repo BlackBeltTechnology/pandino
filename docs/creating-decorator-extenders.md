@@ -9,8 +9,8 @@ What you use:
 
 See also:
 
-- [docs/extender-pattern.md]() (concepts)
-- [docs/whiteboard-pattern.md]() (EventAdmin)
+- [docs/extender-pattern.md](./extender-pattern.md) (concepts)
+- [docs/whiteboard-pattern.md](./whiteboard-pattern.md) (EventAdmin)
 
 ## Event‑driven micro‑extender
 Subscribe to SCR topics so your extender reacts as components appear/change without re‑scanning.
@@ -70,6 +70,7 @@ export class CustomDecoratorExtender implements EventHandler {
 Define decorators in your app that store reflect‑metadata; SCR exposes them via DecoratorInfo.
 
 ```ts
+// This is important:
 import 'reflect-metadata';
 
 export function Feature(meta: any) {
@@ -110,7 +111,7 @@ Notes:
 - Prefer Whiteboard style: register as services and let the framework route events.
 
 ## References
-- docs/extender-pattern.md — Conceptual overview of SCR as an extender
-- docs/whiteboard-pattern.md — EventAdmin and event handling
-- packages/pandino/src/services/declarative-services/reflection.ts — getDecoratorInfo helpers
-- packages/decorators — Core decorator package (Component, Service, Property, ...)
+- [docs/extender-pattern.md](./extender-pattern.md) — Conceptual overview of SCR as an extender
+- [docs/whiteboard-pattern.md](./whiteboard-pattern.md) — EventAdmin and event handling
+- [packages/pandino/src/services/declarative-services/reflection.ts](../packages/pandino/src/services/declarative-services/reflection.ts) — getDecoratorInfo helpers
+- [packages/decorators](../packages/decorators) — Core decorator package (Component, Service, Property, ...)
