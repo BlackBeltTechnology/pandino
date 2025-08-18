@@ -12,51 +12,57 @@ export function useService<T>(
   error: Error | null;
 } {
   const { bundleContext, isInitialized } = usePandinoContext();
-  const [service, setService] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const serviceReferenceRef = useRef<ServiceReference<T> | null>(null);
+  const cleanupRef = useRef<ServiceReference<T> | null>(null);
 
-  useEffect(() => {
+  const result = useMemo(() => {
     if (!isInitialized || !bundleContext) {
-      setLoading(true);
-      setService(null);
-      setError(null);
-      return;
+      return {
+        service: null as T | null,
+        loading: true,
+        error: null as Error | null,
+        ref: null as ServiceReference<T> | null,
+      };
     }
 
     try {
-      const serviceReference = filter
+      const serviceReference: ServiceReference<T> | null = filter
         ? bundleContext.getServiceReferences<T>(serviceClass, filter)?.[0] || null
         : bundleContext.getServiceReference<T>(serviceClass);
 
-      serviceReferenceRef.current = serviceReference;
-
       if (!serviceReference) {
-        setService(null);
-        setLoading(false);
-        return;
+        return { service: null as T | null, loading: false, error: null as Error | null, ref: null };
       }
 
       const serviceInstance = bundleContext.getService<T>(serviceReference);
-      setService(serviceInstance);
-      setLoading(false);
+      return { service: serviceInstance, loading: false, error: null as Error | null, ref: serviceReference };
     } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
-      setLoading(false);
+      return {
+        service: null as T | null,
+        loading: false,
+        error: (err instanceof Error ? err : new Error(String(err))) as Error,
+        ref: null,
+      };
     }
+  }, [bundleContext, isInitialized, serviceClass, filter]);
 
+  useEffect(() => {
+    // Track the current reference for cleanup on change/unmount
+    cleanupRef.current = result.ref;
     return () => {
-      if (serviceReferenceRef.current && bundleContext) {
+      if (cleanupRef.current && bundleContext) {
         try {
-          bundleContext.ungetService(serviceReferenceRef.current);
-          serviceReferenceRef.current = null;
-        } catch (err) {
-          // Ignore cleanup errors
+          bundleContext.ungetService(cleanupRef.current);
+        } catch (_err) {
+          // ignore cleanup errors
+        } finally {
+          cleanupRef.current = null;
         }
       }
     };
-  }, [bundleContext, serviceClass, filter, isInitialized]);
+  }, [bundleContext, result.ref]);
 
-  return useMemo(() => ({ service, loading, error }), [service, loading, error]);
+  return useMemo(
+    () => ({ service: result.service, loading: result.loading, error: result.error }),
+    [result.service, result.loading, result.error],
+  );
 }

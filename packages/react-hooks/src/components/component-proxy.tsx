@@ -20,7 +20,6 @@ export function ComponentProxy(props: ComponentProxyProps): ReactNode {
   try {
     if (typeof service === 'function') {
       return createElement(service, {
-        testProp: restProps.testProp || '',
         ...restProps,
       });
     }
@@ -29,7 +28,6 @@ export function ComponentProxy(props: ComponentProxyProps): ReactNode {
       const elementType = service.type;
       const mergedProps = {
         ...service.props,
-        testProp: restProps.testProp || service.props?.testProp || '',
         ...restProps,
       };
 
