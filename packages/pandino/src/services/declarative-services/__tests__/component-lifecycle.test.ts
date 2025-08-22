@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { OSGiFramework } from '~/framework/framework';
-import type { BundleContext, ServiceReference } from '~/framework/interfaces';
+import type { BundleContext } from '~/framework/interfaces';
 import { Activate, Component, Deactivate, Modified, Reference } from '@pandino/decorators';
 import { getComponentMetadata } from '../reflection';
 import { ServiceComponentRuntime } from '../scr';
@@ -9,15 +9,12 @@ describe('Component Lifecycle', () => {
   let framework: OSGiFramework;
   let scr: ServiceComponentRuntime;
   let bundleContext: BundleContext;
-  let mockServiceRef: ServiceReference<any>;
 
   beforeEach(async () => {
     framework = new OSGiFramework();
     await framework.start();
     bundleContext = framework.getBundleContext();
     scr = new ServiceComponentRuntime(framework, bundleContext);
-
-    mockServiceRef = { getProperty: vi.fn() } as unknown as ServiceReference<any>;
   });
 
   describe('Component Registration', () => {
@@ -281,22 +278,18 @@ describe('Component Lifecycle', () => {
         }
       }
 
-      const mockBundleContext = {
-        getServiceReferences: vi.fn().mockReturnValue([mockServiceRef]),
-        getService: vi.fn().mockReturnValue({ value: 'test' }),
-        registerService: vi.fn(),
-        ungetService: vi.fn(),
-      } as unknown as BundleContext;
+      // Register a real TestService in the framework context so SCR can resolve it via the component's bundle context
+      bundleContext.registerService('TestService', { value: 'test' });
 
-      const testScr = new ServiceComponentRuntime(framework, mockBundleContext);
       const bundleId = 0;
-      testScr.registerComponent(FullLifecycleComponent, bundleId);
-      await testScr.activateComponent(bundleId, 'full.lifecycle.component');
+      scr.registerComponent(FullLifecycleComponent, bundleId);
+      await scr.activateComponent(bundleId, 'full.lifecycle.component');
 
-      await testScr.processServiceEvent('TestService', 'unregistered');
-      await testScr.deactivateComponent(bundleId, 'full.lifecycle.component');
+      await scr.processServiceEvent('TestService', 'unregistered');
+      await scr.deactivateComponent(bundleId, 'full.lifecycle.component');
 
-      expect(lifecycleTracker).toEqual(['activated', 'service-bound', 'service-unbound', 'deactivated']);
+      // With pre-binding before activation, service binding happens before activation callback
+      expect(lifecycleTracker).toEqual(['service-bound', 'activated', 'service-unbound', 'deactivated']);
     });
   });
 

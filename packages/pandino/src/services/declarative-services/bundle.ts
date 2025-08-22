@@ -33,8 +33,16 @@ export class ServiceComponentRuntimeBundleActivator implements BundleActivator, 
     context.addBundleListener(this);
 
     const bundles = context.getBundles();
+    // Process only ACTIVE bundles to ensure activators run before components
     for (const bundle of bundles) {
-      this.processBundle(bundle);
+      try {
+        if (bundle.getState() === BUNDLE_STATES.ACTIVE) {
+          this.processBundle(bundle);
+        }
+        // oxlint-disable-next-line no-unused-vars
+      } catch (_err) {
+        // ignore individual bundle processing errors during startup
+      }
     }
   }
 
@@ -62,7 +70,6 @@ export class ServiceComponentRuntimeBundleActivator implements BundleActivator, 
     const bundleId = bundle.getBundleId();
 
     switch (bundleState) {
-      case BUNDLE_STATES.RESOLVED:
       case BUNDLE_STATES.ACTIVE:
         this.processBundle(bundle);
         break;
@@ -76,7 +83,7 @@ export class ServiceComponentRuntimeBundleActivator implements BundleActivator, 
         break;
 
       default:
-        // For other states (INSTALLED, STARTING), we don't need to take action
+        // For other states (INSTALLED, STARTING, RESOLVED), we don't take action here
         break;
     }
   }

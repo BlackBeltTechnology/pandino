@@ -79,15 +79,10 @@ describe('Service References', () => {
         }
       }
 
-      const mockServiceA = { type: 'A' };
-      const mockServiceB = { type: 'B' };
-
-      bundleContext.getServiceReferences = vi
-        .fn()
-        .mockReturnValueOnce([mockServiceRef]) // ServiceA
-        .mockReturnValueOnce([mockServiceRef]); // ServiceB
-
-      bundleContext.getService = vi.fn().mockReturnValueOnce(mockServiceA).mockReturnValueOnce(mockServiceB);
+      // SCR may query references multiple times (pre- and post-activation passes)
+      bundleContext.getServiceReferences = vi.fn().mockReturnValue([mockServiceRef]);
+      // Return some object for any service ref; binding order is asserted via which bind method is called
+      bundleContext.getService = vi.fn().mockReturnValue({});
 
       const bundleId = 0;
       scr.registerComponent(MultiReferenceComponent, bundleId);
@@ -232,10 +227,6 @@ describe('Service References', () => {
           cardinality: '0..1',
         })
         private dataService?: DataService;
-
-        getData(): string {
-          return this.dataService?.getData() || 'no-data';
-        }
       }
 
       const metadata = getComponentMetadata(FieldInjectionComponent);

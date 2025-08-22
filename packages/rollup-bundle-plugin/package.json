@@ -1,0 +1,41 @@
+{
+  "name": "@pandino/rollup-bundle-plugin",
+  "version": "0.1.0",
+  "description": "Rollup/Vite plugin for Pandino to generate a BundleModule from decorators",
+  "license": "EPL-2.0",
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "type": "module",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js"
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsc && vite build",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "rollup": ">=3",
+    "vite": ">=4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "@types/picomatch": "^4.0.2",
+    "rollup": "^4.21.0",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "picomatch": "^4.0.3",
+    "typescript": "^5.9.2"
+  }
+}

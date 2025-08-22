@@ -22,10 +22,6 @@
         "build": "tsc && vite build",
         "build:dev": "tsc && vite build --mode development",
         "prepublishOnly": "pnpm build",
-        "test": "vitest run",
-        "test:watch": "vitest",
-        "test:coverage": "vitest --coverage",
-        "test:ui": "vitest --ui",
         "check:fix": "biome check ./src --write"
     },
     "peerDependencies": {

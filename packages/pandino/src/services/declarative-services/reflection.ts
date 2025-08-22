@@ -1,5 +1,13 @@
 import 'reflect-metadata';
 import { COMPONENT_METADATA_KEY, type ComponentDescriptor, type ReferenceDescriptor } from '@pandino/decorators';
+import type {
+  ComponentInfo,
+  ConfigurationInfo,
+  DecoratorInfo,
+  LifecycleInfo,
+  ReferenceFilterOptions,
+  ServiceInfo,
+} from './interfaces';
 
 export function getComponentMetadata<T = any>(target: any): (ComponentDescriptor & T) | null {
   if (!target) {
@@ -10,17 +18,6 @@ export function getComponentMetadata<T = any>(target: any): (ComponentDescriptor
   const constructor = typeof target === 'function' ? target : target.constructor;
 
   return Reflect.getMetadata(COMPONENT_METADATA_KEY, constructor) || null;
-}
-
-export interface ComponentInfo {
-  isComponent: boolean;
-  name: string | null;
-  enabled: boolean;
-  immediate: boolean;
-  factory: {
-    isFactory: boolean;
-    id: string | null;
-  };
 }
 
 export function getComponentInfo(target: any): ComponentInfo {
@@ -38,11 +35,6 @@ export function getComponentInfo(target: any): ComponentInfo {
   };
 }
 
-export interface ServiceInfo {
-  interfaces: string[];
-  scope: 'singleton' | 'bundle' | 'prototype' | null;
-}
-
 export function getServiceInfo(target: any): ServiceInfo {
   const metadata = getComponentMetadata(target);
   const serviceMetadata = metadata?.service;
@@ -51,12 +43,6 @@ export function getServiceInfo(target: any): ServiceInfo {
     interfaces: serviceMetadata?.interfaces || [],
     scope: serviceMetadata?.scope || (serviceMetadata ? 'singleton' : null),
   };
-}
-
-export interface ConfigurationInfo {
-  pid: string | null;
-  policy: 'optional' | 'require' | 'ignore';
-  properties: Record<string, any>;
 }
 
 export function getConfigurationInfo(target: any): ConfigurationInfo {
@@ -69,12 +55,6 @@ export function getConfigurationInfo(target: any): ConfigurationInfo {
   };
 }
 
-export interface LifecycleInfo {
-  activate: string | null;
-  deactivate: string | null;
-  modified: string | null;
-}
-
 export function getLifecycleInfo(target: any): LifecycleInfo {
   const metadata = getComponentMetadata(target);
 
@@ -83,11 +63,6 @@ export function getLifecycleInfo(target: any): LifecycleInfo {
     deactivate: metadata?.deactivate || null,
     modified: metadata?.modified || null,
   };
-}
-
-export interface ReferenceFilterOptions {
-  name?: string;
-  interface?: string;
 }
 
 export function getReferenceInfo(target: any, filter?: ReferenceFilterOptions): ReferenceDescriptor[] {
@@ -105,18 +80,6 @@ export function getReferenceInfo(target: any, filter?: ReferenceFilterOptions): 
   }
 
   return references;
-}
-
-export interface DecoratorInfo {
-  component: ComponentInfo;
-  service: ServiceInfo;
-  configuration: ConfigurationInfo;
-  lifecycle: LifecycleInfo;
-  references: ReferenceDescriptor[];
-  rawMetadata: ComponentDescriptor | null;
-  customDecorators: Record<string, any>;
-  customFieldDecorators: Record<string, Record<string, any>>;
-  customMethodDecorators: Record<string, Record<string, any>>;
 }
 
 function isFilteredMetaKey(key: any): boolean {

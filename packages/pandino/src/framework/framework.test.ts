@@ -251,9 +251,9 @@ describe('OSGiFramework', () => {
 
       await bundle.stop();
 
-      expect(async () => {
-        await context.installBundle(createBundleModule('another.bundle'));
-      }).rejects.toThrow('BundleContext is no longer valid');
+      await expect(context.installBundle(createBundleModule('another.bundle'))).rejects.toThrow(
+        'BundleContext is no longer valid',
+      );
     });
 
     it('should clear service listeners when context is invalidated', async () => {

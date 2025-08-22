@@ -1,42 +1,51 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import { resolve } from 'path';
-import { readFileSync } from 'fs';
+import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
+import pandinoBundle from '@pandino/rollup-bundle-plugin';
 
 // Read package.json to extract name and version
 const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    // Alpha bundle with activator
+    pandinoBundle({
+      virtualId: 'pandino:bundle:alpha',
+      include: ['src/bundles/alpha/**/*.{ts,tsx}'],
+      activator: 'src/bundles/alpha/activator.ts',
+      headers: {
+        bundleSymbolicName: `${packageJson.name}.alpha`,
+        bundleVersion: packageJson.version,
+        bundleDescription: 'Alpha example bundle',
+      },
+    }),
+    // Beta bundle
+    pandinoBundle({
+      virtualId: 'pandino:bundle:beta',
+      include: ['src/bundles/beta/**/*.{ts,tsx}'],
+      headers: {
+        bundleSymbolicName: `${packageJson.name}.beta`,
+        bundleVersion: packageJson.version,
+        bundleDescription: 'Beta example bundle',
+      },
+    }),
+    // Gamma bundle
+    pandinoBundle({
+      virtualId: 'pandino:bundle:gamma',
+      include: ['src/bundles/gamma/**/*.{ts,tsx}'],
+      headers: {
+        bundleSymbolicName: `${packageJson.name}.gamma`,
+        bundleVersion: packageJson.version,
+        bundleDescription: 'Gamma example bundle',
+      },
+    }),
+  ],
   define: {
     'import.meta.env.VITE_BUNDLE_SYMBOLIC_NAME': JSON.stringify(packageJson.name),
     'import.meta.env.VITE_BUNDLE_VERSION': JSON.stringify(packageJson.version),
     'import.meta.env.VITE_BUNDLE_DESCRIPTION': JSON.stringify(packageJson.description),
   },
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-        'greeting-service-bundle': resolve(__dirname, 'src/bundles/greeting-service-bundle.ts'),
-      },
-      output: {
-        entryFileNames: (chunkInfo) => {
-          return chunkInfo.name === 'greeting-service-bundle'
-            ? 'bundles/[name].js'
-            : 'assets/[name]-[hash].js';
-        },
-        // Remove manual chunks to prevent duplicate React instances
-        // This ensures that React is properly shared across all components
-        // manualChunks: {
-        //   'react-syntax-highlighter': ['react-syntax-highlighter'],
-        //   'react': ['react'],
-        //   'react-dom': ['react-dom'],
-        //   'react-router-dom': ['react-router-dom'],
-        //   'mui-material': ['@mui/material'],
-        //   'mui-icons': ['@mui/icons-material'],
-        // }
-      },
-    },
-  },
-})
+});

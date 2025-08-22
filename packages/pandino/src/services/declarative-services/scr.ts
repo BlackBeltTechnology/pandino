@@ -1,167 +1,14 @@
-import type {
-  Bundle,
-  BundleContext,
-  ServiceFactory,
-  ServiceReference,
-  ServiceRegistration,
-} from '~/framework/interfaces';
+import type { BundleContext, ServiceReference } from '~/framework/interfaces';
 import { ComponentContextImpl } from './component-context';
 import { getComponentMetadata, getDecoratorInfo } from './reflection';
 import type { ConfigurationAdmin } from '~/services/config-admin';
-import type { ComponentDescriptor, ReferenceDescriptor } from '@pandino/decorators';
-import type { ComponentContext } from './interfaces';
+import type { ReferenceDescriptor } from '@pandino/decorators';
+import type { ComponentEntry } from './interfaces';
 import { OSGiFramework } from '~/framework/framework';
 import { Event } from '~/services/event-admin/interfaces';
 import type { EventAdmin } from '~/services/event-admin/interfaces';
-
-interface ComponentEntry {
-  instance: any;
-  metadata: ComponentDescriptor;
-  serviceRegistration?: ServiceRegistration<any>;
-  factoryInstances?: Map<string, any>;
-  context?: ComponentContext;
-  bundleInstances?: Map<number, any>; // For bundle-scoped services
-}
-
-class PrototypeServiceFactory implements ServiceFactory<any> {
-  constructor(
-    private ComponentClass: any,
-    private metadata: ComponentDescriptor,
-    private scr: ServiceComponentRuntime,
-  ) {}
-
-  getService(bundle: Bundle, registration: ServiceRegistration<any>): any {
-    const instance = new this.ComponentClass();
-
-    const context = new ComponentContextImpl(
-      bundle.getContext(),
-      this.metadata.properties || {},
-      registration.getReference(),
-      this.metadata.name,
-      this.scr,
-    );
-
-    if (this.metadata.activate) {
-      try {
-        instance[this.metadata.activate](context);
-      } catch (error) {
-        this.scr
-          .getFramework()
-          .getLogger()
-          .error(`Failed to activate prototype instance: ${error}`, error as Error);
-        throw error;
-      }
-    }
-
-    this.satisfyInstanceReferences(instance);
-
-    // Return a proxy that forces the framework to not cache this instance
-    // by making each call return a different object reference
-    return new Proxy(instance, {
-      get(target, prop, receiver) {
-        // Add a unique identifier to prevent caching
-        if (prop === Symbol.toPrimitive || prop === 'valueOf' || prop === 'toString') {
-          return () => `PrototypeInstance_${Date.now()}_${Math.random()}`;
-        }
-        return Reflect.get(target, prop, receiver);
-      },
-    });
-  }
-
-  ungetService(_bundle: Bundle, _registration: ServiceRegistration<any>, service: any): void {
-    // For prototype scope, immediately deactivate the instance
-    if (this.metadata.deactivate && typeof service[this.metadata.deactivate] === 'function') {
-      try {
-        service[this.metadata.deactivate]();
-      } catch (error) {
-        this.scr
-          .getFramework()
-          .getLogger()
-          .error(`Failed to deactivate prototype instance: ${error}`, error as Error);
-      }
-    }
-  }
-
-  private satisfyInstanceReferences(instance: any): void {
-    for (const ref of this.metadata.references || []) {
-      try {
-        this.scr.satisfyReferenceForInstance(instance, ref);
-      } catch (error) {
-        this.scr
-          .getFramework()
-          .getLogger()
-          .error(`Failed to satisfy reference ${ref.interface} for prototype instance: ${error}`, error as Error);
-      }
-    }
-  }
-}
-
-class BundleScopeServiceFactory implements ServiceFactory<any> {
-  constructor(
-    private ComponentClass: any,
-    private metadata: ComponentDescriptor,
-    private scr: ServiceComponentRuntime,
-    private componentEntry: ComponentEntry,
-  ) {}
-
-  getService(bundle: Bundle, registration: ServiceRegistration<any>): any {
-    const bundleId = bundle.getBundleId();
-
-    if (!this.componentEntry.bundleInstances) {
-      this.componentEntry.bundleInstances = new Map();
-    }
-
-    let instance = this.componentEntry.bundleInstances.get(bundleId);
-    if (instance) {
-      return instance;
-    }
-
-    instance = new this.ComponentClass();
-    this.componentEntry.bundleInstances.set(bundleId, instance);
-
-    const context = new ComponentContextImpl(
-      bundle.getContext(),
-      this.metadata.properties || {},
-      registration.getReference(),
-      this.metadata.name,
-      this.scr,
-    );
-
-    if (this.metadata.activate) {
-      try {
-        instance[this.metadata.activate](context);
-      } catch (error) {
-        this.scr
-          .getFramework()
-          .getLogger()
-          .error(`Failed to activate bundle-scoped instance: ${error}`, error as Error);
-        throw error;
-      }
-    }
-
-    this.satisfyInstanceReferences(instance);
-
-    return instance;
-  }
-
-  ungetService(_bundle: Bundle, _registration: ServiceRegistration<any>, _service: any): void {
-    // For bundle scope, we don't immediately deactivate on unget
-    // The instance stays alive until the bundle stops or component is deactivated
-  }
-
-  private satisfyInstanceReferences(instance: any): void {
-    for (const ref of this.metadata.references || []) {
-      try {
-        this.scr.satisfyReferenceForInstance(instance, ref);
-      } catch (error) {
-        this.scr
-          .getFramework()
-          .getLogger()
-          .error(`Failed to satisfy reference ${ref.interface} for bundle-scoped instance: ${error}`, error as Error);
-      }
-    }
-  }
-}
+import { PrototypeServiceFactory } from './service-factories/PrototypeServiceFactory';
+import { BundleScopeServiceFactory } from './service-factories/BundleScopeServiceFactory';
 
 export class ServiceComponentRuntime {
   // Map of bundle ID -> component name -> component entry
@@ -215,7 +62,13 @@ export class ServiceComponentRuntime {
       this.components.set(bundleId, new Map<string, ComponentEntry>());
     }
 
-    this.components.get(bundleId)!.set(metadata.name, {
+    const bundleComponents = this.components.get(bundleId)!;
+    // Idempotency: avoid duplicate registration of the same component in the same bundle
+    if (bundleComponents.has(metadata.name)) {
+      return;
+    }
+
+    bundleComponents.set(metadata.name, {
       instance: null,
       metadata: { ...metadata, class: component },
     });
@@ -230,17 +83,6 @@ export class ServiceComponentRuntime {
     if (metadata.immediate) {
       await this.tryActivateImmediate(bundleId, metadata.name);
     }
-  }
-
-  private getBundleIdForComponent(component: any): number {
-    // Get the bundle ID from the component metadata
-    const metadata = getComponentMetadata(component);
-    if (metadata && metadata.bundleId !== undefined) {
-      return metadata.bundleId;
-    }
-
-    // If not found in metadata, use the current bundle's ID
-    return this.bundleContext.getBundle().getBundleId();
   }
 
   /**
@@ -289,7 +131,12 @@ export class ServiceComponentRuntime {
 
       if (cardinality === '1..1' || cardinality === '1..n') {
         const filter = ref.target || null;
-        const serviceRefs = this.bundleContext.getServiceReferences(ref.interface, filter) ?? [];
+        const scrBundleId = this.bundleContext.getBundle().getBundleId();
+        const componentCtx =
+          bundleId === scrBundleId
+            ? this.bundleContext
+            : this.framework.getBundle(bundleId)?.getContext() || this.bundleContext;
+        const serviceRefs = componentCtx.getServiceReferences(ref.interface, filter) ?? [];
 
         if (serviceRefs.length === 0) {
           return false; // Mandatory reference not satisfied
@@ -361,6 +208,9 @@ export class ServiceComponentRuntime {
 
     const scope = metadata.service?.scope || 'singleton';
 
+    // Use the component's own BundleContext (not SCR's) for registration and lookups
+    const componentBundleContext = this.framework.getBundle(bundleId)?.getContext() || this.bundleContext;
+
     if (scope === 'prototype') {
       // For prototype scope, we don't create an instance here
       // Instead, we register a service factory that creates instances on demand
@@ -373,7 +223,7 @@ export class ServiceComponentRuntime {
         };
         const factory = new PrototypeServiceFactory(ComponentClass, metadata, this);
 
-        entry.serviceRegistration = this.bundleContext.registerService(
+        entry.serviceRegistration = componentBundleContext.registerService(
           metadata.service.interfaces,
           factory,
           serviceProps,
@@ -387,7 +237,7 @@ export class ServiceComponentRuntime {
         const serviceProps = { ...metadata.properties };
         const factory = new BundleScopeServiceFactory(ComponentClass, metadata, this, entry);
 
-        entry.serviceRegistration = this.bundleContext.registerService(
+        entry.serviceRegistration = componentBundleContext.registerService(
           metadata.service.interfaces,
           factory,
           serviceProps,
@@ -400,7 +250,7 @@ export class ServiceComponentRuntime {
 
       if (metadata.service?.interfaces && metadata.service.interfaces.length > 0) {
         const serviceProps = { ...metadata.properties };
-        entry.serviceRegistration = this.bundleContext.registerService(
+        entry.serviceRegistration = componentBundleContext.registerService(
           metadata.service.interfaces,
           instance,
           serviceProps,
@@ -409,7 +259,7 @@ export class ServiceComponentRuntime {
 
       const serviceRef = entry.serviceRegistration?.getReference() || null;
       const context = new ComponentContextImpl(
-        this.bundleContext,
+        componentBundleContext,
         metadata.properties || {},
         serviceRef,
         metadata.name,
@@ -417,9 +267,15 @@ export class ServiceComponentRuntime {
       );
       entry.context = context;
 
-      if (metadata.activate) {
+      // Bind/satisfy references before invoking @Activate so injected fields are available during activation.
+      await this.satisfyReferences(bundleId, name, true);
+
+      // Invoke @Activate if present; otherwise, fall back to a conventional 'activate' method if it exists.
+      const activateMethodName =
+        metadata.activate || (typeof (instance as any)['activate'] === 'function' ? 'activate' : null);
+      if (activateMethodName) {
         try {
-          await instance[metadata.activate](context);
+          await (instance as any)[activateMethodName](context);
         } catch (error) {
           if (entry.serviceRegistration) {
             entry.serviceRegistration.unregister();
@@ -430,7 +286,15 @@ export class ServiceComponentRuntime {
         }
       }
 
-      await this.satisfyReferences(bundleId, name);
+      // For dynamic references, perform additional passes to allow late availability
+      const hasDynamicRefs = (metadata.references || []).some((r) => (r.policy || 'static') === 'dynamic');
+      if (hasDynamicRefs) {
+        // Second pass: bind any references (especially dynamic) now that activation completed
+        await this.satisfyReferences(bundleId, name);
+        // Yield to allow concurrently activating components to register their services, then try once more (tolerant for dynamic)
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        await this.satisfyReferences(bundleId, name, true);
+      }
     }
 
     if (metadata.factory) {
@@ -510,7 +374,7 @@ export class ServiceComponentRuntime {
     });
   }
 
-  async satisfyReferences(bundleId: number, name: string): Promise<void> {
+  async satisfyReferences(bundleId: number, name: string, initialActivation = false): Promise<void> {
     let entry: ComponentEntry | undefined;
 
     const bundleComponents = this.components.get(bundleId);
@@ -525,11 +389,11 @@ export class ServiceComponentRuntime {
 
     const { instance, metadata } = entry;
     for (const ref of metadata.references || []) {
-      await this.satisfyReference(instance, ref);
+      await this.satisfyReference(instance, ref, initialActivation);
     }
   }
 
-  private async satisfyReference(instance: any, ref: ReferenceDescriptor) {
+  private async satisfyReference(instance: any, ref: ReferenceDescriptor, initialActivation = false) {
     const filter = ref.target || null;
 
     let componentName: string | undefined;
@@ -550,7 +414,11 @@ export class ServiceComponentRuntime {
       if (found) break;
     }
 
-    const serviceRefs = this.bundleContext.getServiceReferences(ref.interface, filter) ?? [];
+    const componentCtx =
+      bundleId !== undefined
+        ? this.framework.getBundle(bundleId)?.getContext() || this.bundleContext
+        : this.bundleContext;
+    const serviceRefs = componentCtx.getServiceReferences(ref.interface, filter) ?? [];
 
     // Check for circular dependencies
     if (componentName && bundleId !== undefined && serviceRefs.length > 0) {
@@ -591,23 +459,40 @@ export class ServiceComponentRuntime {
 
     if (cardinality === '1..1' || cardinality === '0..1') {
       if (serviceRefs.length > 0) {
-        const service = this.bundleContext.getService(serviceRefs[0]);
+        const service = componentCtx.getService(serviceRefs[0]);
         if (service) {
-          if (ref.bind) {
-            instance[ref.bind](service);
+          const isMethodField =
+            ref.bind && ref.field === ref.bind && typeof (instance as any)[ref.field!] === 'function';
+          // Skip duplicate binding if the same service is already assigned to the field
+          if (ref.field && !isMethodField && (instance as any)[ref.field] === service) {
+            return;
+          }
+          if (ref.bind && typeof (instance as any)[ref.bind] === 'function') {
+            const maybePromise = (instance as any)[ref.bind](service);
+            if (maybePromise && typeof (maybePromise as any).then === 'function') {
+              await maybePromise;
+            }
           }
 
-          if (ref.field) {
-            instance[ref.field] = service;
+          if (ref.field && !isMethodField) {
+            (instance as any)[ref.field] = service;
           }
         }
       } else if (cardinality === '1..1') {
+        const isDynamic = (ref.policy || 'static') === 'dynamic';
+        if (initialActivation && isDynamic) {
+          return; // allow dynamic mandatory reference to be bound later via events
+        }
         throw new Error(`Mandatory reference ${ref.interface} not satisfied`);
       }
     } else {
-      const services = serviceRefs.map((ref) => this.bundleContext.getService(ref)).filter(Boolean);
+      const services = serviceRefs.map((ref) => componentCtx.getService(ref)).filter(Boolean);
 
       if (services.length === 0 && cardinality === '1..n') {
+        const isDynamic = (ref.policy || 'static') === 'dynamic';
+        if (initialActivation && isDynamic) {
+          return; // allow dynamic mandatory references to be satisfied later
+        }
         throw new Error(`Mandatory reference ${ref.interface} not satisfied`);
       }
 
@@ -808,12 +693,29 @@ export class ServiceComponentRuntime {
 
   satisfyReferenceForInstance(instance: any, ref: ReferenceDescriptor) {
     const filter = ref.target || null;
-    const serviceRefs = this.bundleContext.getServiceReferences(ref.interface, filter) ?? [];
+
+    // Determine the bundle context of the component instance
+    let owningBundleId: number | undefined;
+    for (const [currentBundleId, bundleComponents] of this.components.entries()) {
+      for (const [_currentName, entry] of bundleComponents.entries()) {
+        if (entry.instance === instance || entry.bundleInstances?.has?.(currentBundleId)) {
+          owningBundleId = currentBundleId;
+          break;
+        }
+      }
+      if (owningBundleId !== undefined) break;
+    }
+    const componentCtx =
+      owningBundleId !== undefined
+        ? this.framework.getBundle(owningBundleId)?.getContext() || this.bundleContext
+        : this.bundleContext;
+
+    const serviceRefs = componentCtx.getServiceReferences(ref.interface, filter) ?? [];
     const cardinality = ref.cardinality || '0..1';
 
     if (cardinality === '1..1' || cardinality === '0..1') {
       if (serviceRefs.length > 0) {
-        const service = this.bundleContext.getService(serviceRefs[0]);
+        const service = componentCtx.getService(serviceRefs[0]);
         if (service) {
           if (ref.bind) {
             instance[ref.bind](service);
@@ -826,7 +728,7 @@ export class ServiceComponentRuntime {
         throw new Error(`Mandatory reference ${ref.interface} not satisfied`);
       }
     } else {
-      const services = serviceRefs.map((ref) => this.bundleContext.getService(ref)).filter(Boolean);
+      const services = serviceRefs.map((ref) => componentCtx.getService(ref)).filter(Boolean);
 
       if (services.length === 0 && cardinality === '1..n') {
         throw new Error(`Mandatory reference ${ref.interface} not satisfied`);

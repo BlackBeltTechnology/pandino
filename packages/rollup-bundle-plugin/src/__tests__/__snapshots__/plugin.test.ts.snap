@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`pandinoBundle plugin > allows overriding headers via options 1`] = `
+"import { A as __pnd_A } from "./src/a.ts";
+import __pnd_BDefault from "./src/b.ts";
+import { Y as __pnd_Y } from "./src/y.ts";
+
+const headers = {
+  "bundleSymbolicName": "over",
+  "bundleVersion": "1.0.0"
+};
+const components = [__pnd_A, __pnd_BDefault, __pnd_Y];
+export default { headers, activator: undefined, components };"
+`;
+
+exports[`pandinoBundle plugin > generates module with headers from package.json and discovered components (named and namespace decorators) 1`] = `
+"import { A as __pnd_A } from "./src/a.ts";
+import __pnd_BDefault from "./src/b.ts";
+import Activator from "./src/Activator.ts";
+const headers = {
+  "bundleSymbolicName": "test-bundle",
+  "bundleVersion": "1.2.3"
+};
+const components = [__pnd_A, __pnd_BDefault];
+export default { headers, activator: Activator, components };"
+`;
+
+exports[`pandinoBundle plugin > respects include/exclude globs to skip files 1`] = `
+"import { A as __pnd_A } from "./src/a.ts";
+import __pnd_BDefault from "./src/b.ts";
+import { Y as __pnd_Y } from "./src/y.ts";
+
+const headers = {
+  "bundleSymbolicName": "test-bundle-2",
+  "bundleVersion": "0.0.1"
+};
+const components = [__pnd_A, __pnd_BDefault, __pnd_Y];
+export default { headers, activator: undefined, components };"
+`;
