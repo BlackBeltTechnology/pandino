@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { BundleHeader } from '~/framework/interfaces';
+import type { BundleHeader } from '../../../framework/interfaces';
 import { ConsoleLogService } from '../console-log-service';
 import { LogLevel, type LogListener } from '../interfaces';
 

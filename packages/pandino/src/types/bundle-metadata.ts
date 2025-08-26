@@ -1,4 +1,4 @@
-import type { BundleActivator } from '~/framework/interfaces';
+import type { BundleActivator } from '../framework/interfaces';
 
 export interface BundleMetadata {
   bundleSymbolicName: string;

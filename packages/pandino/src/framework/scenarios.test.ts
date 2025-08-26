@@ -1,14 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiBootstrap } from '~/framework/bootstrap';
-import type { OSGiFramework } from '~/framework/framework';
-import type {
-  BundleActivator,
-  BundleContext,
-  ServiceEvent,
-  ServiceListener,
-  ServiceReference,
-} from '~/framework/interfaces';
-import { BUNDLE_STATES, type BundleState, SERVICE_EVENT_TYPES } from '~/types/constants';
+import { OSGiBootstrap } from './bootstrap';
+import type { OSGiFramework } from './framework';
+import type { BundleActivator, BundleContext, ServiceEvent, ServiceListener, ServiceReference } from './interfaces';
+import { BUNDLE_STATES, type BundleState, SERVICE_EVENT_TYPES } from '../types/constants';
 
 interface DataService {
   getData(): string;

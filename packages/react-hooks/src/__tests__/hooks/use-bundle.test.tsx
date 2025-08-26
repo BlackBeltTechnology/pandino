@@ -1,11 +1,11 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { type ReactNode, useMemo } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { PandinoContext } from '~/context/pandino-context';
-import { useAllBundles, useBundle } from '~/hooks/use-bundle';
-import { findBundleBySymbolicName } from '~/utils/bundle-utils';
+import { PandinoContext } from '../../context/pandino-context';
+import { useAllBundles, useBundle } from '../../hooks/use-bundle';
+import { findBundleBySymbolicName } from '../../utils/bundle-utils';
 
-vi.mock('~/utils/bundle-utils', () => ({
+vi.mock('../../utils/bundle-utils', () => ({
   findBundleBySymbolicName: vi.fn(),
 }));
 

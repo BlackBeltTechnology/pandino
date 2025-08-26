@@ -1,7 +1,6 @@
-// oxlint-disable no-unused-vars
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { ServiceReference } from '@pandino/pandino';
-import { usePandinoContext } from '~/context';
+import { usePandinoContext } from '../context';
 
 export function useService<T>(
   serviceClass: string | Function,
@@ -52,6 +51,7 @@ export function useService<T>(
       if (cleanupRef.current && bundleContext) {
         try {
           bundleContext.ungetService(cleanupRef.current);
+          // oxlint-disable-next-line no-unused-vars
         } catch (_err) {
           // ignore cleanup errors
         } finally {

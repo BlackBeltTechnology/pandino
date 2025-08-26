@@ -1,5 +1,5 @@
 import { type ReactNode, createElement } from 'react';
-import { useService } from '~/hooks';
+import { useService } from '../hooks';
 
 export interface ComponentProxyProps {
   filter: string;

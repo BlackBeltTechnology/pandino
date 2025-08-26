@@ -1,4 +1,4 @@
-import { LogLevel } from '~/services/log-service/interfaces';
+import { LogLevel } from '../services/log-service';
 
 /**
  * Configuration options for the OSGi bootstrap.

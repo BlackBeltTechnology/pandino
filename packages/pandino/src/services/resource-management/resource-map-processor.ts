@@ -1,4 +1,4 @@
-import type { Bundle, FragmentResourceProcessor } from '~/framework/interfaces';
+import type { Bundle, FragmentResourceProcessor } from '../../framework/interfaces';
 
 export class ResourceMapProcessor implements FragmentResourceProcessor {
   getResourceType(): string {

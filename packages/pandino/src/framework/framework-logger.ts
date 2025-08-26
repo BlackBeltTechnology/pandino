@@ -1,4 +1,4 @@
-import { type LogLevel, type LogService, type LogListener, type LogEntry } from '~/services/log-service/interfaces';
+import { type LogLevel, type LogService, type LogListener, type LogEntry } from '../services/log-service';
 
 export class FrameworkLogger {
   private logService: LogService | null = null;

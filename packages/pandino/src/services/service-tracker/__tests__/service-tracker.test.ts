@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { ServiceTrackerCustomizer } from '~/services/service-tracker/interfaces';
-import { SERVICE_EVENT_TYPES } from '~/types/constants';
+import type { ServiceTrackerCustomizer } from '../interfaces';
+import { SERVICE_EVENT_TYPES } from '../../../types/constants';
 import { ServiceTracker } from '../index';
 
 interface MockService {

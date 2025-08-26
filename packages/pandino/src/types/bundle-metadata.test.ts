@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BundleManifest, BundleMetadata } from '~/types/bundle-metadata';
+import type { BundleManifest, BundleMetadata } from './bundle-metadata';
 
 describe('Bundle Metadata Types', () => {
   describe('BundleMetadata', () => {

@@ -1,4 +1,3 @@
-import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
@@ -6,12 +5,13 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 export default defineConfig({
   test: {
-    alias: [
-      { find: '~', replacement: resolve(__dirname, 'src') },
-    ],
     globals: true,
     environment: 'node',
-    include: ['src/**/*.{test,spec}.{ts,mts,tsx}'],
+    include: [
+      'src/**/*.{test,spec}.{ts,mts,tsx}',
+      // Explicitly include tests under __tests__ directories
+      'src/**/__tests__/**/*.{test,spec}.{ts,mts,tsx}'
+    ],
     exclude: ['**/node_modules/**', '**/dist/**'],
     coverage: {
       provider: 'v8',
@@ -22,6 +22,7 @@ export default defineConfig({
         '**/node_modules/**',
         '**/*.d.ts',
         '**/test/**',
+        // keep excluding test sources from coverage, but discovery is allowed above
         '**/__tests__/**',
         'src/test/setup.ts'
       ],

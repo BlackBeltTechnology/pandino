@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { OSGiBootstrap } from '~/framework/bootstrap';
-import type { BundleContext } from '~/framework/interfaces';
+import { OSGiBootstrap } from '../../../framework/bootstrap';
+import type { BundleContext } from '../../../framework/interfaces';
 import { Component, Service, Reference, Activate, Deactivate } from '@pandino/decorators';
 
 interface AuxService {
@@ -34,7 +34,7 @@ describe('Service Component Runtime (Declarative Services)', () => {
     @Component({ name: 'probe.component', immediate: true })
     @Service({ interfaces: ['ProbeService'] })
     class ProbeComponent {
-      @Reference({ interface: 'AuxService', cardinality: '1..1', field: 'aux' })
+      @Reference({ interface: 'AuxService', cardinality: '1..1' })
       private aux!: AuxService;
 
       private activatedWithRef = false;
@@ -50,6 +50,7 @@ describe('Service Component Runtime (Declarative Services)', () => {
       isActivatedWithReference(): boolean {
         return this.activatedWithRef;
       }
+
       hasAux(): boolean {
         return !!this.aux;
       }

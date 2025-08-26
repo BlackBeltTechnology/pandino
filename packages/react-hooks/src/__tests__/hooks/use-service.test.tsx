@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { useService } from '~/hooks/use-service';
+import { useService } from '../../hooks/use-service';
 import { PandinoTestUtils } from '../test-utils/pandino-test-utils';
 import { cleanupPandinoTest, PandinoTestWrapper, setupPandinoTest } from '../test-utils/test-wrapper';
 

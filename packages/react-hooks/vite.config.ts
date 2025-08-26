@@ -8,11 +8,6 @@ export default defineConfig(({ mode }) => {
   const isModeNotDev = mode !== 'development';
   return {
     base: '',
-    resolve: {
-      alias: [
-        { find: '~', replacement: resolve('src') },
-      ],
-    },
     build: {
       lib: {
         entry: resolve('src/index.ts'),

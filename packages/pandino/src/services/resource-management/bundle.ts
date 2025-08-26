@@ -1,5 +1,5 @@
-import type { BundleActivator, BundleContext, ServiceReference } from '~/framework/interfaces';
-import type { OSGiFramework } from '~/framework/framework';
+import type { BundleActivator, BundleContext, ServiceReference } from '../../framework/interfaces';
+import type { OSGiFramework } from '../../framework/framework';
 import { ResourceMapProcessor } from './resource-map-processor';
 
 export class ResourceManagementBundleActivator implements BundleActivator {

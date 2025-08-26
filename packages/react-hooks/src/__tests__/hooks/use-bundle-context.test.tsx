@@ -1,8 +1,8 @@
 import { renderHook } from '@testing-library/react';
 import { type ReactNode, useMemo } from 'react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { PandinoContext } from '~/context/pandino-context';
-import { useBundleContext } from '~/hooks/use-bundle-context';
+import { PandinoContext } from '../../context/pandino-context';
+import { useBundleContext } from '../../hooks/use-bundle-context';
 import { PandinoTestUtils } from '../test-utils/pandino-test-utils';
 import { cleanupPandinoTest, PandinoTestWrapper, setupPandinoTest } from '../test-utils/test-wrapper';
 

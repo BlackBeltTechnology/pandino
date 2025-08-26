@@ -7,11 +7,6 @@ export default defineConfig(({ mode }) => {
   const isModeNotDev = mode !== 'development';
   return {
     base: '',
-    resolve: {
-      alias: [
-        { find: '~', replacement: resolve('src') },
-      ],
-    },
     define: {
       // Inject package version and name as environment variables
       'import.meta.env.VITE_PANDINO_VERSION': JSON.stringify(pkg.version),

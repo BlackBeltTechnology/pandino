@@ -1,4 +1,4 @@
-import type { Bundle, ServiceFactory, ServiceRegistration } from '~/framework/interfaces';
+import type { Bundle, ServiceFactory, ServiceRegistration } from '../../framework/interfaces';
 import { ConsoleLogService } from './console-log-service';
 import type { LogService } from './interfaces';
 

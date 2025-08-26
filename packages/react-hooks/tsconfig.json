@@ -18,10 +18,7 @@
         "strictFunctionTypes": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "jsx": "react-jsx",
-        "paths": {
-            "~/*": ["./src/*"]
-        }
+        "jsx": "react-jsx"
     },
     "include": [
         "src"

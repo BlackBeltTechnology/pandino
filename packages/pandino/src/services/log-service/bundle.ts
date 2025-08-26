@@ -1,6 +1,6 @@
-import type { BundleActivator, BundleContext, ServiceRegistration } from '~/framework/interfaces';
+import type { BundleActivator, BundleContext, ServiceRegistration } from '../../framework/interfaces';
 import { type LogService } from './interfaces';
-import { DefaultLogServiceFactory } from '~/services/log-service/log-service-factory';
+import { DefaultLogServiceFactory } from './log-service-factory';
 
 export class LogServiceBundleActivator implements BundleActivator {
   private serviceRegistration: ServiceRegistration<LogService> | null = null;

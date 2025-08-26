@@ -1,7 +1,7 @@
 import { LogLevel } from '@pandino/pandino';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { PandinoProvider, usePandinoContext } from '~/context';
+import { PandinoProvider, usePandinoContext } from '../../context';
 
 const TestConsumer = () => {
   const { framework, bundleContext, isInitialized, error } = usePandinoContext();

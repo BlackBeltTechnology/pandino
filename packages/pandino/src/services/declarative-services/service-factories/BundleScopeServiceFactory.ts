@@ -1,5 +1,5 @@
-import type { Bundle, ServiceFactory, ServiceRegistration } from '~/framework/interfaces';
-import { ComponentContextImpl, ComponentEntry, ServiceComponentRuntime } from '~/services/declarative-services';
+import type { Bundle, ServiceFactory, ServiceRegistration } from '../../../framework/interfaces';
+import { ComponentContextImpl, ComponentEntry, ServiceComponentRuntime } from '../../../services/declarative-services';
 import type { ComponentDescriptor } from '@pandino/decorators';
 
 export class BundleScopeServiceFactory implements ServiceFactory<any> {

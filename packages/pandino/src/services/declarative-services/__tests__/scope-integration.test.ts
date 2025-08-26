@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '~/framework/framework';
-import type { BundleContext } from '~/framework/interfaces';
+import { OSGiFramework } from '../../../framework/framework';
+import type { BundleContext } from '../../../framework/interfaces';
 import { ServiceComponentRuntime } from '../scr';
 import { Activate, Scope, Service } from '@pandino/decorators';
 import { Component } from '@pandino/decorators';

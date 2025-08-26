@@ -1,6 +1,6 @@
 import { BUNDLE_STATES } from '@pandino/pandino';
 import type { ReactNode } from 'react';
-import { useBundle } from '~/hooks';
+import { useBundle } from '../hooks';
 
 export interface BundleInfoProps {
   bundleIdOrName: number | string;

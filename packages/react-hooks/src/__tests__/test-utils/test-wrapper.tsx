@@ -1,5 +1,5 @@
 import type { ReactNode, FC } from 'react';
-import { PandinoContext } from '~/context/pandino-context';
+import { PandinoContext } from '../../context/pandino-context';
 import { PandinoTestUtils } from './pandino-test-utils';
 
 export const PandinoTestWrapper: FC<{

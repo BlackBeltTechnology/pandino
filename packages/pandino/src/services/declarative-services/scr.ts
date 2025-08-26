@@ -1,12 +1,12 @@
-import type { BundleContext, ServiceReference } from '~/framework/interfaces';
+import type { BundleContext, ServiceReference } from '../../framework/interfaces';
 import { ComponentContextImpl } from './component-context';
 import { getComponentMetadata, getDecoratorInfo } from './reflection';
-import type { ConfigurationAdmin } from '~/services/config-admin';
+import type { ConfigurationAdmin } from '../config-admin';
 import type { ReferenceDescriptor } from '@pandino/decorators';
 import type { ComponentEntry } from './interfaces';
-import { OSGiFramework } from '~/framework/framework';
-import { Event } from '~/services/event-admin/interfaces';
-import type { EventAdmin } from '~/services/event-admin/interfaces';
+import { OSGiFramework } from '../../framework/framework';
+import { Event } from '../event-admin';
+import type { EventAdmin } from '../event-admin';
 import { PrototypeServiceFactory } from './service-factories/PrototypeServiceFactory';
 import { BundleScopeServiceFactory } from './service-factories/BundleScopeServiceFactory';
 
@@ -268,7 +268,7 @@ export class ServiceComponentRuntime {
       entry.context = context;
 
       // Bind/satisfy references before invoking @Activate so injected fields are available during activation.
-      await this.satisfyReferences(bundleId, name, true);
+      this.satisfyReferences(bundleId, name, true);
 
       // Invoke @Activate if present; otherwise, fall back to a conventional 'activate' method if it exists.
       const activateMethodName =
@@ -290,10 +290,7 @@ export class ServiceComponentRuntime {
       const hasDynamicRefs = (metadata.references || []).some((r) => (r.policy || 'static') === 'dynamic');
       if (hasDynamicRefs) {
         // Second pass: bind any references (especially dynamic) now that activation completed
-        await this.satisfyReferences(bundleId, name);
-        // Yield to allow concurrently activating components to register their services, then try once more (tolerant for dynamic)
-        await new Promise((resolve) => setTimeout(resolve, 0));
-        await this.satisfyReferences(bundleId, name, true);
+        this.satisfyReferences(bundleId, name);
       }
     }
 
@@ -374,7 +371,7 @@ export class ServiceComponentRuntime {
     });
   }
 
-  async satisfyReferences(bundleId: number, name: string, initialActivation = false): Promise<void> {
+  satisfyReferences(bundleId: number, name: string, initialActivation = false): void {
     let entry: ComponentEntry | undefined;
 
     const bundleComponents = this.components.get(bundleId);
@@ -389,11 +386,11 @@ export class ServiceComponentRuntime {
 
     const { instance, metadata } = entry;
     for (const ref of metadata.references || []) {
-      await this.satisfyReference(instance, ref, initialActivation);
+      this.satisfyReference(instance, ref, initialActivation);
     }
   }
 
-  private async satisfyReference(instance: any, ref: ReferenceDescriptor, initialActivation = false) {
+  private satisfyReference(instance: any, ref: ReferenceDescriptor, initialActivation = false) {
     const filter = ref.target || null;
 
     let componentName: string | undefined;
@@ -468,10 +465,7 @@ export class ServiceComponentRuntime {
             return;
           }
           if (ref.bind && typeof (instance as any)[ref.bind] === 'function') {
-            const maybePromise = (instance as any)[ref.bind](service);
-            if (maybePromise && typeof (maybePromise as any).then === 'function') {
-              await maybePromise;
-            }
+            (instance as any)[ref.bind](service);
           }
 
           if (ref.field && !isMethodField) {

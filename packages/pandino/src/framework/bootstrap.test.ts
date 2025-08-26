@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { OSGiBootstrap } from '~/framework/bootstrap';
+import { OSGiBootstrap } from './bootstrap';
 
 describe('OSGiBootstrap', () => {
   let bootstrap: OSGiBootstrap;

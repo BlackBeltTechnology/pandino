@@ -1,4 +1,4 @@
-import type { BundleContext, ServiceReference } from '~/framework/interfaces';
+import type { BundleContext, ServiceReference } from '../../framework/interfaces';
 import type { ComponentContext } from './interfaces';
 
 export class ComponentContextImpl implements ComponentContext {

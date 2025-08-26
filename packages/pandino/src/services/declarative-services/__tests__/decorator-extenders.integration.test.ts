@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { OSGiBootstrap } from '~/framework/bootstrap';
-import type { EventAdmin, EventHandler } from '~/services/event-admin/interfaces';
-import { Event } from '~/services/event-admin/interfaces';
+import { OSGiBootstrap } from '../../../framework/bootstrap';
+import type { EventAdmin, EventHandler } from '../../event-admin';
+import { Event } from '../../event-admin';
 import { ServiceComponentRuntime } from '../scr';
 import { Component, Service, Activate, Deactivate, Reference } from '@pandino/decorators';
 import { getDecoratorInfo } from '../reflection';

@@ -1,13 +1,13 @@
-import { LogLevel, type LogService } from '~/services/log-service/interfaces';
-import type { BundleModule } from '~/types/bundle-metadata';
+import { LogLevel, type LogService } from '../services/log-service';
+import type { BundleModule } from '../types/bundle-metadata';
 import { BootstrapConfig, DEFAULT_BOOTSTRAP_CONFIG } from './bootstrap-config';
 import { OSGiFramework } from './framework';
 
-import ConfigAdminBundle from '~/services/config-admin/bundle';
-import EventAdminBundle from '~/services/event-admin/bundle';
-import LogServiceBundle from '~/services/log-service/bundle';
-import ServiceComponentRuntimeBundle from '~/services/declarative-services/bundle';
-import ServiceTrackerBundle from '~/services/service-tracker/bundle';
+import ConfigAdminBundle from '../services/config-admin/bundle';
+import EventAdminBundle from '../services/event-admin/bundle';
+import LogServiceBundle from '../services/log-service/bundle';
+import ServiceComponentRuntimeBundle from '../services/declarative-services/bundle';
+import ServiceTrackerBundle from '../services/service-tracker/bundle';
 
 export class OSGiBootstrap {
   private readonly framework: OSGiFramework;

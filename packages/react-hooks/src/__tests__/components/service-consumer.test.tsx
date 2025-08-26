@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ServiceConsumer } from '~/components/service-consumer';
-import * as useServiceModule from '~/hooks/use-service';
+import { ServiceConsumer } from '../../components/service-consumer';
+import * as useServiceModule from '../../hooks/use-service';
 
 // Mock the useService hook
-vi.mock('~/hooks/use-service', () => ({
+vi.mock('../../hooks/use-service', () => ({
   useService: vi.fn(),
 }));
 

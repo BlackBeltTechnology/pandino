@@ -1,4 +1,9 @@
-import type { BundleConfiguration, BundleContext, ServiceReference, ServiceRegistration } from '~/framework/interfaces';
+import type {
+  BundleConfiguration,
+  BundleContext,
+  ServiceReference,
+  ServiceRegistration,
+} from '../../framework/interfaces';
 import type { ComponentDescriptor, ReferenceDescriptor } from '@pandino/decorators';
 
 export interface SCRBundleConfiguration extends BundleConfiguration {

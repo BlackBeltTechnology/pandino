@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '~/framework/framework';
-import { ConfigurationAdminImpl } from '~/services/config-admin/configuration-admin';
-import type { Configuration, ManagedService } from '~/services/config-admin/interfaces';
+import { OSGiFramework } from '../../framework/framework';
+import { ConfigurationAdminImpl } from './configuration-admin';
+import type { Configuration, ManagedService } from './interfaces';
 
 describe('ConfigurationAdmin', () => {
   let framework: OSGiFramework;

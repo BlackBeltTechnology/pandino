@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { PandinoContext } from '~/context/pandino-context';
-import { useServiceTracker } from '~/hooks/use-service-tracker';
+import { PandinoContext } from '../../context/pandino-context';
+import { useServiceTracker } from '../../hooks/use-service-tracker';
 import { ServiceRegistration } from '@pandino/pandino';
 import { PandinoTestUtils } from '../test-utils/pandino-test-utils';
 import { cleanupPandinoTest, PandinoTestWrapper, setupPandinoTest } from '../test-utils/test-wrapper';

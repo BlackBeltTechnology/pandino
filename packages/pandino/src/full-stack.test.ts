@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiBootstrap } from '~/framework/bootstrap';
-import type { ConfigurationAdmin, ManagedService } from '~/services/config-admin/interfaces';
-import type { EventAdmin, EventHandler } from '~/services/event-admin/interfaces';
-import { Event } from '~/services/event-admin/interfaces';
-import { BUNDLE_STATES } from '~/types/constants';
+import { OSGiBootstrap } from './framework/bootstrap';
+import type { ConfigurationAdmin, ManagedService } from './services/config-admin';
+import type { EventAdmin, EventHandler } from './services/event-admin';
+import { Event } from './services/event-admin';
+import { BUNDLE_STATES } from './types/constants';
 
 describe('Full Stack Integration', () => {
   let bootstrap: OSGiBootstrap;

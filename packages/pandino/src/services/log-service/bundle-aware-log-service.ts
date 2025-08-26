@@ -1,4 +1,4 @@
-import type { Bundle } from '~/framework/interfaces';
+import type { Bundle } from '../../framework/interfaces';
 import { LogLevel, type LogListener, type LogService } from './interfaces';
 
 export class BundleAwareLogService implements LogService {

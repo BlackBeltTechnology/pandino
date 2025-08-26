@@ -1,6 +1,6 @@
-import type { LogService } from '~/services/log-service';
-import type { BundleModule } from '~/types/bundle-metadata';
-import type { BundleState, ServiceEventType } from '~/types/constants';
+import type { LogService } from '../services/log-service';
+import type { BundleModule } from '../types/bundle-metadata';
+import type { BundleState, ServiceEventType } from '../types/constants';
 
 export interface BundleActivator {
   start(context: BundleContext): void | Promise<void>;

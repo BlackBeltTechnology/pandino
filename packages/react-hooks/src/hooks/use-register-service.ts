@@ -1,6 +1,6 @@
 import type { ServiceRegistration } from '@pandino/pandino';
 import { useEffect, useState } from 'react';
-import { usePandinoContext } from '~/context';
+import { usePandinoContext } from '../context';
 
 export function useRegisterService<T>(
   serviceClass: string | string[] | Function,

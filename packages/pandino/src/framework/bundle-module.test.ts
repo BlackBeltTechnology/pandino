@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '~/framework/framework';
-import type { BundleActivator } from '~/framework/interfaces';
-import type { BundleModule } from '~/types/bundle-metadata';
-import { BUNDLE_STATES } from '~/types/constants';
+import { OSGiFramework } from './framework';
+import type { BundleActivator } from './interfaces';
+import type { BundleModule } from '../types/bundle-metadata';
+import { BUNDLE_STATES } from '../types/constants';
 
 function createBundleModule(
   symbolicName: string,

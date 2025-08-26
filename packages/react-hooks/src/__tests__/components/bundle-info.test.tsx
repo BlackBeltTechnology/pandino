@@ -1,10 +1,10 @@
 import { BUNDLE_STATES } from '@pandino/pandino';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { BundleInfo, bundleStateToString } from '~/components/bundle-info';
-import * as useBundleModule from '~/hooks/use-bundle';
+import { BundleInfo, bundleStateToString } from '../../components/bundle-info';
+import * as useBundleModule from '../../hooks/use-bundle';
 
-vi.mock('~/hooks/use-bundle', () => ({
+vi.mock('../../hooks/use-bundle', () => ({
   useBundle: vi.fn(),
 }));
 

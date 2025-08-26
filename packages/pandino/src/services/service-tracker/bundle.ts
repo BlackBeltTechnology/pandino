@@ -1,4 +1,4 @@
-import type { BundleActivator, BundleContext, ServiceRegistration } from '~/framework/interfaces';
+import type { BundleActivator, BundleContext, ServiceRegistration } from '../../framework/interfaces';
 import { ServiceTracker } from './index';
 
 export class ServiceTrackerBundleActivator implements BundleActivator {

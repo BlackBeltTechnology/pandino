@@ -1,7 +1,7 @@
 import type { ServiceReference, ServiceTrackerCustomizer } from '@pandino/pandino';
 import { ServiceTracker } from '@pandino/pandino';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { usePandinoContext } from '~/context';
+import { usePandinoContext } from '../context';
 
 export interface UseServiceTrackerResult<T = any> {
   services: T[];

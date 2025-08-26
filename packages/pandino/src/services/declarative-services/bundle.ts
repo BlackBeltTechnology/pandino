@@ -4,10 +4,10 @@ import type {
   BundleListener,
   ServiceReference,
   ServiceRegistration,
-} from '~/framework/interfaces';
-import { BundleEvent } from '~/framework/interfaces';
-import { BUNDLE_STATES } from '~/types/constants';
-import type { OSGiFramework } from '~/framework/framework';
+} from '../../framework/interfaces';
+import { BundleEvent } from '../../framework/interfaces';
+import { BUNDLE_STATES } from '../../types/constants';
+import type { OSGiFramework } from '../../framework/framework';
 import { ServiceComponentRuntime } from './scr';
 import { SCRBundleConfiguration } from './interfaces';
 import { ComponentResourceProcessor } from './component-resource-processor';

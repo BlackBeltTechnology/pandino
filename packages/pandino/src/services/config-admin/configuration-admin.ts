@@ -1,5 +1,5 @@
-import type { OSGiFramework } from '~/framework/framework';
-import { LdapFilterService } from '~/framework/interfaces';
+import type { OSGiFramework } from '../../framework/framework';
+import { LdapFilterService } from '../../framework/interfaces';
 import {
   Configuration,
   ConfigurationAdmin,

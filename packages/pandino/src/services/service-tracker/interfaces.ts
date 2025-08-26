@@ -1,4 +1,4 @@
-import type { ServiceReference } from '~/framework/interfaces';
+import type { ServiceReference } from '../../framework/interfaces';
 
 /**
  * The ServiceTrackerCustomizer interface allows a ServiceTracker to customize

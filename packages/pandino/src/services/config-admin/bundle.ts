@@ -1,5 +1,5 @@
-import type { BundleActivator, BundleContext, ServiceReference, ServiceRegistration } from '~/framework/interfaces';
-import type { OSGiFramework } from '~/framework/framework';
+import type { BundleActivator, BundleContext, ServiceReference, ServiceRegistration } from '../../framework/interfaces';
+import type { OSGiFramework } from '../../framework/framework';
 import type { ConfigurationAdmin } from './interfaces';
 import { ConfigurationAdminImpl } from './configuration-admin';
 

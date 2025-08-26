@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '~/framework/framework';
-import type { BundleContext, ServiceReference } from '~/framework/interfaces';
+import { OSGiFramework } from '../../../framework/framework';
+import type { BundleContext, ServiceReference } from '../../../framework/interfaces';
 import { getComponentMetadata } from '../reflection';
 import { ServiceComponentRuntime } from '../scr';
 import { Activate, Component, Reference } from '@pandino/decorators';
@@ -105,7 +105,7 @@ describe('Service References', () => {
       const getServiceReferencesSpy = vi.spyOn(bundleContext, 'getServiceReferences');
       getServiceReferencesSpy.mockClear();
 
-      await scr.satisfyReferences(bundleId, 'no.references.component');
+      scr.satisfyReferences(bundleId, 'no.references.component');
 
       expect(getServiceReferencesSpy).not.toHaveBeenCalled();
     });
@@ -132,7 +132,7 @@ describe('Service References', () => {
       const bundleId = 0;
       scr.registerComponent(NullServiceComponent, bundleId);
       await scr.activateComponent(bundleId, 'null.service.component');
-      await scr.satisfyReferences(bundleId, 'null.service.component');
+      scr.satisfyReferences(bundleId, 'null.service.component');
 
       expect(bindTracker).toEqual([]);
     });

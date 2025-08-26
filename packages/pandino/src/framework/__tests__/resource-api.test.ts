@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { OSGiFramework } from '../framework';
-import { LogLevel } from '~/services/log-service/interfaces';
+import { LogLevel } from '../../services/log-service';
 import type { Bundle, BundleContext } from '../interfaces';
-import { ResourceMapProcessor } from '~/services/resource-management/resource-map-processor';
+import { ResourceMapProcessor } from '../../services/resource-management/resource-map-processor';
 
 describe('Resource API', () => {
   let framework: OSGiFramework;

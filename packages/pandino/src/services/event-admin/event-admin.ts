@@ -1,5 +1,5 @@
-import type { OSGiFramework } from '~/framework/framework';
-import type { BundleEvent, LdapFilterService, ServiceEvent, ServiceReference } from '~/framework/interfaces';
+import type { OSGiFramework } from '../../framework/framework';
+import type { BundleEvent, LdapFilterService, ServiceEvent, ServiceReference } from '../../framework/interfaces';
 import { Event, type EventAdmin, type EventHandler } from './interfaces';
 
 export class EventAdminImpl implements EventAdmin {

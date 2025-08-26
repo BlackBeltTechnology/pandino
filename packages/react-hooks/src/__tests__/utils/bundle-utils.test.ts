@@ -1,6 +1,6 @@
 import type { Bundle, OSGiFramework } from '@pandino/pandino';
 import { describe, expect, it, vi } from 'vitest';
-import { findBundleBySymbolicName } from '~/utils/bundle-utils';
+import { findBundleBySymbolicName } from '../../utils/bundle-utils';
 
 describe('bundle-utils', () => {
   describe('findBundleBySymbolicName', () => {

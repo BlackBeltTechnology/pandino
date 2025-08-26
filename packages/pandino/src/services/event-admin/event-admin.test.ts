@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '~/framework/framework';
-import type { BundleActivator } from '~/framework/interfaces';
-import { EventAdminImpl } from '~/services/event-admin/event-admin';
-import { Event, type EventHandler } from '~/services/event-admin/interfaces';
-import type { BundleModule } from '~/types/bundle-metadata';
+import { OSGiFramework } from '../../framework/framework';
+import type { BundleActivator } from '../../framework/interfaces';
+import { EventAdminImpl } from './event-admin';
+import { Event, type EventHandler } from './interfaces';
+import type { BundleModule } from '../../types/bundle-metadata';
 
 function createBundleModule(
   symbolicName: string = 'test.bundle',

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ResourceMapProcessor } from '../resource-map-processor';
-import type { Bundle } from '~/framework/interfaces';
+import type { Bundle } from '../../../framework/interfaces';
 
 describe('ResourceMapProcessor', () => {
   let processor: ResourceMapProcessor;

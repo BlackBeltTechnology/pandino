@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { BundleActivator, BundleListener, ServiceListener } from '~/framework/interfaces';
-import { ConsoleLogService, type LogService } from '~/services/log-service';
-import { LogLevel } from '~/services/log-service/interfaces';
-import type { BundleModule } from '~/types/bundle-metadata';
-import { BUNDLE_STATES, SERVICE_EVENT_TYPES } from '~/types/constants';
+import type { BundleActivator, BundleListener, ServiceListener } from './interfaces';
+import { ConsoleLogService, type LogService } from '../services/log-service';
+import { LogLevel } from '../services/log-service';
+import type { BundleModule } from '../types/bundle-metadata';
+import { BUNDLE_STATES, SERVICE_EVENT_TYPES } from '../types/constants';
 import { OSGiFramework } from './framework';
 
 function createBundleModule(

@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '~/framework/framework';
-import type { BundleActivator, BundleConfiguration, ServiceRegistration } from '~/framework/interfaces';
-import type { BundleModule } from '~/types/bundle-metadata';
-import { BUNDLE_STATES } from '~/types/constants';
+import { OSGiFramework } from './framework';
+import type { BundleActivator, BundleConfiguration, ServiceRegistration } from './interfaces';
+import type { BundleModule } from '../types/bundle-metadata';
+import { BUNDLE_STATES } from '../types/constants';
 
 interface TestService {
   getData: () => string;

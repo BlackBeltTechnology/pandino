@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { ComponentProxy } from '~/components/component-proxy';
+import { ComponentProxy } from '../../components/component-proxy';
 import { PandinoTestUtils } from '../test-utils/pandino-test-utils';
 import { cleanupPandinoTest, PandinoTestWrapper, setupPandinoTest } from '../test-utils/test-wrapper';
 

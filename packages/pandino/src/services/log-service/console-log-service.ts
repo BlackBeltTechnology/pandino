@@ -1,5 +1,5 @@
 import { type LogEntry, LogLevel, type LogListener, type LogService } from './interfaces';
-import type { BundleHeader } from '~/framework/interfaces';
+import type { BundleHeader } from '../../framework/interfaces';
 
 export class ConsoleLogService implements LogService {
   private currentLevel: LogLevel = LogLevel.INFO;

@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { OSGiFramework } from '../framework';
-import { LogLevel } from '~/services/log-service/interfaces';
-import type { BundleModule } from '~/types/bundle-metadata';
+import { LogLevel } from '../../services/log-service';
+import type { BundleModule } from '../../types/bundle-metadata';
 import type { BundleContext } from '../interfaces';
-import { ComponentResourceProcessor } from '~/services/declarative-services/component-resource-processor';
+import { ComponentResourceProcessor } from '../../services/declarative-services/component-resource-processor';
 
 describe('Fragment Feature', () => {
   let framework: OSGiFramework;

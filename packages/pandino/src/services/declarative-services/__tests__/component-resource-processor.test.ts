@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentResourceProcessor } from '../component-resource-processor';
-import type { Bundle } from '~/framework/interfaces';
-import { BundleModule } from '~/types/bundle-metadata';
+import type { Bundle } from '../../../framework/interfaces';
+import { BundleModule } from '../../../types/bundle-metadata';
 
 describe('ComponentResourceProcessor', () => {
   let processor: ComponentResourceProcessor;

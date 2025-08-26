@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useService } from '~/hooks';
+import { useService } from '../hooks';
 
 export interface ServiceConsumerProps<T> {
   serviceClass: string | Function;

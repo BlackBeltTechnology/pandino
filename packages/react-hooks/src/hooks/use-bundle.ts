@@ -1,7 +1,7 @@
 import type { Bundle } from '@pandino/pandino';
 import { useEffect, useMemo, useState } from 'react';
-import { usePandinoContext } from '~/context';
-import { findBundleBySymbolicName } from '~/utils/bundle-utils';
+import { usePandinoContext } from '../context';
+import { findBundleBySymbolicName } from '../utils/bundle-utils';
 
 export function useBundle(bundleIdOrName: number | string): {
   bundle: Bundle | null;

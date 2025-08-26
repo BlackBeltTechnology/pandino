@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '~/framework/framework';
-import type { Bundle, BundleContext } from '~/framework/interfaces';
+import { OSGiFramework } from './framework';
+import type { Bundle, BundleContext } from './interfaces';
 
 describe('BundleContext', () => {
   let framework: OSGiFramework;

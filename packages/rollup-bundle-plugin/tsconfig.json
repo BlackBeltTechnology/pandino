@@ -17,10 +17,7 @@
         "noEmit": true,
         "strictFunctionTypes": true,
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "paths": {
-            "~/*": ["./src/*"],
-        }
+        "emitDecoratorMetadata": true
     },
     "include": [
         "src"

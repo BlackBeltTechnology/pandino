@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '~/framework/framework';
-import type { Bundle, BundleContext, BundleEvent } from '~/framework/interfaces';
-import { BUNDLE_STATES } from '~/types/constants';
+import { OSGiFramework } from '../../../framework/framework';
+import type { Bundle, BundleContext, BundleEvent } from '../../../framework/interfaces';
+import { BUNDLE_STATES } from '../../../types/constants';
 import { Component, Service, Activate } from '@pandino/decorators';
 import { ServiceComponentRuntimeBundleActivator } from '../bundle';
 import type { ServiceComponentRuntime } from '../scr';

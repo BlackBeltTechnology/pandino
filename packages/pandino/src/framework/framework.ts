@@ -1,8 +1,8 @@
-import { EventEmitter } from '~/framework/event-emitter';
-import { FrameworkLogger } from '~/framework/framework-logger';
-import { LogLevel, type LogService } from '~/services/log-service/interfaces';
-import type { BundleMetadata, BundleModule } from '~/types/bundle-metadata';
-import { BUNDLE_STATES, type BundleState, SERVICE_EVENT_TYPES } from '~/types/constants';
+import { EventEmitter } from './event-emitter';
+import { FrameworkLogger } from './framework-logger';
+import { LogLevel, type LogService } from '../services/log-service';
+import type { BundleMetadata, BundleModule } from '../types/bundle-metadata';
+import { BUNDLE_STATES, type BundleState, SERVICE_EVENT_TYPES } from '../types/constants';
 import {
   type Bundle,
   type BundleActivator,
