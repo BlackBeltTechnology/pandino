@@ -1,4 +1,4 @@
-# @pandino/rollup-plugin-bundle
+# @pandino/rollup-bundle-plugin
 
 Rollup/Vite plugin for Pandino that discovers decorators (e.g. `@Component`) across your source files and generates a BundleModule the Pandino runtime can consume.
 
@@ -7,7 +7,7 @@ The generated module can be imported via a virtual id (`pandino:bundle`) and is 
 ## Install
 
 ```bash
-pnpm add -D @pandino/rollup-plugin-bundle
+pnpm add -D @pandino/rollup-bundle-plugin
 ```
 
 Peer dependencies: rollup (>=3) and/or vite (>=4).
@@ -35,7 +35,7 @@ export default {
 
 ```javascript
 // rollup.config.mjs
-import pandinoBundle from '@pandino/rollup-plugin-bundle';
+import pandinoBundle from '@pandino/rollup-bundle-plugin';
 
 export default {
   input: 'pandino:bundle', // or import 'pandino:bundle' in your code
@@ -106,7 +106,6 @@ import bundle from 'pandino:bundle';
 
 - Detection uses AST parsing via the TypeScript compiler API to find exported classes annotated with your configured decorator name (default: `Component`). Only real decorators are supported; commented markers are not recognized. It supports both `export class Foo` and `export default class Foo`.
 - The plugin scans the filesystem at build start using the include/exclude globs and also observes files passing through Rollup's transform hook.
-- Only Rollup public plugin APIs are used.
 
 ## Testing
 
