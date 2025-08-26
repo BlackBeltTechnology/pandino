@@ -1,7 +1,7 @@
-import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 import pandinoBundle from '@pandino/rollup-bundle-plugin';
 
 // Read package.json to extract name and version

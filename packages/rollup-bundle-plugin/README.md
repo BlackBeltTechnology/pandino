@@ -31,33 +31,6 @@ export default {
 - `components` are classes found in files that contain the configured decorator (default: `@Component`).
 - `activator` is set to the default export of the configured activator module, if provided.
 
-## Usage with Rollup
-
-```javascript
-// rollup.config.mjs
-import pandinoBundle from '@pandino/rollup-bundle-plugin';
-
-export default {
-  input: 'pandino:bundle', // or import 'pandino:bundle' in your code
-  plugins: [
-    pandinoBundle({
-      // rootDir: process.cwd(),
-      // include: ['**/*.{ts,tsx,js,jsx}'],
-      // exclude: ['**/node_modules/**', '**/dist/**', '**/build/**'],
-      // componentsDecorator: 'Component',
-      // activator: 'src/Activator.ts',
-      // outputFile: 'pandino/bundle.js',
-    }),
-  ],
-  output: {
-    dir: 'dist',
-    format: 'es',
-  },
-};
-```
-
-You can also omit `input: 'pandino:bundle'` and rely on the plugin to emit the chunk named by `outputFile`.
-
 ## Usage with Vite
 
 ```typescript
@@ -66,24 +39,49 @@ import { defineConfig } from 'vite';
 import pandinoBundle from '@pandino/rollup-plugin-bundle';
 
 export default defineConfig({
+  // ...
   plugins: [
-    pandinoBundle({ activator: 'src/Activator.ts' }),
+      pandinoBundle({
+          virtualId: 'pandino:bundle:alpha',
+          include: ['src/bundles/alpha/**/*.{ts,tsx}'],
+          activator: 'src/bundles/alpha/activator.ts',
+          headers: {
+              bundleSymbolicName: `${packageJson.name}.alpha`,
+              bundleVersion: packageJson.version,
+              bundleDescription: 'Alpha example bundle',
+          },
+      }),
   ],
-  build: {
-    rollupOptions: {
-      // optionally add as an entry
-      input: 'pandino:bundle',
-    },
-  },
 });
 ```
 
+> Every `pandinoBundle()` call creates a separate bundle. You can call it multiple times with different options if needed.
+
 Then in your app you can import:
 
-```typescript
-import bundle from 'pandino:bundle';
-// bundle.headers, bundle.activator, bundle.components
+```typescript jsx
+import { type FC, StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { PandinoProvider } from '@pandino/react-hooks';
+
+const Root: FC = () => {
+    return (
+        <PandinoProvider bundles={[import('pandino:bundle:alpha'), /* ... */]}>
+            {/* ... */}
+        </PandinoProvider>
+    );
+};
+
+const rootElement = document.getElementById('root')!;
+
+createRoot(rootElement).render(
+  <StrictMode>
+    <Root />
+  </StrictMode>,
+);
 ```
+
+The `virtualId` option is only necessary if you want to import the bundle module directly. If you only want the emitted chunk, you can omit it.
 
 ## Options
 

@@ -29,6 +29,7 @@
 | ⚙️ **Configuration Management** | Static application configuration | Runtime configuration updates without restarts |
 | 🏗️ **Declarative Services** | Complex service wiring boilerplate | Decorator-based dependency injection |
 | ⚛️ **React Integration** | Framework complexity in React apps | Hook-based service discovery in components |
+| 📦 **Rollup Bundle Plugin** | Automated bundling of modules | Simplifies and automates the bundling process |
 
 ## 🚀 Quick Concept Demo
 
@@ -201,6 +202,12 @@ npm install @pandino/pandino
 npm install @pandino/pandino @pandino/react-hooks
 ```
 [→ React Integration Guide](./packages/react-hooks/README.md)
+
+### Rollup Bundle Plugin
+```bash
+npm install -D @pandino/rollup-bundle-plugin
+```
+[→ Rollup Bundle Plugin Guide](./packages/rollup-bundle-plugin/README.md)
 
 ## Contributing
 
