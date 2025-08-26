@@ -32,16 +32,6 @@ export default defineConfig({
         bundleDescription: 'Beta example bundle',
       },
     }),
-    // Gamma bundle
-    pandinoBundle({
-      virtualId: 'pandino:bundle:gamma',
-      include: ['src/bundles/gamma/**/*.{ts,tsx}'],
-      headers: {
-        bundleSymbolicName: `${packageJson.name}.gamma`,
-        bundleVersion: packageJson.version,
-        bundleDescription: 'Gamma example bundle',
-      },
-    }),
   ],
   define: {
     'import.meta.env.VITE_BUNDLE_SYMBOLIC_NAME': JSON.stringify(packageJson.name),
