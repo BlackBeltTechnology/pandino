@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '../../../framework/framework';
-import type { BundleContext, ServiceReference } from '../../../framework/interfaces';
-import { ServiceComponentRuntime } from '../scr';
+import { OSGiFramework } from '../../../../framework/framework';
+import type { BundleContext, ServiceReference } from '../../../../framework/interfaces';
+import { ServiceComponentRuntime } from '../../scr';
 import { Activate, Reference, Component, Service } from '@pandino/decorators';
 
 describe('Recursive Reference Dependencies', () => {

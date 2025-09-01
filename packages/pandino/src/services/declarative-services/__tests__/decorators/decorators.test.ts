@@ -12,7 +12,7 @@ import {
   Scope,
   Service,
 } from '@pandino/decorators';
-import { getComponentMetadata } from '../reflection';
+import { getComponentMetadata } from '../../reflection';
 
 describe('Declarative Services Decorators', () => {
   describe('Basic Component Decorators', () => {

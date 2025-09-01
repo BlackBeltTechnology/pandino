@@ -1,0 +1,125 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Reflection Helpers > getDecoratorInfo > should retrieve all decorator information in a single call 1`] = `
+{
+  "component": {
+    "enabled": true,
+    "factory": {
+      "id": null,
+      "isFactory": false,
+    },
+    "immediate": true,
+    "isComponent": true,
+    "name": "complete.component",
+  },
+  "configuration": {
+    "pid": "complete.config",
+    "policy": "require",
+    "properties": {
+      "service.ranking": 100,
+    },
+  },
+  "customDecorators": {},
+  "customFieldDecorators": {},
+  "customMethodDecorators": {},
+  "lifecycle": {
+    "activate": "activate",
+    "deactivate": "deactivate",
+    "modified": null,
+  },
+  "rawMetadata": {
+    "activate": "activate",
+    "configurationPid": "complete.config",
+    "configurationPolicy": "require",
+    "deactivate": "deactivate",
+    "enabled": true,
+    "factory": undefined,
+    "immediate": true,
+    "implementation": [Function],
+    "modified": undefined,
+    "name": "complete.component",
+    "properties": {
+      "service.ranking": 100,
+    },
+    "references": [
+      {
+        "bind": undefined,
+        "cardinality": "1..1",
+        "field": "logger",
+        "fieldOption": "replace",
+        "interface": "LogService",
+        "name": "logger",
+        "policy": "static",
+        "policyOption": "reluctant",
+        "scope": "bundle",
+        "target": undefined,
+        "unbind": undefined,
+        "updated": undefined,
+      },
+    ],
+    "scope": "singleton",
+    "service": {
+      "interfaces": [
+        "CompleteService",
+      ],
+      "scope": "prototype",
+    },
+  },
+  "references": [
+    {
+      "bind": undefined,
+      "cardinality": "1..1",
+      "field": "logger",
+      "fieldOption": "replace",
+      "interface": "LogService",
+      "name": "logger",
+      "policy": "static",
+      "policyOption": "reluctant",
+      "scope": "bundle",
+      "target": undefined,
+      "unbind": undefined,
+      "updated": undefined,
+    },
+  ],
+  "service": {
+    "interfaces": [
+      "CompleteService",
+    ],
+    "scope": "prototype",
+  },
+}
+`;
+
+exports[`Reflection Helpers > getDecoratorInfo > should work with non-component classes 1`] = `
+{
+  "component": {
+    "enabled": false,
+    "factory": {
+      "id": null,
+      "isFactory": false,
+    },
+    "immediate": false,
+    "isComponent": false,
+    "name": null,
+  },
+  "configuration": {
+    "pid": null,
+    "policy": "optional",
+    "properties": {},
+  },
+  "customDecorators": {},
+  "customFieldDecorators": {},
+  "customMethodDecorators": {},
+  "lifecycle": {
+    "activate": null,
+    "deactivate": null,
+    "modified": null,
+  },
+  "rawMetadata": null,
+  "references": [],
+  "service": {
+    "interfaces": [],
+    "scope": null,
+  },
+}
+`;

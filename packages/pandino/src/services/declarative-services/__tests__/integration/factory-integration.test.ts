@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '../../../framework/framework';
-import type { BundleContext } from '../../../framework/interfaces';
-import { getComponentMetadata } from '../reflection';
-import { ServiceComponentRuntime } from '../scr';
+import { OSGiFramework } from '../../../../framework/framework';
+import type { BundleContext } from '../../../../framework/interfaces';
+import { getComponentMetadata } from '../../reflection';
+import { ServiceComponentRuntime } from '../../scr';
 import { Component, Factory } from '@pandino/decorators';
 import { Activate } from '@pandino/decorators';
 

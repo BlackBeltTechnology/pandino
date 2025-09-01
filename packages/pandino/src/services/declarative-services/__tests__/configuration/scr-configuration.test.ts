@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '../../../framework/framework';
-import type { BundleContext } from '../../../framework/interfaces';
-import { ServiceComponentRuntime } from '../scr';
-import type { ConfigurationAdmin } from '../../config-admin';
+import { OSGiFramework } from '../../../../framework/framework';
+import type { BundleContext } from '../../../../framework/interfaces';
+import { ServiceComponentRuntime } from '../../scr';
+import type { ConfigurationAdmin } from '../../../config-admin';
 import { Activate, Component } from '@pandino/decorators';
 
 describe('SCR Configuration Integration', () => {

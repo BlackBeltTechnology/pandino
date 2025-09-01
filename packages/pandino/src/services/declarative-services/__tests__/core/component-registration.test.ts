@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { OSGiFramework } from '../../../framework/framework';
-import type { BundleContext } from '../../../framework/interfaces';
+import { OSGiFramework } from '../../../../framework/framework';
+import type { BundleContext } from '../../../../framework/interfaces';
 import { Activate, Component, Deactivate, Modified, Reference } from '@pandino/decorators';
-import { getComponentMetadata } from '../reflection';
-import { ServiceComponentRuntime } from '../scr';
+import { getComponentMetadata } from '../../reflection';
+import { ServiceComponentRuntime } from '../../scr';
 
 describe('Component Lifecycle', () => {
   let framework: OSGiFramework;

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { OSGiBootstrap } from '../../../framework/bootstrap';
-import type { BundleContext } from '../../../framework/interfaces';
+import { OSGiBootstrap } from '../../../../framework/bootstrap';
+import type { BundleContext } from '../../../../framework/interfaces';
 import { Component, Service, Reference, Activate, Deactivate } from '@pandino/decorators';
 
 interface AuxService {

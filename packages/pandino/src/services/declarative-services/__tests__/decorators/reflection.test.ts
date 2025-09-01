@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getDecoratorInfo } from '../reflection';
+import { getDecoratorInfo } from '../../reflection';
 import {
   Activate,
   Component,
