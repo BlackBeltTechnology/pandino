@@ -13,6 +13,7 @@ import {
   BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import dagre from 'dagre';
 import type { OSGiFramework, BundleEvent, ServiceEvent } from '@pandino/pandino';
 import { BUNDLE_STATES } from '@pandino/pandino';
 import { BundleNode } from './nodes/BundleNode';
@@ -20,6 +21,43 @@ import { ServiceNode } from './nodes/ServiceNode';
 import { StatisticsPanel } from './StatisticsPanel';
 import { EventLog } from './EventLog';
 import './PandinoVisualizer.css';
+
+// Layout configuration
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+const nodeWidth = 220;
+const nodeHeight = 150;
+
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
+  const isHorizontal = direction === 'LR';
+  dagreGraph.setGraph({ rankdir: direction, ranksep: 100, nodesep: 80 });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const layoutedNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    return {
+      ...node,
+      targetPosition: isHorizontal ? 'left' : 'top',
+      sourcePosition: isHorizontal ? 'right' : 'bottom',
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
+  });
+
+  return { nodes: layoutedNodes, edges };
+};
 
 export interface PandinoVisualizerProps {
   framework: OSGiFramework;
@@ -71,7 +109,7 @@ export function PandinoVisualizer({
       newNodes.push({
         id: `bundle-${bundleId}`,
         type: 'bundle',
-        position: { x: 100 + (index % 3) * 300, y: 100 + Math.floor(index / 3) * 250 },
+        position: { x: 0, y: 0 }, // Will be set by layout algorithm
         data: {
           bundle,
           label: bundle.getSymbolicName(),
@@ -92,10 +130,7 @@ export function PandinoVisualizer({
         const serviceNode: Node = {
           id: `service-${serviceId}`,
           type: 'service',
-          position: {
-            x: 150 + (index % 3) * 300,
-            y: 180 + Math.floor(index / 3) * 250 + serviceIndex * 60
-          },
+          position: { x: 0, y: 0 }, // Will be set by layout algorithm
           data: {
             serviceRef,
             label: serviceName,
@@ -125,8 +160,11 @@ export function PandinoVisualizer({
       });
     });
 
-    setNodes(newNodes);
-    setEdges(newEdges);
+    // Apply automatic layout
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(newNodes, newEdges, 'TB');
+
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
   }, [framework, setNodes, setEdges]);
 
   // Listen to framework events

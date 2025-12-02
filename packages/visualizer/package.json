@@ -30,11 +30,13 @@
     "start": "vite demo"
   },
   "dependencies": {
-    "@xyflow/react": "^12.3.2"
+    "@xyflow/react": "^12.3.2",
+    "dagre": "^0.8.5"
   },
   "devDependencies": {
     "@pandino/pandino": "workspace:*",
     "@pandino/react-hooks": "workspace:*",
+    "@types/dagre": "^0.7.52",
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",
     "@vitejs/plugin-react": "^4.3.4",
