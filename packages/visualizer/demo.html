@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pandino Visualizer Demo</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.2em;
+      opacity: 0.9;
+      margin-bottom: 30px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: white;
+      color: #667eea;
+      font-weight: 600;
+      transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .info {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .info h3 {
+      margin-top: 0;
+      font-size: 1.3em;
+    }
+
+    .info p {
+      margin: 10px 0;
+      line-height: 1.6;
+    }
+
+    code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .log {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+
+    .log-entry {
+      margin: 5px 0;
+      padding: 5px;
+      border-left: 3px solid #4caf50;
+      padding-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Pandino Visualizer Demo</h1>
+    <p class="subtitle">Interactive demonstration of the Pandino Framework Visualizer</p>
+
+    <div class="info">
+      <h3>Quick Start</h3>
+      <p>The visualizer is now active! Try these actions:</p>
+      <ul>
+        <li>Press <code>Ctrl+Shift+V</code> to toggle the visualizer</li>
+        <li>Click buttons below to interact with the framework</li>
+        <li>Watch the visualizer update in real-time</li>
+      </ul>
+    </div>
+
+    <div class="actions">
+      <button onclick="showVisualizer()">Show Visualizer</button>
+      <button onclick="hideVisualizer()">Hide Visualizer</button>
+      <button onclick="addTestBundle()">Install Test Bundle</button>
+      <button onclick="registerTestService()">Register Service</button>
+      <button onclick="unregisterTestService()">Unregister Service</button>
+      <button onclick="startTestBundle()">Start Bundle</button>
+      <button onclick="stopTestBundle()">Stop Bundle</button>
+    </div>
+
+    <div class="info">
+      <h3>Framework Status</h3>
+      <div id="status">Initializing framework...</div>
+    </div>
+
+    <div class="log" id="log">
+      <div class="log-entry">Initializing Pandino framework...</div>
+    </div>
+  </div>
+
+  <!-- Load Pandino framework from CDN -->
+  <script type="importmap">
+    {
+      "imports": {
+        "@pandino/pandino": "https://esm.sh/@pandino/pandino@latest"
+      }
+    }
+  </script>
+
+  <script type="module">
+    // Use real Pandino framework
+    import { OSGiBootstrap, LogLevel } from '@pandino/pandino';
+
+    let framework = null;
+    let context = null;
+    let testBundle = null;
+    let testServiceReg = null;
+
+    function log(message) {
+      const logDiv = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.insertBefore(entry, logDiv.firstChild);
+    }
+
+    // Initialize real Pandino framework
+    async function initFramework() {
+      try {
+        log('Starting Pandino framework...');
+        const bootstrap = new OSGiBootstrap({
+          frameworkLogLevel: LogLevel.INFO
+        });
+
+        framework = await bootstrap.start();
+        context = framework.getBundleContext();
+
+        // Expose for visualizer
+        window.pandinoFramework = framework;
+
+        log('Framework started successfully');
+        log(`System bundle: ${context.getBundle().getSymbolicName()}`);
+
+        // Register some initial services
+        context.registerService('LogService', {
+          log: (level, message) => console.log(`[${level}] ${message}`)
+        }, { 'service.vendor': 'Pandino Demo' });
+
+        context.registerService('ConfigurationAdmin', {
+          getConfiguration: (pid) => ({ pid, properties: {} })
+        }, { 'service.vendor': 'Pandino Demo' });
+
+        context.registerService('EventAdmin', {
+          postEvent: (event) => console.log('Event posted:', event),
+          sendEvent: (event) => console.log('Event sent:', event)
+        }, { 'service.vendor': 'Pandino Demo' });
+
+        log('Registered 3 initial services');
+        updateStatus();
+
+        // Initialize visualizer after framework is ready
+        setTimeout(() => {
+          if (window.PandinoVisualizer) {
+            window.PandinoVisualizer.init(framework);
+            window.PandinoVisualizer.show();
+            log('Visualizer initialized and shown');
+          }
+        }, 500);
+      } catch (error) {
+        log(`Error initializing framework: ${error.message}`);
+        console.error('Framework initialization error:', error);
+      }
+    }
+
+    // Start framework initialization
+    initFramework();
+
+    // Make functions available globally
+    window.showVisualizer = () => {
+      if (window.PandinoVisualizer) {
+        window.PandinoVisualizer.show();
+        log('Visualizer shown');
+      }
+    };
+
+    window.hideVisualizer = () => {
+      if (window.PandinoVisualizer) {
+        window.PandinoVisualizer.hide();
+        log('Visualizer hidden');
+      }
+    };
+
+    window.addTestBundle = async () => {
+      if (!context) {
+        log('Framework not ready');
+        return;
+      }
+
+      try {
+        // Install a bundle using string location (creates a simple bundle)
+        testBundle = await context.installBundle('test://com.example.test.bundle', {
+          headers: {
+            bundleSymbolicName: 'com.example.test.bundle',
+            bundleVersion: '2.0.0',
+            bundleName: 'Test Bundle',
+            bundleDescription: 'A test bundle for demonstration'
+          },
+          activator: {
+            start: async (ctx) => {
+              log('Test bundle activator: start() called');
+            },
+            stop: async (ctx) => {
+              log('Test bundle activator: stop() called');
+            }
+          }
+        });
+
+        log(`Bundle installed: ${testBundle.getSymbolicName()} (${testBundle.getBundleId()})`);
+        updateStatus();
+      } catch (error) {
+        log(`Error installing bundle: ${error.message}`);
+      }
+    };
+
+    window.registerTestService = () => {
+      if (!context) {
+        log('Framework not ready');
+        return;
+      }
+
+      try {
+        testServiceReg = context.registerService('TestService', {
+          doSomething: () => 'Test service working!',
+          getName: () => 'Test Service Implementation'
+        }, {
+          'service.description': 'A test service for demo',
+          'service.vendor': 'Demo App',
+          'custom.property': 'example-value',
+          'service.ranking': 100
+        });
+
+        log(`Service registered: TestService (${testServiceReg.getReference().getProperty('service.id')})`);
+        updateStatus();
+      } catch (error) {
+        log(`Error registering service: ${error.message}`);
+      }
+    };
+
+    window.unregisterTestService = () => {
+      if (testServiceReg) {
+        try {
+          testServiceReg.unregister();
+          log('Service unregistered: TestService');
+          testServiceReg = null;
+          updateStatus();
+        } catch (error) {
+          log(`Error unregistering service: ${error.message}`);
+        }
+      } else {
+        log('No test service to unregister');
+      }
+    };
+
+    window.startTestBundle = async () => {
+      if (testBundle) {
+        try {
+          await testBundle.start();
+          log(`Bundle started: ${testBundle.getSymbolicName()}`);
+          updateStatus();
+        } catch (error) {
+          log(`Error starting bundle: ${error.message}`);
+        }
+      } else {
+        log('No test bundle to start. Install one first.');
+      }
+    };
+
+    window.stopTestBundle = async () => {
+      if (testBundle) {
+        try {
+          await testBundle.stop();
+          log(`Bundle stopped: ${testBundle.getSymbolicName()}`);
+          updateStatus();
+        } catch (error) {
+          log(`Error stopping bundle: ${error.message}`);
+        }
+      } else {
+        log('No test bundle to stop');
+      }
+    };
+
+    function updateStatus() {
+      if (!context) {
+        document.getElementById('status').innerHTML = '<span style="color: #ff9800;">Framework initializing...</span>';
+        return;
+      }
+
+      const bundles = context.getBundles();
+      const activeBundles = bundles.filter(b => b.getState() === 32).length; // ACTIVE state
+
+      // Count services by iterating through all bundles
+      let totalServices = 0;
+      bundles.forEach(bundle => {
+        totalServices += bundle.getRegisteredServices().length;
+      });
+
+      document.getElementById('status').innerHTML = `
+        <strong>Bundles:</strong> ${bundles.length} (${activeBundles} active)<br>
+        <strong>Services:</strong> ${totalServices}<br>
+        <strong>Status:</strong> <span style="color: #4caf50;">Running</span>
+      `;
+    }
+  </script>
+
+  <!-- Load the Pandino Visualizer -->
+  <script src="./dist/pandino-visualizer.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pandino Visualizer - Standalone Demo</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1e1e1e;
+      color: white;
+    }
+
+    .controls {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000000;
+      background: linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(45, 45, 48, 0.95));
+      backdrop-filter: blur(10px);
+      padding: 24px;
+      border-radius: 12px;
+      border: 2px solid #0078d4;
+      box-shadow: 0 8px 32px rgba(0, 120, 212, 0.3);
+      max-width: 400px;
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+    }
+
+    p {
+      margin: 0 0 16px 0;
+      color: #a0a0a0;
+      font-size: 14px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 120, 212, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 120, 212, 0.5);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #a0a0a0;
+    }
+
+    #loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-size: 24px;
+    }
+  </style>
+
+  <!-- Load Pandino Visualizer CSS -->
+  <link rel="stylesheet" href="../dist/pandino-visualizer.css">
+</head>
+<body>
+  <div id="loading">Loading Pandino Framework...</div>
+
+  <div id="controls" class="controls" style="display: none;">
+    <h1>🔍 Pandino Visualizer Demo</h1>
+    <p>Pure JavaScript with React under the hood</p>
+    <div class="button-group">
+      <button onclick="installTestBundle()">📦 Install Bundle</button>
+      <button onclick="registerService()">⚙️ Register Service</button>
+    </div>
+    <p class="hint">Press <code>Ctrl+Shift+V</code> to toggle visualizer</p>
+  </div>
+
+  <!-- Load Pandino framework from CDN -->
+  <script type="importmap">
+    {
+      "imports": {
+        "@pandino/pandino": "https://esm.sh/@pandino/pandino@latest"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import { OSGiBootstrap, LogLevel } from '@pandino/pandino';
+
+    let framework = null;
+    let context = null;
+
+    async function initFramework() {
+      try {
+        const bootstrap = new OSGiBootstrap({
+          frameworkLogLevel: LogLevel.INFO
+        });
+
+        framework = await bootstrap.start();
+        context = framework.getBundleContext();
+
+        // Expose for visualizer
+        window.pandinoFramework = framework;
+
+        // Register some initial services
+        context.registerService('LogService', {
+          log: (level, message) => console.log(`[${level}] ${message}`)
+        }, {
+          'service.vendor': 'Pandino Demo',
+          'service.description': 'Logging service'
+        });
+
+        context.registerService('ConfigurationAdmin', {
+          getConfiguration: (pid) => ({ pid, properties: {} }),
+          listConfigurations: () => Promise.resolve([])
+        }, {
+          'service.vendor': 'Pandino Demo',
+          'service.description': 'Configuration management'
+        });
+
+        context.registerService('EventAdmin', {
+          postEvent: (event) => console.log('Event posted:', event),
+          sendEvent: (event) => console.log('Event sent:', event)
+        }, {
+          'service.vendor': 'Pandino Demo',
+          'service.description': 'Event distribution',
+          'service.ranking': 100
+        });
+
+        console.log('Framework initialized with 3 services');
+
+        // Show controls
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('controls').style.display = 'block';
+
+      } catch (error) {
+        console.error('Failed to initialize framework:', error);
+        document.getElementById('loading').textContent = 'Error: ' + error.message;
+      }
+    }
+
+    window.installTestBundle = async function() {
+      if (!context) return;
+
+      try {
+        const bundle = await context.installBundle('test://com.example.test.bundle', {
+          headers: {
+            bundleSymbolicName: 'com.example.test.bundle',
+            bundleVersion: '2.0.0',
+            bundleName: 'Test Bundle',
+            bundleDescription: 'A test bundle'
+          },
+          activator: {
+            start: async (ctx) => {
+              console.log('Test bundle started');
+              ctx.registerService('TestService', {
+                doSomething: () => 'Working!',
+                getName: () => 'Test Service'
+              }, {
+                'service.description': 'Test service',
+                'service.vendor': 'Demo',
+                'test.property': 'example'
+              });
+            },
+            stop: async () => {
+              console.log('Test bundle stopped');
+            }
+          }
+        });
+
+        await bundle.start();
+        console.log('Test bundle installed and started');
+      } catch (error) {
+        console.error('Failed to install bundle:', error);
+      }
+    };
+
+    window.registerService = function() {
+      if (!context) return;
+
+      context.registerService('DynamicService', {
+        test: () => 'Dynamic!'
+      }, {
+        'service.description': 'Dynamically registered',
+        'timestamp': Date.now()
+      });
+
+      console.log('Dynamic service registered');
+    };
+
+    initFramework();
+  </script>
+
+  <!-- Load Pandino Visualizer (will auto-initialize with window.pandinoFramework) -->
+  <script src="../dist/pandino-visualizer.js"></script>
+</body>
+</html>
+

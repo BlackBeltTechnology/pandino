@@ -17,6 +17,7 @@
         "dev:example": "pnpm --filter @pandino/example dev",
         "build:pandino": "pnpm --filter @pandino/pandino build",
         "build:react-hooks": "pnpm --filter @pandino/react-hooks build",
+        "build:visualizer": "pnpm --filter @pandino/visualizer build",
         "lint": "oxlint",
         "format:write": "biome format --write"
     },

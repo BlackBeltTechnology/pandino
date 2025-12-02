@@ -1,0 +1,55 @@
+{
+  "name": "@pandino/visualizer",
+  "version": "0.2.0",
+  "description": "React-based real-time visualizer for Pandino framework with interactive dependency graphs",
+  "license": "EPL-2.0",
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "type": "module",
+  "main": "dist/pandino-visualizer.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/pandino-visualizer.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./standalone": "./dist/pandino-visualizer.js",
+    "./style.css": "./dist/pandino-visualizer.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "build:lib": "vite build --config vite.config.lib.ts",
+    "build:all": "pnpm build && pnpm build:lib",
+    "build:dev": "vite build --mode development",
+    "dev": "vite",
+    "demo": "vite demo",
+    "start": "vite demo"
+  },
+  "dependencies": {
+    "@xyflow/react": "^12.3.2"
+  },
+  "devDependencies": {
+    "@pandino/pandino": "workspace:*",
+    "@pandino/react-hooks": "workspace:*",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.9.2",
+    "vite": "^6.0.6"
+  },
+  "peerDependencies": {
+    "@pandino/pandino": ">=0.9.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  }
+}
+
