@@ -259,6 +259,11 @@ export function PandinoVisualizer({
     <div className={containerClass}>
       <div className="pandino-visualizer-header">
         <h2>🔍 Pandino Visualizer</h2>
+
+        <StatisticsPanel statistics={statistics}>
+          {children}
+        </StatisticsPanel>
+
         <div className="pandino-visualizer-controls">
           <button
             onClick={() => setSelectedView('graph')}
@@ -278,9 +283,6 @@ export function PandinoVisualizer({
         </div>
       </div>
 
-      <StatisticsPanel statistics={statistics}>
-        {children}
-      </StatisticsPanel>
 
       {selectedView === 'graph' ? (
         <div className="pandino-visualizer-graph">

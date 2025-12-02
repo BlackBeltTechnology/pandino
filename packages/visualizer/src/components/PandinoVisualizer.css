@@ -77,34 +77,39 @@
 .pandino-visualizer-header {
   background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
   color: white;
-  padding: 16px 20px;
+  padding: 12px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  gap: 20px;
 }
 
 .pandino-visualizer-header h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .pandino-visualizer-controls {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .pandino-visualizer-controls button {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   transition: background 0.2s;
+  white-space: nowrap;
 }
 
 .pandino-visualizer-controls button:hover {
@@ -117,42 +122,44 @@
 }
 
 .pandino-visualizer-close {
-  width: 32px !important;
-  height: 32px !important;
+  width: 28px !important;
+  height: 28px !important;
   padding: 0 !important;
-  font-size: 24px !important;
+  font-size: 22px !important;
   line-height: 1 !important;
 }
 
 .pandino-statistics {
   display: flex;
   gap: 12px;
-  padding: 12px 20px;
-  background: #252526;
-  border-bottom: 1px solid #3e3e42;
-  flex-shrink: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  flex: 1;
+  align-items: center;
 }
 
 .stat-card {
   flex: 0 0 auto;
-  background: #1e1e1e;
-  border: 1px solid #3e3e42;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
-  padding: 10px 16px;
+  padding: 8px 14px;
   text-align: center;
-  min-width: 120px;
+  min-width: 100px;
+  backdrop-filter: blur(10px);
 }
 
 .stat-value {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
-  color: #0078d4;
+  color: white;
   margin-bottom: 2px;
 }
 
 .stat-label {
-  font-size: 11px;
-  color: #a0a0a0;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.8);
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.5px;
