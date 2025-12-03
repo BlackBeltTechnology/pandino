@@ -248,6 +248,9 @@ importers:
         specifier: ^0.8.5
         version: 0.8.5
     devDependencies:
+      '@pandino/decorators':
+        specifier: workspace:*
+        version: link:../decorators
       '@pandino/pandino':
         specifier: workspace:*
         version: link:../pandino

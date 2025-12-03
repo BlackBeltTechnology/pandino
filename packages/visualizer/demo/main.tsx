@@ -1,7 +1,380 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { OSGiBootstrap, type OSGiFramework, LogLevel } from '@pandino/pandino';
+import { OSGiBootstrap, type OSGiFramework, LogLevel, getDecoratorInfo } from '@pandino/pandino';
 import { PandinoVisualizer, PandinoVisualizerProvider } from '../src/index.tsx';
+import { Component, Service, Reference } from '@pandino/decorators';
+
+// ============================================
+// DECORATED DS COMPONENTS
+// ============================================
+
+// 1. UserManager - DS Component with required config and mixed references
+@Component({
+  name: 'UserManager',
+  immediate: true,
+  configurationPolicy: 'require',
+  configurationPid: 'com.example.usermanager'
+})
+@Service({
+  interfaces: ['UserManagerService']
+})
+class UserManager {
+  @Reference({
+    name: 'userService',
+    interface: 'UserService',
+    cardinality: '1..1',
+    policy: 'static'
+  })
+  private userService: any;
+
+  @Reference({
+    name: 'logger',
+    interface: 'LogService',
+    cardinality: '0..1',
+    policy: 'dynamic'
+  })
+  private logger?: any;
+
+  createUser(name: string) {
+    console.log(`Creating user: ${name}`);
+  }
+
+  deleteUser(id: string) {
+    console.log(`Deleting user: ${id}`);
+  }
+
+  authenticate(username: string, password: string) {
+    return true;
+  }
+}
+
+// 2. DataAccessLayer - DS Component with optional config and multiple references
+@Component({
+  name: 'DataAccessLayer',
+  immediate: false,
+  configurationPolicy: 'optional',
+  configurationPid: 'com.example.dal'
+})
+@Service({
+  interfaces: ['DataAccessLayer']
+})
+class DataAccessLayerImpl {
+  @Reference({
+    name: 'dataStore',
+    interface: 'DataStore',
+    cardinality: '1..1',
+    policy: 'static'
+  })
+  private dataStore: any;
+
+  @Reference({
+    name: 'logger',
+    interface: 'LogService',
+    cardinality: '1..1',
+    policy: 'static'
+  })
+  private logger: any;
+
+  @Reference({
+    name: 'eventAdmin',
+    interface: 'EventAdmin',
+    cardinality: '0..1',
+    policy: 'dynamic'
+  })
+  private eventAdmin?: any;
+
+  query(sql: string) {
+    return Promise.resolve([]);
+  }
+
+  execute(sql: string) {
+    return Promise.resolve({ rowsAffected: 0 });
+  }
+}
+
+// 3. NotificationService - Factory Component
+@Component({
+  name: 'NotificationService',
+  factory: 'notification.factory',
+  immediate: false,
+  configurationPolicy: 'ignore'
+})
+@Service({
+  interfaces: ['NotificationService']
+})
+class NotificationServiceImpl {
+  @Reference({
+    name: 'eventAdmin',
+    interface: 'EventAdmin',
+    cardinality: '1..1',
+    policy: 'dynamic'
+  })
+  private eventAdmin: any;
+
+  @Reference({
+    name: 'logger',
+    interface: 'LogService',
+    cardinality: '0..1',
+    policy: 'dynamic'
+  })
+  private logger?: any;
+
+  send(to: string, message: string) {
+    console.log(`Notification to ${to}: ${message}`);
+  }
+
+  subscribe(topic: string, callback: Function) {
+    console.log(`Subscribed to: ${topic}`);
+  }
+}
+
+// 4. AuthenticationService - DS Component with target filter
+@Component({
+  name: 'AuthenticationService',
+  immediate: true,
+  configurationPolicy: 'require',
+  configurationPid: 'com.example.auth'
+})
+@Service({
+  interfaces: ['AuthenticationService']
+})
+class AuthenticationServiceImpl {
+  @Reference({
+    name: 'userManager',
+    interface: 'UserManagerService',
+    cardinality: '1..1',
+    policy: 'static',
+    target: '(service.vendor=Pandino Demo)'
+  })
+  private userManager: any;
+
+  @Reference({
+    name: 'dataAccess',
+    interface: 'DataAccessLayer',
+    cardinality: '0..1',
+    policy: 'dynamic'
+  })
+  private dataAccess?: any;
+
+  @Reference({
+    name: 'logger',
+    interface: 'LogService',
+    cardinality: '1..1',
+    policy: 'static'
+  })
+  private logger: any;
+
+  login(username: string, password: string) {
+    return true;
+  }
+
+  logout(token: string) {
+    console.log('Logged out');
+  }
+
+  validateToken(token: string) {
+    return true;
+  }
+}
+
+// 5. CacheService - DS Component with multiple optional references
+@Component({
+  name: 'CacheService',
+  immediate: false,
+  configurationPolicy: 'optional',
+  configurationPid: 'com.example.cache'
+})
+@Service({
+  interfaces: ['CacheService']
+})
+class CacheServiceImpl {
+  @Reference({
+    name: 'dataStore',
+    interface: 'DataStore',
+    cardinality: '0..n',
+    policy: 'dynamic'
+  })
+  private dataStores: any[] = [];
+
+  @Reference({
+    name: 'eventAdmin',
+    interface: 'EventAdmin',
+    cardinality: '0..1',
+    policy: 'dynamic'
+  })
+  private eventAdmin?: any;
+
+  get(key: string) {
+    return null;
+  }
+
+  set(key: string, value: any, ttl: number) {
+    // Cache implementation
+  }
+
+  invalidate(key: string) {
+    // Invalidation logic
+  }
+}
+
+// 6. ApiGateway - DS Component with multiple dependencies
+@Component({
+  name: 'ApiGateway',
+  immediate: true,
+  configurationPolicy: 'require',
+  configurationPid: 'com.example.gateway'
+})
+@Service({
+  interfaces: ['ApiGateway']
+})
+class ApiGatewayImpl {
+  @Reference({
+    name: 'auth',
+    interface: 'AuthenticationService',
+    cardinality: '1..1',
+    policy: 'static'
+  })
+  private auth: any;
+
+  @Reference({
+    name: 'userManager',
+    interface: 'UserManagerService',
+    cardinality: '1..1',
+    policy: 'static'
+  })
+  private userManager: any;
+
+  @Reference({
+    name: 'cache',
+    interface: 'CacheService',
+    cardinality: '0..1',
+    policy: 'dynamic'
+  })
+  private cache?: any;
+
+  @Reference({
+    name: 'notifications',
+    interface: 'NotificationService',
+    cardinality: '0..n',
+    policy: 'dynamic'
+  })
+  private notifications: any[] = [];
+
+  @Reference({
+    name: 'logger',
+    interface: 'LogService',
+    cardinality: '1..1',
+    policy: 'static'
+  })
+  private logger: any;
+
+  handleRequest(req: any) {
+    console.log('Handling request');
+  }
+
+  registerRoute(path: string, handler: Function) {
+    // Route registration
+  }
+}
+
+// 7. PaymentProcessor - Component with MISSING required dependency
+@Component({
+  name: 'PaymentProcessor',
+  immediate: true,
+  configurationPolicy: 'require',
+  configurationPid: 'com.example.payment'
+})
+@Service({
+  interfaces: ['PaymentProcessorService']
+})
+class PaymentProcessor {
+  @Reference({
+    name: 'gateway',
+    interface: 'PaymentGateway',
+    cardinality: '1..1',  // MANDATORY - will be missing!
+    policy: 'static'
+  })
+  private gateway: any;
+
+  @Reference({
+    name: 'logger',
+    interface: 'LogService',
+    cardinality: '1..1',
+    policy: 'static'
+  })
+  private logger: any;
+
+  processPayment(amount: number) {
+    console.log(`Processing payment: ${amount}`);
+  }
+
+  refundPayment(transactionId: string) {
+    console.log(`Refunding: ${transactionId}`);
+  }
+}
+
+// 8. EmailService - Component with MISSING optional dependency
+@Component({
+  name: 'EmailService',
+  immediate: false,
+  configurationPolicy: 'optional',
+  configurationPid: 'com.example.email'
+})
+@Service({
+  interfaces: ['EmailService']
+})
+class EmailServiceImpl {
+  @Reference({
+    name: 'mailServer',
+    interface: 'MailServer',
+    cardinality: '0..1',  // OPTIONAL - will be missing (warning only)
+    policy: 'dynamic'
+  })
+  private mailServer?: any;
+
+  @Reference({
+    name: 'eventAdmin',
+    interface: 'EventAdmin',
+    cardinality: '0..1',
+    policy: 'dynamic'
+  })
+  private eventAdmin?: any;
+
+  sendEmail(to: string, subject: string, body: string) {
+    console.log(`Email to ${to}: ${subject}`);
+  }
+}
+
+// 9. ReportGenerator - Component with MISSING required multiple dependencies
+@Component({
+  name: 'ReportGenerator',
+  immediate: false,
+  configurationPolicy: 'optional'
+})
+@Service({
+  interfaces: ['ReportGeneratorService']
+})
+class ReportGenerator {
+  @Reference({
+    name: 'dataProviders',
+    interface: 'DataProvider',
+    cardinality: '1..n',  // MANDATORY MULTIPLE - will be missing!
+    policy: 'dynamic'
+  })
+  private dataProviders: any[] = [];
+
+  @Reference({
+    name: 'logger',
+    interface: 'LogService',
+    cardinality: '0..1',
+    policy: 'dynamic'
+  })
+  private logger?: any;
+
+  generateReport(reportType: string) {
+    console.log(`Generating report: ${reportType}`);
+  }
+}
 
 function Demo() {
   const [framework, setFramework] = useState<OSGiFramework | null>(null);
@@ -9,6 +382,8 @@ function Demo() {
 
   useEffect(() => {
     let mounted = true;
+
+    const log = (message: string) => console.log(`[Demo] ${message}`);
 
     async function initFramework() {
       try {
@@ -19,7 +394,7 @@ function Demo() {
         const fw = await bootstrap.start();
         const context = fw.getBundleContext();
 
-        // Register some test services
+        // Register some basic services
         context.registerService('LogService', {
           log: (level: number, message: string) => console.log(`[${level}] ${message}`),
           setLogLevel: (level: number) => console.log(`Log level set to: ${level}`),
@@ -28,14 +403,23 @@ function Demo() {
           'service.description': 'Logging service for the framework',
         });
 
+        // Register ConfigurationAdmin service
         context.registerService('ConfigurationAdmin', {
-          getConfiguration: (pid: string) => ({ pid, properties: {} }),
+          getConfiguration: (pid: string) => ({
+            pid,
+            properties: {
+              'db.host': 'localhost',
+              'db.port': 5432,
+              'db.name': 'pandino_demo'
+            }
+          }),
           listConfigurations: () => Promise.resolve([]),
         }, {
           'service.vendor': 'Pandino Demo',
           'service.description': 'Configuration management service',
         });
 
+        // Register EventAdmin service
         context.registerService('EventAdmin', {
           postEvent: (event: any) => console.log('Event posted:', event),
           sendEvent: (event: any) => console.log('Event sent:', event),
@@ -43,6 +427,72 @@ function Demo() {
           'service.vendor': 'Pandino Demo',
           'service.description': 'Event distribution service',
           'service.ranking': 100,
+        });
+
+        // ============================================
+        // REGISTER BASE SERVICES (non-DS components)
+        // ============================================
+
+        // 1. UserService - Simple service (referenced by others)
+        context.registerService('UserService', {
+          getUser: (id: string) => ({ id, name: 'Demo User' }),
+          listUsers: () => Promise.resolve([]),
+        }, {
+          'service.vendor': 'Pandino Demo',
+          'service.description': 'User management service',
+        });
+
+        // 2. DataStore - Simple service (referenced by others)
+        context.registerService('DataStore', {
+          get: (_key: string) => Promise.resolve(null),
+          set: (_key: string, _value: any) => Promise.resolve(),
+        }, {
+          'service.vendor': 'Pandino Demo',
+          'service.description': 'Data persistence service',
+        });
+
+        // ============================================
+        // REGISTER DECORATED DS COMPONENTS
+        // ============================================
+
+        log('Registering decorated DS components...');
+
+        // Register component instances using the decorator metadata
+        // The decorators store metadata using reflect-metadata
+        const componentInstances = [
+          new UserManager(),
+          new DataAccessLayerImpl(),
+          new NotificationServiceImpl(),
+          new AuthenticationServiceImpl(),
+          new CacheServiceImpl(),
+          new ApiGatewayImpl(),
+          new PaymentProcessor(),
+          new EmailServiceImpl(),
+          new ReportGenerator(),
+        ];
+
+        // Register each component instance as a service
+        // The framework's getDecoratorInfo() will extract the metadata from reflect-metadata
+        componentInstances.forEach((instance: any) => {
+          // Try to get the decorator info to determine the service name
+          try {
+            const decoratorInfo = getDecoratorInfo(instance);
+
+            if (decoratorInfo.component.isComponent) {
+              const interfaces = decoratorInfo.service.interfaces || [];
+              const serviceName = interfaces[0] || decoratorInfo.component.name || 'UnknownService';
+
+              log(`Registering DS component: ${serviceName} (${decoratorInfo.component.name})`);
+
+              // Register the service instance
+              context.registerService(serviceName, instance, {
+                'service.vendor': 'Pandino Demo',
+                'service.description': `DS Component: ${decoratorInfo.component.name}`,
+              });
+            }
+          } catch (error) {
+            console.error('Failed to register component:', error);
+          }
         });
 
         if (mounted) {

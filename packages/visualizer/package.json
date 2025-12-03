@@ -34,6 +34,7 @@
     "dagre": "^0.8.5"
   },
   "devDependencies": {
+    "@pandino/decorators": "workspace:*",
     "@pandino/pandino": "workspace:*",
     "@pandino/react-hooks": "workspace:*",
     "@types/dagre": "^0.7.52",

@@ -45,9 +45,85 @@ export const EventLog = memo(({ events, framework }: EventLogProps) => {
                     {services.map(service => {
                       const objectClass = service.getProperty('objectClass');
                       const serviceName = Array.isArray(objectClass) ? objectClass[0] : objectClass;
+                      const serviceId = service.getProperty('service.id');
+
+                      // Check if this is a DS component
+                      const componentName = service.getProperty('component.name');
+                      const componentId = service.getProperty('component.id');
+                      const isComponent = !!(componentName || componentId);
+                      const factory = service.getProperty('component.factory');
+                      const immediate = service.getProperty('component.immediate');
+                      const configPolicy = service.getProperty('component.configuration.policy');
+                      const configPid = service.getProperty('component.configuration.pid');
+
+                      // Extract references
+                      const references: any[] = [];
+                      if (isComponent) {
+                        const refKeys = Object.keys(service.getProperties()).filter(k => k.startsWith('component.reference.') && !k.includes('.interface') && !k.includes('.cardinality') && !k.includes('.policy') && !k.includes('.target'));
+                        refKeys.forEach(key => {
+                          const refName = key.replace('component.reference.', '');
+                          const refInterface = service.getProperty(`${key}.interface`);
+                          const cardinality = service.getProperty(`${key}.cardinality`);
+                          const policy = service.getProperty(`${key}.policy`);
+                          references.push({
+                            name: refName,
+                            interface: refInterface,
+                            cardinality: cardinality || '1..1',
+                            policy: policy || 'static',
+                          });
+                        });
+                      }
+
                       return (
-                        <div key={service.getProperty('service.id')} className="service-list-item">
-                          ⚙️ {serviceName}
+                        <div key={serviceId} className={`service-list-item ${isComponent ? 'ds-component-item' : ''}`}>
+                          <div className="service-item-header">
+                            <span className="service-icon">{isComponent ? '🔷' : '⚙️'}</span>
+                            <span className="service-name">{serviceName}</span>
+                            <span className="service-id">#{serviceId}</span>
+                          </div>
+
+                          {isComponent && (
+                            <div className="component-metadata">
+                              <div className="component-badges">
+                                <span className="badge badge-component">DS Component</span>
+                                {factory && <span className="badge badge-factory">Factory</span>}
+                                {immediate && <span className="badge badge-immediate">Immediate</span>}
+                              </div>
+
+                              {componentName && (
+                                <div className="metadata-row">
+                                  <span className="metadata-label">Component:</span>
+                                  <span className="metadata-value">{componentName}</span>
+                                </div>
+                              )}
+
+                              {configPolicy && (
+                                <div className="metadata-row">
+                                  <span className="metadata-label">Config Policy:</span>
+                                  <span className="metadata-value">{configPolicy}</span>
+                                  {configPid && (
+                                    <span className="metadata-pid">({configPid})</span>
+                                  )}
+                                </div>
+                              )}
+
+                              {references.length > 0 && (
+                                <div className="references-section">
+                                  <div className="metadata-label">References:</div>
+                                  <div className="references-list">
+                                    {references.map((ref, idx) => (
+                                      <div key={idx} className="reference-row">
+                                        <span className="reference-name">{ref.name}</span>
+                                        <span className="reference-details">
+                                          [{ref.cardinality}] {ref.interface} ({ref.policy})
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       );
                     })}

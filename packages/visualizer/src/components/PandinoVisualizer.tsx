@@ -15,7 +15,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
 import type { OSGiFramework, BundleEvent, ServiceEvent } from '@pandino/pandino';
-import { BUNDLE_STATES } from '@pandino/pandino';
+import { BUNDLE_STATES, getDecoratorInfo } from '@pandino/pandino';
 import { BundleNode } from './nodes/BundleNode';
 import { ServiceNode } from './nodes/ServiceNode';
 import { StatisticsPanel } from './StatisticsPanel';
@@ -127,6 +127,75 @@ export function PandinoVisualizer({
         const serviceName = Array.isArray(objectClass) ? objectClass[0] : objectClass;
         const ranking = serviceRef.getProperty('service.ranking') || 0;
 
+        // Try to get the actual service instance to extract decorator metadata
+        const context = framework.getBundleContext();
+        let dsMetadata: any = null;
+
+        try {
+          const serviceInstance = context.getService(serviceRef);
+          if (serviceInstance) {
+            // Use framework's reflection utilities to extract decorator metadata
+            const decoratorInfo = getDecoratorInfo(serviceInstance);
+
+            if (decoratorInfo.component.isComponent) {
+              dsMetadata = {
+                isComponent: true,
+                componentName: decoratorInfo.component.name,
+                componentId: serviceId, // Use service ID as component ID
+                factory: decoratorInfo.component.factory.isFactory ? decoratorInfo.component.factory.id : undefined,
+                immediate: decoratorInfo.component.immediate,
+                configurationPolicy: decoratorInfo.configuration.policy,
+                configurationPid: decoratorInfo.configuration.pid,
+                references: decoratorInfo.references.map((ref: any) => ({
+                  name: ref.name,
+                  interface: ref.interface,
+                  cardinality: ref.cardinality,
+                  policy: ref.policy,
+                  target: ref.target,
+                })),
+              };
+            }
+          }
+        } catch (error) {
+          // If we can't get the service instance, fall back to checking service properties
+          // (for backwards compatibility with manually registered services)
+          const componentName = serviceRef.getProperty('component.name');
+          const componentId = serviceRef.getProperty('component.id');
+
+          if (componentName || componentId) {
+            dsMetadata = {
+              isComponent: true,
+              componentName: componentName,
+              componentId: componentId,
+              factory: serviceRef.getProperty('component.factory'),
+              immediate: serviceRef.getProperty('component.immediate'),
+              configurationPolicy: serviceRef.getProperty('component.configuration.policy'),
+              configurationPid: serviceRef.getProperty('component.configuration.pid'),
+              references: [],
+            };
+
+            // Extract reference information from properties
+            const refKeys = Object.keys(serviceRef.getProperties()).filter(k =>
+              k.startsWith('component.reference.') &&
+              !k.includes('.interface') &&
+              !k.includes('.cardinality') &&
+              !k.includes('.policy') &&
+              !k.includes('.target')
+            );
+
+            dsMetadata.references = refKeys.map(key => {
+              const refName = key.replace('component.reference.', '');
+              return {
+                name: refName,
+                interface: serviceRef.getProperty(`${key}.interface`),
+                cardinality: serviceRef.getProperty(`${key}.cardinality`),
+                policy: serviceRef.getProperty(`${key}.policy`),
+                target: serviceRef.getProperty(`${key}.target`),
+              };
+            });
+          }
+        }
+
         const serviceNode: Node = {
           id: `service-${serviceId}`,
           type: 'service',
@@ -138,25 +207,136 @@ export function PandinoVisualizer({
             ranking,
             properties: serviceRef.getProperties(),
             interfaces: Array.isArray(objectClass) ? objectClass : [objectClass],
+            dsMetadata: dsMetadata,
           },
         };
 
         newNodes.push(serviceNode);
         serviceNodeMap.set(serviceId, serviceNode);
 
-        // Create edge from bundle to service
+        // Create edge from bundle to service (containment)
         newEdges.push({
           id: `bundle-${bundleId}-service-${serviceId}`,
           source: `bundle-${bundleId}`,
           target: `service-${serviceId}`,
-          type: 'smoothstep',
-          animated: state === BUNDLE_STATES.ACTIVE,
-          style: { stroke: '#0078d4', strokeWidth: 2 },
+          type: 'straight',  // Straight line for containment
+          animated: false,
+          style: {
+            stroke: '#4a4a4a',  // Gray for containment
+            strokeWidth: 1.5,
+            opacity: 0.5
+          },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: '#0078d4',
+            color: '#4a4a4a',
           },
         });
+
+        // Create edges for DS service references
+        if (dsMetadata && dsMetadata.references && dsMetadata.references.length > 0) {
+          dsMetadata.references.forEach((ref: any) => {
+            // Find target service nodes that match the interface
+            let referenceFound = false;
+            serviceNodeMap.forEach((targetNode, targetServiceId) => {
+              const targetInterfaces: string[] = (targetNode.data.interfaces as string[]) || [];
+              if (targetInterfaces.includes(ref.interface)) {
+                referenceFound = true;
+                // Build label with reference details
+                const cardinality = ref.cardinality || '1..1';
+                const policy = ref.policy || 'static';
+                const labelText = `${ref.name}\n[${cardinality}] ${policy}`;
+
+                // Active reference - solid line
+                newEdges.push({
+                  id: `service-${serviceId}-ref-${targetServiceId}`,
+                  source: `service-${serviceId}`,
+                  target: `service-${targetServiceId}`,
+                  type: 'smoothstep',
+                  animated: policy === 'dynamic',
+                  style: {
+                    stroke: policy === 'dynamic' ? '#e91e63' : '#9c27b0',  // Pink for dynamic, purple for static
+                    strokeWidth: 3,
+                    strokeDasharray: '0'  // Solid line for active references
+                  },
+                  label: labelText,
+                  labelStyle: {
+                    fill: policy === 'dynamic' ? '#e91e63' : '#9c27b0',
+                    fontWeight: 700,
+                    fontSize: 12,
+                    fontFamily: 'monospace'
+                  },
+                  labelBgStyle: {
+                    fill: '#ffffff',
+                    fillOpacity: 0.95
+                  },
+                  labelBgPadding: [8, 5] as [number, number],
+                  labelBgBorderRadius: 6,
+                  markerEnd: {
+                    type: MarkerType.ArrowClosed,
+                    color: policy === 'dynamic' ? '#e91e63' : '#9c27b0',
+                  },
+                });
+              }
+            });
+
+            // If reference not found, create a broken reference indicator
+            if (!referenceFound) {
+              const cardinality = ref.cardinality || '1..1';
+              const policy = ref.policy || 'static';
+              const isMandatory = cardinality.startsWith('1');
+              const labelText = `${ref.name}\n[${cardinality}] ${policy}\n⚠️ MISSING`;
+
+              // Create a phantom node for the missing service
+              const phantomNodeId = `phantom-${ref.interface}-${serviceId}`;
+              if (!newNodes.find(n => n.id === phantomNodeId)) {
+                newNodes.push({
+                  id: phantomNodeId,
+                  type: 'service',
+                  position: { x: 0, y: 0 },
+                  data: {
+                    label: ref.interface,
+                    id: -1,
+                    ranking: 0,
+                    properties: {},
+                    interfaces: [ref.interface],
+                    isMissing: true,
+                  },
+                });
+              }
+
+              // Broken reference - dashed line with warning color
+              newEdges.push({
+                id: `service-${serviceId}-ref-broken-${ref.name}`,
+                source: `service-${serviceId}`,
+                target: phantomNodeId,
+                type: 'smoothstep',
+                animated: false,
+                style: {
+                  stroke: isMandatory ? '#f44336' : '#ff9800',  // Red for mandatory, orange for optional
+                  strokeWidth: 3,
+                  strokeDasharray: '8,4'  // Dashed for broken/inactive
+                },
+                label: labelText,
+                labelStyle: {
+                  fill: isMandatory ? '#f44336' : '#ff9800',
+                  fontWeight: 700,
+                  fontSize: 12,
+                  fontFamily: 'monospace'
+                },
+                labelBgStyle: {
+                  fill: '#fff3e0',
+                  fillOpacity: 0.95
+                },
+                labelBgPadding: [8, 5] as [number, number],
+                labelBgBorderRadius: 6,
+                markerEnd: {
+                  type: MarkerType.ArrowClosed,
+                  color: isMandatory ? '#f44336' : '#ff9800',
+                },
+              });
+            }
+          });
+        }
       });
     });
 
@@ -311,9 +491,20 @@ export function PandinoVisualizer({
             />
             <Panel position="bottom-right">
               <div className="pandino-legend">
-                <div><span className="legend-color bundle-active"></span> Active Bundle</div>
-                <div><span className="legend-color bundle-resolved"></span> Resolved Bundle</div>
-                <div><span className="legend-color service"></span> Service</div>
+                <div className="legend-section">
+                  <div className="legend-section-title">Nodes</div>
+                  <div><span className="legend-color bundle-active"></span> Active Bundle</div>
+                  <div><span className="legend-color bundle-resolved"></span> Resolved Bundle</div>
+                  <div><span className="legend-color service"></span> Service</div>
+                  <div><span className="legend-color ds-component"></span> DS Component</div>
+                  <div><span className="legend-color missing-service"></span> Missing Service</div>
+                </div>
+                <div className="legend-section">
+                  <div className="legend-section-title">Edges</div>
+                  <div><span className="legend-line containment"></span> Bundle Contains</div>
+                  <div><span className="legend-line ds-reference-active"></span> Active Reference</div>
+                  <div><span className="legend-line ds-reference-broken"></span> Broken Reference</div>
+                </div>
               </div>
             </Panel>
           </ReactFlow>

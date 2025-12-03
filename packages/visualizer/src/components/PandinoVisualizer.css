@@ -207,6 +207,26 @@
   background: linear-gradient(135deg, #ffffff 0%, #f9f1fc 100%);
 }
 
+.service-node.ds-component {
+  border-color: #673ab7;
+  background: linear-gradient(135deg, #ffffff 0%, #ede7f6 100%);
+  box-shadow: 0 2px 8px rgba(103, 58, 183, 0.2);
+}
+
+/* Missing/phantom service nodes */
+.react-flow__node[data-ismissing="true"] .service-node {
+  border-color: #f44336;
+  border-style: dashed;
+  border-width: 2px;
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  opacity: 0.8;
+}
+
+.react-flow__node[data-ismissing="true"] .service-name {
+  color: #d32f2f;
+  font-style: italic;
+}
+
 .node-header {
   display: flex;
   align-items: center;
@@ -247,6 +267,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 4px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .node-label {
@@ -257,6 +279,7 @@
 .node-value {
   color: #666;
   font-family: 'Consolas', 'Monaco', monospace;
+  word-break: break-word;
 }
 
 .node-badge {
@@ -282,6 +305,21 @@
   color: white;
 }
 
+.badge-component {
+  background: #673ab7;
+  color: white;
+}
+
+.badge-factory {
+  background: #ff5722;
+  color: white;
+}
+
+.badge-immediate {
+  background: #00bcd4;
+  color: white;
+}
+
 .node-interfaces {
   display: flex;
   flex-wrap: wrap;
@@ -296,6 +334,49 @@
   border-radius: 4px;
   font-size: 10px;
   font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.node-references {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.reference-item {
+  margin-bottom: 8px;
+  padding: 8px;
+  background: #f5f5f5;
+  border-left: 3px solid #9c27b0;
+  border-radius: 4px;
+}
+
+.reference-name {
+  font-weight: 600;
+  color: #673ab7;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.reference-cardinality {
+  font-size: 10px;
+  color: #9c27b0;
+  font-weight: normal;
+}
+
+.reference-interface {
+  font-size: 11px;
+  color: #1976d2;
+  font-family: 'Consolas', 'Monaco', monospace;
+  margin-bottom: 2px;
+}
+
+.reference-policy,
+.reference-target {
+  font-size: 10px;
+  color: #666;
+  font-style: italic;
 }
 
 .node-properties {
@@ -325,23 +406,47 @@
 /* Legend */
 .pandino-legend {
   background: white;
-  padding: 12px;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 14px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
   font-size: 12px;
+  min-width: 200px;
 }
 
-.pandino-legend > div {
+.legend-section {
+  margin-bottom: 12px;
+}
+
+.legend-section:last-child {
+  margin-bottom: 0;
+}
+
+.legend-section-title {
+  font-weight: 700;
+  font-size: 11px;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.pandino-legend > div,
+.legend-section > div {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
+}
+
+.legend-section-title {
+  display: block;
 }
 
 .legend-color {
   width: 16px;
   height: 16px;
   border-radius: 3px;
+  flex-shrink: 0;
 }
 
 .legend-color.bundle-active {
@@ -354,6 +459,44 @@
 
 .legend-color.service {
   background: #9c27b0;
+}
+
+.legend-color.ds-component {
+  background: #673ab7;
+}
+
+.legend-color.missing-service {
+  background: #f44336;
+  border: 2px dashed #d32f2f;
+  box-sizing: border-box;
+}
+
+.legend-line {
+  width: 28px;
+  height: 3px;
+  flex-shrink: 0;
+}
+
+.legend-line.containment {
+  background: #4a4a4a;
+  opacity: 0.5;
+  height: 2px;
+}
+
+.legend-line.ds-reference-active {
+  background: #9c27b0;
+  height: 3px;
+}
+
+.legend-line.ds-reference-broken {
+  background: repeating-linear-gradient(
+    to right,
+    #f44336 0,
+    #f44336 8px,
+    transparent 8px,
+    transparent 12px
+  );
+  height: 3px;
 }
 
 /* Event Log */
@@ -460,10 +603,104 @@
 }
 
 .service-list-item {
-  padding: 4px 0;
-  color: #9cdcfe;
+  padding: 8px;
+  margin-bottom: 8px;
+  background: #2d2d30;
+  border-left: 3px solid #9c27b0;
+  border-radius: 4px;
   font-family: 'Consolas', 'Monaco', monospace;
   font-size: 11px;
+}
+
+.service-list-item.ds-component-item {
+  border-left-color: #673ab7;
+  background: #2d2d35;
+}
+
+.service-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.service-icon {
+  font-size: 14px;
+}
+
+.service-name {
+  flex: 1;
+  color: #9cdcfe;
+}
+
+.service-id {
+  color: #666;
+  font-size: 10px;
+}
+
+.component-metadata {
+  padding-left: 22px;
+  margin-top: 6px;
+}
+
+.component-badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.metadata-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.metadata-label {
+  color: #858585;
+  font-weight: 600;
+  min-width: 90px;
+}
+
+.metadata-value {
+  color: #dcdcaa;
+}
+
+.metadata-pid {
+  color: #666;
+  font-style: italic;
+  font-size: 10px;
+}
+
+.references-section {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #3e3e42;
+}
+
+.references-list {
+  margin-top: 4px;
+}
+
+.reference-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 3px;
+  padding-left: 12px;
+  align-items: center;
+}
+
+.reference-name {
+  color: #c586c0;
+  font-weight: 600;
+  min-width: 80px;
+}
+
+.reference-details {
+  color: #4ec9b0;
+  font-size: 10px;
 }
 
 .event-timeline {
