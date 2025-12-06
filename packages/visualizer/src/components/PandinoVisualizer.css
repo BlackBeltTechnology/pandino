@@ -188,11 +188,12 @@
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
-  padding: 8px 14px;
-  text-align: center;
-  min-width: 100px;
+  padding: 6px 12px;
   backdrop-filter: blur(10px);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .stat-card:hover {
@@ -202,10 +203,10 @@
 }
 
 .stat-value {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: white;
-  margin-bottom: 2px;
+  line-height: 1;
 }
 
 .stat-label {
@@ -214,6 +215,8 @@
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.5px;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 .pandino-visualizer-graph {
