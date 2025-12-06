@@ -6,11 +6,11 @@ import {
   Controls,
   Background,
   MiniMap,
-  Panel,
   useNodesState,
   useEdgesState,
   MarkerType,
   BackgroundVariant,
+  Position,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
@@ -47,8 +47,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
     const nodeWithPosition = dagreGraph.node(node.id);
     return {
       ...node,
-      targetPosition: isHorizontal ? 'left' : 'top',
-      sourcePosition: isHorizontal ? 'right' : 'bottom',
+      targetPosition: (isHorizontal ? Position.Left : Position.Top) as Position,
+      sourcePosition: (isHorizontal ? Position.Right : Position.Bottom) as Position,
       position: {
         x: nodeWithPosition.x - nodeWidth / 2,
         y: nodeWithPosition.y - nodeHeight / 2,
@@ -101,7 +101,7 @@ export function PandinoVisualizer({
     const serviceNodeMap = new Map<number, Node>();
 
     // Create bundle nodes
-    bundles.forEach((bundle, index) => {
+    bundles.forEach((bundle) => {
       const bundleId = bundle.getBundleId();
       const state = bundle.getState();
       const stateName = getStateName(state);
@@ -121,7 +121,7 @@ export function PandinoVisualizer({
 
       // Create service nodes for this bundle
       const services = bundle.getRegisteredServices();
-      services.forEach((serviceRef, serviceIndex) => {
+      services.forEach((serviceRef) => {
         const serviceId = serviceRef.getProperty('service.id');
         const objectClass = serviceRef.getProperty('objectClass');
         const serviceName = Array.isArray(objectClass) ? objectClass[0] : objectClass;
@@ -156,7 +156,7 @@ export function PandinoVisualizer({
               };
             }
           }
-        } catch (error) {
+        } catch (_error) {
           // If we can't get the service instance, fall back to checking service properties
           // (for backwards compatibility with manually registered services)
           const componentName = serviceRef.getProperty('component.name');
@@ -241,40 +241,35 @@ export function PandinoVisualizer({
               const targetInterfaces: string[] = (targetNode.data.interfaces as string[]) || [];
               if (targetInterfaces.includes(ref.interface)) {
                 referenceFound = true;
-                // Build label with reference details
                 const cardinality = ref.cardinality || '1..1';
                 const policy = ref.policy || 'static';
-                const labelText = `${ref.name}\n[${cardinality}] ${policy}`;
 
-                // Active reference - solid line
+                // Working reference - thin, subtle line WITHOUT label (to reduce clutter)
                 newEdges.push({
                   id: `service-${serviceId}-ref-${targetServiceId}`,
                   source: `service-${serviceId}`,
                   target: `service-${targetServiceId}`,
                   type: 'smoothstep',
-                  animated: policy === 'dynamic',
+                  animated: false,  // No animation for working refs to reduce distraction
                   style: {
-                    stroke: policy === 'dynamic' ? '#e91e63' : '#9c27b0',  // Pink for dynamic, purple for static
-                    strokeWidth: 3,
-                    strokeDasharray: '0'  // Solid line for active references
+                    stroke: '#b0b0b0',  // Subtle gray for working references
+                    strokeWidth: 1,  // Thin line
+                    opacity: 0.4,  // Low opacity to reduce clutter
                   },
-                  label: labelText,
-                  labelStyle: {
-                    fill: policy === 'dynamic' ? '#e91e63' : '#9c27b0',
-                    fontWeight: 700,
-                    fontSize: 12,
-                    fontFamily: 'monospace'
-                  },
-                  labelBgStyle: {
-                    fill: '#ffffff',
-                    fillOpacity: 0.95
-                  },
-                  labelBgPadding: [8, 5] as [number, number],
-                  labelBgBorderRadius: 6,
+                  // NO LABEL for working references - keeps diagram clean
                   markerEnd: {
                     type: MarkerType.ArrowClosed,
-                    color: policy === 'dynamic' ? '#e91e63' : '#9c27b0',
+                    color: '#b0b0b0',
+                    width: 12,
+                    height: 12,
                   },
+                  data: {
+                    // Store metadata for tooltips/inspection but don't show by default
+                    refName: ref.name,
+                    cardinality,
+                    policy,
+                    satisfied: true,
+                  }
                 });
               }
             });
@@ -284,7 +279,9 @@ export function PandinoVisualizer({
               const cardinality = ref.cardinality || '1..1';
               const policy = ref.policy || 'static';
               const isMandatory = cardinality.startsWith('1');
-              const labelText = `${ref.name}\n[${cardinality}] ${policy}\n⚠️ MISSING`;
+
+              // BUILD CLEAR, PROMINENT LABEL for problematic references
+              const labelText = `⚠️ ${ref.name}\n[${cardinality}] ${policy}\nMISSING: ${ref.interface}`;
 
               // Create a phantom node for the missing service
               const phantomNodeId = `phantom-${ref.interface}-${serviceId}`;
@@ -304,35 +301,46 @@ export function PandinoVisualizer({
                 });
               }
 
-              // Broken reference - dashed line with warning color
+              // Broken reference - BOLD, PROMINENT styling with label
               newEdges.push({
                 id: `service-${serviceId}-ref-broken-${ref.name}`,
                 source: `service-${serviceId}`,
                 target: phantomNodeId,
                 type: 'smoothstep',
-                animated: false,
+                animated: true,  // Animate to draw attention
                 style: {
                   stroke: isMandatory ? '#f44336' : '#ff9800',  // Red for mandatory, orange for optional
-                  strokeWidth: 3,
-                  strokeDasharray: '8,4'  // Dashed for broken/inactive
+                  strokeWidth: 4,  // THICK line to stand out
+                  strokeDasharray: '10,5'  // Dashed for broken/inactive
                 },
                 label: labelText,
                 labelStyle: {
                   fill: isMandatory ? '#f44336' : '#ff9800',
                   fontWeight: 700,
-                  fontSize: 12,
+                  fontSize: 13,
                   fontFamily: 'monospace'
                 },
                 labelBgStyle: {
-                  fill: '#fff3e0',
-                  fillOpacity: 0.95
+                  fill: isMandatory ? '#ffebee' : '#fff3e0',
+                  fillOpacity: 0.98,
+                  stroke: isMandatory ? '#f44336' : '#ff9800',
+                  strokeWidth: 1.5,
                 },
-                labelBgPadding: [8, 5] as [number, number],
-                labelBgBorderRadius: 6,
+                labelBgPadding: [10, 6] as [number, number],
+                labelBgBorderRadius: 8,
                 markerEnd: {
                   type: MarkerType.ArrowClosed,
                   color: isMandatory ? '#f44336' : '#ff9800',
+                  width: 20,
+                  height: 20,
                 },
+                data: {
+                  refName: ref.name,
+                  cardinality,
+                  policy,
+                  satisfied: false,
+                  isMandatory,
+                }
               });
             }
           });
@@ -489,24 +497,6 @@ export function PandinoVisualizer({
                 return '#9c27b0';
               }}
             />
-            <Panel position="bottom-right">
-              <div className="pandino-legend">
-                <div className="legend-section">
-                  <div className="legend-section-title">Nodes</div>
-                  <div><span className="legend-color bundle-active"></span> Active Bundle</div>
-                  <div><span className="legend-color bundle-resolved"></span> Resolved Bundle</div>
-                  <div><span className="legend-color service"></span> Service</div>
-                  <div><span className="legend-color ds-component"></span> DS Component</div>
-                  <div><span className="legend-color missing-service"></span> Missing Service</div>
-                </div>
-                <div className="legend-section">
-                  <div className="legend-section-title">Edges</div>
-                  <div><span className="legend-line containment"></span> Bundle Contains</div>
-                  <div><span className="legend-line ds-reference-active"></span> Active Reference</div>
-                  <div><span className="legend-line ds-reference-broken"></span> Broken Reference</div>
-                </div>
-              </div>
-            </Panel>
           </ReactFlow>
         </div>
       ) : (

@@ -6,17 +6,37 @@ export default defineConfig(({ command }) => {
   if (command === 'serve') {
     // Development server configuration for demo
     return {
-      plugins: [react()],
+      plugins: [react({
+        babel: {
+          parserOpts: {
+            plugins: ['decorators-legacy']
+          }
+        }
+      })],
       root: './demo',
       server: {
         port: 8080,
       },
+      esbuild: {
+        tsconfigRaw: {
+          compilerOptions: {
+            experimentalDecorators: true,
+            emitDecoratorMetadata: true
+          }
+        }
+      }
     };
   }
 
   // Build configuration for standalone bundle
   return {
-    plugins: [react()],
+    plugins: [react({
+      babel: {
+        parserOpts: {
+          plugins: ['decorators-legacy']
+        }
+      }
+    })],
     build: {
       lib: {
         entry: resolve(__dirname, 'src/standalone.tsx'),
@@ -40,6 +60,14 @@ export default defineConfig(({ command }) => {
       emptyOutDir: true,
       sourcemap: true,
     },
+    esbuild: {
+      tsconfigRaw: {
+        compilerOptions: {
+          experimentalDecorators: true,
+          emitDecoratorMetadata: true
+        }
+      }
+    }
   };
 });
 

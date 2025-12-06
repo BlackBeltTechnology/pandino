@@ -10,9 +10,9 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
       "require": "./dist/pandino-visualizer.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/index.js"
     },
     "./standalone": "./dist/pandino-visualizer.js",
     "./style.css": "./dist/pandino-visualizer.css"

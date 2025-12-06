@@ -5,7 +5,8 @@
     "rootDir": "./src",
     "jsx": "react-jsx",
     "declaration": true,
-    "emitDeclarationOnly": false
+    "emitDeclarationOnly": false,
+    "experimentalDecorators": true
   },
   "include": ["src/**/*"]
 }
