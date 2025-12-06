@@ -21,7 +21,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build",
+    "build": "tsc && vite build",
     "build:lib": "vite build --config vite.config.lib.ts",
     "build:all": "pnpm build && pnpm build:lib",
     "build:dev": "vite build --mode development",

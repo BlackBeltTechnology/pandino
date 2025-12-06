@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, createElement } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import type { Bundle } from '@pandino/pandino';
 
@@ -10,14 +10,14 @@ export interface BundleNodeData {
   id: number;
 }
 
-export const BundleNode = memo(({ data }: NodeProps<BundleNodeData>) => {
-  const { label, version, state, id } = data;
+export const BundleNode = memo(({ data }: NodeProps) => {
+  const { label, version, state, id } = data as unknown as BundleNodeData;
 
   const stateClass = state.toLowerCase();
 
   return (
     <div className={`custom-node bundle-node bundle-${stateClass}`}>
-      <Handle type="target" position={Position.Top} />
+      {createElement(Handle as any, { type: 'target', position: Position.Top })}
 
       <div className="node-header">
         <div className="node-icon">📦</div>
@@ -38,7 +38,7 @@ export const BundleNode = memo(({ data }: NodeProps<BundleNodeData>) => {
         </div>
       </div>
 
-      <Handle type="source" position={Position.Bottom} />
+      {createElement(Handle as any, { type: 'source', position: Position.Bottom })}
     </div>
   );
 });
