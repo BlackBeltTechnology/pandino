@@ -1,5 +1,4 @@
-import type { Node, Edge } from '@xyflow/react';
-import type { ServiceReference } from '@pandino/pandino';
+import type { Node } from '@xyflow/react';
 
 /**
  * DS Component metadata extracted from decorator information
@@ -27,31 +26,12 @@ export interface DSReference {
 }
 
 /**
- * Extended edge data for DS references
- */
-export interface EdgeData {
-  refName: string;
-  cardinality: string;
-  policy: string;
-  satisfied: boolean;
-  isMandatory?: boolean;
-}
-
-/**
  * Framework event wrapper
  */
 export interface FrameworkEvent {
   type: 'service' | 'bundle';
   event: any;
   timestamp: number;
-}
-
-/**
- * Graph building result
- */
-export interface GraphResult {
-  nodes: Node[];
-  edges: Edge[];
 }
 
 /**
