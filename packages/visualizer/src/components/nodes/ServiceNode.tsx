@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo, useState, createElement } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import type { ServiceReference } from '@pandino/pandino';
 
@@ -27,18 +27,19 @@ export interface ServiceNodeData {
   } | null;
 }
 
-export const ServiceNode = memo(({ data }: NodeProps<ServiceNodeData>) => {
-  const { label, id, ranking, properties, interfaces, dsMetadata } = data;
+export const ServiceNode = memo(({ data }: NodeProps) => {
+  const { label, id, ranking, properties, interfaces, dsMetadata } = data as unknown as ServiceNodeData;
   const [expanded, setExpanded] = useState(false);
 
   const isComponent = dsMetadata?.isComponent || false;
   const isMissing = (data as any).isMissing || false;
+  const hasIssues = (data as any).hasIssues || false;
 
   if (isMissing) {
     // Render missing service placeholder
     return (
-      <div className="custom-node service-node" data-ismissing="true">
-        <Handle type="target" position={Position.Top} />
+      <div className="custom-node service-node node-missing">
+        {createElement(Handle as any, { type: 'target', position: Position.Top })}
 
         <div className="node-header">
           <div className="node-icon">⚠️</div>
@@ -58,14 +59,14 @@ export const ServiceNode = memo(({ data }: NodeProps<ServiceNodeData>) => {
           </div>
         </div>
 
-        <Handle type="source" position={Position.Bottom} />
+        {createElement(Handle as any, { type: 'source', position: Position.Bottom })}
       </div>
     );
   }
 
   return (
-    <div className={`custom-node service-node ${isComponent ? 'ds-component' : ''}`}>
-      <Handle type="target" position={Position.Top} />
+    <div className={`custom-node service-node ${isComponent ? 'ds-component' : ''} ${hasIssues ? 'node-has-issues' : ''}`}>
+      {createElement(Handle as any, { type: 'target', position: Position.Top })}
 
       <div className="node-header" onClick={() => setExpanded(!expanded)}>
         <div className="node-icon">{isComponent ? '🔷' : '⚙️'}</div>
@@ -165,7 +166,7 @@ export const ServiceNode = memo(({ data }: NodeProps<ServiceNodeData>) => {
         )}
       </div>
 
-      <Handle type="source" position={Position.Bottom} />
+      {createElement(Handle as any, { type: 'source', position: Position.Bottom })}
     </div>
   );
 });

@@ -186,14 +186,16 @@ export function createBrokenReferenceEdge(
 
 /**
  * Create reference edges for a service
+ * Returns edges and a flag indicating if there are missing required references
  */
 export function createReferenceEdges(
   serviceId: number,
   references: DSReference[],
   serviceNodeMap: ServiceNodeMap,
   nodes: Node[]
-): Edge[] {
+): { edges: Edge[]; hasMissingRequiredRefs: boolean } {
   const edges: Edge[] = [];
+  let hasMissingRequiredRefs = false;
 
   references.forEach((ref) => {
     let referenceFound = false;
@@ -217,6 +219,7 @@ export function createReferenceEdges(
 
       // Only show missing required references (skip optional ones with lower bound 0)
       if (isMandatory) {
+        hasMissingRequiredRefs = true;
         const phantomNodeId = `phantom-${ref.interface}-${serviceId}`;
 
         // Create phantom node if it doesn't exist
@@ -229,6 +232,6 @@ export function createReferenceEdges(
     }
   });
 
-  return edges;
+  return { edges, hasMissingRequiredRefs };
 }
 

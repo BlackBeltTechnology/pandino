@@ -3,13 +3,13 @@ import type { Node, Edge } from '@xyflow/react';
 import type { OSGiFramework, BundleEvent, ServiceEvent } from '@pandino/pandino';
 import type { FrameworkEvent, DSMetadata } from '../types';
 import { EVENT_LOG_MAX_ENTRIES } from '../constants';
-import { calculateLayout } from '../utils/layout';
+import { calculateLayout } from '../utils';
 import {
   createBundleNode,
   createServiceNode,
   createContainmentEdge,
   createReferenceEdges,
-} from '../utils/graph-builders';
+} from '../utils';
 
 /**
  * Custom hook to manage framework graph state
@@ -51,13 +51,18 @@ export function useFrameworkGraph(framework: OSGiFramework | null) {
         // Create reference edges if this is a DS component
         const dsMetadata = serviceNode.data.dsMetadata as DSMetadata | null;
         if (dsMetadata?.references && dsMetadata.references.length > 0) {
-          const referenceEdges = createReferenceEdges(
+          const { edges: referenceEdges, hasMissingRequiredRefs } = createReferenceEdges(
             serviceId,
             dsMetadata.references,
             serviceNodeMap,
             newNodes
           );
           newEdges.push(...referenceEdges);
+
+          // Mark service node if it has missing required references
+          if (hasMissingRequiredRefs) {
+            serviceNode.data.hasIssues = true;
+          }
         }
       });
     });
