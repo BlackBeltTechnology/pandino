@@ -562,42 +562,6 @@ function Demo() {
     };
   }, []);
 
-  async function installTestBundle() {
-    if (!framework) return;
-
-    const context = framework.getBundleContext();
-
-    try {
-      const bundle = await context.installBundle('test://com.example.test.bundle', {
-        headers: {
-          bundleSymbolicName: 'com.example.test.bundle',
-          bundleVersion: '2.0.0',
-          bundleName: 'Test Bundle',
-          bundleDescription: 'A test bundle for demonstration',
-        },
-        activator: {
-          start: async (ctx) => {
-            console.log('Test bundle started');
-            ctx.registerService('TestService', {
-              doSomething: () => 'Test service working!',
-              getName: () => 'Test Service Implementation',
-            }, {
-              'service.description': 'A test service',
-              'service.vendor': 'Demo',
-              'test.property': 'example-value',
-            });
-          },
-          stop: async () => {
-            console.log('Test bundle stopped');
-          },
-        },
-      });
-
-      await bundle.start();
-    } catch (error) {
-      console.error('Failed to install bundle:', error);
-    }
-  }
 
   if (loading) {
     return (
@@ -618,27 +582,7 @@ function Demo() {
   return (
     <div style={styles.container}>
       <PandinoVisualizerProvider>
-        <PandinoVisualizer framework={framework} defaultOpen={true} position="fullscreen">
-          <span style={styles.controlsSeparator}>|</span>
-          <span style={styles.controlsLabel}>🎮 Demo:</span>
-          <button onClick={installTestBundle} style={styles.controlButton}>
-            📦 Install Bundle
-          </button>
-          <button onClick={() => {
-            const context = framework.getBundleContext();
-            context.registerService('DynamicService', {
-              test: () => 'Dynamic service',
-            }, {
-              'service.description': 'Dynamically registered service',
-              'timestamp': Date.now(),
-            });
-          }} style={styles.controlButton}>
-            ⚙️ Register Service
-          </button>
-          <span style={styles.controlHint}>
-            <code style={styles.code}>Ctrl+Shift+V</code> to toggle
-          </span>
-        </PandinoVisualizer>
+        <PandinoVisualizer framework={framework} defaultOpen={true} position="fullscreen" />
       </PandinoVisualizerProvider>
     </div>
   );
@@ -649,44 +593,6 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100vw',
     height: '100vh',
     position: 'relative',
-  },
-  controlsSeparator: {
-    color: 'rgba(255, 255, 255, 0.3)',
-    margin: '0 8px',
-    fontSize: '16px',
-  },
-  controlsLabel: {
-    fontSize: '12px',
-    fontWeight: 600,
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginRight: '8px',
-  },
-  controlButton: {
-    background: 'rgba(255, 255, 255, 0.25)',
-    border: '1px solid rgba(255, 255, 255, 0.3)',
-    color: 'white',
-    padding: '6px 12px',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '11px',
-    fontWeight: '600',
-    transition: 'all 0.2s',
-    whiteSpace: 'nowrap',
-  },
-  controlHint: {
-    fontSize: '10px',
-    color: 'rgba(255, 255, 255, 0.7)',
-    marginLeft: '12px',
-    paddingLeft: '12px',
-    borderLeft: '1px solid rgba(255, 255, 255, 0.2)',
-  },
-  code: {
-    background: 'rgba(0, 0, 0, 0.2)',
-    padding: '2px 4px',
-    borderRadius: '3px',
-    fontSize: '9px',
-    fontFamily: 'monospace',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
   },
   loading: {
     display: 'flex',
