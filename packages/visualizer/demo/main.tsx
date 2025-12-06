@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { OSGiBootstrap, type OSGiFramework, LogLevel, getDecoratorInfo } from '@pandino/pandino';
-import { PandinoVisualizer, PandinoVisualizerProvider } from '../src/index.tsx';
+import { PandinoVisualizer, PandinoVisualizerProvider } from '../src/index';
 import { Component, Service, Reference } from '@pandino/decorators';
 
 // ============================================
@@ -35,15 +35,15 @@ class UserManager {
   })
   private logger?: any;
 
-  createUser(name: string) {
-    console.log(`Creating user: ${name}`);
+  createUser(_name: string) {
+    console.log(`Creating user: ${_name}`);
   }
 
-  deleteUser(id: string) {
-    console.log(`Deleting user: ${id}`);
+  deleteUser(_id: string) {
+    console.log(`Deleting user: ${_id}`);
   }
 
-  authenticate(username: string, password: string) {
+  authenticate(_username: string, _password: string) {
     return true;
   }
 }
@@ -83,11 +83,11 @@ class DataAccessLayerImpl {
   })
   private eventAdmin?: any;
 
-  query(sql: string) {
+  query(_sql: string) {
     return Promise.resolve([]);
   }
 
-  execute(sql: string) {
+  execute(_sql: string) {
     return Promise.resolve({ rowsAffected: 0 });
   }
 }
@@ -123,7 +123,7 @@ class NotificationServiceImpl {
     console.log(`Notification to ${to}: ${message}`);
   }
 
-  subscribe(topic: string, callback: Function) {
+  subscribe(topic: string, _callback: Function) {
     console.log(`Subscribed to: ${topic}`);
   }
 }
@@ -164,15 +164,15 @@ class AuthenticationServiceImpl {
   })
   private logger: any;
 
-  login(username: string, password: string) {
+  login(_username: string, _password: string) {
     return true;
   }
 
-  logout(token: string) {
+  logout(_token: string) {
     console.log('Logged out');
   }
 
-  validateToken(token: string) {
+  validateToken(_token: string) {
     return true;
   }
 }
@@ -204,15 +204,15 @@ class CacheServiceImpl {
   })
   private eventAdmin?: any;
 
-  get(key: string) {
+  get(_key: string) {
     return null;
   }
 
-  set(key: string, value: any, ttl: number) {
+  set(_key: string, _value: any, _ttl: number) {
     // Cache implementation
   }
 
-  invalidate(key: string) {
+  invalidate(_key: string) {
     // Invalidation logic
   }
 }
@@ -268,11 +268,11 @@ class ApiGatewayImpl {
   })
   private logger: any;
 
-  handleRequest(req: any) {
+  handleRequest(_req: any) {
     console.log('Handling request');
   }
 
-  registerRoute(path: string, handler: Function) {
+  registerRoute(_path: string, _handler: Function) {
     // Route registration
   }
 }
@@ -340,7 +340,7 @@ class EmailServiceImpl {
   })
   private eventAdmin?: any;
 
-  sendEmail(to: string, subject: string, body: string) {
+  sendEmail(to: string, subject: string, _body: string) {
     console.log(`Email to ${to}: ${subject}`);
   }
 }

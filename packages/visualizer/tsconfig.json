@@ -2,12 +2,12 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "jsx": "react-jsx",
     "declaration": true,
     "emitDeclarationOnly": false,
     "experimentalDecorators": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "demo/**/*"]
 }
 

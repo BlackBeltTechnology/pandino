@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, ReactNode, createElement } from 'react';
 import {
   ReactFlow,
   Node,
@@ -156,7 +156,7 @@ export function PandinoVisualizer({
               };
             }
           }
-        } catch (_error) {
+        } catch {
           // If we can't get the service instance, fall back to checking service properties
           // (for backwards compatibility with manually registered services)
           const componentName = serviceRef.getProperty('component.name');
@@ -484,10 +484,10 @@ export function PandinoVisualizer({
             minZoom={0.1}
             maxZoom={2}
           >
-            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-            <Controls />
-            <MiniMap
-              nodeColor={(node) => {
+            {createElement(Background as any, { variant: BackgroundVariant.Dots, gap: 12, size: 1 })}
+            {createElement(Controls as any)}
+            {createElement(MiniMap as any, {
+              nodeColor: (node: Node) => {
                 if (node.type === 'bundle') {
                   const state = node.data.state;
                   if (state === 'ACTIVE') return '#4caf50';
@@ -495,8 +495,8 @@ export function PandinoVisualizer({
                   return '#ff9800';
                 }
                 return '#9c27b0';
-              }}
-            />
+              }
+            })}
           </ReactFlow>
         </div>
       ) : (
