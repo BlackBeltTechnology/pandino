@@ -9,6 +9,7 @@ import {
   createServiceNode,
   createContainmentEdge,
   createReferenceEdges,
+  createFactoryEdge,
 } from '../utils';
 
 /**
@@ -65,6 +66,29 @@ export function useFrameworkGraph(framework: OSGiFramework | null) {
           }
         }
       });
+    });
+
+    // Create factory edges: Track services created by factory components
+    // Services created by factories have 'service.factoryPid' property
+    serviceNodeMap.forEach((serviceNode, serviceId) => {
+      const properties = serviceNode.data.properties as Record<string, any>;
+      const factoryPid = properties['service.factoryPid'];
+
+      if (factoryPid) {
+        // Find the factory service/component that has this factory PID
+        serviceNodeMap.forEach((potentialFactory, potentialFactoryId) => {
+          const factoryProps = potentialFactory.data.properties as Record<string, any>;
+          const factoryMetadata = potentialFactory.data.dsMetadata as DSMetadata | null;
+
+          // Check if this service is the factory (has component.factory matching the PID)
+          const isFactory = factoryProps['component.factory'] === factoryPid ||
+                           factoryMetadata?.factory === factoryPid;
+
+          if (isFactory && potentialFactoryId !== serviceId) {
+            newEdges.push(createFactoryEdge(potentialFactoryId, serviceId));
+          }
+        });
+      }
     });
 
     // Apply automatic layout

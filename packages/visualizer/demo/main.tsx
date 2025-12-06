@@ -376,6 +376,7 @@ class ReportGenerator {
   }
 }
 
+
 function Demo() {
   const [framework, setFramework] = useState<OSGiFramework | null>(null);
   const [loading, setLoading] = useState(true);
@@ -459,10 +460,11 @@ function Demo() {
 
         // Register component instances using the decorator metadata
         // The decorators store metadata using reflect-metadata
+        // NOTE: Factory components are NOT included here - they're registered separately below
         const componentInstances = [
           new UserManager(),
           new DataAccessLayerImpl(),
-          new NotificationServiceImpl(),
+          // NotificationServiceImpl is a FACTORY - registered separately below
           new AuthenticationServiceImpl(),
           new CacheServiceImpl(),
           new ApiGatewayImpl(),
@@ -493,6 +495,52 @@ function Demo() {
           } catch (error) {
             console.error('Failed to register component:', error);
           }
+        });
+
+        // ============================================
+        // DEMONSTRATE FACTORY COMPONENTS
+        // ============================================
+
+        log('Demonstrating factory component pattern...');
+
+        // Factory components create instances via Configuration Admin.
+        // For demo purposes, we'll manually create instances to show what they look like.
+
+        // Register the factory component metadata (shows the Factory badge)
+        const factoryMetadata = getDecoratorInfo(NotificationServiceImpl.prototype);
+        context.registerService('NotificationFactory', {
+          // Factory service that would create instances
+          createNotification: (config: any) => new NotificationServiceImpl(),
+        }, {
+          'service.vendor': 'Pandino Demo',
+          'service.description': 'Factory for creating notification service instances',
+          'component.name': factoryMetadata.component.name,
+          'component.factory': 'notification.factory',
+        });
+
+        // Create 2 instances to demonstrate what factory-created services look like
+        // In real usage, Configuration Admin would do this automatically
+        const notificationInstance1 = new NotificationServiceImpl();
+        const notificationInstance2 = new NotificationServiceImpl();
+
+        log('Creating factory instances (simulating Configuration Admin behavior)...');
+
+        // Register first instance with service.factoryPid to show factory relationship
+        context.registerService('NotificationService', notificationInstance1, {
+          'service.vendor': 'Pandino Demo',
+          'service.description': 'Notification service instance #1',
+          'service.pid': 'notification.factory.1',
+          'service.factoryPid': 'notification.factory',  // Links to factory
+          'notification.type': 'email',
+        });
+
+        // Register second instance
+        context.registerService('NotificationService', notificationInstance2, {
+          'service.vendor': 'Pandino Demo',
+          'service.description': 'Notification service instance #2',
+          'service.pid': 'notification.factory.2',
+          'service.factoryPid': 'notification.factory',  // Links to factory
+          'notification.type': 'sms',
         });
 
         if (mounted) {

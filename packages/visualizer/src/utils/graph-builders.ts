@@ -185,6 +185,32 @@ export function createBrokenReferenceEdge(
 }
 
 /**
+ * Create a factory edge (factory service -> created service instance)
+ */
+export function createFactoryEdge(
+  factoryServiceId: number,
+  createdServiceId: number
+): Edge {
+  return {
+    id: `factory-${factoryServiceId}-created-${createdServiceId}`,
+    source: `service-${factoryServiceId}`,
+    target: `service-${createdServiceId}`,
+    type: 'smoothstep',
+    animated: true,
+    style: EDGE_STYLES.FACTORY_CREATED,
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: EDGE_STYLES.FACTORY_CREATED.stroke,
+      width: 14,
+      height: 14,
+    },
+    data: {
+      edgeType: 'factory',
+    },
+  };
+}
+
+/**
  * Create reference edges for a service
  * Returns edges and a flag indicating if there are missing required references
  */

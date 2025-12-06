@@ -30,6 +30,11 @@ export const EDGE_STYLES = {
     stroke: '#ff9800',
     strokeWidth: 4,
   },
+  FACTORY_CREATED: {
+    stroke: '#9c27b0',
+    strokeWidth: 2,
+    opacity: 0.6,
+  },
 } as const;
 
 // Node colors
