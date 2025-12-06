@@ -207,16 +207,25 @@ export function createReferenceEdges(
       }
     });
 
-    // Create broken reference edge if not found
+    // Create broken reference edge ONLY if not found AND it's mandatory (required)
     if (!referenceFound) {
-      const phantomNodeId = `phantom-${ref.interface}-${serviceId}`;
+      const cardinality = ref.cardinality || '1..1';
 
-      // Create phantom node if it doesn't exist
-      if (!nodes.find((n) => n.id === phantomNodeId)) {
-        nodes.push(createPhantomNode(ref.interface || 'Unknown', serviceId));
+      // Parse lower bound from cardinality (e.g., "0..1" -> 0, "1..n" -> 1, "2..*" -> 2)
+      const lowerBound = parseInt(cardinality.split('..')[0], 10);
+      const isMandatory = !isNaN(lowerBound) && lowerBound >= 1;
+
+      // Only show missing required references (skip optional ones with lower bound 0)
+      if (isMandatory) {
+        const phantomNodeId = `phantom-${ref.interface}-${serviceId}`;
+
+        // Create phantom node if it doesn't exist
+        if (!nodes.find((n) => n.id === phantomNodeId)) {
+          nodes.push(createPhantomNode(ref.interface || 'Unknown', serviceId));
+        }
+
+        edges.push(createBrokenReferenceEdge(serviceId, phantomNodeId, ref));
       }
-
-      edges.push(createBrokenReferenceEdge(serviceId, phantomNodeId, ref));
     }
   });
 
