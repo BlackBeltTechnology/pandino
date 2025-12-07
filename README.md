@@ -177,13 +177,6 @@ A pattern that allows a bundle (fragment) to attach to another bundle (host) and
 
 [→ Fragment Pattern Documentation](./docs/fragment-pattern.md)
 
-## Troubleshooting
-
-### Reference Injection Issues
-Having trouble with `@Reference` not injecting services? Check these guides:
-
-- [Quick Start: Reference Cardinality](./docs/reference-cardinality-quickstart.md) - Fast solutions for common injection issues
-
 ## Use Cases
 
 | Scenario | Traditional Approach | Pandino Approach |
