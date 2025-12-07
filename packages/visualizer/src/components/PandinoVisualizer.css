@@ -403,6 +403,24 @@
   color: white;
 }
 
+.badge-consumer-only {
+  background: #ff9800;
+  color: white;
+}
+
+/* Consumer-only component styling */
+.service-node.consumer-only {
+  border-color: #ff9800;
+  background: white !important;
+}
+
+.service-node.consumer-only .node-header {
+  margin: -12px -12px 8px -12px;
+  padding: 8px 12px;
+  border-radius: 6px 6px 0 0;
+}
+
+
 .node-interfaces {
   display: flex;
   flex-wrap: wrap;

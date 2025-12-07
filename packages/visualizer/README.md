@@ -80,25 +80,143 @@ window.pandinoFramework = framework; // Expose framework
 
 ## 📖 API
 
-### PandinoVisualizer.init(framework)
+### PandinoVisualizerProvider
 
-Initialize the visualizer with a Pandino framework instance.
-
-```typescript
-PandinoVisualizer.init(framework);
-```
-
-### PandinoVisualizer.show()
-
-Show the visualizer panel.
+Context provider component that manages visualizer state.
 
 ```typescript
-PandinoVisualizer.show();
+import { PandinoVisualizerProvider } from '@pandino/visualizer';
+
+<PandinoVisualizerProvider>
+  {/* Your app components */}
+</PandinoVisualizerProvider>
 ```
 
-### PandinoVisualizer.hide()
+### PandinoVisualizer
 
-Hide the visualizer panel.
+Main visualizer component.
+
+**Props:**
+- `framework: OSGiFramework` - The Pandino framework instance (required)
+- `defaultOpen?: boolean` - Whether to show visualizer by default (default: `false`)
+- `position?: string` - Position of the visualizer panel:
+  - `'fullscreen'` (default) - Full screen overlay
+  - `'top-right'` - Docked to top-right corner
+  - `'top-left'` - Docked to top-left corner
+  - `'bottom-right'` - Docked to bottom-right corner
+  - `'bottom-left'` - Docked to bottom-left corner
+- `children?: ReactNode` - Custom content to add to the statistics panel
+
+```typescript
+<PandinoVisualizer
+  framework={framework}
+  defaultOpen={true}
+  position="fullscreen"
+/>
+```
+
+## 🎨 Decorator Support
+
+The visualizer automatically extracts and displays metadata from Pandino decorators:
+
+### ⚠️ Critical: @Component vs @Component + @Service
+
+Understanding this distinction is **fundamental** to OSGi Declarative Services:
+
+**@Component ONLY (Consumer Components):**
+- Component is **NOT** registered in the service registry
+- Cannot be referenced by other components via `@Reference`
+- Can still inject dependencies and use lifecycle methods
+- **Must** have `immediate=true` to activate
+- Use for: background workers, event listeners, internal utilities
+
+**@Component + @Service (Service Providers):**
+- Component **IS** registered in the service registry
+- Can be referenced by other components via `@Reference`
+- Can have `immediate=false` for lazy activation
+- Use for: service providers, shared APIs, business logic
+
+### Component Decorator (`@Component`)
+```typescript
+@Component({
+  name: 'MyComponent',           // Component name
+  immediate: true,               // Immediate activation
+  enabled: true,                 // Enabled state
+  scope: 'singleton',            // Component scope
+  configurationPolicy: 'require', // Config policy
+  configurationPid: 'my.config',  // Configuration PID
+  factory: 'my.factory'          // Factory ID
+})
+```
+
+### Service Decorator (`@Service`)
+```typescript
+@Service({
+  interfaces: ['MyService'],     // Service interfaces
+  scope: 'singleton'             // Service scope
+})
+```
+
+### Reference Decorator (`@Reference`)
+```typescript
+@Reference({
+  name: 'myRef',                 // Reference name
+  interface: 'TargetService',    // Target interface
+  cardinality: '1..1',           // 1..1, 0..1, 1..n, 0..n
+  policy: 'static',              // static or dynamic
+  policyOption: 'greedy',        // greedy or reluctant
+  target: '(prop=value)',        // LDAP filter
+  bind: 'bindMethod',            // Bind method name
+  unbind: 'unbindMethod',        // Unbind method name
+  updated: 'updatedMethod',      // Updated method name
+  field: 'fieldName',            // Field for injection
+  fieldOption: 'replace',        // replace or update
+  scope: 'bundle'                // bundle, prototype, prototype_required
+})
+```
+
+### Lifecycle Decorators
+```typescript
+@Activate
+activate() { /* Called when component activates */ }
+
+@Deactivate
+deactivate() { /* Called when component deactivates */ }
+
+@Modified
+modified() { /* Called when configuration changes */ }
+```
+
+## 🔍 Visual Elements
+
+### Nodes
+- **Bundle Node**: Represents an OSGi bundle with state, version, and symbolic name
+- **Service Node**: Represents a registered service with ID, ranking, and properties
+- **DS Component Node**: Service decorated with `@Component` - shows special badge and metadata
+- **Phantom Node**: Visual placeholder for missing required service dependencies
+
+### Edges
+- **Containment Edge**: Bundle → Service (gray solid line)
+- **Working Reference**: Service → Service dependency (blue solid line)
+- **Broken Mandatory Reference**: Service → Missing dependency (red dashed line, animated)
+- **Broken Optional Reference**: Not shown (optional dependencies don't block activation)
+- **Factory Edge**: Factory → Created instance (purple animated line)
+
+### Badges & Indicators
+- **🔷 DS Component**: Component decorated with `@Component`
+- **Factory: [id]**: Component is a factory
+- **Immediate**: Component activates immediately
+- **Disabled**: Component is disabled
+- **⚠️ MISSING SERVICE**: Required dependency not found
+
+## 📊 Statistics Panel
+
+The statistics panel shows real-time metrics:
+- Total number of bundles
+- Total number of services
+- Number of DS components
+- Active bundles
+- Framework state
 
 ```typescript
 PandinoVisualizer.hide();
@@ -161,21 +279,80 @@ PandinoVisualizer.clearEvents();
 
 ### Development & Debugging
 - Monitor service lifecycle during development
-- Debug service registration issues
-- Verify bundle states and dependencies
+- Debug service registration issues and missing dependencies
+- Verify DS component references and cardinalities
 - Track real-time framework events
+- Visualize component dependency graphs
 
 ### Production Monitoring
-- Health check dashboard
+- Health check dashboard for microservices
 - Service availability monitoring
-- Bundle lifecycle tracking
-- Performance insights
+- Component lifecycle tracking
+- Performance insights and bottleneck detection
 
 ### Learning & Documentation
-- Understand OSGi concepts visually
+- Understand OSGi Declarative Services visually
 - Explore service registry patterns
-- Study bundle interactions
-- Demonstrate framework capabilities
+- Study component interactions and dependencies
+- Demonstrate framework capabilities to teams
+
+## 🎮 Demo Examples
+
+The visualizer demo (`demo/main.tsx`) includes comprehensive examples showcasing **12 DS components** organized into three sections:
+
+### Section 1: Consumer-Only Components (@Component without @Service)
+
+These components consume services but don't provide any:
+
+1. **LoggerComponent** - Consumes LogService for internal logging
+2. **ConfigWatcher** - Monitors configuration changes
+3. **DataProcessor** - Processes data using DataStore and EventAdmin
+
+**Key characteristics:**
+- Not registered in service registry
+- Cannot be referenced by other components
+- Must have `immediate=true`
+
+### Section 2: Service Provider Components (@Component + @Service)
+
+These components are registered as services and can be referenced by others:
+
+4. **UserManager** - Provides UserManagerService with full lifecycle
+5. **DataAccessLayer** - Lazy-activated service with dynamic references
+6. **NotificationService** - Factory component creating multiple instances
+7. **AuthenticationService** - Bundle-scoped service with target filter
+8. **CacheService** - Service with multiple (0..n) references
+9. **ApiGateway** - Complex service with many dependencies
+
+**Key characteristics:**
+- Registered in service registry
+- Can be referenced via @Reference
+- Can be lazy (`immediate=false`) or immediate
+
+### Section 3: Broken Components (Error Demonstration)
+
+These demonstrate missing dependency handling:
+
+10. **PaymentProcessor** - Missing required PaymentGateway (❌ broken)
+11. **EmailService** - Missing optional MailServer (✅ OK to activate)
+12. **ReportGenerator** - Missing required multiple DataProviders (❌ broken)
+
+## 🎭 Running the Demo
+
+```bash
+# Install dependencies
+pnpm install
+
+# Run the visualizer demo
+cd packages/visualizer
+pnpm run dev
+```
+
+The demo includes:
+- **9 DS Components** with various configurations
+- **Real Pandino Framework** with decorator support
+- **Interactive Graph** showing all component relationships
+- **Live Examples** of missing dependencies and factory components
 
 ## 🛠️ Building from Source
 

@@ -43,6 +43,7 @@ export const NODE_COLORS = {
   BUNDLE_RESOLVED: '#2196f3',
   BUNDLE_OTHER: '#ff9800',
   SERVICE: '#9c27b0',
+  CONSUMER_ONLY: '#ff9800',
 } as const;
 
 // Keyboard shortcuts

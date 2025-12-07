@@ -60,6 +60,13 @@ export const GraphView = memo(({ nodes, edges }: GraphViewProps) => {
               if (state === 'RESOLVED') return NODE_COLORS.BUNDLE_RESOLVED;
               return NODE_COLORS.BUNDLE_OTHER;
             }
+            // Check if service node is a consumer-only component
+            if (node.type === 'service') {
+              const dsMetadata = (node.data as any).dsMetadata;
+              if (dsMetadata?.isComponent && (!dsMetadata?.service || dsMetadata.service.interfaces?.length === 0)) {
+                return NODE_COLORS.CONSUMER_ONLY;
+              }
+            }
             return NODE_COLORS.SERVICE;
           },
         })}

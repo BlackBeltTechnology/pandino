@@ -23,18 +23,49 @@ export function extractDSMetadata(
           isComponent: true,
           componentName: decoratorInfo.component.name || undefined,
           componentId: serviceId,
+
+          // Component properties
+          properties: decoratorInfo.configuration.properties,
+
+          // Service registration
+          service: decoratorInfo.service.interfaces.length > 0 ? {
+            interfaces: decoratorInfo.service.interfaces,
+            scope: decoratorInfo.service.scope || undefined,
+          } : undefined,
+
+          // Lifecycle methods
+          activate: decoratorInfo.lifecycle.activate || undefined,
+          deactivate: decoratorInfo.lifecycle.deactivate || undefined,
+          modified: decoratorInfo.lifecycle.modified || undefined,
+
+          // Configuration
+          configurationPid: decoratorInfo.configuration.pid || undefined,
+          configurationPolicy: decoratorInfo.configuration.policy,
+
+          // Factory support
           factory: decoratorInfo.component.factory.isFactory
             ? decoratorInfo.component.factory.id || undefined
             : undefined,
+
+          // Component behavior
           immediate: decoratorInfo.component.immediate,
-          configurationPolicy: decoratorInfo.configuration.policy,
-          configurationPid: decoratorInfo.configuration.pid || undefined,
-          references: decoratorInfo.references.map((ref: any) => ({
+          enabled: decoratorInfo.component.enabled,
+          scope: decoratorInfo.rawMetadata?.scope,
+
+          // References - map complete ReferenceDescriptor
+          references: decoratorInfo.references.map((ref) => ({
             name: ref.name,
             interface: ref.interface,
             cardinality: ref.cardinality,
             policy: ref.policy,
+            policyOption: ref.policyOption,
             target: ref.target,
+            bind: ref.bind,
+            unbind: ref.unbind,
+            updated: ref.updated,
+            field: ref.field,
+            fieldOption: ref.fieldOption,
+            scope: ref.scope,
           })),
         };
       }
@@ -67,28 +98,62 @@ function extractDSMetadataFromProperties(
       !k.includes('.interface') &&
       !k.includes('.cardinality') &&
       !k.includes('.policy') &&
-      !k.includes('.target')
+      !k.includes('.target') &&
+      !k.includes('.policyOption') &&
+      !k.includes('.bind') &&
+      !k.includes('.unbind') &&
+      !k.includes('.updated') &&
+      !k.includes('.field') &&
+      !k.includes('.fieldOption') &&
+      !k.includes('.scope')
   );
 
   const references = refKeys.map((key) => {
     const refName = key.replace('component.reference.', '');
     return {
       name: refName,
-      interface: serviceRef.getProperty(`${key}.interface`),
-      cardinality: serviceRef.getProperty(`${key}.cardinality`),
-      policy: serviceRef.getProperty(`${key}.policy`),
+      interface: serviceRef.getProperty(`${key}.interface`) || 'any',
+      cardinality: serviceRef.getProperty(`${key}.cardinality`) || '1..1',
+      policy: serviceRef.getProperty(`${key}.policy`) || 'static',
+      policyOption: serviceRef.getProperty(`${key}.policyOption`),
       target: serviceRef.getProperty(`${key}.target`),
+      bind: serviceRef.getProperty(`${key}.bind`),
+      unbind: serviceRef.getProperty(`${key}.unbind`),
+      updated: serviceRef.getProperty(`${key}.updated`),
+      field: serviceRef.getProperty(`${key}.field`),
+      fieldOption: serviceRef.getProperty(`${key}.fieldOption`),
+      scope: serviceRef.getProperty(`${key}.scope`),
     };
   });
+
+  // Extract service interfaces
+  const objectClass = serviceRef.getProperty('objectClass');
+  const interfaces = Array.isArray(objectClass) ? objectClass : [objectClass];
 
   return {
     isComponent: true,
     componentName,
     componentId,
+
+    properties: {},
+
+    service: {
+      interfaces,
+      scope: serviceRef.getProperty('service.scope'),
+    },
+
+    activate: serviceRef.getProperty('component.activate'),
+    deactivate: serviceRef.getProperty('component.deactivate'),
+    modified: serviceRef.getProperty('component.modified'),
+
     factory: serviceRef.getProperty('component.factory'),
     immediate: serviceRef.getProperty('component.immediate'),
-    configurationPolicy: serviceRef.getProperty('component.configuration.policy'),
+    enabled: serviceRef.getProperty('component.enabled'),
+    scope: serviceRef.getProperty('component.scope'),
+
+    configurationPolicy: serviceRef.getProperty('component.configuration.policy') || 'optional',
     configurationPid: serviceRef.getProperty('component.configuration.pid'),
+
     references,
   };
 }
