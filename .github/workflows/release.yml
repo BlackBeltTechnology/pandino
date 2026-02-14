@@ -2,13 +2,14 @@ name: release
 
 on:
   workflow_dispatch:
-    branches:
-      - master
     inputs:
-      type:
-        description: 'Release Type (not yet used, can be anything)'
+      version:
+        description: 'Explicit version number to release (e.g. 0.9.0)'
         required: true
-        default: 'patch'
+      branch:
+        description: 'Branch to create the release from'
+        required: true
+        default: 'master'
 
 jobs:
   release:
@@ -20,6 +21,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch }}
 
       - name: setup git config
         run: |
@@ -54,6 +57,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Set explicit version
+        run: |
+          VERSION="${{ inputs.version }}"
+          echo "Setting version to ${VERSION} across all workspace packages"
+          node -e "
+            const fs = require('fs');
+            const { execSync } = require('child_process');
+            const files = execSync('find packages -name package.json -not -path \"*/node_modules/*\"', { encoding: 'utf-8' }).trim().split('\n').filter(Boolean);
+            for (const file of files) {
+              const pkg = JSON.parse(fs.readFileSync(file, 'utf-8'));
+              if (pkg.version) {
+                pkg.version = '${VERSION}';
+                fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + '\n');
+                console.log('  Updated ' + pkg.name + ' -> ${VERSION}');
+              }
+            }
+          "
+
       - name: Build
         run: pnpm run build
 
@@ -62,3 +83,17 @@ jobs:
 
       - name: Publish
         run: npx changeset publish
+
+      - name: Create Git Tag
+        run: |
+          VERSION="${{ inputs.version }}"
+          git tag -a "v${VERSION}" -m "Release v${VERSION}"
+          git push origin "v${VERSION}"
+
+      - name: Create GitHub Release
+        run: |
+          VERSION="${{ inputs.version }}"
+          gh release create "v${VERSION}" \
+            --target "${{ inputs.branch }}" \
+            --title "v${VERSION}" \
+            --generate-notes
