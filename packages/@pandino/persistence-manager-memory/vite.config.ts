@@ -33,6 +33,12 @@ export default defineConfig(({ mode }) => ({
       formats,
       fileName: (format) => fileName[format],
     },
+    rollupOptions: {
+      external: [
+        '@pandino/pandino-api',
+        '@pandino/persistence-manager-api',
+      ],
+    },
   },
   plugins: [
     generateManifest(),

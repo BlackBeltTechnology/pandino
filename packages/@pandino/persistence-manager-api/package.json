@@ -44,6 +44,9 @@
   "files": [
     "dist"
   ],
+  "peerDependencies": {
+    "@pandino/pandino-api": ">=0.8.0"
+  },
   "devDependencies": {
     "@pandino/pandino-api": "workspace:^0.8.31",
     "dts-bundle-generator": "^8.1.2",

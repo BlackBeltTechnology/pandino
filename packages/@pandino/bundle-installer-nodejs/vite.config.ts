@@ -35,6 +35,7 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       external: [
+        '@pandino/pandino-api',
         'node:fs',
         'node:path',
         'node:url',

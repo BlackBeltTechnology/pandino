@@ -33,6 +33,14 @@ export default defineConfig(({ mode }) => ({
       formats,
       fileName: (format) => fileName[format],
     },
+    rollupOptions: {
+      external: [
+        '@pandino/event-api',
+        '@pandino/filters',
+        '@pandino/log-api',
+        '@pandino/pandino-api',
+      ],
+    },
   },
   plugins: [
     generateManifest(),

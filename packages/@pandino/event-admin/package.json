@@ -46,6 +46,12 @@
   "files": [
     "dist"
   ],
+  "peerDependencies": {
+    "@pandino/event-api": ">=0.8.0",
+    "@pandino/filters": ">=0.8.0",
+    "@pandino/log-api": ">=0.8.0",
+    "@pandino/pandino-api": ">=0.8.0"
+  },
   "devDependencies": {
     "@pandino/event-api": "workspace:^0.8.31",
     "@pandino/filters": "workspace:^0.8.31",

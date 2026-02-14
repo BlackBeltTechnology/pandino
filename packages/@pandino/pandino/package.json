@@ -48,6 +48,9 @@
   "files": [
     "dist"
   ],
+  "peerDependencies": {
+    "@pandino/pandino-api": ">=0.8.0"
+  },
   "dependencies": {
     "@pandino/filters": "workspace:^0.8.31"
   },

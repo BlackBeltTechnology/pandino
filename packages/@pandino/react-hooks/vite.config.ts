@@ -32,5 +32,16 @@ export default defineConfig(({ mode }) => ({
       formats,
       fileName: (format) => fileName[format],
     },
+    rollupOptions: {
+      external: ['react', 'react-dom', 'react/jsx-runtime', '@pandino/pandino-api'],
+      output: {
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM',
+          'react/jsx-runtime': 'jsxRuntime',
+          '@pandino/pandino-api': 'PandinoApi',
+        },
+      },
+    },
   },
 }));

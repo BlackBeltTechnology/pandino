@@ -41,6 +41,10 @@
   "files": [
     "dist"
   ],
+  "peerDependencies": {
+    "@pandino/pandino-api": ">=0.8.0",
+    "react": ">=17.0.0"
+  },
   "devDependencies": {
     "@pandino/pandino-api": "workspace:^0.8.31",
     "@types/react": "^18.0.26",

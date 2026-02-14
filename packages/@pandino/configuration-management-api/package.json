@@ -43,6 +43,10 @@
   "files": [
     "dist"
   ],
+  "peerDependencies": {
+    "@pandino/pandino-api": ">=0.8.0",
+    "@pandino/persistence-manager-api": ">=0.8.0"
+  },
   "devDependencies": {
     "@pandino/pandino-api": "workspace:^0.8.31",
     "@pandino/persistence-manager-api": "workspace:^0.8.31",
