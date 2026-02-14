@@ -8,6 +8,7 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/@pandino/event-admin.d.ts",
       "require": "./dist/@pandino/event-admin.cjs",
       "import": "./dist/@pandino/event-admin.mjs"
     }

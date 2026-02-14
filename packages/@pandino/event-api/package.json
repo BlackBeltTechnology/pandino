@@ -8,6 +8,7 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/@pandino/event-api.d.ts",
       "require": "./dist/@pandino/event-api.cjs",
       "import": "./dist/@pandino/event-api.mjs"
     }

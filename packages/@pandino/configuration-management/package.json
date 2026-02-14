@@ -8,6 +8,7 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/@pandino/configuration-management.d.ts",
       "require": "./dist/@pandino/configuration-management.cjs",
       "import": "./dist/@pandino/configuration-management.mjs"
     }

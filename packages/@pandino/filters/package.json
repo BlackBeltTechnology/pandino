@@ -8,6 +8,7 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/@pandino/filters.d.ts",
       "require": "./dist/@pandino/filters.cjs",
       "import": "./dist/@pandino/filters.mjs"
     }

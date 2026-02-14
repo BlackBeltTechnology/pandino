@@ -8,6 +8,7 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/@pandino/persistence-manager-memory.d.ts",
       "require": "./dist/@pandino/persistence-manager-memory.cjs",
       "import": "./dist/@pandino/persistence-manager-memory.mjs"
     }

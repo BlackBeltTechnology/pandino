@@ -8,6 +8,7 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/@pandino/bundle-installer-nodejs.d.ts",
       "require": "./dist/@pandino/bundle-installer-nodejs.cjs",
       "import": "./dist/@pandino/bundle-installer-nodejs.mjs"
     }

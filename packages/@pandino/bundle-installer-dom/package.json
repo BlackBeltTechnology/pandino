@@ -7,6 +7,7 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/@pandino/bundle-installer-dom.d.ts",
       "require": "./dist/@pandino/bundle-installer-dom.cjs",
       "import": "./dist/@pandino/bundle-installer-dom.mjs"
     }
