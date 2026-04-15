@@ -48,6 +48,8 @@ export default function pandinoBundle(options: PandinoBundleOptions = {}): Plugi
   const components = new Map<string, DiscoveredComponent>(); // key: moduleId#export
   let headers: Record<string, any> | null = null;
   let activatorPath: string | null = options.activator ? pathResolveWithRoot(rootDir, options.activator) : null;
+  // Vite sets this via the configResolved hook; Rollup leaves it as false
+  let isServe = false;
 
   function addComponent(comp: DiscoveredComponent) {
     const key = `${comp.id}#${comp.export}`;
@@ -61,6 +63,11 @@ export default function pandinoBundle(options: PandinoBundleOptions = {}): Plugi
 
     async options() {
       return null;
+    },
+
+    // Vite-only hook; Rollup silently ignores unknown hooks
+    configResolved(config: { command?: 'serve' | 'build' }) {
+      isServe = config?.command === 'serve';
     },
 
     async buildStart() {
@@ -78,8 +85,12 @@ export default function pandinoBundle(options: PandinoBundleOptions = {}): Plugi
         for (const f of found) addComponent(f);
       }
 
-      // Emit the virtual chunk so Rollup knows about it even if not explicitly imported as input
-      this.emitFile({ type: 'chunk', id: virtualId, name: path.basename(outputFile, path.extname(outputFile)) });
+      // Emit the virtual chunk so Rollup knows about it even if not explicitly imported as input.
+      // Skip in Vite serve mode — emitFile('chunk') is not supported there, and the virtual
+      // module is served on-the-fly via resolveId/load instead.
+      if (!isServe) {
+        this.emitFile({ type: 'chunk', id: virtualId, name: path.basename(outputFile, path.extname(outputFile)) });
+      }
     },
 
     resolveId(source) {
@@ -160,7 +171,7 @@ export default function pandinoBundle(options: PandinoBundleOptions = {}): Plugi
       // Nothing else to do here minimally.
       return;
     },
-  };
+  } as Plugin;
 }
 
 function toArray<T>(v: T | T[] | undefined): T[] {
