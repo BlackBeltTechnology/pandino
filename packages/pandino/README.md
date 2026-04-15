@@ -4,17 +4,48 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE.txt)
 
-Core TypeScript framework providing service registry, bundle system, and built-in services for modular applications.
+The core Pandino runtime: an OSGi-style service registry, bundle system, and built-in services for building modular TypeScript applications. Services discover each other dynamically at runtime instead of being statically wired at compile time.
 
-## 📦 Installation
+## Where it fits in the Pandino ecosystem
 
-```bash
-npm install @pandino/pandino
+```
+ @pandino/decorators            @pandino/rollup-bundle-plugin
+ (declare components) ──┐         (auto-package bundles)
+                        ▼                     │
+              ┌──────────────────────────┐    │
+              │   @pandino/pandino       │ ◀──┘
+              │   • Service Registry     │
+              │   • Bundle Lifecycle     │
+              │   • EventAdmin           │     @pandino/react-hooks
+              │   • ConfigurationAdmin   │ ──▶ (consume services in React)
+              │   • LogService           │
+              │   • SCR (runtime)        │
+              └──────────────────────────┘
 ```
 
-## ⚙️ TypeScript Configuration
+This package is the heart of any Pandino application. Every other package either produces artifacts it consumes (decorators, rollup plugin) or provides an adapter layer to interact with it (react-hooks).
 
-To use Pandino's decorators (`@Component`, `@Service`, `@Reference`, etc.) from the `@pandino/decorators` package, you must enable experimental decorators in your `tsconfig.json`:
+## Installation
+
+```bash
+npm install @pandino/pandino reflect-metadata
+```
+
+If you plan to use decorators, also install [`@pandino/decorators`](../decorators/README.md):
+
+```bash
+npm install @pandino/decorators
+```
+
+Import `reflect-metadata` once at your application's entry point:
+
+```typescript
+import 'reflect-metadata';
+```
+
+### TypeScript configuration
+
+Enable decorators and metadata emission in `tsconfig.json`:
 
 ```json
 {
@@ -25,23 +56,49 @@ To use Pandino's decorators (`@Component`, `@Service`, `@Reference`, etc.) from 
 }
 ```
 
-> ⚠️ **Important:** Without these settings, decorators will not work and you'll get TypeScript compilation errors.
->
-> For more information about available decorators, see the [decorators package documentation](../decorators/README.md).
+## Core concepts
 
-## Quick Start
+### Services and service references
+
+A **service** is any object registered in Pandino's central registry under one or more interface names. Consumers don't import service implementations directly — they look them up by interface, optionally filtering by properties.
+
+| Concept                 | What it is                                  | Analogy                     |
+| ----------------------- | ------------------------------------------- | --------------------------- |
+| **Service**             | The object that does the work               | A person you want to call   |
+| **Service Reference**   | A handle used to look up and release access | The phone-book entry        |
+| **Service Registration**| Handle returned when you publish a service  | Your listing in the book    |
+
+### Bundles
+
+A **bundle** is a self-contained module with its own lifecycle (`install`, `start`, `stop`, `uninstall`). Each bundle can publish services, consume services, and register event listeners through a `BundleContext`. Bundles are the unit of modularity in Pandino.
+
+### Dynamic dependencies
+
+Services can appear and disappear at runtime. Dependents are wired automatically as soon as their requirements become available — bundle start-up order does not matter.
+
+### Declarative services (SCR)
+
+The **Service Component Runtime** activates classes annotated with `@Component` (from `@pandino/decorators`) and resolves their `@Reference` dependencies automatically. This eliminates the boilerplate of manual `registerService()` calls.
+
+## Quick start
+
+### 1. Bootstrap the framework
 
 ```typescript
+import 'reflect-metadata';
 import { OSGiBootstrap, LogLevel } from '@pandino/pandino';
 
-// 1. Start the framework
 const bootstrap = new OSGiBootstrap({
   frameworkLogLevel: LogLevel.INFO,
 });
+
 const framework = await bootstrap.start();
 const context = framework.getBundleContext();
+```
 
-// 2. Define and register a service
+### 2. Register and consume a service imperatively
+
+```typescript
 interface GreetingService {
   sayHello(name: string): string;
 }
@@ -52,90 +109,176 @@ class SimpleGreetingService implements GreetingService {
   }
 }
 
-const service = new SimpleGreetingService();
-context.registerService('GreetingService', service);
+// Publish
+const registration = context.registerService('GreetingService', new SimpleGreetingService());
 
-// 3. Find and use the service
-const serviceRef = context.getServiceReference<GreetingService>('GreetingService');
-const greetingService = context.getService(serviceRef)!;
+// Look up
+const ref = context.getServiceReference<GreetingService>('GreetingService')!;
+const service = context.getService(ref)!;
+console.log(service.sayHello('World'));
 
-console.log(greetingService.sayHello('World')); // "Hello, World!"
-
-// 4. Clean shutdown
-await bootstrap.stop();
+// Clean up
+context.ungetService(ref);
+registration.unregister();
 ```
 
-## Core Concepts
-
-### Services vs Service References
-
-| Component             | Purpose                              | Analogy                            |
-| --------------------- | ------------------------------------ | ---------------------------------- |
-| **Service**           | The actual object that does the work | The person you want to call        |
-| **Service Reference** | A pointer/handle to find the service | The phone number in the phone book |
+### 3. Or declare a component with decorators
 
 ```typescript
-// The service - does the actual work
-const service = new SimpleGreetingService();
+import { Component, Service, Reference, Activate } from '@pandino/decorators';
+import type { LogService } from '@pandino/pandino';
 
-// Register it - puts it in the "phone book"
-context.registerService('GreetingService', service);
+@Component({ name: 'greeting.service', immediate: true })
+@Service({ interfaces: ['GreetingService'] })
+export class GreetingServiceImpl implements GreetingService {
+  @Reference({ interface: 'LogService' })
+  private logger!: LogService;
 
-// Get a reference - look up the "phone number"
-const serviceRef = context.getServiceReference<GreetingService>('GreetingService');
+  @Activate
+  activate(): void {
+    this.logger.info('GreetingService ready');
+  }
 
-// Get the service - make the "phone call"
-const greetingService = context.getService(serviceRef);
+  sayHello(name: string): string {
+    return `Hello, ${name}!`;
+  }
+}
 ```
 
-### Service Configuration
+Decorated classes are activated by the SCR when they are included in a bundle. See the [`@pandino/decorators`](../decorators/README.md) and [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md) documentation for how to ship them as bundles.
 
-Services carry configuration metadata for powerful discovery:
+## Service properties and LDAP filters
+
+Services carry metadata. Consumers can select specific implementations using LDAP filter expressions:
 
 ```typescript
-// Register services with rich metadata
 context.registerService('DatabaseService', new MySQLService(), {
   'db.type': 'mysql',
   'db.host': 'localhost',
-  'db.port': 3306,
   'service.ranking': 100,
 });
 
-// Find services using LDAP filters
-const mysqlRefs = context.getServiceReferences<DatabaseService>('DatabaseService', '(db.type=mysql)');
+const refs = context.getServiceReferences<DatabaseService>('DatabaseService', '(db.type=mysql)');
 ```
 
-### Bundle System
+Common filter forms:
 
-Bundles are self-contained modules with their own lifecycle:
+| Filter                                  | Matches                            |
+| --------------------------------------- | ---------------------------------- |
+| `(db.type=mysql)`                       | MySQL database services            |
+| `(service.ranking>=100)`                | High-priority services             |
+| `(&(db.host=localhost)(db.port>=3000))` | Local services on ports ≥ 3000     |
+| `(\|(category=urgent)(priority=1))`     | Urgent OR priority-1 services      |
+
+When multiple services are registered under the same interface, the one with the highest `service.ranking` wins by default.
+
+## Built-in services
+
+These services are registered by the framework itself and are available through the bundle context as soon as it is started.
+
+### LogService
+
+Centralised logging with bundle-aware context.
 
 ```typescript
-// database-bundle.ts
+const logRef = context.getServiceReference<LogService>('LogService')!;
+const logger = context.getService(logRef)!;
+
+logger.info('Server starting', undefined, { port: 8080 });
+```
+
+### EventAdmin
+
+Topic-based publish–subscribe messaging.
+
+```typescript
+import { EventAdmin, Event } from '@pandino/pandino';
+
+const eventAdmin = context.getService(context.getServiceReference<EventAdmin>('EventAdmin')!)!;
+
+// Publish
+eventAdmin.sendEvent(new Event('user/login', { userId: '123' }));
+
+// Subscribe
+context.registerService('EventHandler', {
+  handleEvent: (event) => console.log(event.getTopic(), event.getProperty('userId')),
+}, {
+  'event.topics': 'user/*',
+});
+```
+
+### ConfigurationAdmin
+
+Runtime configuration updates delivered to `ManagedService` instances.
+
+```typescript
+import type { ConfigurationAdmin, ManagedService } from '@pandino/pandino';
+
+const configAdmin = context.getService(context.getServiceReference<ConfigurationAdmin>('ConfigurationAdmin')!)!;
+
+const config = await configAdmin.getConfiguration('database.connection');
+await config.update({ host: 'localhost', port: 5432 });
+
+// Services can receive updates by implementing ManagedService
+class DatabaseService implements ManagedService {
+  updated(props: Record<string, any> | null): void {
+    if (props) this.reconnect(props);
+  }
+}
+context.registerService('DatabaseService', new DatabaseService(), {
+  'service.pid': 'database.connection',
+});
+```
+
+### ServiceTracker
+
+A helper that tracks the availability of services matching an interface or filter.
+
+```typescript
+import { ServiceTracker } from '@pandino/pandino';
+
+const tracker = new ServiceTracker<DatabaseService>(context, 'DatabaseService', {
+  addingService: (ref) => context.getService(ref),
+  removedService: (ref) => context.ungetService(ref),
+});
+
+tracker.open();
+const current = tracker.getService();
+```
+
+### ServiceComponentRuntime (SCR)
+
+Activates and manages declaratively defined components. You usually don't interact with it directly — bundles register their components via SCR automatically. For manual control:
+
+```typescript
+import type { BundleActivator, BundleContext, ServiceComponentRuntime } from '@pandino/pandino';
+
+const activator: BundleActivator = {
+  async start(context: BundleContext) {
+    const scr = context.getService(context.getServiceReference<ServiceComponentRuntime>('ServiceComponentRuntime')!)!;
+    const bundleId = context.getBundle().getBundleId();
+    await scr.registerComponent(GreetingServiceImpl, bundleId);
+  },
+};
+```
+
+## Writing a bundle
+
+A bundle is a plain module whose default export describes itself:
+
+```typescript
 import type { BundleActivator, BundleContext } from '@pandino/pandino';
 
 class DatabaseService {
-  connect() {
-    console.log('Database connected');
-  }
-  query(sql: string) {
-    return [{ id: 1, name: 'Test' }];
-  }
+  query(sql: string) { /* ... */ }
 }
 
 const activator: BundleActivator = {
-  serviceRegistration: null,
-
   async start(context: BundleContext) {
-    const dbService = new DatabaseService();
-    this.serviceRegistration = context.registerService('DatabaseService', dbService);
-    console.log('Database bundle started');
+    context.registerService('DatabaseService', new DatabaseService());
   },
-
-  async stop(context: BundleContext) {
-    if (this.serviceRegistration) {
-      this.serviceRegistration.unregister();
-    }
-    console.log('Database bundle stopped');
+  async stop() {
+    // optional manual cleanup; services registered via the context are released automatically
   },
 };
 
@@ -146,351 +289,64 @@ export default {
     bundleName: 'Database Bundle',
   },
   activator,
+  components: [
+    // classes decorated with @Component — optional
+  ],
 };
 ```
 
-### Fragment Bundles
+Bundles can be loaded at startup by passing them to the bootstrap, installed via `context.installBundle()`, or produced automatically by the [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md).
 
-Fragments are special bundles that attach to a host bundle and contribute their resources directly to the host:
+### Fragment bundles
+
+A **fragment** is a bundle that attaches to a host and contributes components or resources without its own lifecycle. Typical uses: localisation packs, platform-specific overrides, theming.
 
 ```typescript
-// localization-fragment.ts
-import GermanTranslations from './translations/de.json';
-
 export default {
   headers: {
     bundleSymbolicName: 'com.example.database.german',
     bundleVersion: '1.0.0',
-    // Specify the host bundle this fragment attaches to
     fragmentHost: 'com.example.database',
   },
-  // Activator is ignored for fragments
-  activator: {
-    start: async () => {},
-    stop: async () => {},
-  },
-  // Components will be merged with the host's components
-  components: [{ name: 'GermanTranslations', translations: GermanTranslations }],
+  activator: { start: async () => {}, stop: async () => {} },
+  components: [{ name: 'GermanTranslations', translations: {/* ... */} }],
 };
 ```
 
-Fragments are useful for:
-
-- **Localization**: Adding language packs to a host bundle
-- **Platform-specific code**: Providing different implementations for different environments
-- **Adding components**: Extending a bundle with new services without modifying its code
-- **Theming**: Applying different visual styles to UI components
-
-For more details, see the [Fragment Pattern Documentation](../../docs/fragment-pattern.md).
-
-### Dynamic Dependencies
-
-> 🚀 Bundle registration order doesn't matter! Dependencies resolve automatically.
-
-```typescript
-// This works fine - API bundle can start before Database bundle!
-await apiBundle.start(); // ✅ Starts, waits for database service
-await databaseBundle.start(); // ✅ API bundle automatically gets database service
-```
-
-## Built-in Services
-
-### EventAdmin: Publish-Subscribe Messaging
-
-```typescript
-import { EventAdmin, Event } from '@pandino/pandino';
-
-const eventAdminRef = context.getServiceReference<EventAdmin>('EventAdmin');
-const eventAdmin = context.getService(eventAdminRef)!;
-
-// Send events
-eventAdmin.sendEvent(
-  new Event('user/login', {
-    userId: '123',
-    username: 'john.doe',
-  }),
-);
-
-// Register event handler
-context.registerService('EventHandler', new UserEventHandler(), {
-  'event.topics': 'user/*', // Listen to all user events
-  'event.filter': '(amount>=100)', // Only high-value events
-});
-```
-
-### ConfigAdmin: Dynamic Configuration Management
-
-```typescript
-const configAdmin = context.getService(context.getServiceReference<ConfigurationAdmin>('ConfigurationAdmin'))!;
-
-// Create/update configuration
-const config = await configAdmin.getConfiguration('database.connection');
-await config.update({
-  host: 'localhost',
-  port: 5432,
-  maxConnections: 20,
-});
-
-// Receive configuration updates
-class DatabaseService implements ManagedService {
-  updated(properties: Record<string, any> | null): void {
-    if (properties) {
-      this.reconnectWithNewSettings(properties);
-    }
-  }
-}
-
-context.registerService('DatabaseService', new DatabaseService(), {
-  'service.pid': 'database.connection',
-});
-```
-
-### LogService: Centralized Logging
-
-```typescript
-class WebServerBundleActivator implements BundleActivator {
-  private logger: LogService;
-
-  async start(context: BundleContext): Promise<void> {
-    const logServiceRef = context.getServiceReference<LogService>('LogService');
-    this.logger = context.getService(logServiceRef)!;
-
-    this.logger.info('Web server starting', undefined, { port: 8080 });
-    // Output: [2025-07-28T23:58:10.231Z] [web-server-bundle] INFO: Web server starting {"port":8080}
-  }
-}
-```
-
-### ServiceTracker: Simplified Service Discovery
-
-```typescript
-import { ServiceTracker } from '@pandino/pandino';
-
-class ApiService {
-  private dbTracker: ServiceTracker<DatabaseService>;
-
-  constructor(context: BundleContext) {
-    this.dbTracker = new ServiceTracker(context, 'DatabaseService', {
-      addingService: (ref) => {
-        const service = context.getService(ref);
-        console.log('Database service available');
-        return service;
-      },
-      removedService: (ref, service) => {
-        console.log('Database service removed');
-        context.ungetService(ref);
-      },
-    });
-  }
-
-  async start() {
-    this.dbTracker.open();
-  }
-
-  getCurrentDatabase(): DatabaseService | null {
-    return this.dbTracker.getService();
-  }
-}
-```
-
-## Declarative Services
-
-Eliminate boilerplate with TypeScript decorators:
-
-> **Note:** Decorators have been moved to a dedicated package `@pandino/decorators`. See the [decorators package documentation](../decorators/README.md) for installation and available decorators.
-
-### Reflection Helpers
-
-Pandino provides a comprehensive API to retrieve decorator data from components. The main function `getDecoratorInfo()` returns a complete structured
-representation of all decorator information:
-
-```typescript
-import { Component, Service, Reference } from '@pandino/decorators';
-import { getDecoratorInfo } from '@pandino/pandino';
-
-@Component({
-  name: 'example.component',
-  immediate: true,
-  configurationPid: 'example.config',
-})
-@Service({ interfaces: ['ExampleService'] })
-class ExampleComponent {
-  @Reference({ interface: 'LogService' })
-  private logger?: any;
-}
-
-// Get ALL decorator information in a single call
-const info = getDecoratorInfo(ExampleComponent);
-```
-
-#### Complete Decorator Information Structure
-
-The `getDecoratorInfo()` function returns a comprehensive `DecoratorInfo` object.
-
-### Basic Component Definition
-
-```typescript
-import { Component, Service, Activate, Deactivate } from '@pandino/decorators';
-
-@Component({ name: 'user.service' })
-@Service({ interfaces: ['UserService'] })
-class UserService {
-  private users = new Map<string, User>();
-
-  @Activate
-  activate() {
-    console.log('User service started');
-  }
-
-  @Deactivate
-  deactivate() {
-    this.users.clear();
-  }
-
-  createUser(userData: UserData): User {
-    const user = new User(userData);
-    this.users.set(user.id, user);
-    return user;
-  }
-}
-```
-
-### Dependency Injection
-
-```typescript
-@Component({ name: 'order.service' })
-@Service({ interfaces: ['OrderService'] })
-class OrderService {
-  @Reference({ interface: 'UserService', bind: 'setUserService' })
-  private userService?: UserService;
-
-  @Reference({ interface: 'PaymentService', bind: 'setPaymentService' })
-  private paymentService?: PaymentService;
-
-  setUserService(service: UserService) {
-    this.userService = service;
-  }
-
-  setPaymentService(service: PaymentService) {
-    this.paymentService = service;
-  }
-
-  async createOrder(userId: string, items: OrderItem[]): Promise<Order> {
-    const user = this.userService?.findUser(userId);
-    const order = new Order(user, items);
-    await this.paymentService?.processPayment(order);
-    return order;
-  }
-}
-```
-
-### Service Component Runtime (SCR)
-
-SCR automatically detects and registers components from bundle configurations:
-
-```typescript
-// bundle.ts - Automatic component registration
-export default {
-  headers: {
-    bundleSymbolicName: 'com.example.services',
-    bundleVersion: '1.0.0',
-  },
-  // Components are automatically registered by SCR
-  components: [UserService, OrderService],
-};
-```
-
-SCR acts as an extender for Pandino, tracking bundle lifecycle and managing registered components accordingly. When a bundle's state changes (resolved, active,
-stopping, uninstalled), SCR automatically handles component registration, deactivation, and removal.
-
-For manual registration, use the SCR service directly:
-
-```typescript
-import type { BundleActivator, BundleContext, ServiceComponentRuntime } from '@pandino/pandino';
-
-const activator: BundleActivator = {
-  async start(context: BundleContext) {
-    // Get SCR service from the service registry
-    const scrRef = context.getServiceReference<ServiceComponentRuntime>('ServiceComponentRuntime');
-    const scr = context.getService(scrRef)!;
-    const bundleId = context.getBundle().getBundleId();
-
-    // Register your components
-    await scr.registerComponent(UserService, bundleId);
-    await scr.registerComponent(OrderService, bundleId);
-
-    console.log('Components registered with SCR');
-  },
-};
-```
-
-## Advanced Features
-
-### LDAP Filtering
-
-| Filter                                  | Matches                       |
-| --------------------------------------- | ----------------------------- |
-| `(db.type=mysql)`                       | MySQL database services       |
-| `(service.ranking>=100)`                | High-priority services        |
-| `(&(db.host=localhost)(db.port>=3000))` | Local services on ports 3000+ |
-| `(\|(category=urgent)(priority=1))`     | Urgent OR priority 1 services |
-
-### Service Lifecycle Management
-
-```typescript
-// Services can be replaced at runtime
-const registration1 = context.registerService('CacheService', new RedisCache());
-const registration2 = context.registerService('CacheService', new MemoryCache(), {
-  'service.ranking': 200, // Higher priority
-});
-
-// Clients automatically get the highest-ranked service
-```
-
-### Bundle Best Practices
-
-Use environment variables for bundle metadata:
-
-```typescript
-// vite.config.ts
-import { defineConfig } from 'vite';
-import { readFileSync } from 'node:fs';
-
-const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'));
-
-export default defineConfig({
-  define: {
-    'import.meta.env.VITE_BUNDLE_NAME': JSON.stringify(packageJson.name),
-    'import.meta.env.VITE_BUNDLE_VERSION': JSON.stringify(packageJson.version),
-  },
-});
-
-// bundle.ts
-export default {
-  headers: {
-    bundleSymbolicName: import.meta.env.VITE_BUNDLE_NAME,
-    bundleVersion: import.meta.env.VITE_BUNDLE_VERSION,
-    bundleName: 'My Service Bundle',
-  },
-  activator,
-};
-```
-
-## API Reference
-
-### Core Interfaces
-
-- `BundleContext` - Service registry access and bundle management
-- `ServiceReference<T>` - Handle to discover and access services
-- `ServiceRegistration<T>` - Handle to manage registered services
-- `BundleActivator` - Bundle lifecycle management interface
-
-### Built-in Services
-
-- `EventAdmin` - Event publishing and subscription
-- `ConfigurationAdmin` - Dynamic configuration management
-- `LogService` - Centralized logging with bundle context
-- `ServiceComponentRuntime` - Declarative services management
+More details in the [Fragment Pattern documentation](../../docs/fragment-pattern.md).
+
+## Recommended patterns
+
+Common architectural patterns used with Pandino bundles:
+
+- [Extender pattern](../../docs/extender-pattern.md) — observe other bundles and react to their metadata.
+- [Whiteboard pattern](../../docs/whiteboard-pattern.md) — collect contributions as services instead of plugin registries.
+- [Fragment pattern](../../docs/fragment-pattern.md) — attach to a host bundle.
+- [Creating decorator extenders](../../docs/creating-decorator-extenders.md) — add your own decorator-driven behaviours.
+
+## Public API cheatsheet
+
+| Export                         | Purpose                                                |
+| ------------------------------ | ------------------------------------------------------ |
+| `OSGiBootstrap`                | Start and stop the framework                           |
+| `OSGiFramework`                | The running framework instance                         |
+| `BundleContext`                | Register / look up services, install bundles           |
+| `Bundle`, `BundleActivator`    | Bundle lifecycle model                                 |
+| `ServiceReference<T>`          | Handle used to look up and release a service           |
+| `ServiceRegistration<T>`       | Handle to unregister or update a registered service    |
+| `ServiceTracker<T>`            | Tracks service availability with customiser callbacks  |
+| `EventAdmin`, `Event`, `EventHandler` | Publish/subscribe messaging                      |
+| `ConfigurationAdmin`, `ManagedService`, `ManagedServiceFactory` | Runtime configuration |
+| `LogService`, `LogLevel`       | Framework-provided logger                              |
+| `ServiceComponentRuntime`, `ComponentContext` | Declarative-service runtime            |
+| `BUNDLE_STATES`, `SERVICE_EVENT_TYPES` | Lifecycle / event enumerations                 |
+| `getDecoratorInfo(ClassRef)`   | Inspect decorator metadata on a component class        |
+
+## Related packages
+
+- [`@pandino/decorators`](../decorators/README.md) — Decorator-based component declarations.
+- [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md) — Package your source files into Pandino bundles at build time.
+- [`@pandino/react-hooks`](../react-hooks/README.md) — Use Pandino services from React components.
 
 ## License
 

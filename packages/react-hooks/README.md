@@ -4,355 +4,236 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE.txt)
 
-React hooks and components for seamless integration with the Pandino framework. Build modular React applications where components can dynamically discover and use services.
+React bindings for the Pandino framework. Start the runtime, install bundles, and consume services from React components using a small set of hooks and helpers.
+
+## Where it fits in the Pandino ecosystem
+
+```
+                 ┌──────────────────────────┐
+                 │   @pandino/pandino       │
+                 │   (service registry,     │
+                 │    bundles, SCR)         │
+                 └────────────┬─────────────┘
+                              │ starts & wraps
+                              ▼
+                 ┌──────────────────────────┐
+                 │   @pandino/react-hooks   │
+                 │   <PandinoProvider>      │
+                 │   useService / useBundle │
+                 │   useServiceTracker ...  │
+                 └────────────┬─────────────┘
+                              │ consumed by
+                              ▼
+                        Your React tree
+```
+
+This package wraps the Pandino framework with a React context and exposes idiomatic hooks for service discovery, dynamic registration, and bundle introspection. It is the recommended integration layer for React applications built on Pandino.
 
 ## Installation
 
 ```bash
-npm install @pandino/pandino @pandino/react-hooks
+npm install @pandino/pandino @pandino/react-hooks reflect-metadata
 ```
 
-## Quick Start
+Peer dependencies: `react` and `react-dom` (v19+), `@pandino/pandino`.
+
+Import `reflect-metadata` once at the entry point of your application:
 
 ```typescript
+import 'reflect-metadata';
+```
+
+## Quick start
+
+### 1. Wrap your app with `PandinoProvider`
+
+```tsx
 // main.tsx
+import 'reflect-metadata';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { PandinoProvider } from '@pandino/react-hooks';
 import App from './App';
 
-// The provider handles framework initialization automatically
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <PandinoProvider bundles={[import('./bundles/greeting-service-bundle.ts')]}>
+    <PandinoProvider
+      bundles={[
+        import('./bundles/greeting-bundle'),
+        // ...more bundle modules
+      ]}
+    >
       <App />
     </PandinoProvider>
-  </StrictMode>
+  </StrictMode>,
 );
 ```
 
-```typescript
+The provider bootstraps the framework, installs every bundle module passed via `bundles`, and makes the `BundleContext` available through React context. Each entry is a dynamic `import()` returning a Pandino `BundleModule` — typically produced by [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md).
+
+### 2. Consume a service inside a component
+
+```tsx
 // App.tsx
-import React from 'react';
-import { useService, usePandinoContext } from '@pandino/react-hooks';
-
-interface GreetingService {
-  greet(name: string): string;
-  getWelcomeMessage(): string;
-}
-
-function App() {
-  const { bundleContext } = usePandinoContext();
-  const { service: greetingService, loading } = useService<GreetingService>('GreetingService');
-
-  if (loading || !greetingService) {
-    return <div>Loading greeting service...</div>;
-  }
-
-  return (
-    <div>
-      <h1>{greetingService.greet('React')}</h1>
-      <p>Framework Status: {bundleContext ? 'Connected' : 'Initializing'}</p>
-    </div>
-  );
-}
-
-export default App;
-```
-
-## React Hooks
-
-### usePandinoContext: Framework Access
-
-Access the framework instance and bundle context:
-
-```typescript
-import { usePandinoContext } from '@pandino/react-hooks';
-
-function FrameworkStatus() {
-  const { bundleContext, isInitialized } = usePandinoContext();
-
-  return (
-    <div>
-      <div className={`status-dot ${bundleContext ? 'connected' : 'disconnected'}`}></div>
-      <span>Framework: {bundleContext ? 'Connected' : 'Initializing...'}</span>
-    </div>
-  );
-}
-```
-
-### useService: Service Discovery
-
-Get a single service instance with loading state:
-
-```typescript
-import { useService } from '@pandino/react-hooks';
-
-function UserProfile({ userId }: { userId: string }) {
-  const { service: userService, loading } = useService<UserService>('UserService');
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    if (userService) {
-      userService.getUser(userId).then(setUser);
-    }
-  }, [userService, userId]);
-
-  if (loading || !userService) {
-    return <div>Loading user service...</div>;
-  }
-
-  if (!user) return <div>Loading user...</div>;
-
-  return <div>Welcome, {user.name}!</div>;
-}
-```
-
-## Real-World Component Examples
-
-### Service-Powered Greeting Component
-
-```typescript
-// components/Greeting.tsx
-import { useState } from 'react';
 import { useService } from '@pandino/react-hooks';
 
 interface GreetingService {
-  greet(name: string): string;
-  getRandomGreeting(name: string): string;
-  getWelcomeMessage(): string;
+  sayHello(name: string): string;
 }
 
-function Greeting({ name }: { name: string }) {
-  const { service: greetingService, loading } = useService<GreetingService>('GreetingService');
-  const [useRandomGreeting, setUseRandomGreeting] = useState(false);
+export default function App() {
+  const { service, loading, error } = useService<GreetingService>('GreetingService');
 
-  if (loading || !greetingService) {
-    return (
-      <div className="greeting-container">
-        <div className="loading-spinner"></div>
-        <p>Loading greeting service...</p>
-      </div>
-    );
-  }
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+  if (!service) return <p>GreetingService unavailable</p>;
 
-  const currentGreeting = useRandomGreeting
-    ? greetingService.getRandomGreeting(name)
-    : greetingService.greet(name);
-
-  return (
-    <div className="greeting-container">
-      <h2>{currentGreeting}</h2>
-      <p>{greetingService.getWelcomeMessage()}</p>
-
-      <button onClick={() => setUseRandomGreeting(!useRandomGreeting)}>
-        {useRandomGreeting ? '🎲 Random Mode ON' : '🎯 Standard Mode'}
-      </button>
-    </div>
-  );
+  return <h1>{service.sayHello('React')}</h1>;
 }
 ```
 
-### Bundle Information Display
+## Hooks
 
-```typescript
-// components/BundleInfo.tsx
-import React from 'react';
-import { usePandinoContext } from '@pandino/react-hooks';
-import { BUNDLE_STATES } from '@pandino/pandino';
+### `useService<T>(serviceClass, filter?)`
 
-function BundleInfo() {
-  const { bundleContext, isInitialized } = usePandinoContext();
-  const [refreshTrigger, setRefreshTrigger] = React.useState(0);
+Resolves a single service by interface name (and optional LDAP filter). Releases the service reference automatically when the component unmounts or the reference changes.
 
-  // Listen for bundle changes
-  React.useEffect(() => {
-    if (!bundleContext) return;
-
-    const bundleListener = {
-      bundleChanged: () => setRefreshTrigger(prev => prev + 1)
-    };
-
-    bundleContext.addBundleListener(bundleListener);
-    return () => bundleContext.removeBundleListener(bundleListener);
-  }, [bundleContext]);
-
-  const bundles = React.useMemo(() => {
-    if (!bundleContext || !isInitialized) return [];
-
-    return bundleContext.getBundles().map(bundle => ({
-      id: bundle.getBundleId(),
-      name: bundle.getSymbolicName(),
-      state: bundle.getState(),
-      version: bundle.getVersion()
-    }));
-  }, [bundleContext, isInitialized, refreshTrigger]);
-
-  return (
-    <div className="bundle-info">
-      <h3>Bundle Status</h3>
-      {bundles.map(bundle => (
-        <div key={bundle.id} className="bundle-item">
-          <span>{bundle.name} ({bundle.version})</span>
-          <span className={`state state-${bundle.state}`}>
-            {Object.entries(BUNDLE_STATES).find(([_, value]) => value === bundle.state)?.[0]}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
+```tsx
+const { service, loading, error } = useService<PaymentService>(
+  'PaymentService',
+  '(region=EU)',
+);
 ```
 
-## Advanced Patterns
+Returns `{ service, loading, error }`.
 
-### Dynamic Service Switching
+### `useServiceTracker<T>(serviceClass, filter?)`
 
-```typescript
-function PaymentComponent() {
-  const { service: paymentService, loading } = useService<PaymentService>('PaymentService');
-  const [paymentMethod, setPaymentMethod] = useState('credit-card');
+Tracks **all** services that match an interface (and optional filter). Re-renders whenever services appear, change, or disappear.
 
-  // Service registry automatically provides the highest-ranked service
-  // You can register multiple implementations with different rankings
+```tsx
+const { services, loading, error } = useServiceTracker<PluginService>('PluginService');
 
-  if (loading || !paymentService) {
-    return <div>Loading payment service...</div>;
-  }
-
-  return (
-    <div>
-      <select onChange={(e) => setPaymentMethod(e.target.value)}>
-        <option value="credit-card">Credit Card</option>
-        <option value="paypal">PayPal</option>
-      </select>
-      <button onClick={() => paymentService.processPayment(paymentMethod)}>
-        Pay Now
-      </button>
-    </div>
-  );
-}
+return (
+  <ul>
+    {services.map((plugin, i) => <li key={i}>{plugin.name}</li>)}
+  </ul>
+);
 ```
 
-### Service Availability Gates
+### `useRegisterService<T>(serviceClass, implementation, properties?)`
 
-```typescript
-function ProtectedFeature({ children }: { children: React.ReactNode }) {
-  const { service: authService } = useService<AuthService>('AuthService');
-  const { service: featureService } = useService<FeatureToggleService>('FeatureToggleService');
+Registers a service for the lifetime of the component. Useful when a React component itself wants to contribute a service to the registry.
 
-  if (!authService || !featureService) {
-    return <div>Loading required services...</div>;
+```tsx
+const { isRegistered, updateProperties } = useRegisterService('AnalyticsSink', {
+  track: (event) => console.log(event),
+}, { priority: 10 });
+```
+
+The service is unregistered automatically on unmount.
+
+### `useBundle(idOrSymbolicName)`
+
+Looks up a bundle by numeric id or symbolic name and exposes its lifecycle state.
+
+```tsx
+const { bundle, loading, error } = useBundle('com.example.database');
+if (bundle) console.log(bundle.getState());
+```
+
+### `useBundleContext()` / `usePandinoContext()`
+
+Low-level escape hatches that return the raw `BundleContext` or the full context value (`{ framework, bundleContext, isInitialized, error }`). Use them when you need APIs that don't have a dedicated hook.
+
+```tsx
+const context = useBundleContext();
+const refs = context?.getServiceReferences('EventHandler', '(event.topics=user/*)');
+```
+
+## Components
+
+### `<PandinoProvider>`
+
+Root provider. Accepts:
+
+| Prop              | Type                                | Purpose                                     |
+| ----------------- | ----------------------------------- | ------------------------------------------- |
+| `bundles`         | `Array<Promise<BundleModule>>`      | Bundle modules to install and start         |
+| `bootstrapConfig` | `BootstrapConfig` (optional)        | Forwarded to the Pandino `OSGiBootstrap`    |
+| `children`        | `ReactNode`                         | Your application                            |
+
+### `<BundleInfo bundleIdOrName>`
+
+Renders a bundle's id, symbolic name, version, and state. Pass a `children` render prop to customise the output; otherwise a default table is rendered.
+
+```tsx
+<BundleInfo bundleIdOrName="com.example.database" />
+```
+
+### `<ServiceConsumer serviceClass filter?>`
+
+Render-prop wrapper around `useService`. Handy when you prefer composition over hooks.
+
+```tsx
+<ServiceConsumer<GreetingService> serviceClass="GreetingService">
+  {({ service, loading }) =>
+    loading ? <Spinner /> : <h1>{service?.sayHello('world')}</h1>
   }
+</ServiceConsumer>
+```
 
-  if (!authService.isAuthenticated()) {
-    return <div>Please log in to access this feature.</div>;
-  }
+### `<ComponentProxy serviceClass filter? ...props>`
 
-  if (!featureService.isEnabled('premium-features')) {
-    return <div>This feature is not available.</div>;
-  }
+Resolves a service that is itself a React component (or React element) and renders it with the remaining props. Useful for plugin-style UIs where the rendered component is provided by a bundle.
 
+```tsx
+<ComponentProxy serviceClass="DashboardWidget" filter="(slot=primary)" user={user} />
+```
+
+## Common patterns
+
+### Gating UI on service availability
+
+```tsx
+function PremiumFeature({ children }: { children: React.ReactNode }) {
+  const { service: auth } = useService<AuthService>('AuthService');
+  const { service: flags } = useService<FeatureFlags>('FeatureFlags');
+
+  if (!auth || !flags) return <p>Loading...</p>;
+  if (!auth.isAuthenticated()) return <p>Please sign in.</p>;
+  if (!flags.isEnabled('premium')) return <p>Feature unavailable.</p>;
   return <>{children}</>;
 }
 ```
 
-### Bundle Lifecycle Management
+### Rendering a list from a whiteboard
 
-```typescript
-function AdminPanel() {
-  const { bundleContext } = usePandinoContext();
-  const [bundles, setBundles] = useState<Bundle[]>([]);
-
-  useEffect(() => {
-    if (bundleContext) {
-      setBundles(bundleContext.getBundles());
-    }
-  }, [bundleContext]);
-
-  const stopBundle = async (bundleId: number) => {
-    const bundle = bundles.find(b => b.getBundleId() === bundleId);
-    if (bundle) {
-      await bundle.stop();
-      setBundles(bundleContext.getBundles());
-    }
-  };
+```tsx
+function Toolbar() {
+  const { services: actions } = useServiceTracker<ToolbarAction>('ToolbarAction');
 
   return (
-    <div>
-      <h3>Bundle Management</h3>
-      {bundles.map(bundle => (
-        <div key={bundle.getBundleId()}>
-          <span>{bundle.getSymbolicName()}</span>
-          <button onClick={() => stopBundle(bundle.getBundleId())}>
-            Stop
-          </button>
-        </div>
+    <nav>
+      {actions.map((a) => (
+        <button key={a.id} onClick={a.invoke}>{a.label}</button>
       ))}
-    </div>
+    </nav>
   );
 }
 ```
 
-## Performance Tips
+### Filtering by service properties
 
-### Conditional Service Loading
-
-```typescript
-function ConditionalServiceComponent({ shouldLoad }: { shouldLoad: boolean }) {
-  // Only attempt to load service when needed
-  const { service, loading } = useService<ExpensiveService>(
-    shouldLoad ? 'ExpensiveService' : null
-  );
-
-  if (!shouldLoad) {
-    return <div>Feature disabled</div>;
-  }
-
-  if (loading) {
-    return <div>Loading service...</div>;
-  }
-
-  return <div>{service ? 'Service ready!' : 'Service unavailable'}</div>;
-}
+```tsx
+const { service: logger } = useService<LogService>('LogService', '(log.target=console)');
 ```
 
-### Service Result Caching
+## Related packages
 
-```typescript
-function CachedDataComponent() {
-  const { service: dataService } = useService<DataService>('DataService');
-  const [cachedData, setCachedData] = useState<Data[]>([]);
-  const [lastFetch, setLastFetch] = useState<number>(0);
-
-  useEffect(() => {
-    if (dataService && Date.now() - lastFetch > 60000) { // Cache for 1 minute
-      dataService.fetchData().then(data => {
-        setCachedData(data);
-        setLastFetch(Date.now());
-      });
-    }
-  }, [dataService, lastFetch]);
-
-  return <DataTable data={cachedData} />;
-}
-```
-
-## API Reference
-
-### Hooks
-
-- `usePandinoContext()` - Returns `{ bundleContext, isInitialized }`
-- `useService<T>(interface: string)` - Returns `{ service: T | null, loading: boolean }`
-
-### Components
-
-- `<PandinoProvider bundles={bundleImports}>` - Root provider that initializes framework with bundles
-
-### Types
-
-- `BundleContext` - Service registry access and bundle management
-- `Bundle` - Individual bundle instance with lifecycle methods
+- [`@pandino/pandino`](../pandino/README.md) — Core runtime. Every type the hooks return (`BundleContext`, `ServiceReference`, `Bundle`, ...) comes from there.
+- [`@pandino/decorators`](../decorators/README.md) — Declare the services you consume here.
+- [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md) — Package your bundles so they can be passed to `<PandinoProvider bundles={...} />`.
 
 ## License
 
