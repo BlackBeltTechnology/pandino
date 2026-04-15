@@ -4,7 +4,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE.txt)
 
-
 Core TypeScript framework providing service registry, bundle system, and built-in services for modular applications.
 
 ## 📦 Installation
@@ -37,7 +36,7 @@ import { OSGiBootstrap, LogLevel } from '@pandino/pandino';
 
 // 1. Start the framework
 const bootstrap = new OSGiBootstrap({
-  frameworkLogLevel: LogLevel.INFO
+  frameworkLogLevel: LogLevel.INFO,
 });
 const framework = await bootstrap.start();
 const context = framework.getBundleContext();
@@ -70,9 +69,9 @@ await bootstrap.stop();
 
 ### Services vs Service References
 
-| Component | Purpose | Analogy |
-|-----------|---------|---------|
-| **Service** | The actual object that does the work | The person you want to call |
+| Component             | Purpose                              | Analogy                            |
+| --------------------- | ------------------------------------ | ---------------------------------- |
+| **Service**           | The actual object that does the work | The person you want to call        |
 | **Service Reference** | A pointer/handle to find the service | The phone number in the phone book |
 
 ```typescript
@@ -99,14 +98,11 @@ context.registerService('DatabaseService', new MySQLService(), {
   'db.type': 'mysql',
   'db.host': 'localhost',
   'db.port': 3306,
-  'service.ranking': 100
+  'service.ranking': 100,
 });
 
 // Find services using LDAP filters
-const mysqlRefs = context.getServiceReferences<DatabaseService>(
-  'DatabaseService',
-  '(db.type=mysql)'
-);
+const mysqlRefs = context.getServiceReferences<DatabaseService>('DatabaseService', '(db.type=mysql)');
 ```
 
 ### Bundle System
@@ -118,8 +114,12 @@ Bundles are self-contained modules with their own lifecycle:
 import type { BundleActivator, BundleContext } from '@pandino/pandino';
 
 class DatabaseService {
-  connect() { console.log('Database connected'); }
-  query(sql: string) { return [{ id: 1, name: 'Test' }]; }
+  connect() {
+    console.log('Database connected');
+  }
+  query(sql: string) {
+    return [{ id: 1, name: 'Test' }];
+  }
 }
 
 const activator: BundleActivator = {
@@ -136,16 +136,16 @@ const activator: BundleActivator = {
       this.serviceRegistration.unregister();
     }
     console.log('Database bundle stopped');
-  }
+  },
 };
 
 export default {
   headers: {
     bundleSymbolicName: 'com.example.database',
     bundleVersion: '1.0.0',
-    bundleName: 'Database Bundle'
+    bundleName: 'Database Bundle',
   },
-  activator
+  activator,
 };
 ```
 
@@ -162,21 +162,20 @@ export default {
     bundleSymbolicName: 'com.example.database.german',
     bundleVersion: '1.0.0',
     // Specify the host bundle this fragment attaches to
-    fragmentHost: 'com.example.database'
+    fragmentHost: 'com.example.database',
   },
   // Activator is ignored for fragments
   activator: {
     start: async () => {},
-    stop: async () => {}
+    stop: async () => {},
   },
   // Components will be merged with the host's components
-  components: [
-    { name: 'GermanTranslations', translations: GermanTranslations }
-  ]
+  components: [{ name: 'GermanTranslations', translations: GermanTranslations }],
 };
 ```
 
 Fragments are useful for:
+
 - **Localization**: Adding language packs to a host bundle
 - **Platform-specific code**: Providing different implementations for different environments
 - **Adding components**: Extending a bundle with new services without modifying its code
@@ -190,7 +189,7 @@ For more details, see the [Fragment Pattern Documentation](../../docs/fragment-p
 
 ```typescript
 // This works fine - API bundle can start before Database bundle!
-await apiBundle.start();      // ✅ Starts, waits for database service
+await apiBundle.start(); // ✅ Starts, waits for database service
 await databaseBundle.start(); // ✅ API bundle automatically gets database service
 ```
 
@@ -205,31 +204,31 @@ const eventAdminRef = context.getServiceReference<EventAdmin>('EventAdmin');
 const eventAdmin = context.getService(eventAdminRef)!;
 
 // Send events
-eventAdmin.sendEvent(new Event('user/login', {
-  userId: '123',
-  username: 'john.doe'
-}));
+eventAdmin.sendEvent(
+  new Event('user/login', {
+    userId: '123',
+    username: 'john.doe',
+  }),
+);
 
 // Register event handler
 context.registerService('EventHandler', new UserEventHandler(), {
-  'event.topics': 'user/*',  // Listen to all user events
-  'event.filter': '(amount>=100)'  // Only high-value events
+  'event.topics': 'user/*', // Listen to all user events
+  'event.filter': '(amount>=100)', // Only high-value events
 });
 ```
 
 ### ConfigAdmin: Dynamic Configuration Management
 
 ```typescript
-const configAdmin = context.getService(
-  context.getServiceReference<ConfigurationAdmin>('ConfigurationAdmin')
-)!;
+const configAdmin = context.getService(context.getServiceReference<ConfigurationAdmin>('ConfigurationAdmin'))!;
 
 // Create/update configuration
 const config = await configAdmin.getConfiguration('database.connection');
 await config.update({
   host: 'localhost',
   port: 5432,
-  maxConnections: 20
+  maxConnections: 20,
 });
 
 // Receive configuration updates
@@ -242,7 +241,7 @@ class DatabaseService implements ManagedService {
 }
 
 context.registerService('DatabaseService', new DatabaseService(), {
-  'service.pid': 'database.connection'
+  'service.pid': 'database.connection',
 });
 ```
 
@@ -280,7 +279,7 @@ class ApiService {
       removedService: (ref, service) => {
         console.log('Database service removed');
         context.ungetService(ref);
-      }
+      },
     });
   }
 
@@ -306,15 +305,13 @@ Pandino provides a comprehensive API to retrieve decorator data from components.
 representation of all decorator information:
 
 ```typescript
-import {
-  Component, Service, Reference
-} from '@pandino/decorators';
+import { Component, Service, Reference } from '@pandino/decorators';
 import { getDecoratorInfo } from '@pandino/pandino';
 
 @Component({
   name: 'example.component',
   immediate: true,
-  configurationPid: 'example.config'
+  configurationPid: 'example.config',
 })
 @Service({ interfaces: ['ExampleService'] })
 class ExampleComponent {
@@ -399,7 +396,7 @@ export default {
     bundleVersion: '1.0.0',
   },
   // Components are automatically registered by SCR
-  components: [UserService, OrderService]
+  components: [UserService, OrderService],
 };
 ```
 
@@ -423,7 +420,7 @@ const activator: BundleActivator = {
     await scr.registerComponent(OrderService, bundleId);
 
     console.log('Components registered with SCR');
-  }
+  },
 };
 ```
 
@@ -431,12 +428,12 @@ const activator: BundleActivator = {
 
 ### LDAP Filtering
 
-| Filter | Matches |
-|--------|---------|
-| `(db.type=mysql)` | MySQL database services |
-| `(service.ranking>=100)` | High-priority services |
+| Filter                                  | Matches                       |
+| --------------------------------------- | ----------------------------- |
+| `(db.type=mysql)`                       | MySQL database services       |
+| `(service.ranking>=100)`                | High-priority services        |
 | `(&(db.host=localhost)(db.port>=3000))` | Local services on ports 3000+ |
-| `(\|(category=urgent)(priority=1))` | Urgent OR priority 1 services |
+| `(\|(category=urgent)(priority=1))`     | Urgent OR priority 1 services |
 
 ### Service Lifecycle Management
 
@@ -444,7 +441,7 @@ const activator: BundleActivator = {
 // Services can be replaced at runtime
 const registration1 = context.registerService('CacheService', new RedisCache());
 const registration2 = context.registerService('CacheService', new MemoryCache(), {
-  'service.ranking': 200  // Higher priority
+  'service.ranking': 200, // Higher priority
 });
 
 // Clients automatically get the highest-ranked service
@@ -473,9 +470,9 @@ export default {
   headers: {
     bundleSymbolicName: import.meta.env.VITE_BUNDLE_NAME,
     bundleVersion: import.meta.env.VITE_BUNDLE_VERSION,
-    bundleName: 'My Service Bundle'
+    bundleName: 'My Service Bundle',
   },
-  activator
+  activator,
 };
 ```
 

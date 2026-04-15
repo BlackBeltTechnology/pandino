@@ -28,13 +28,13 @@ pnpm test
 
 ## 🎯 What We Accept
 
-| Type | Examples |
-|------|----------|
-| 🐛 **Bug fixes** | Fix service registration race conditions |
-| ✨ **Features** | New built-in services, bundle lifecycle improvements |
-| 📚 **Documentation** | README improvements, code examples |
-| 🔧 **Tooling** | Build improvements, test utilities |
-| ⚡ **Performance** | Bundle startup optimizations |
+| Type                 | Examples                                             |
+| -------------------- | ---------------------------------------------------- |
+| 🐛 **Bug fixes**     | Fix service registration race conditions             |
+| ✨ **Features**      | New built-in services, bundle lifecycle improvements |
+| 📚 **Documentation** | README improvements, code examples                   |
+| 🔧 **Tooling**       | Build improvements, test utilities                   |
+| ⚡ **Performance**   | Bundle startup optimizations                         |
 
 ## 📝 Coding Standards
 
@@ -71,6 +71,7 @@ packages/
 ## 🐛 Bug Reports
 
 Include:
+
 - **Environment** - Node.js version, OS, package versions
 - **Steps to reproduce** - Minimal code example
 - **Expected vs actual behavior**

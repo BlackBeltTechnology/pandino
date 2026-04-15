@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 import pandinoBundle from '@pandino/rollup-bundle-plugin';
 
 // Read package.json to extract name and version
-const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
+const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'));
 
 // https://vitejs.dev/config/
 export default defineConfig({

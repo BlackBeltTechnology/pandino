@@ -169,8 +169,8 @@ function toArray<T>(v: T | T[] | undefined): T[] {
 }
 
 function makeFilter(include: string[], exclude: string[], rootDir: string) {
-  const includeMatchers = include.map((p) => picomatch(p, { cwd: rootDir, dot: true }));
-  const excludeMatchers = exclude.map((p) => picomatch(p, { cwd: rootDir, dot: true }));
+  const includeMatchers = include.map((p) => picomatch(p, { dot: true }));
+  const excludeMatchers = exclude.map((p) => picomatch(p, { dot: true }));
   return (id: string) => {
     const rel = normalizePath(path.isAbsolute(id) ? path.relative(rootDir, id) : id);
     if (excludeMatchers.some((m) => m(rel))) return false;

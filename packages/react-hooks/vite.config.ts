@@ -6,6 +6,7 @@ import pkg from './package.json';
 
 export default defineConfig(({ mode }) => {
   const isModeNotDev = mode !== 'development';
+  const peers = Object.keys(pkg.peerDependencies || {});
   return {
     base: '',
     build: {
@@ -17,7 +18,9 @@ export default defineConfig(({ mode }) => {
       minify: isModeNotDev,
       sourcemap: isModeNotDev,
       rollupOptions: {
-        external: Object.keys(pkg.peerDependencies || {}),
+        // Externalize peer deps and any of their subpaths (e.g. `react/jsx-runtime`),
+        // so Rolldown doesn't inline them as CJS with a broken `require()` shim.
+        external: (id) => peers.some((p) => id === p || id.startsWith(`${p}/`)),
         output: {
           // Disable chunking completely for a single artifact
           manualChunks: undefined,
@@ -31,7 +34,7 @@ export default defineConfig(({ mode }) => {
         exclude: ['**/node_modules/**', '**/__tests__/**', '**/*.test.ts', '**/*.test.tsx'],
         entryRoot: 'src',
         outDir: 'dist',
-        rollupTypes: true, // Bundle all types into a single file
+        rollupTypes: false,
       }),
     ],
   };

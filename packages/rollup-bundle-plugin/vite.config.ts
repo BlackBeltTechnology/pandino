@@ -34,7 +34,7 @@ export default defineConfig(() => {
         exclude: ['**/node_modules/**', '**/__tests__/**', '**/*.test.ts'],
         entryRoot: 'src',
         outDir: 'dist',
-        rollupTypes: true, // Bundle all types into a single file
+        rollupTypes: false,
       }),
     ],
   };

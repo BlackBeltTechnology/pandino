@@ -121,14 +121,15 @@ const translationUrls = bundle.findResources('i18n', '*.json');
 for (const url of translationUrls) {
   // Load the translation file
   fetch(url)
-    .then(response => response.json())
-    .then(translations => {
+    .then((response) => response.json())
+    .then((translations) => {
       // Process translations
     });
 }
 ```
 
 For host bundles, these methods search for resources in:
+
 1. The host bundle's own resources map
 2. The resources maps of any attached fragments
 
@@ -186,7 +187,7 @@ class UIManager {
   loadTranslations(locale: string) {
     const translationUrl = this.bundle.getResource(`i18n/${locale}.json`);
     if (translationUrl) {
-      return fetch(translationUrl).then(response => response.json());
+      return fetch(translationUrl).then((response) => response.json());
     }
     return Promise.resolve({});
   }
@@ -396,10 +397,7 @@ export class TranslationResourceProcessor implements FragmentResourceProcessor {
       }
 
       // Merge translations for this locale
-      Object.assign(
-        hostModule.default.translations[locale],
-        fragmentTranslations[locale]
-      );
+      Object.assign(hostModule.default.translations[locale], fragmentTranslations[locale]);
     }
 
     return true;

@@ -15,12 +15,14 @@ Pandino is an OSGi-style framework for TypeScript that provides modular architec
 ## Common Development Commands
 
 ### Build Commands
+
 - `pnpm build` - Build all packages recursively
 - `pnpm build:dev` - Build all packages in development mode
 - `pnpm build:pandino` - Build only the core pandino package
 - `pnpm build:react-hooks` - Build only the React hooks package
 
 ### Testing Commands
+
 - `pnpm test` - Run all tests using Vitest
 - `pnpm test:watch` - Run tests in watch mode
 - `pnpm test:coverage` - Run tests with coverage report
@@ -28,18 +30,21 @@ Pandino is an OSGi-style framework for TypeScript that provides modular architec
 - Individual package tests: `cd packages/<package-name> && pnpm test`
 
 ### Development Commands
+
 - `pnpm dev:example` - Start the example application
 - `pnpm lint` - Run oxlint for code linting
-- `pnpm format:write` - Format code using Biome
+- `pnpm format:write` - Format code using oxfmt
 
 ### Package Management
+
 - Uses pnpm workspaces with packages in `packages/` directory
-- Node.js >=22 and pnpm >=10 required
+- Node.js >=24 and pnpm >=10 required
 - Workspace dependencies use `workspace:*` protocol
 
 ## Project Architecture
 
 ### Core Packages Structure
+
 - `packages/pandino/` - Core framework (service registry, bundles, lifecycle management)
 - `packages/react-hooks/` - React integration with hooks and components
 - `packages/decorators/` - Decorators for Service Component Runtime (SCR)
@@ -57,6 +62,7 @@ Pandino is an OSGi-style framework for TypeScript that provides modular architec
 **Dynamic Dependencies**: Services can start in any order - dependencies are resolved automatically when services become available.
 
 ### Core Framework Structure (`packages/pandino/src/`)
+
 - `framework/` - Core framework implementation and bootstrap
 - `services/` - Built-in services (service registry, event admin, etc.)
 - `bundle/` - Bundle management and lifecycle
@@ -66,6 +72,7 @@ Pandino is an OSGi-style framework for TypeScript that provides modular architec
 ## Development Patterns
 
 ### Service Definition Pattern
+
 ```typescript
 // 1. Define interface
 interface MyService {
@@ -87,6 +94,7 @@ class MyServiceImpl implements MyService {
 ```
 
 ### Bundle Activator Pattern
+
 ```typescript
 export class BundleActivator {
   async start(context: BundleContext): Promise<void> {
@@ -109,12 +117,13 @@ export class BundleActivator {
 ## Code Quality Tools
 
 ### Formatting & Linting
-- **Biome**: Code formatting with 2-space indentation, 120 character line width
-- **oxlint**: Fast linting (Biome linter disabled in favor of oxlint)
+
+- **oxfmt**: Code formatting with 2-space indentation, 120 character line width
+- **oxlint**: Fast linting
 - **TypeScript**: Strict type checking with multiple tsconfig files
 
 ### Import Organization
-- Biome automatically organizes imports
+
 - Use `reflect-metadata` for decorator support
 - Peer dependency on `@pandino/decorators`
 
@@ -126,6 +135,7 @@ export class BundleActivator {
 - **Type Exports**: Proper TypeScript module resolution support
 
 ## Key Files for Understanding
+
 - `packages/pandino/src/framework/framework.ts` - Core framework implementation
 - `packages/pandino/src/services/` - Built-in service implementations
 - `packages/pandino/src/types/` - Type definitions for the entire system

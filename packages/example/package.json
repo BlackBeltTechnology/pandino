@@ -1,7 +1,7 @@
 {
   "name": "@pandino/example",
-  "description": "Example application demonstrating Pandino's dynamic service component runtime with React integration",
   "version": "0.9.20",
+  "description": "Example application demonstrating Pandino's dynamic service component runtime with React integration",
   "license": "EPL-2.0",
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
   "type": "module",
@@ -13,22 +13,22 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@mui/icons-material": "^7.3.1",
-    "@mui/material": "^7.3.1",
+    "@mui/icons-material": "^9.0.0",
+    "@mui/material": "^9.0.0",
     "@pandino/decorators": "workspace:*",
     "@pandino/pandino": "workspace:*",
     "@pandino/react-hooks": "workspace:*",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "react-router-dom": "^7.8.0"
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.1"
   },
   "devDependencies": {
     "@pandino/rollup-bundle-plugin": "workspace:*",
-    "@types/node": "^24.2.1",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "^5.9.2",
-    "vite": "^7.1.1"
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8"
   }
 }

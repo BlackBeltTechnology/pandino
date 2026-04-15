@@ -19,7 +19,7 @@ export default defineConfig({
         '**/*.d.ts',
         '**/test/**',
         '**/__tests__/**',
-        'src/test/setup.ts'
+        'src/test/setup.ts',
       ],
     },
   },

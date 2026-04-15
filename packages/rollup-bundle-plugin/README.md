@@ -41,16 +41,16 @@ import pandinoBundle from '@pandino/rollup-plugin-bundle';
 export default defineConfig({
   // ...
   plugins: [
-      pandinoBundle({
-          virtualId: 'pandino:bundle:alpha',
-          include: ['src/bundles/alpha/**/*.{ts,tsx}'],
-          activator: 'src/bundles/alpha/activator.ts',
-          headers: {
-              bundleSymbolicName: `${packageJson.name}.alpha`,
-              bundleVersion: packageJson.version,
-              bundleDescription: 'Alpha example bundle',
-          },
-      }),
+    pandinoBundle({
+      virtualId: 'pandino:bundle:alpha',
+      include: ['src/bundles/alpha/**/*.{ts,tsx}'],
+      activator: 'src/bundles/alpha/activator.ts',
+      headers: {
+        bundleSymbolicName: `${packageJson.name}.alpha`,
+        bundleVersion: packageJson.version,
+        bundleDescription: 'Alpha example bundle',
+      },
+    }),
   ],
 });
 ```

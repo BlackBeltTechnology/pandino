@@ -26,7 +26,7 @@ Services can be registered in several ways:
 context.registerService('DatabaseService', new MySQLService(), {
   'db.type': 'mysql',
   'db.host': 'localhost',
-  'service.ranking': 100
+  'service.ranking': 100,
 });
 ```
 
@@ -52,10 +52,7 @@ const serviceRef = context.getServiceReference<GreetingService>('GreetingService
 const greetingService = context.getService(serviceRef)!;
 
 // Or with filtering
-const mysqlRefs = context.getServiceReferences<DatabaseService>(
-  'DatabaseService',
-  '(db.type=mysql)'
-);
+const mysqlRefs = context.getServiceReferences<DatabaseService>('DatabaseService', '(db.type=mysql)');
 ```
 
 **React Hooks (for UI Components):**
@@ -86,7 +83,7 @@ const dbTracker = new ServiceTracker(context, 'DatabaseService', {
   removedService: (ref, service) => {
     console.log('Database service removed');
     context.ungetService(ref);
-  }
+  },
 });
 
 dbTracker.open();

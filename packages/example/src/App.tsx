@@ -12,7 +12,7 @@ const Alpha = lazy(() => import('./pages/Alpha'));
 const Beta = lazy(() => import('./pages/Beta'));
 
 const LoadingFallback = () => (
-  <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
     <CircularProgress />
   </Box>
 );

@@ -35,7 +35,7 @@ export default function AlphaPage() {
         </Typography>
       )}
       {!loading && !service && <Typography variant="body2">Service not available.</Typography>}
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center">
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ alignItems: 'center' }}>
         <TextField
           size="small"
           label="Name"
@@ -48,7 +48,7 @@ export default function AlphaPage() {
         </Button>
       </Stack>
       {message && (
-        <Box mt={2}>
+        <Box sx={{ mt: 2 }}>
           <Typography variant="body1">{message}</Typography>
         </Box>
       )}

@@ -1,41 +1,41 @@
 {
-    "name": "@pandino/decorators",
-    "version": "0.9.20",
-    "description": "Decorators for the Pandino framework.",
-    "license": "EPL-2.0",
-    "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
-    "main": "dist/decorators.cjs.js",
-    "module": "dist/decorators.es.js",
-    "types": "dist/index.d.ts",
-    "type": "module",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/decorators.es.js",
-            "require": "./dist/decorators.cjs.js"
-        }
-    },
-    "files": [
-        "dist/**/*"
-    ],
-    "scripts": {
-        "build": "tsc && vite build",
-        "build:dev": "tsc && vite build --mode development",
-        "prepublishOnly": "pnpm build",
-        "check:fix": "biome check ./src --write"
-    },
-    "peerDependencies": {
-        "reflect-metadata": "^0.2.2"
-    },
-    "devDependencies": {
-        "@types/node": "^24.2.1",
-        "@vitest/coverage-v8": "^3.2.4",
-        "@vitest/ui": "^3.2.4",
-        "http-server": "^14.1.1",
-        "jsdom": "^26.1.0",
-        "typescript": "^5.9.2",
-        "vite": "^7.1.1",
-        "vite-plugin-dts": "^4.5.4",
-        "vitest": "^3.2.4"
+  "name": "@pandino/decorators",
+  "version": "0.9.20",
+  "description": "Decorators for the Pandino framework.",
+  "license": "EPL-2.0",
+  "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "files": [
+    "dist/**/*"
+  ],
+  "type": "module",
+  "main": "dist/decorators.cjs.js",
+  "module": "dist/decorators.esm.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/decorators.esm.js",
+      "require": "./dist/decorators.cjs.js"
     }
+  },
+  "scripts": {
+    "build": "tsc && vite build",
+    "build:dev": "tsc && vite build --mode development",
+    "prepublishOnly": "pnpm build",
+    "check:fix": "oxlint --fix ./src && oxfmt --write ./src"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "@vitest/ui": "^4.1.4",
+    "http-server": "^14.1.1",
+    "jsdom": "^29.0.2",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.1.4"
+  },
+  "peerDependencies": {
+    "reflect-metadata": "^0.2.2"
+  }
 }

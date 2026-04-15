@@ -41,7 +41,7 @@ export default function BetaPage() {
         </Typography>
       )}
       {!loading && !service && <Typography variant="body2">Service not available.</Typography>}
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <Button variant="outlined" size="small" onClick={onDec} disabled={!service}>
           −
         </Button>

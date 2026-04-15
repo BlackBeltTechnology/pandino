@@ -55,7 +55,7 @@ export default {
     bundleVersion: '1.0.0',
   },
   // Components are automatically registered by SCR
-  components: [UserService, OrderService]
+  components: [UserService, OrderService],
 };
 ```
 
@@ -69,6 +69,7 @@ The SCR service in Pandino acts as the extender by:
 - Handling service registration and dependency injection
 
 When a bundle with decorated components is started, SCR:
+
 1. Detects the components through decorator metadata
 2. Processes the component configuration
 3. Manages service dependencies (via `@Reference` decorators)
@@ -117,6 +118,7 @@ class OrderService {
 ```
 
 In this example, SCR (the extender) handles:
+
 - Tracking when the component's bundle is started
 - Waiting for required services to be available
 - Injecting service dependencies
@@ -128,4 +130,5 @@ In this example, SCR (the extender) handles:
 The Extender Pattern, implemented through SCR in Pandino, brings the power of OSGi's dynamic modularity to TypeScript and browser environments. It enables a declarative approach to service components, reducing boilerplate code and allowing developers to focus on business logic while the framework handles the complex service lifecycle management.
 
 ## See also
+
 - Creating Decorator Extenders (Micro‑Extenders): [creating-decorator-extenders.md](./creating-decorator-extenders.md)

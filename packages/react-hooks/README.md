@@ -4,7 +4,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE.txt)
 
-
 React hooks and components for seamless integration with the Pandino framework. Build modular React applications where components can dynamically discover and use services.
 
 ## Installation

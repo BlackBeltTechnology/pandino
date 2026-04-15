@@ -3,6 +3,7 @@
 Build small extenders that react to component decorators and wire your own features (UI, views, routing, etc.) without re‑implementing SCR.
 
 What you use:
+
 - getDecoratorInfo(target) — one call for all decorator metadata.
 - EventAdmin — SCR posts component lifecycle events carrying DecoratorInfo.
 - Custom metadata — read your own reflect‑metadata without hard‑coding names.
@@ -13,9 +14,11 @@ See also:
 - [docs/whiteboard-pattern.md](./whiteboard-pattern.md) (EventAdmin)
 
 ## Event‑driven micro‑extender
+
 Subscribe to SCR topics so your extender reacts as components appear/change without re‑scanning.
 
 Topics to handle:
+
 - scr/component/registered
 - scr/component/activated
 - scr/component/deactivated
@@ -23,6 +26,7 @@ Topics to handle:
 - scr/component/config-updated
 
 Event properties (recommended):
+
 - bundle.id: number
 - bundle.symbolicName?: string
 - component.name: string
@@ -67,6 +71,7 @@ export class CustomDecoratorExtender implements EventHandler {
 ```
 
 ## Reading custom metadata (class, field, method)
+
 Define decorators in your app that store reflect‑metadata; SCR exposes them via DecoratorInfo.
 
 ```ts
@@ -101,16 +106,19 @@ const mtd = info.customMethodDecorators['doWork']?.['my:method'];
 ```
 
 Notes:
-- design:* and Pandino internal keys are filtered out from these maps.
+
+- design:\* and Pandino internal keys are filtered out from these maps.
 - Field names are inferred from DS references when present.
 
 ## Best practices
+
 - Keep extenders tiny and single‑purpose; filter early by topic/properties.
 - Cache results; invalidate on deactivated/removed.
 - Offload heavy work; use postEvent for async pipelines.
 - Prefer Whiteboard style: register as services and let the framework route events.
 
 ## References
+
 - [docs/extender-pattern.md](./extender-pattern.md) — Conceptual overview of SCR as an extender
 - [docs/whiteboard-pattern.md](./whiteboard-pattern.md) — EventAdmin and event handling
 - [packages/pandino/src/services/declarative-services/reflection.ts](../packages/pandino/src/services/declarative-services/reflection.ts) — getDecoratorInfo helpers

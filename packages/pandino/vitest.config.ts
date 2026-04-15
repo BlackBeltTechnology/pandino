@@ -10,7 +10,7 @@ export default defineConfig({
     include: [
       'src/**/*.{test,spec}.{ts,mts,tsx}',
       // Explicitly include tests under __tests__ directories
-      'src/**/__tests__/**/*.{test,spec}.{ts,mts,tsx}'
+      'src/**/__tests__/**/*.{test,spec}.{ts,mts,tsx}',
     ],
     exclude: ['**/node_modules/**', '**/dist/**'],
     coverage: {
@@ -24,7 +24,7 @@ export default defineConfig({
         '**/test/**',
         // keep excluding test sources from coverage, but discovery is allowed above
         '**/__tests__/**',
-        'src/test/setup.ts'
+        'src/test/setup.ts',
       ],
     },
   },

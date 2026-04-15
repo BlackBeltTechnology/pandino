@@ -10,26 +10,26 @@
 
 **Traditional DI vs Pandino Service Registry:**
 
-| Traditional DI | Pandino Service Registry |
-|----------------|-------------------------|
-| Static dependency injection | Dynamic service discovery |
-| Compile-time wiring | Runtime service resolution |
-| Hard-coded dependencies | LDAP-filtered service selection |
-| Single service per interface | Multiple ranked services |
-| Manual lifecycle management | Automatic service lifecycle |
+| Traditional DI               | Pandino Service Registry        |
+| ---------------------------- | ------------------------------- |
+| Static dependency injection  | Dynamic service discovery       |
+| Compile-time wiring          | Runtime service resolution      |
+| Hard-coded dependencies      | LDAP-filtered service selection |
+| Single service per interface | Multiple ranked services        |
+| Manual lifecycle management  | Automatic service lifecycle     |
 
 ## Key Features
 
-| Feature | What it Solves | Benefit |
-|---------|----------------|---------|
-| 🔌 **Service Registry** | Hard-coded dependencies between modules | Services discover each other dynamically |
-| 📦 **Bundle System** | Monolithic application architecture | Modular containers with independent lifecycles |
-| 🔄 **Dynamic Dependencies** | Startup order dependencies | Bundles start in any order, dependencies resolve automatically |
-| 📡 **Event System** | Tight coupling between modules | Publish-subscribe messaging with topic-based routing |
-| ⚙️ **Configuration Management** | Static application configuration | Runtime configuration updates without restarts |
-| 🏗️ **Declarative Services** | Complex service wiring boilerplate | Decorator-based dependency injection |
-| ⚛️ **React Integration** | Framework complexity in React apps | Hook-based service discovery in components |
-| 📦 **Rollup Bundle Plugin** | Automated bundling of modules | Simplifies and automates the bundling process |
+| Feature                         | What it Solves                          | Benefit                                                        |
+| ------------------------------- | --------------------------------------- | -------------------------------------------------------------- |
+| 🔌 **Service Registry**         | Hard-coded dependencies between modules | Services discover each other dynamically                       |
+| 📦 **Bundle System**            | Monolithic application architecture     | Modular containers with independent lifecycles                 |
+| 🔄 **Dynamic Dependencies**     | Startup order dependencies              | Bundles start in any order, dependencies resolve automatically |
+| 📡 **Event System**             | Tight coupling between modules          | Publish-subscribe messaging with topic-based routing           |
+| ⚙️ **Configuration Management** | Static application configuration        | Runtime configuration updates without restarts                 |
+| 🏗️ **Declarative Services**     | Complex service wiring boilerplate      | Decorator-based dependency injection                           |
+| ⚛️ **React Integration**        | Framework complexity in React apps      | Hook-based service discovery in components                     |
+| 📦 **Rollup Bundle Plugin**     | Automated bundling of modules           | Simplifies and automates the bundling process                  |
 
 ## 🚀 Quick Concept Demo
 
@@ -120,21 +120,22 @@ await scr.registerComponent(OrderService, bundleId);
 
 ## Packages
 
-| Package | Purpose | Documentation |
-|---------|---------|---------------|
-| [`@pandino/pandino`](./packages/pandino) | Core framework with service registry, bundles, and built-in services | [Core Documentation](./packages/pandino/README.md) |
-| [`@pandino/react-hooks`](./packages/react-hooks) | React integration with hooks and components | [React Documentation](./packages/react-hooks/README.md) |
+| Package                                          | Purpose                                                              | Documentation                                           |
+| ------------------------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------- |
+| [`@pandino/pandino`](./packages/pandino)         | Core framework with service registry, bundles, and built-in services | [Core Documentation](./packages/pandino/README.md)      |
+| [`@pandino/react-hooks`](./packages/react-hooks) | React integration with hooks and components                          | [React Documentation](./packages/react-hooks/README.md) |
 
 ## Architecture Concepts
 
 ### Service-Oriented Architecture
+
 Services are registered in a central registry and discovered by interface name and properties:
 
 ```typescript
 // Register with metadata
 context.registerService('DatabaseService', new MySQLService(), {
   'db.type': 'mysql',
-  'service.ranking': 100
+  'service.ranking': 100,
 });
 
 // Discover by capabilities
@@ -142,71 +143,86 @@ const dbRefs = context.getServiceReferences('DatabaseService', '(db.type=mysql)'
 ```
 
 ### Bundle Modularity
+
 Bundles are self-contained modules with independent lifecycles:
 
 ```typescript
 // Each bundle manages its own services
 const databaseBundle = {
   activator: {
-    start(context) { /* register database services */ },
-    stop(context) { /* cleanup */ }
-  }
+    start(context) {
+      /* register database services */
+    },
+    stop(context) {
+      /* cleanup */
+    },
+  },
 };
 ```
 
 ### Dynamic Dependencies
+
 Order doesn't matter - dependencies resolve when services become available:
 
 ```typescript
-await apiBundle.start();      // ✅ Starts immediately
+await apiBundle.start(); // ✅ Starts immediately
 await databaseBundle.start(); // ✅ API bundle automatically gets database service
 ```
 
 ### Extender Pattern
+
 A pattern where a dedicated bundle (extender) monitors other bundles and provides functionality based on their metadata:
 
 [→ Extender Pattern Documentation](./docs/extender-pattern.md)
 
 ### Whiteboard Pattern
+
 A service-oriented pattern that promotes loose coupling through a central service registry:
 
 [→ Whiteboard Pattern Documentation](./docs/whiteboard-pattern.md)
 
 ### Fragment Pattern
+
 A pattern that allows a bundle (fragment) to attach to another bundle (host) and contribute its resources directly to the host:
 
 [→ Fragment Pattern Documentation](./docs/fragment-pattern.md)
 
 ## Use Cases
 
-| Scenario | Traditional Approach | Pandino Approach |
-|----------|---------------------|------------------|
-| **Microservices Architecture** | Hard-coded service URLs | Dynamic service discovery |
-| **Plugin Systems** | Manual plugin loading | Bundle-based plugins with auto-discovery |
-| **Feature Flags** | Code-level toggles | Service-level feature activation |
-| **Multi-tenant Apps** | Complex configuration management | Service filtering by tenant properties |
-| **A/B Testing** | Conditional code blocks | Multiple service implementations with ranking |
+| Scenario                       | Traditional Approach             | Pandino Approach                              |
+| ------------------------------ | -------------------------------- | --------------------------------------------- |
+| **Microservices Architecture** | Hard-coded service URLs          | Dynamic service discovery                     |
+| **Plugin Systems**             | Manual plugin loading            | Bundle-based plugins with auto-discovery      |
+| **Feature Flags**              | Code-level toggles               | Service-level feature activation              |
+| **Multi-tenant Apps**          | Complex configuration management | Service filtering by tenant properties        |
+| **A/B Testing**                | Conditional code blocks          | Multiple service implementations with ranking |
 
 ## Getting Started
 
 Choose your integration approach:
 
 ### Core Framework
+
 ```bash
 npm install @pandino/pandino
 ```
+
 [→ Core Framework Guide](./packages/pandino/README.md)
 
 ### React Integration
+
 ```bash
 npm install @pandino/pandino @pandino/react-hooks
 ```
+
 [→ React Integration Guide](./packages/react-hooks/README.md)
 
 ### Rollup Bundle Plugin
+
 ```bash
 npm install -D @pandino/rollup-bundle-plugin
 ```
+
 [→ Rollup Bundle Plugin Guide](./packages/rollup-bundle-plugin/README.md)
 
 ## Contributing

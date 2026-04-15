@@ -4,8 +4,8 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "types": ["node"],
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "bundler",
@@ -20,4 +20,3 @@
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
-
