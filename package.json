@@ -4,13 +4,11 @@
   "description": "OSGi-Style Framework for TypeScript",
   "license": "EPL-2.0",
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "private": true,
   "workspaces": [
     "packages/*"
   ],
   "type": "module",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org"
-  },
   "scripts": {
     "build": "pnpm -r build",
     "build:dev": "pnpm -r build:dev",

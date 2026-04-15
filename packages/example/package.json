@@ -4,6 +4,7 @@
   "description": "Example application demonstrating Pandino's dynamic service component runtime with React integration",
   "license": "EPL-2.0",
   "author": "Norbert Herczeg <norbert.herczeg@blackbelt.hu>",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
