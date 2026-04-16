@@ -60,6 +60,7 @@ export default defineConfig({
       { text: 'Concepts', link: '/concepts/services' },
       { text: 'Patterns', link: '/patterns/extender-pattern' },
       { text: 'API', link: '/api/core' },
+      { text: 'llms.txt', link: '/pandino/llms.txt', target: '_blank' },
       {
         text: 'Packages',
         items: [
