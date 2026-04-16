@@ -2,7 +2,7 @@ import type { BootstrapConfig, BundleContext, BundleModule, OSGiFramework } from
 import { OSGiBootstrap } from '@pandino/pandino';
 import { createContext, type FC, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
 
-// Define the context type
+/** Shape of the value provided by `PandinoContext`. */
 export interface PandinoContextType {
   framework: OSGiFramework | null;
   bundleContext: BundleContext | null;
@@ -18,14 +18,25 @@ export const PandinoContext = createContext<PandinoContextType>({
   error: null,
 });
 
-// Provider props
+/** Props accepted by {@link PandinoProvider}. */
 export interface PandinoProviderProps {
   children: ReactNode;
   bootstrapConfig?: BootstrapConfig;
   bundles?: Array<Promise<BundleModule>>;
 }
 
-// Provider component
+/**
+ * Bootstraps the Pandino framework and provides it to the React tree.
+ * Place this component near the root of your application. The framework is
+ * started once on mount and stopped automatically on unmount.
+ *
+ * @example
+ * ```tsx
+ * <PandinoProvider bootstrapConfig={config} bundles={[import('./my-bundle')]}>
+ *   <App />
+ * </PandinoProvider>
+ * ```
+ */
 export const PandinoProvider: FC<PandinoProviderProps> = ({ children, bootstrapConfig, bundles = [] }) => {
   const [framework, setFramework] = useState<OSGiFramework | null>(null);
   const [bundleContext, setBundleContext] = useState<BundleContext | null>(null);
@@ -98,7 +109,10 @@ export const PandinoProvider: FC<PandinoProviderProps> = ({ children, bootstrapC
   return <PandinoContext.Provider value={contextValue}>{children}</PandinoContext.Provider>;
 };
 
-// Hook to use the Pandino context
+/**
+ * Returns the current {@link PandinoContextType} value.
+ * Must be called inside a `<PandinoProvider>` tree.
+ */
 export const usePandinoContext = (): PandinoContextType => {
   const context = useContext(PandinoContext);
   if (!context) {

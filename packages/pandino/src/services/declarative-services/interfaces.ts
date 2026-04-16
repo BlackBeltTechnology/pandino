@@ -10,14 +10,26 @@ export interface SCRBundleConfiguration extends BundleConfiguration {
   components?: any[];
 }
 
+/**
+ * Context passed to a component's @Activate callback. Provides access to the
+ * bundle context, component properties, and bound services.
+ */
 export interface ComponentContext {
+  /** Returns the BundleContext for the bundle that owns this component. */
   getBundleContext(): BundleContext;
+  /** Returns the component's merged properties (from @Property decorators and configuration). */
   getProperties(): Record<string, any>;
+  /** Returns the ServiceReference for this component's registered service. */
   getServiceReference(): ServiceReference<any>;
+  /** Returns the component name (from @Component name option). */
   getComponentName(): string;
+  /** Locates a bound service by its reference name. Returns null if not available. */
   locateService<S>(name: string): S | null;
+  /** Locates all bound services matching the given reference name. */
   locateServices<S>(name: string): S[];
+  /** Disables a component by name, deactivating it if currently active. */
   disableComponent(name: string): void;
+  /** Enables a previously disabled component by name. */
   enableComponent(name: string): void;
 }
 

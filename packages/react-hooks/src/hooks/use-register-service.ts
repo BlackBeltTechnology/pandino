@@ -2,6 +2,15 @@ import type { ServiceRegistration } from '@pandino/pandino';
 import { useEffect, useState } from 'react';
 import { usePandinoContext } from '../context';
 
+/**
+ * Registers a service with the Pandino framework for the lifetime of the
+ * component. The registration is automatically unregistered on unmount.
+ *
+ * @param serviceClass - Interface name(s) or constructor the service implements.
+ * @param serviceImpl - The service instance to register.
+ * @param properties - Optional service properties.
+ * @returns `{ registration, isRegistered, error, updateProperties }` - the live registration handle.
+ */
 export function useRegisterService<T>(
   serviceClass: string | string[] | Function,
   serviceImpl: T,

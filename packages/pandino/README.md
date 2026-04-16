@@ -31,7 +31,7 @@ This package is the heart of any Pandino application. Every other package either
 npm install @pandino/pandino reflect-metadata
 ```
 
-If you plan to use decorators, also install [`@pandino/decorators`](../decorators/README.md):
+If you plan to use decorators, also install [`@pandino/decorators`](https://www.npmjs.com/package/@pandino/decorators):
 
 ```bash
 npm install @pandino/decorators
@@ -145,7 +145,7 @@ export class GreetingServiceImpl implements GreetingService {
 }
 ```
 
-Decorated classes are activated by the SCR when they are included in a bundle. See the [`@pandino/decorators`](../decorators/README.md) and [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md) documentation for how to ship them as bundles.
+Decorated classes are activated by the SCR when they are included in a bundle. See the [`@pandino/decorators`](https://www.npmjs.com/package/@pandino/decorators) and [`@pandino/rollup-bundle-plugin`](https://www.npmjs.com/package/@pandino/rollup-bundle-plugin) documentation for how to ship them as bundles.
 
 ## Service properties and LDAP filters
 
@@ -295,7 +295,7 @@ export default {
 };
 ```
 
-Bundles can be loaded at startup by passing them to the bootstrap, installed via `context.installBundle()`, or produced automatically by the [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md).
+Bundles can be loaded at startup by passing them to the bootstrap, installed via `context.installBundle()`, or produced automatically by the [`@pandino/rollup-bundle-plugin`](https://www.npmjs.com/package/@pandino/rollup-bundle-plugin).
 
 ### Fragment bundles
 
@@ -313,16 +313,16 @@ export default {
 };
 ```
 
-More details in the [Fragment Pattern documentation](../../docs/fragment-pattern.md).
+More details in the [Fragment Pattern documentation](https://github.com/BlackBeltTechnology/pandino/blob/master/docs/fragment-pattern.md).
 
 ## Recommended patterns
 
 Common architectural patterns used with Pandino bundles:
 
-- [Extender pattern](../../docs/extender-pattern.md) — observe other bundles and react to their metadata.
-- [Whiteboard pattern](../../docs/whiteboard-pattern.md) — collect contributions as services instead of plugin registries.
-- [Fragment pattern](../../docs/fragment-pattern.md) — attach to a host bundle.
-- [Creating decorator extenders](../../docs/creating-decorator-extenders.md) — add your own decorator-driven behaviours.
+- [Extender pattern](https://github.com/BlackBeltTechnology/pandino/blob/master/docs/extender-pattern.md) — observe other bundles and react to their metadata.
+- [Whiteboard pattern](https://github.com/BlackBeltTechnology/pandino/blob/master/docs/whiteboard-pattern.md) — collect contributions as services instead of plugin registries.
+- [Fragment pattern](https://github.com/BlackBeltTechnology/pandino/blob/master/docs/fragment-pattern.md) — attach to a host bundle.
+- [Creating decorator extenders](https://github.com/BlackBeltTechnology/pandino/blob/master/docs/creating-decorator-extenders.md) — add your own decorator-driven behaviours.
 
 ## Public API cheatsheet
 
@@ -344,9 +344,9 @@ Common architectural patterns used with Pandino bundles:
 
 ## Related packages
 
-- [`@pandino/decorators`](../decorators/README.md) — Decorator-based component declarations.
-- [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md) — Package your source files into Pandino bundles at build time.
-- [`@pandino/react-hooks`](../react-hooks/README.md) — Use Pandino services from React components.
+- [`@pandino/decorators`](https://www.npmjs.com/package/@pandino/decorators) — Decorator-based component declarations.
+- [`@pandino/rollup-bundle-plugin`](https://www.npmjs.com/package/@pandino/rollup-bundle-plugin) — Package your source files into Pandino bundles at build time.
+- [`@pandino/react-hooks`](https://www.npmjs.com/package/@pandino/react-hooks) — Use Pandino services from React components.
 
 ## License
 

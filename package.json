@@ -19,7 +19,10 @@
     "build:pandino": "pnpm --filter @pandino/pandino build",
     "build:react-hooks": "pnpm --filter @pandino/react-hooks build",
     "lint": "oxlint --fix",
-    "format:write": "oxfmt --write"
+    "format:write": "oxfmt --write",
+    "docs:dev": "vitepress dev docs-site",
+    "docs:build": "vitepress build docs-site",
+    "docs:preview": "vitepress preview docs-site"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
@@ -27,6 +30,7 @@
     "oxfmt": "^0.45.0",
     "oxlint": "^1.60.0",
     "typescript": "^6.0.2",
+    "vitepress": "^1.6.3",
     "vitest": "^4.1.4"
   },
   "engines": {

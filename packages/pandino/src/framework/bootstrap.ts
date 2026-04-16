@@ -9,6 +9,18 @@ import LogServiceBundle from '../services/log-service/bundle';
 import ServiceComponentRuntimeBundle from '../services/declarative-services/bundle';
 import ServiceTrackerBundle from '../services/service-tracker/bundle';
 
+/**
+ * Entry point for initializing and running a Pandino framework instance.
+ * Bootstraps the framework and installs all built-in system services
+ * (LogService, ConfigurationAdmin, EventAdmin, SCR, ServiceTracker).
+ *
+ * @example
+ * ```ts
+ * const bootstrap = new OSGiBootstrap({ frameworkLogLevel: LogLevel.INFO });
+ * const framework = await bootstrap.start();
+ * const context = framework.getBundleContext();
+ * ```
+ */
 export class OSGiBootstrap {
   private readonly framework: OSGiFramework;
   private readonly config: BootstrapConfig;
@@ -68,10 +80,12 @@ export class OSGiBootstrap {
     await serviceTrackerBundle.start();
   }
 
+  /** Stops the framework and all installed bundles. */
   async stop(): Promise<void> {
     await this.framework.stop();
   }
 
+  /** Returns the framework instance. */
   getFramework(): OSGiFramework {
     return this.framework;
   }

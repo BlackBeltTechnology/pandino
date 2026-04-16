@@ -32,3 +32,7 @@ src/generated
 
 # node env
 node
+
+# VitePress
+docs-site/.vitepress/dist
+docs-site/.vitepress/cache

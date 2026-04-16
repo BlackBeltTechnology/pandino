@@ -2,6 +2,7 @@ import { BUNDLE_STATES } from '@pandino/pandino';
 import type { ReactNode } from 'react';
 import { useBundle } from '../hooks';
 
+/** Props accepted by {@link BundleInfo}. */
 export interface BundleInfoProps {
   bundleIdOrName: number | string;
   children?: (props: {
@@ -12,6 +13,10 @@ export interface BundleInfoProps {
   }) => ReactNode;
 }
 
+/**
+ * Converts a numeric bundle state constant to its human-readable name
+ * (e.g. `ACTIVE`, `INSTALLED`).
+ */
 export function bundleStateToString(state: number): string {
   switch (state) {
     case BUNDLE_STATES.INSTALLED:
@@ -31,6 +36,14 @@ export function bundleStateToString(state: number): string {
   }
 }
 
+/**
+ * Displays information about a single bundle. When used without a render-prop
+ * `children`, it renders a default info table. Pass a render function as
+ * `children` for full control over the output.
+ *
+ * @param props.bundleIdOrName - Bundle ID (number) or symbolic name (string).
+ * @param props.children - Optional render function receiving `{ bundle, loading, error, stateToString }`.
+ */
 export function BundleInfo({ bundleIdOrName, children }: BundleInfoProps): ReactNode {
   const { bundle, loading, error } = useBundle(bundleIdOrName);
 

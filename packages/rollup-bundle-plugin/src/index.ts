@@ -4,14 +4,23 @@ import type { Plugin, OutputBundle } from 'rollup';
 import picomatch from 'picomatch';
 import ts from 'typescript';
 
+/** Configuration options for the Pandino bundle plugin. */
 export interface PandinoBundleOptions {
+  /** Glob patterns for files to scan for `@Component` classes. */
   include?: string | string[];
+  /** Glob patterns for files to skip. */
   exclude?: string | string[];
+  /** Base directory for scanning and locating `package.json`. Defaults to `process.cwd()`. */
   rootDir?: string;
-  componentsDecorator?: string; // e.g. 'Component'
-  activator?: string; // path to module exporting default activator
-  virtualId?: string; // e.g. 'pandino:bundle'
-  outputFile?: string; // e.g. 'pandino/bundle.js'
+  /** Decorator name to scan for. Defaults to `'Component'`. */
+  componentsDecorator?: string;
+  /** Path to a module whose default export implements `BundleActivator`. */
+  activator?: string;
+  /** Virtual module id used by `import(...)`. Give each bundle its own id. Defaults to `'pandino:bundle'`. */
+  virtualId?: string;
+  /** Path (relative to Rollup output dir) for the emitted chunk. Defaults to `'pandino/bundle.js'`. */
+  outputFile?: string;
+  /** Extends or overrides the auto-derived bundle headers. */
   headers?: Partial<{
     bundleSymbolicName: string;
     bundleVersion: string;
@@ -34,6 +43,13 @@ const DEFAULT_EXCLUDE = ['**/node_modules/**', '**/dist/**', '**/build/**'];
 const DEFAULT_VIRTUAL_ID = 'pandino:bundle';
 const DEFAULT_OUTPUT_FILE = 'pandino/bundle.js';
 
+/**
+ * Rollup/Vite plugin that scans source files for `@Component` decorated classes
+ * and produces a Pandino `BundleModule`. Call once per bundle you want to produce.
+ *
+ * @param options - Plugin configuration (include, exclude, virtualId, headers, etc.).
+ * @returns A Rollup plugin instance.
+ */
 export default function pandinoBundle(options: PandinoBundleOptions = {}): Plugin {
   const include = toArray(options.include ?? DEFAULT_INCLUDE);
   const exclude = toArray(options.exclude ?? DEFAULT_EXCLUDE);

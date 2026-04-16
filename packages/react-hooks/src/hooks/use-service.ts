@@ -2,6 +2,14 @@ import { useEffect, useMemo, useRef } from 'react';
 import { ServiceReference } from '@pandino/pandino';
 import { usePandinoContext } from '../context';
 
+/**
+ * Resolves a single service by interface name. Releases the service reference
+ * automatically when the component unmounts.
+ *
+ * @param serviceClass - The interface name or constructor to look up.
+ * @param filter - Optional LDAP filter expression (e.g. `'(region=EU)'`).
+ * @returns `{ service, loading, error }` - the resolved service instance, or `null` while loading or if not found.
+ */
 export function useService<T>(
   serviceClass: string | Function,
   filter?: string,

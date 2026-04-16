@@ -1,3 +1,4 @@
+/** Numeric constants for bundle lifecycle states. */
 export const BUNDLE_STATES = {
   INSTALLED: 2,
   RESOLVED: 4,
@@ -7,6 +8,7 @@ export const BUNDLE_STATES = {
   UNINSTALLED: 1,
 } as const;
 
+/** Numeric constants for service event types. */
 export const SERVICE_EVENT_TYPES = {
   REGISTERED: 1,
   MODIFIED: 2,

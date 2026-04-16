@@ -99,17 +99,17 @@ This component will be discovered and registered automatically when placed in a 
 
 You typically don't register decorated classes yourself. Instead, one of the following mechanisms loads them into Pandino's SCR:
 
-- **Bundles built with [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md)** — the plugin scans your source files for `@Component` classes at build time and exposes them as a bundle module.
+- **Bundles built with [`@pandino/rollup-bundle-plugin`](https://www.npmjs.com/package/@pandino/rollup-bundle-plugin)** — the plugin scans your source files for `@Component` classes at build time and exposes them as a bundle module.
 - **Manual bundle modules** — add decorated classes to your bundle's `components` array.
 - **Manual registration via `ServiceComponentRuntime`** — for advanced cases where you need full control.
 
-See the [core framework README](../pandino/README.md) for details on bundles and the Service Component Runtime.
+See the [core framework README](https://www.npmjs.com/package/@pandino/pandino) for details on bundles and the Service Component Runtime.
 
 ## Related packages
 
-- [`@pandino/pandino`](../pandino/README.md) — The runtime that activates and manages decorated components.
-- [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md) — Auto-discovers decorated classes at build time.
-- [`@pandino/react-hooks`](../react-hooks/README.md) — Consume services declared with these decorators from React components.
+- [`@pandino/pandino`](https://www.npmjs.com/package/@pandino/pandino) — The runtime that activates and manages decorated components.
+- [`@pandino/rollup-bundle-plugin`](https://www.npmjs.com/package/@pandino/rollup-bundle-plugin) — Auto-discovers decorated classes at build time.
+- [`@pandino/react-hooks`](https://www.npmjs.com/package/@pandino/react-hooks) — Consume services declared with these decorators from React components.
 
 ## License
 

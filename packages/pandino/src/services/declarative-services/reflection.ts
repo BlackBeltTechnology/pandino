@@ -173,6 +173,18 @@ function getCustomFieldDecoratorMetadata(target: any): Record<string, Record<str
   return out;
 }
 
+/**
+ * Extracts all decorator metadata from a component class, including Pandino
+ * decorators (@Component, @Service, @Reference, etc.) and any custom
+ * reflect-metadata decorators.
+ *
+ * Useful for building decorator extenders that need to inspect component
+ * metadata at runtime.
+ *
+ * @param target - The component class (constructor function) or instance.
+ * @returns A {@link DecoratorInfo} object with component, service, configuration,
+ *          lifecycle, reference, and custom decorator metadata.
+ */
 export function getDecoratorInfo(target: any): DecoratorInfo {
   return {
     // Keep key order stable for snapshots

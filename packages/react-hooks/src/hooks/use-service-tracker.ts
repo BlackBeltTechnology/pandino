@@ -3,12 +3,22 @@ import { ServiceTracker } from '@pandino/pandino';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePandinoContext } from '../context';
 
+/** Return type of {@link useServiceTracker}. */
 export interface UseServiceTrackerResult<T = any> {
   services: T[];
   loading: boolean;
   error: Error | null;
 }
 
+/**
+ * Tracks all services matching the given interface name and keeps the list
+ * up-to-date as services are registered, modified, or removed. The underlying
+ * `ServiceTracker` is closed automatically when the component unmounts.
+ *
+ * @param serviceClass - The interface name to track.
+ * @param filter - Optional LDAP filter expression to narrow matches.
+ * @returns `{ services, loading, error }` - a live array of matching service instances.
+ */
 export function useServiceTracker<T = any>(serviceClass: string, filter?: string): UseServiceTrackerResult<T> {
   const { bundleContext, isInitialized } = usePandinoContext();
   const [services, setServices] = useState<T[]>([]);

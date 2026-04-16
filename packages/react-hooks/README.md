@@ -69,7 +69,7 @@ createRoot(document.getElementById('root')!).render(
 );
 ```
 
-The provider bootstraps the framework, installs every bundle module passed via `bundles`, and makes the `BundleContext` available through React context. Each entry is a dynamic `import()` returning a Pandino `BundleModule` — typically produced by [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md).
+The provider bootstraps the framework, installs every bundle module passed via `bundles`, and makes the `BundleContext` available through React context. Each entry is a dynamic `import()` returning a Pandino `BundleModule` — typically produced by [`@pandino/rollup-bundle-plugin`](https://www.npmjs.com/package/@pandino/rollup-bundle-plugin).
 
 ### 2. Consume a service inside a component
 
@@ -231,9 +231,9 @@ const { service: logger } = useService<LogService>('LogService', '(log.target=co
 
 ## Related packages
 
-- [`@pandino/pandino`](../pandino/README.md) — Core runtime. Every type the hooks return (`BundleContext`, `ServiceReference`, `Bundle`, ...) comes from there.
-- [`@pandino/decorators`](../decorators/README.md) — Declare the services you consume here.
-- [`@pandino/rollup-bundle-plugin`](../rollup-bundle-plugin/README.md) — Package your bundles so they can be passed to `<PandinoProvider bundles={...} />`.
+- [`@pandino/pandino`](https://www.npmjs.com/package/@pandino/pandino) — Core runtime. Every type the hooks return (`BundleContext`, `ServiceReference`, `Bundle`, ...) comes from there.
+- [`@pandino/decorators`](https://www.npmjs.com/package/@pandino/decorators) — Declare the services you consume here.
+- [`@pandino/rollup-bundle-plugin`](https://www.npmjs.com/package/@pandino/rollup-bundle-plugin) — Package your bundles so they can be passed to `<PandinoProvider bundles={...} />`.
 
 ## License
 

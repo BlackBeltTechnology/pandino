@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE.txt)
 
-A Rollup / Vite plugin that turns a directory of decorated TypeScript classes into a Pandino **bundle module** at build time. It scans your sources for classes annotated with `@Component` (from [`@pandino/decorators`](../decorators/README.md)), collects them, and emits a module that the Pandino runtime can install and start.
+A Rollup / Vite plugin that turns a directory of decorated TypeScript classes into a Pandino **bundle module** at build time. It scans your sources for classes annotated with `@Component` (from [`@pandino/decorators`](https://www.npmjs.com/package/@pandino/decorators)), collects them, and emits a module that the Pandino runtime can install and start.
 
 ## Where it fits in the Pandino ecosystem
 
@@ -137,9 +137,9 @@ await context.installBundle('pandino:bundle:alpha', alphaBundle);
 
 ## Related packages
 
-- [`@pandino/decorators`](../decorators/README.md) — Provides the `@Component` decorator (and friends) that the plugin looks for.
-- [`@pandino/pandino`](../pandino/README.md) — Installs and activates the generated bundles at runtime.
-- [`@pandino/react-hooks`](../react-hooks/README.md) — The usual consumer of the virtual bundle modules in React apps.
+- [`@pandino/decorators`](https://www.npmjs.com/package/@pandino/decorators) — Provides the `@Component` decorator (and friends) that the plugin looks for.
+- [`@pandino/pandino`](https://www.npmjs.com/package/@pandino/pandino) — Installs and activates the generated bundles at runtime.
+- [`@pandino/react-hooks`](https://www.npmjs.com/package/@pandino/react-hooks) — The usual consumer of the virtual bundle modules in React apps.
 
 ## License
 

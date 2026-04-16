@@ -3,6 +3,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { usePandinoContext } from '../context';
 import { findBundleBySymbolicName } from '../utils/bundle-utils';
 
+/**
+ * Looks up a single bundle by its numeric ID or symbolic name.
+ *
+ * @param bundleIdOrName - Bundle ID (number) or symbolic name (string).
+ * @returns `{ bundle, loading, error }` - the resolved `Bundle` or `null` if not found.
+ */
 export function useBundle(bundleIdOrName: number | string): {
   bundle: Bundle | null;
   loading: boolean;
@@ -38,6 +44,11 @@ export function useBundle(bundleIdOrName: number | string): {
   return useMemo(() => ({ bundle, loading, error }), [bundle, loading, error]);
 }
 
+/**
+ * Returns every bundle currently known to the framework.
+ *
+ * @returns `{ bundles, loading, error }` - an array of all `Bundle` instances.
+ */
 export function useAllBundles(): {
   bundles: Bundle[];
   loading: boolean;
