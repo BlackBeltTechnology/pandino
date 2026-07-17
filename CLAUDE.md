@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> See also `AGENTS.md` for behavioral conventions (TDD, simplicity, surgical changes), the OpenSpec workflow, and the discipline-skills checkpoint table. This file (`CLAUDE.md`) is the source of truth for project specifics: architecture, exact commands, and code patterns.
+
 ## important-instruction-reminders
 
 - Do what has been asked; nothing more, nothing less.

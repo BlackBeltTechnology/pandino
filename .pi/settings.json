@@ -1,0 +1,9 @@
+{
+  "worktreeInit": {
+    "gate": "test ! -d node_modules",
+    "run": {
+      "type": "script",
+      "command": "pnpm install --frozen-lockfile"
+    }
+  }
+}
