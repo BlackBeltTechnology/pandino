@@ -278,15 +278,11 @@ describe('SCR OSGi Specification Compliance', () => {
       expect(scr.getComponent(bundleId, 'delayed.dependent.immediate')?.instance).toBeNull();
       expect(activationTracker).toEqual([]);
 
-      // Now register and activate the required service
+      // Now register and activate the required service. Activating it must
+      // automatically resolve the previously-registered pending immediate
+      // component (registration-order independence, #297).
       await scr.registerComponent(DelayedRequiredService, bundleId);
       await scr.activateComponent(bundleId, 'delayed.required.service');
-
-      // Simulate service registration event to trigger dependency resolution
-      const serviceRefs = bundleContext.getServiceReferences('DelayedRequiredService');
-      if (serviceRefs && serviceRefs.length > 0) {
-        await scr.processServiceEvent('DelayedRequiredService', 'registered', serviceRefs[0]);
-      }
 
       // Now the immediate component should be activated
       const entry = scr.getComponent(bundleId, 'delayed.dependent.immediate');
@@ -454,15 +450,11 @@ describe('SCR OSGi Specification Compliance', () => {
       await scr.registerComponent(MixedDependencyImmediateComponent, bundleId);
       expect(scr.getComponent(bundleId, 'mixed.dependency.immediate')?.instance).toBeNull();
 
-      // Register and activate the mandatory service
+      // Register and activate the mandatory service. This must automatically
+      // resolve the pending immediate component (registration-order
+      // independence, #297).
       await scr.registerComponent(MandatoryService, bundleId);
       await scr.activateComponent(bundleId, 'mandatory.service');
-
-      // Simulate service registration event
-      const serviceRefs = bundleContext.getServiceReferences('MandatoryService');
-      if (serviceRefs && serviceRefs.length > 0) {
-        await scr.processServiceEvent('MandatoryService', 'registered', serviceRefs[0]);
-      }
 
       // Now the component should be activated (even without optional service)
       const entry = scr.getComponent(bundleId, 'mixed.dependency.immediate');

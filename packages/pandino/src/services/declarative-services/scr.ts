@@ -17,6 +17,7 @@ export class ServiceComponentRuntime {
   private readonly configAdmin!: ConfigurationAdmin | null;
   private readonly eventAdmin!: EventAdmin | null;
   private activationChain: string[] = [];
+  private resolving = false;
 
   private removeFromActivationChain(componentId: string): void {
     const index = this.activationChain.indexOf(componentId);
@@ -305,6 +306,50 @@ export class ServiceComponentRuntime {
     });
 
     this.removeFromActivationChain(componentId);
+
+    // Activating this component may have registered a service that satisfies
+    // the mandatory references of previously-registered immediate components
+    // that could not activate yet (registration-order independence, #297).
+    await this.resolvePendingImmediateComponents();
+  }
+
+  /**
+   * Re-attempts activation of every immediate component whose mandatory
+   * references were unsatisfied at registration time. Loops to a fixpoint so
+   * activation chains resolve regardless of registration order. Re-entrancy is
+   * guarded so nested activations do not restart the scan.
+   */
+  private async resolvePendingImmediateComponents(): Promise<void> {
+    if (this.resolving) {
+      return;
+    }
+    this.resolving = true;
+    try {
+      let progressed = true;
+      while (progressed) {
+        progressed = false;
+        for (const [bundleId, bundleComponents] of this.components.entries()) {
+          for (const [componentName, entry] of bundleComponents.entries()) {
+            const { metadata, instance } = entry;
+            // Skip non-immediate components and any component already activated.
+            // Singleton scope sets `instance`; prototype/bundle scope leaves
+            // `instance` null but sets `serviceRegistration` — both mean done.
+            if (!metadata.immediate || instance || entry.serviceRegistration) {
+              continue;
+            }
+            if (this.activationChain.includes(`${bundleId}:${componentName}`)) {
+              continue;
+            }
+            if (await this.canActivateComponent(bundleId, componentName)) {
+              await this.activateComponent(bundleId, componentName);
+              progressed = true;
+            }
+          }
+        }
+      }
+    } finally {
+      this.resolving = false;
+    }
   }
 
   async deactivateComponent(bundleId: number, name: string): Promise<void> {
