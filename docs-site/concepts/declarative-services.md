@@ -38,15 +38,15 @@ class GreeterComponent {
 }
 ```
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `name` | `string` | Class name | Unique component name, also used as the default configuration PID |
-| `immediate` | `boolean` | `false` | Activate immediately when satisfied, even without consumers |
-| `enabled` | `boolean` | `true` | Whether the component is enabled at bundle start |
-| `configurationPid` | `string` | Component name | PID for Configuration Admin integration |
-| `configurationPolicy` | `'optional' \| 'require' \| 'ignore'` | `'optional'` | How configuration availability affects activation |
-| `factory` | `string` | `undefined` | Factory identifier for factory components |
-| `scope` | `'singleton' \| 'bundle' \| 'prototype'` | `'singleton'` | Service scope when the component is also a service |
+| Option                | Type                                     | Default        | Description                                                       |
+| --------------------- | ---------------------------------------- | -------------- | ----------------------------------------------------------------- |
+| `name`                | `string`                                 | Class name     | Unique component name, also used as the default configuration PID |
+| `immediate`           | `boolean`                                | `false`        | Activate immediately when satisfied, even without consumers       |
+| `enabled`             | `boolean`                                | `true`         | Whether the component is enabled at bundle start                  |
+| `configurationPid`    | `string`                                 | Component name | PID for Configuration Admin integration                           |
+| `configurationPolicy` | `'optional' \| 'require' \| 'ignore'`    | `'optional'`   | How configuration availability affects activation                 |
+| `factory`             | `string`                                 | `undefined`    | Factory identifier for factory components                         |
+| `scope`               | `'singleton' \| 'bundle' \| 'prototype'` | `'singleton'`  | Service scope when the component is also a service                |
 
 ## @Service
 
@@ -98,22 +98,22 @@ class OrderServiceComponent implements OrderService {
 
 ### Reference Options
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `interface` | `string` | `'any'` | The service interface to bind to |
-| `cardinality` | `'1..1' \| '0..1' \| '1..n' \| '0..n'` | `'1..1'` | Whether the dependency is mandatory/optional and single/multiple |
-| `policy` | `'static' \| 'dynamic'` | `'static'` | Whether bindings can change without deactivating the component |
-| `policyOption` | `'reluctant' \| 'greedy'` | `'reluctant'` | Whether to eagerly rebind when a better match appears |
-| `target` | `string` | `undefined` | LDAP filter to narrow which services match |
+| Option         | Type                                   | Default       | Description                                                      |
+| -------------- | -------------------------------------- | ------------- | ---------------------------------------------------------------- |
+| `interface`    | `string`                               | `'any'`       | The service interface to bind to                                 |
+| `cardinality`  | `'1..1' \| '0..1' \| '1..n' \| '0..n'` | `'1..1'`      | Whether the dependency is mandatory/optional and single/multiple |
+| `policy`       | `'static' \| 'dynamic'`                | `'static'`    | Whether bindings can change without deactivating the component   |
+| `policyOption` | `'reluctant' \| 'greedy'`              | `'reluctant'` | Whether to eagerly rebind when a better match appears            |
+| `target`       | `string`                               | `undefined`   | LDAP filter to narrow which services match                       |
 
 ### Cardinality
 
-| Cardinality | Meaning | Field type |
-| --- | --- | --- |
-| `'1..1'` | Mandatory, single -- component will not activate without this service | `T` |
-| `'0..1'` | Optional, single -- component activates even if this service is absent | `T \| undefined` |
-| `'1..n'` | Mandatory, multiple -- at least one must be available | `T[]` |
-| `'0..n'` | Optional, multiple -- component activates even with zero matches | `T[]` |
+| Cardinality | Meaning                                                                | Field type       |
+| ----------- | ---------------------------------------------------------------------- | ---------------- |
+| `'1..1'`    | Mandatory, single -- component will not activate without this service  | `T`              |
+| `'0..1'`    | Optional, single -- component activates even if this service is absent | `T \| undefined` |
+| `'1..n'`    | Mandatory, multiple -- at least one must be available                  | `T[]`            |
+| `'0..n'`    | Optional, multiple -- component activates even with zero matches       | `T[]`            |
 
 ### Target Filters
 
@@ -179,26 +179,26 @@ class GreeterComponent implements GreeterService {
 
 The `@Activate` method receives a `ComponentContext` that provides access to the component's runtime environment:
 
-| Method | Description |
-| --- | --- |
-| `getBundleContext()` | Returns the owning bundle's `BundleContext` |
-| `getProperties()` | Returns the component's merged properties (component + configuration) |
-| `getServiceReference()` | Returns the `ServiceReference` for this component's service |
-| `getComponentName()` | Returns the component name |
-| `locateService<S>(name)` | Looks up a bound service by its reference name |
-| `locateServices<S>(name)` | Looks up all bound services for a multi-cardinality reference |
-| `disableComponent(name)` | Programmatically disables a component by name |
-| `enableComponent(name)` | Programmatically enables a component by name |
+| Method                    | Description                                                           |
+| ------------------------- | --------------------------------------------------------------------- |
+| `getBundleContext()`      | Returns the owning bundle's `BundleContext`                           |
+| `getProperties()`         | Returns the component's merged properties (component + configuration) |
+| `getServiceReference()`   | Returns the `ServiceReference` for this component's service           |
+| `getComponentName()`      | Returns the component name                                            |
+| `locateService<S>(name)`  | Looks up a bound service by its reference name                        |
+| `locateServices<S>(name)` | Looks up all bound services for a multi-cardinality reference         |
+| `disableComponent(name)`  | Programmatically disables a component by name                         |
+| `enableComponent(name)`   | Programmatically enables a component by name                          |
 
 ## Configuration Policies
 
 The `configurationPolicy` option controls how the component reacts to Configuration Admin:
 
-| Policy | Behavior |
-| --- | --- |
+| Policy       | Behavior                                                                                                                |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------- |
 | `'optional'` | The component activates with or without a matching configuration. If a configuration exists, its properties are merged. |
-| `'require'` | The component will **not** activate until a matching configuration is available. |
-| `'ignore'` | The component ignores any configuration, even if one exists for its PID. |
+| `'require'`  | The component will **not** activate until a matching configuration is available.                                        |
+| `'ignore'`   | The component ignores any configuration, even if one exists for its PID.                                                |
 
 ```typescript
 @Component({
@@ -224,11 +224,11 @@ See [Configuration](/concepts/configuration) for details on providing configurat
 
 The `scope` option controls how many instances of the component exist:
 
-| Scope | Behavior |
-| --- | --- |
+| Scope         | Behavior                                                       |
+| ------------- | -------------------------------------------------------------- |
 | `'singleton'` | One shared instance serves all consumers. This is the default. |
-| `'bundle'` | One instance is created per consuming bundle. |
-| `'prototype'` | A new instance is created for each service lookup. |
+| `'bundle'`    | One instance is created per consuming bundle.                  |
+| `'prototype'` | A new instance is created for each service lookup.             |
 
 ```typescript
 @Component({ name: 'com.example.logger', scope: 'bundle' })

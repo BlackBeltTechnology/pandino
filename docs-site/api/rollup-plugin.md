@@ -35,29 +35,29 @@ export default {
 
 ## PandinoBundleOptions
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `include?` | `string \| string[]` | `['**/*.{js,jsx,ts,tsx}']` | Glob patterns for files to scan for components |
-| `exclude?` | `string \| string[]` | `['**/node_modules/**', '**/dist/**', '**/build/**']` | Glob patterns for files to exclude |
-| `rootDir?` | `string` | `process.cwd()` | Root directory for file scanning and relative path resolution |
-| `componentsDecorator?` | `string` | `'Component'` | Name of the decorator to detect as a component |
-| `activator?` | `string` | - | Path to a module that default-exports a `BundleActivator` |
-| `virtualId?` | `string` | `'pandino:bundle'` | Virtual module ID used for importing the generated bundle |
-| `outputFile?` | `string` | `'pandino/bundle.js'` | Output file path for the generated bundle chunk |
-| `headers?` | `Partial<BundleHeaders>` | Auto-detected from `package.json` | Bundle metadata headers (overrides auto-detected values) |
+| Option                 | Type                     | Default                                               | Description                                                   |
+| ---------------------- | ------------------------ | ----------------------------------------------------- | ------------------------------------------------------------- |
+| `include?`             | `string \| string[]`     | `['**/*.{js,jsx,ts,tsx}']`                            | Glob patterns for files to scan for components                |
+| `exclude?`             | `string \| string[]`     | `['**/node_modules/**', '**/dist/**', '**/build/**']` | Glob patterns for files to exclude                            |
+| `rootDir?`             | `string`                 | `process.cwd()`                                       | Root directory for file scanning and relative path resolution |
+| `componentsDecorator?` | `string`                 | `'Component'`                                         | Name of the decorator to detect as a component                |
+| `activator?`           | `string`                 | -                                                     | Path to a module that default-exports a `BundleActivator`     |
+| `virtualId?`           | `string`                 | `'pandino:bundle'`                                    | Virtual module ID used for importing the generated bundle     |
+| `outputFile?`          | `string`                 | `'pandino/bundle.js'`                                 | Output file path for the generated bundle chunk               |
+| `headers?`             | `Partial<BundleHeaders>` | Auto-detected from `package.json`                     | Bundle metadata headers (overrides auto-detected values)      |
 
 ### Headers Object
 
 When `headers` is not provided, `bundleSymbolicName` and `bundleVersion` are read from the project's `package.json` (`name` and `version` fields).
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `bundleSymbolicName` | `string` | Unique bundle identifier |
-| `bundleVersion` | `string` | Semantic version |
-| `bundleName?` | `string` | Human-readable name |
-| `bundleDescription?` | `string` | Bundle description |
-| `bundleManifestVersion?` | `string` | Manifest format version |
-| `fragmentHost?` | `string` | Host bundle for fragment bundles |
+| Property                 | Type     | Description                      |
+| ------------------------ | -------- | -------------------------------- |
+| `bundleSymbolicName`     | `string` | Unique bundle identifier         |
+| `bundleVersion`          | `string` | Semantic version                 |
+| `bundleName?`            | `string` | Human-readable name              |
+| `bundleDescription?`     | `string` | Bundle description               |
+| `bundleManifestVersion?` | `string` | Manifest format version          |
+| `fragmentHost?`          | `string` | Host bundle for fragment bundles |
 
 ## Virtual Module Import
 
@@ -94,11 +94,11 @@ export default { headers, activator: Activator, components };
 
 The output conforms to the `BundleModule` interface from `@pandino/pandino`:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `headers` | `object` | Bundle metadata derived from options or `package.json` |
-| `activator` | `BundleActivator \| undefined` | The activator, if an `activator` path was configured |
-| `components` | `Class[]` | All discovered `@Component`-decorated classes |
+| Property     | Type                           | Description                                            |
+| ------------ | ------------------------------ | ------------------------------------------------------ |
+| `headers`    | `object`                       | Bundle metadata derived from options or `package.json` |
+| `activator`  | `BundleActivator \| undefined` | The activator, if an `activator` path was configured   |
+| `components` | `Class[]`                      | All discovered `@Component`-decorated classes          |
 
 ## How Discovery Works
 

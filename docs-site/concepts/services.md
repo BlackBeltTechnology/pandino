@@ -29,9 +29,9 @@ export default class Activator implements BundleActivator {
 
   async start(context: BundleContext): Promise<void> {
     this.registration = context.registerService<GreeterService>(
-      'GreeterService',             // interface name
-      new GreeterServiceImpl(),     // implementation
-      { 'service.ranking': 10 },    // optional properties
+      'GreeterService', // interface name
+      new GreeterServiceImpl(), // implementation
+      { 'service.ranking': 10 }, // optional properties
     );
   }
 
@@ -64,10 +64,7 @@ To find multiple services matching a filter:
 
 ```typescript
 // Get all references matching a filter
-const refs = context.getServiceReferences<GreeterService>(
-  'GreeterService',
-  '(language=en)',
-);
+const refs = context.getServiceReferences<GreeterService>('GreeterService', '(language=en)');
 
 if (refs) {
   for (const ref of refs) {
@@ -80,12 +77,12 @@ if (refs) {
 
 ## ServiceReference vs ServiceRegistration
 
-| Aspect | `ServiceReference` | `ServiceRegistration` |
-| --- | --- | --- |
-| **Purpose** | Read-only handle for consumers to inspect and obtain a service | Control handle for the producer that registered the service |
-| **Who holds it** | Any bundle that discovers the service | The bundle that registered the service |
-| **Key methods** | `getProperty(key)`, `getPropertyKeys()`, `getBundle()`, `getProperties()` | `getReference()`, `setProperties(props)`, `unregister()` |
-| **Mutability** | Cannot modify the service or its properties | Can update properties or unregister the service |
+| Aspect           | `ServiceReference`                                                        | `ServiceRegistration`                                       |
+| ---------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **Purpose**      | Read-only handle for consumers to inspect and obtain a service            | Control handle for the producer that registered the service |
+| **Who holds it** | Any bundle that discovers the service                                     | The bundle that registered the service                      |
+| **Key methods**  | `getProperty(key)`, `getPropertyKeys()`, `getBundle()`, `getProperties()` | `getReference()`, `setProperties(props)`, `unregister()`    |
+| **Mutability**   | Cannot modify the service or its properties                               | Can update properties or unregister the service             |
 
 ## Service Properties
 
@@ -96,7 +93,7 @@ Properties are key-value metadata attached to a service at registration time. Th
 
 ```typescript
 context.registerService('GreeterService', impl, {
-  'language': 'en',
+  language: 'en',
   'service.ranking': 5,
   'service.description': 'English greeter',
 });
@@ -106,7 +103,7 @@ The producer can update properties after registration:
 
 ```typescript
 registration.setProperties({
-  'language': 'en',
+  language: 'en',
   'service.ranking': 20,
 });
 ```
@@ -115,24 +112,21 @@ registration.setProperties({
 
 Pandino uses LDAP-style filter syntax to match services by their properties. Filters are passed to `getServiceReferences()` and `addServiceListener()`.
 
-| Expression | Meaning | Example |
-| --- | --- | --- |
-| `(key=value)` | Equality | `(language=en)` |
-| `(key>=value)` | Greater than or equal | `(service.ranking>=10)` |
-| `(key<=value)` | Less than or equal | `(version<=2)` |
-| `(key=*value*)` | Substring match | `(name=*greeter*)` |
-| `(key=*)` | Presence (key exists) | `(language=*)` |
-| `(&(...)(...))`  | AND -- all must match | `(&(language=en)(service.ranking>=5))` |
-| <code>(&#124;(...)(...))  </code> | OR -- any must match | <code>(&#124;(language=en)(language=fr))</code> |
-| `(!(...))`  | NOT -- must not match | `(!(language=de))` |
+| Expression                       | Meaning               | Example                                         |
+| -------------------------------- | --------------------- | ----------------------------------------------- |
+| `(key=value)`                    | Equality              | `(language=en)`                                 |
+| `(key>=value)`                   | Greater than or equal | `(service.ranking>=10)`                         |
+| `(key<=value)`                   | Less than or equal    | `(version<=2)`                                  |
+| `(key=*value*)`                  | Substring match       | `(name=*greeter*)`                              |
+| `(key=*)`                        | Presence (key exists) | `(language=*)`                                  |
+| `(&(...)(...))`                  | AND -- all must match | `(&(language=en)(service.ranking>=5))`          |
+| <code>(&#124;(...)(...)) </code> | OR -- any must match  | <code>(&#124;(language=en)(language=fr))</code> |
+| `(!(...))`                       | NOT -- must not match | `(!(language=de))`                              |
 
 Filters can be nested to build complex queries:
 
 ```typescript
-const refs = context.getServiceReferences(
-  'GreeterService',
-  '(&(language=en)(service.ranking>=5))',
-);
+const refs = context.getServiceReferences('GreeterService', '(&(language=en)(service.ranking>=5))');
 ```
 
 You can also validate or create filter objects programmatically:

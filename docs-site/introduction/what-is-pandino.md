@@ -25,18 +25,19 @@ With Pandino, services are not wired together at compile time. Instead, they are
 
 ## Key Features
 
-| Feature                     | What it Solves                          | Benefit                                                        |
-| --------------------------- | --------------------------------------- | -------------------------------------------------------------- |
-| **Service Registry**        | Hard-coded dependencies between modules | Services discover each other dynamically                       |
-| **Bundle System**           | Monolithic application architecture     | Modular containers with independent lifecycles                 |
-| **Dynamic Dependencies**    | Startup order dependencies              | Bundles start in any order, dependencies resolve automatically |
-| **Event System**            | Tight coupling between modules          | Publish-subscribe messaging with topic-based routing           |
-| **Configuration Management** | Static application configuration       | Runtime configuration updates without restarts                 |
-| **Declarative Services**    | Complex service wiring boilerplate      | Decorator-based dependency injection                           |
-| **React Integration**       | Framework complexity in React apps      | Hook-based service discovery in components                     |
-| **Rollup Bundle Plugin**    | Automated bundling of modules           | Simplifies and automates the bundling process                  |
+| Feature                      | What it Solves                          | Benefit                                                        |
+| ---------------------------- | --------------------------------------- | -------------------------------------------------------------- |
+| **Service Registry**         | Hard-coded dependencies between modules | Services discover each other dynamically                       |
+| **Bundle System**            | Monolithic application architecture     | Modular containers with independent lifecycles                 |
+| **Dynamic Dependencies**     | Startup order dependencies              | Bundles start in any order, dependencies resolve automatically |
+| **Event System**             | Tight coupling between modules          | Publish-subscribe messaging with topic-based routing           |
+| **Configuration Management** | Static application configuration        | Runtime configuration updates without restarts                 |
+| **Declarative Services**     | Complex service wiring boilerplate      | Decorator-based dependency injection                           |
+| **React Integration**        | Framework complexity in React apps      | Hook-based service discovery in components                     |
+| **Rollup Bundle Plugin**     | Automated bundling of modules           | Simplifies and automates the bundling process                  |
 
 Learn more about each feature in the package guides:
+
 - [Core Framework](/guide/core-framework) -- Service registry, bundles, and built-in services
 - [Decorators](/guide/decorators) -- Declarative service components with `@Component`, `@Service`, `@Reference`
 - [React Hooks](/guide/react-hooks) -- Hook-based service discovery for React applications

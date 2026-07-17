@@ -53,12 +53,12 @@ Enable experimental decorators and metadata emission in your `tsconfig.json`:
 | `@Component(options)`      | class    | Declares a component with an optional name, lifecycle, and config PID |
 | `@Service({ interfaces })` | class    | Publishes the component as a service under one or more interfaces     |
 | `@Reference(options)`      | property | Injects a required or optional service dependency                     |
-| `@Activate`                | method   | Called when the component is activated                                 |
-| `@Deactivate`              | method   | Called when the component is deactivated                               |
-| `@Modified`                | method   | Called when the component's configuration changes                      |
+| `@Activate`                | method   | Called when the component is activated                                |
+| `@Deactivate`              | method   | Called when the component is deactivated                              |
+| `@Modified`                | method   | Called when the component's configuration changes                     |
 | `@Property(key, value)`    | class    | Attaches a static property to the component                           |
 | `@ConfigurationPolicy(p)`  | class    | Sets configuration handling: `optional`, `require`, or `ignore`       |
-| `@Factory(factoryId)`      | class    | Marks the component as a component factory                             |
+| `@Factory(factoryId)`      | class    | Marks the component as a component factory                            |
 | `@Immediate`               | class    | Activates the component as soon as its dependencies are satisfied     |
 | `@Scope(scope)`            | class    | Selects service scope: `singleton`, `bundle`, or `prototype`          |
 

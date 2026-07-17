@@ -10,10 +10,10 @@
   "type": "module",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
-  "types": "dist/src/index.d.ts",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/src/index.d.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.esm.js",
       "require": "./dist/index.cjs.js"
     }
@@ -24,15 +24,15 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "picomatch": "^4.0.4",
-    "typescript": "^6.0.2"
+    "picomatch": "^4.0.5",
+    "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
+    "@types/node": "^26.1.1",
     "@types/picomatch": "^4.0.3",
-    "rollup": "^4.60.1",
-    "vite-plugin-dts": "^4.5.4",
-    "vitest": "^4.1.4"
+    "rollup": "^4.62.2",
+    "vite-plugin-dts": "^5.0.3",
+    "vitest": "^4.1.10"
   },
   "peerDependencies": {
     "rollup": ">=3",

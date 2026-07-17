@@ -152,9 +152,7 @@ export function PluginPanel() {
         {plugins.map((plugin) => (
           <li key={plugin.id}>
             <strong>{plugin.label}</strong> -- {plugin.description}
-            <button onClick={() => plugin.execute({ query: 'test' })}>
-              Run
-            </button>
+            <button onClick={() => plugin.execute({ query: 'test' })}>Run</button>
           </li>
         ))}
       </ul>
@@ -171,10 +169,7 @@ Use LDAP filters to show subsets of plugins:
 
 ```tsx
 // Only show data-category plugins
-const { services: dataPlugins } = useServiceTracker<AppPlugin>(
-  'AppPlugin',
-  '(plugin.category=data)',
-);
+const { services: dataPlugins } = useServiceTracker<AppPlugin>('AppPlugin', '(plugin.category=data)');
 ```
 
 ## 7. Plugin communication via events

@@ -63,8 +63,8 @@ In traditional applications, startup order matters -- if module A depends on mod
 Dependencies are resolved **automatically** when services become available in the registry. Bundle startup order does not matter:
 
 ```typescript
-await apiBundle.start();       // Starts immediately, even without a database
-await databaseBundle.start();  // API bundle automatically gets the database service
+await apiBundle.start(); // Starts immediately, even without a database
+await databaseBundle.start(); // API bundle automatically gets the database service
 ```
 
 This means:

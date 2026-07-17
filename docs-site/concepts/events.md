@@ -28,10 +28,10 @@ const event = new Event('user/login', {
   source: 'auth-service',
 });
 
-console.log(event.getTopic());             // 'user/login'
-console.log(event.getProperty('userId'));   // '12345'
-console.log(event.getPropertyNames());      // ['userId', 'timestamp', 'source']
-console.log(event.containsProperty('ip'));  // false
+console.log(event.getTopic()); // 'user/login'
+console.log(event.getProperty('userId')); // '12345'
+console.log(event.getPropertyNames()); // ['userId', 'timestamp', 'source']
+console.log(event.containsProperty('ip')); // false
 ```
 
 Topics use a path-like structure (e.g., `'user/login'`, `'order/created'`, `'system/shutdown'`). This hierarchical naming enables wildcard subscriptions.
@@ -58,10 +58,12 @@ Then send events using one of two methods:
 `sendEvent()` delivers the event to all matching handlers **synchronously** and blocks until all handlers have finished processing:
 
 ```typescript
-eventAdmin.sendEvent(new Event('order/created', {
-  orderId: 'ORD-001',
-  total: 99.99,
-}));
+eventAdmin.sendEvent(
+  new Event('order/created', {
+    orderId: 'ORD-001',
+    total: 99.99,
+  }),
+);
 // All handlers have finished by this point
 ```
 
@@ -72,10 +74,12 @@ Use `sendEvent()` when you need to ensure all handlers have processed the event 
 `postEvent()` delivers the event **asynchronously** -- it returns immediately and handlers are invoked later:
 
 ```typescript
-eventAdmin.postEvent(new Event('user/login', {
-  userId: '12345',
-  timestamp: Date.now(),
-}));
+eventAdmin.postEvent(
+  new Event('user/login', {
+    userId: '12345',
+    timestamp: Date.now(),
+  }),
+);
 // Returns immediately; handlers run asynchronously
 ```
 
@@ -86,11 +90,7 @@ Use `postEvent()` for fire-and-forget notifications where you do not need to wai
 To receive events, implement the `EventHandler` interface and register it as a service with the `event.topics` property:
 
 ```typescript
-import type {
-  BundleActivator,
-  BundleContext,
-  ServiceRegistration,
-} from '@pandino/pandino';
+import type { BundleActivator, BundleContext, ServiceRegistration } from '@pandino/pandino';
 import type { EventHandler } from '@pandino/pandino';
 import type { Event } from '@pandino/pandino';
 
@@ -106,11 +106,9 @@ export default class Activator implements BundleActivator {
   private registration?: ServiceRegistration<EventHandler>;
 
   async start(context: BundleContext): Promise<void> {
-    this.registration = context.registerService(
-      'EventHandler',
-      new UserLoginHandler(),
-      { 'event.topics': 'user/login' },
-    );
+    this.registration = context.registerService('EventHandler', new UserLoginHandler(), {
+      'event.topics': 'user/login',
+    });
   }
 
   async stop(context: BundleContext): Promise<void> {
@@ -125,12 +123,12 @@ The `event.topics` property tells EventAdmin which topics this handler cares abo
 
 Use `*` as the last segment to subscribe to all events under a topic prefix:
 
-| Pattern | Matches |
-| --- | --- |
-| `'user/login'` | Only `'user/login'` |
-| `'user/*'` | `'user/login'`, `'user/logout'`, `'user/registered'`, etc. |
-| `'order/*'` | `'order/created'`, `'order/shipped'`, `'order/cancelled'`, etc. |
-| `'*'` | All events on all topics |
+| Pattern        | Matches                                                         |
+| -------------- | --------------------------------------------------------------- |
+| `'user/login'` | Only `'user/login'`                                             |
+| `'user/*'`     | `'user/login'`, `'user/logout'`, `'user/registered'`, etc.      |
+| `'order/*'`    | `'order/created'`, `'order/shipped'`, `'order/cancelled'`, etc. |
+| `'*'`          | All events on all topics                                        |
 
 ```typescript
 // Subscribe to all user-related events
@@ -190,19 +188,23 @@ class UserServiceComponent implements UserService {
   login(userId: string): void {
     // ... perform login logic ...
 
-    this.eventAdmin?.postEvent(new Event('user/login', {
-      userId,
-      timestamp: Date.now(),
-    }));
+    this.eventAdmin?.postEvent(
+      new Event('user/login', {
+        userId,
+        timestamp: Date.now(),
+      }),
+    );
   }
 
   logout(userId: string): void {
     // ... perform logout logic ...
 
-    this.eventAdmin?.postEvent(new Event('user/logout', {
-      userId,
-      timestamp: Date.now(),
-    }));
+    this.eventAdmin?.postEvent(
+      new Event('user/logout', {
+        userId,
+        timestamp: Date.now(),
+      }),
+    );
   }
 }
 ```

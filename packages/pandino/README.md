@@ -62,11 +62,11 @@ Enable decorators and metadata emission in `tsconfig.json`:
 
 A **service** is any object registered in Pandino's central registry under one or more interface names. Consumers don't import service implementations directly — they look them up by interface, optionally filtering by properties.
 
-| Concept                 | What it is                                  | Analogy                     |
-| ----------------------- | ------------------------------------------- | --------------------------- |
-| **Service**             | The object that does the work               | A person you want to call   |
-| **Service Reference**   | A handle used to look up and release access | The phone-book entry        |
-| **Service Registration**| Handle returned when you publish a service  | Your listing in the book    |
+| Concept                  | What it is                                  | Analogy                   |
+| ------------------------ | ------------------------------------------- | ------------------------- |
+| **Service**              | The object that does the work               | A person you want to call |
+| **Service Reference**    | A handle used to look up and release access | The phone-book entry      |
+| **Service Registration** | Handle returned when you publish a service  | Your listing in the book  |
 
 ### Bundles
 
@@ -163,12 +163,12 @@ const refs = context.getServiceReferences<DatabaseService>('DatabaseService', '(
 
 Common filter forms:
 
-| Filter                                  | Matches                            |
-| --------------------------------------- | ---------------------------------- |
-| `(db.type=mysql)`                       | MySQL database services            |
-| `(service.ranking>=100)`                | High-priority services             |
-| `(&(db.host=localhost)(db.port>=3000))` | Local services on ports ≥ 3000     |
-| `(\|(category=urgent)(priority=1))`     | Urgent OR priority-1 services      |
+| Filter                                  | Matches                        |
+| --------------------------------------- | ------------------------------ |
+| `(db.type=mysql)`                       | MySQL database services        |
+| `(service.ranking>=100)`                | High-priority services         |
+| `(&(db.host=localhost)(db.port>=3000))` | Local services on ports ≥ 3000 |
+| `(\|(category=urgent)(priority=1))`     | Urgent OR priority-1 services  |
 
 When multiple services are registered under the same interface, the one with the highest `service.ranking` wins by default.
 
@@ -200,11 +200,15 @@ const eventAdmin = context.getService(context.getServiceReference<EventAdmin>('E
 eventAdmin.sendEvent(new Event('user/login', { userId: '123' }));
 
 // Subscribe
-context.registerService('EventHandler', {
-  handleEvent: (event) => console.log(event.getTopic(), event.getProperty('userId')),
-}, {
-  'event.topics': 'user/*',
-});
+context.registerService(
+  'EventHandler',
+  {
+    handleEvent: (event) => console.log(event.getTopic(), event.getProperty('userId')),
+  },
+  {
+    'event.topics': 'user/*',
+  },
+);
 ```
 
 ### ConfigurationAdmin
@@ -270,7 +274,9 @@ A bundle is a plain module whose default export describes itself:
 import type { BundleActivator, BundleContext } from '@pandino/pandino';
 
 class DatabaseService {
-  query(sql: string) { /* ... */ }
+  query(sql: string) {
+    /* ... */
+  }
 }
 
 const activator: BundleActivator = {
@@ -326,21 +332,21 @@ Common architectural patterns used with Pandino bundles:
 
 ## Public API cheatsheet
 
-| Export                         | Purpose                                                |
-| ------------------------------ | ------------------------------------------------------ |
-| `OSGiBootstrap`                | Start and stop the framework                           |
-| `OSGiFramework`                | The running framework instance                         |
-| `BundleContext`                | Register / look up services, install bundles           |
-| `Bundle`, `BundleActivator`    | Bundle lifecycle model                                 |
-| `ServiceReference<T>`          | Handle used to look up and release a service           |
-| `ServiceRegistration<T>`       | Handle to unregister or update a registered service    |
-| `ServiceTracker<T>`            | Tracks service availability with customiser callbacks  |
-| `EventAdmin`, `Event`, `EventHandler` | Publish/subscribe messaging                      |
-| `ConfigurationAdmin`, `ManagedService`, `ManagedServiceFactory` | Runtime configuration |
-| `LogService`, `LogLevel`       | Framework-provided logger                              |
-| `ServiceComponentRuntime`, `ComponentContext` | Declarative-service runtime            |
-| `BUNDLE_STATES`, `SERVICE_EVENT_TYPES` | Lifecycle / event enumerations                 |
-| `getDecoratorInfo(ClassRef)`   | Inspect decorator metadata on a component class        |
+| Export                                                          | Purpose                                               |
+| --------------------------------------------------------------- | ----------------------------------------------------- |
+| `OSGiBootstrap`                                                 | Start and stop the framework                          |
+| `OSGiFramework`                                                 | The running framework instance                        |
+| `BundleContext`                                                 | Register / look up services, install bundles          |
+| `Bundle`, `BundleActivator`                                     | Bundle lifecycle model                                |
+| `ServiceReference<T>`                                           | Handle used to look up and release a service          |
+| `ServiceRegistration<T>`                                        | Handle to unregister or update a registered service   |
+| `ServiceTracker<T>`                                             | Tracks service availability with customiser callbacks |
+| `EventAdmin`, `Event`, `EventHandler`                           | Publish/subscribe messaging                           |
+| `ConfigurationAdmin`, `ManagedService`, `ManagedServiceFactory` | Runtime configuration                                 |
+| `LogService`, `LogLevel`                                        | Framework-provided logger                             |
+| `ServiceComponentRuntime`, `ComponentContext`                   | Declarative-service runtime                           |
+| `BUNDLE_STATES`, `SERVICE_EVENT_TYPES`                          | Lifecycle / event enumerations                        |
+| `getDecoratorInfo(ClassRef)`                                    | Inspect decorator metadata on a component class       |
 
 ## Related packages
 

@@ -13,15 +13,15 @@ import { Component, Service, Reference, Activate, Deactivate, Modified } from '@
 
 ## Class Decorators
 
-| Decorator | Target | Description |
-|-----------|--------|-------------|
-| `@Component(options?)` | Class | Declares a class as a Declarative Services component |
-| `@Service(options?)` | Class | Registers the component as a service under specified interfaces |
-| `@Immediate` | Class | Marks the component for immediate activation |
-| `@Factory(factoryId)` | Class | Declares a factory component |
-| `@ConfigurationPolicy(policy)` | Class | Sets the configuration policy |
-| `@Scope(scope)` | Class | Sets the service scope |
-| `@Property(key, value)` | Class | Adds a static property to the component |
+| Decorator                      | Target | Description                                                     |
+| ------------------------------ | ------ | --------------------------------------------------------------- |
+| `@Component(options?)`         | Class  | Declares a class as a Declarative Services component            |
+| `@Service(options?)`           | Class  | Registers the component as a service under specified interfaces |
+| `@Immediate`                   | Class  | Marks the component for immediate activation                    |
+| `@Factory(factoryId)`          | Class  | Declares a factory component                                    |
+| `@ConfigurationPolicy(policy)` | Class  | Sets the configuration policy                                   |
+| `@Scope(scope)`                | Class  | Sets the service scope                                          |
+| `@Property(key, value)`        | Class  | Adds a static property to the component                         |
 
 ### @Component
 
@@ -34,21 +34,21 @@ import { Component, Service, Reference, Activate, Deactivate, Modified } from '@
 class MyServiceImpl {}
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `name?` | `string` | Class name | Unique component name |
-| `immediate?` | `boolean` | `false` | Activate immediately, even without service consumers |
-| `enabled?` | `boolean` | `true` | Whether the component is enabled at bundle start |
-| `configurationPid?` | `string` | Component name | Configuration Admin PID |
-| `configurationPolicy?` | `'optional' \| 'require' \| 'ignore'` | `'optional'` | How configuration affects activation |
-| `factory?` | `string` | - | Factory identifier; makes this a factory component |
-| `scope?` | `'singleton' \| 'bundle' \| 'prototype'` | `'singleton'` | Component instance scope |
-| `service?` | `ServiceDescriptor` | - | Inline service registration (alternative to `@Service`) |
-| `properties?` | `Record<string, any>` | `{}` | Component/service properties |
-| `references?` | `ReferenceDescriptor[]` | `[]` | Inline reference declarations |
-| `activate?` | `string` | - | Name of the activate method |
-| `deactivate?` | `string` | - | Name of the deactivate method |
-| `modified?` | `string` | - | Name of the modified method |
+| Option                 | Type                                     | Default        | Description                                             |
+| ---------------------- | ---------------------------------------- | -------------- | ------------------------------------------------------- |
+| `name?`                | `string`                                 | Class name     | Unique component name                                   |
+| `immediate?`           | `boolean`                                | `false`        | Activate immediately, even without service consumers    |
+| `enabled?`             | `boolean`                                | `true`         | Whether the component is enabled at bundle start        |
+| `configurationPid?`    | `string`                                 | Component name | Configuration Admin PID                                 |
+| `configurationPolicy?` | `'optional' \| 'require' \| 'ignore'`    | `'optional'`   | How configuration affects activation                    |
+| `factory?`             | `string`                                 | -              | Factory identifier; makes this a factory component      |
+| `scope?`               | `'singleton' \| 'bundle' \| 'prototype'` | `'singleton'`  | Component instance scope                                |
+| `service?`             | `ServiceDescriptor`                      | -              | Inline service registration (alternative to `@Service`) |
+| `properties?`          | `Record<string, any>`                    | `{}`           | Component/service properties                            |
+| `references?`          | `ReferenceDescriptor[]`                  | `[]`           | Inline reference declarations                           |
+| `activate?`            | `string`                                 | -              | Name of the activate method                             |
+| `deactivate?`          | `string`                                 | -              | Name of the deactivate method                           |
+| `modified?`            | `string`                                 | -              | Name of the modified method                             |
 
 ### @Service
 
@@ -57,10 +57,10 @@ class MyServiceImpl {}
 class MyServiceImpl {}
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `interfaces?` | `string[]` | `[ClassName]` | Interface names to register under |
-| `scope?` | `'singleton' \| 'bundle' \| 'prototype'` | `'singleton'` | Service scope |
+| Option        | Type                                     | Default       | Description                       |
+| ------------- | ---------------------------------------- | ------------- | --------------------------------- |
+| `interfaces?` | `string[]`                               | `[ClassName]` | Interface names to register under |
+| `scope?`      | `'singleton' \| 'bundle' \| 'prototype'` | `'singleton'` | Service scope                     |
 
 ### @Immediate
 
@@ -81,8 +81,8 @@ class MyServiceImpl {}
 class MyFactoryComponent {}
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
+| Parameter   | Type     | Description                       |
+| ----------- | -------- | --------------------------------- |
 | `factoryId` | `string` | Unique identifier for the factory |
 
 ### @ConfigurationPolicy
@@ -93,9 +93,9 @@ class MyFactoryComponent {}
 class MyConfiguredService {}
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `policy` | `'optional' \| 'require' \| 'ignore'` | `'optional'` activates with or without config; `'require'` needs config to activate; `'ignore'` ignores any config |
+| Parameter | Type                                  | Description                                                                                                        |
+| --------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `policy`  | `'optional' \| 'require' \| 'ignore'` | `'optional'` activates with or without config; `'require'` needs config to activate; `'ignore'` ignores any config |
 
 ### @Scope
 
@@ -106,9 +106,9 @@ class MyConfiguredService {}
 class MyPrototypeService {}
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `scope` | `'singleton' \| 'bundle' \| 'prototype'` | `'singleton'` = one instance; `'bundle'` = one per consuming bundle; `'prototype'` = new instance per lookup |
+| Parameter | Type                                     | Description                                                                                                  |
+| --------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `scope`   | `'singleton' \| 'bundle' \| 'prototype'` | `'singleton'` = one instance; `'bundle'` = one per consuming bundle; `'prototype'` = new instance per lookup |
 
 ### @Property
 
@@ -119,10 +119,10 @@ class MyPrototypeService {}
 class MyServiceImpl {}
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | `string` | Property key |
-| `value` | `any` | Property value |
+| Parameter | Type     | Description    |
+| --------- | -------- | -------------- |
+| `key`     | `string` | Property key   |
+| `value`   | `any`    | Property value |
 
 ## Field Decorators
 
@@ -141,28 +141,28 @@ class MyConsumer {
 }
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `name?` | `string` | Field name | Reference name, used to identify bind/unbind methods |
-| `interface?` | `string` | `'any'` | Service interface to bind |
-| `cardinality?` | `'1..1' \| '0..1' \| '1..n' \| '0..n'` | `'1..1'` | `1..1` = mandatory single; `0..1` = optional single; `1..n` = mandatory multiple; `0..n` = optional multiple |
-| `policy?` | `'static' \| 'dynamic'` | `'static'` | `'static'` requires deactivation to rebind; `'dynamic'` allows live rebinding |
-| `policyOption?` | `'reluctant' \| 'greedy'` | `'reluctant'` | `'reluctant'` keeps current binding; `'greedy'` rebinds to better matches immediately |
-| `target?` | `string` | - | LDAP filter applied to the referenced service properties |
-| `bind?` | `string` | - | Name of bind callback method |
-| `unbind?` | `string` | - | Name of unbind callback method |
-| `updated?` | `string` | - | Name of updated callback method |
-| `field?` | `string` | Field name | Target field for injection |
-| `fieldOption?` | `'replace' \| 'update'` | `'replace'` | `'replace'` swaps the field value; `'update'` mutates in place |
-| `scope?` | `'bundle' \| 'prototype' \| 'prototype_required'` | `'bundle'` | Required scope for the referenced service |
+| Option          | Type                                              | Default       | Description                                                                                                  |
+| --------------- | ------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------ |
+| `name?`         | `string`                                          | Field name    | Reference name, used to identify bind/unbind methods                                                         |
+| `interface?`    | `string`                                          | `'any'`       | Service interface to bind                                                                                    |
+| `cardinality?`  | `'1..1' \| '0..1' \| '1..n' \| '0..n'`            | `'1..1'`      | `1..1` = mandatory single; `0..1` = optional single; `1..n` = mandatory multiple; `0..n` = optional multiple |
+| `policy?`       | `'static' \| 'dynamic'`                           | `'static'`    | `'static'` requires deactivation to rebind; `'dynamic'` allows live rebinding                                |
+| `policyOption?` | `'reluctant' \| 'greedy'`                         | `'reluctant'` | `'reluctant'` keeps current binding; `'greedy'` rebinds to better matches immediately                        |
+| `target?`       | `string`                                          | -             | LDAP filter applied to the referenced service properties                                                     |
+| `bind?`         | `string`                                          | -             | Name of bind callback method                                                                                 |
+| `unbind?`       | `string`                                          | -             | Name of unbind callback method                                                                               |
+| `updated?`      | `string`                                          | -             | Name of updated callback method                                                                              |
+| `field?`        | `string`                                          | Field name    | Target field for injection                                                                                   |
+| `fieldOption?`  | `'replace' \| 'update'`                           | `'replace'`   | `'replace'` swaps the field value; `'update'` mutates in place                                               |
+| `scope?`        | `'bundle' \| 'prototype' \| 'prototype_required'` | `'bundle'`    | Required scope for the referenced service                                                                    |
 
 ## Method Decorators
 
-| Decorator | Target | Description |
-|-----------|--------|-------------|
-| `@Activate` | Method | Called when the component is activated |
+| Decorator     | Target | Description                                |
+| ------------- | ------ | ------------------------------------------ |
+| `@Activate`   | Method | Called when the component is activated     |
 | `@Deactivate` | Method | Called before the component is deactivated |
-| `@Modified` | Method | Called when bound configuration changes |
+| `@Modified`   | Method | Called when bound configuration changes    |
 
 ### @Activate
 
@@ -205,54 +205,54 @@ class MyServiceImpl {
 
 ## Interfaces
 
-| Export | Type | Description |
-|--------|------|-------------|
-| `ComponentDescriptor` | Interface | Full component metadata shape |
-| `ReferenceDescriptor` | Interface | Reference metadata shape |
-| `ServiceDescriptor` | Interface | Service registration metadata |
-| `OSGiConstructor<T>` | Type | Constructor type: `new (...args: any[]) => T` |
-| `COMPONENT_METADATA_KEY` | Constant | Reflect metadata key: `'osgi:component'` |
+| Export                   | Type      | Description                                   |
+| ------------------------ | --------- | --------------------------------------------- |
+| `ComponentDescriptor`    | Interface | Full component metadata shape                 |
+| `ReferenceDescriptor`    | Interface | Reference metadata shape                      |
+| `ServiceDescriptor`      | Interface | Service registration metadata                 |
+| `OSGiConstructor<T>`     | Type      | Constructor type: `new (...args: any[]) => T` |
+| `COMPONENT_METADATA_KEY` | Constant  | Reflect metadata key: `'osgi:component'`      |
 
 ### ComponentDescriptor
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `name` | `string` | Component name |
-| `implementation` | `string \| Function` | Implementation class |
-| `class?` | `any` | Direct class reference |
-| `properties?` | `Record<string, any>` | Component properties |
-| `references?` | `ReferenceDescriptor[]` | Service references |
-| `activate?` | `string` | Activate method name |
-| `deactivate?` | `string` | Deactivate method name |
-| `modified?` | `string` | Modified method name |
-| `configurationPid?` | `string` | Configuration PID |
-| `configurationPolicy?` | `'optional' \| 'require' \| 'ignore'` | Configuration policy |
-| `factory?` | `string` | Factory identifier |
-| `immediate?` | `boolean` | Immediate activation flag |
-| `enabled?` | `boolean` | Enabled at bundle start |
-| `scope?` | `'singleton' \| 'bundle' \| 'prototype'` | Component scope |
-| `service?` | `ServiceDescriptor` | Service descriptor |
+| Property               | Type                                     | Description               |
+| ---------------------- | ---------------------------------------- | ------------------------- |
+| `name`                 | `string`                                 | Component name            |
+| `implementation`       | `string \| Function`                     | Implementation class      |
+| `class?`               | `any`                                    | Direct class reference    |
+| `properties?`          | `Record<string, any>`                    | Component properties      |
+| `references?`          | `ReferenceDescriptor[]`                  | Service references        |
+| `activate?`            | `string`                                 | Activate method name      |
+| `deactivate?`          | `string`                                 | Deactivate method name    |
+| `modified?`            | `string`                                 | Modified method name      |
+| `configurationPid?`    | `string`                                 | Configuration PID         |
+| `configurationPolicy?` | `'optional' \| 'require' \| 'ignore'`    | Configuration policy      |
+| `factory?`             | `string`                                 | Factory identifier        |
+| `immediate?`           | `boolean`                                | Immediate activation flag |
+| `enabled?`             | `boolean`                                | Enabled at bundle start   |
+| `scope?`               | `'singleton' \| 'bundle' \| 'prototype'` | Component scope           |
+| `service?`             | `ServiceDescriptor`                      | Service descriptor        |
 
 ### ReferenceDescriptor
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `name` | `string` | Reference name |
-| `interface` | `string` | Target service interface |
-| `cardinality` | `'1..1' \| '0..1' \| '1..n' \| '0..n'` | Reference cardinality |
-| `policy` | `'static' \| 'dynamic'` | Binding policy |
-| `policyOption?` | `'reluctant' \| 'greedy'` | Rebinding strategy |
-| `target?` | `string` | LDAP filter for the target service |
-| `bind?` | `string` | Bind method name |
-| `unbind?` | `string` | Unbind method name |
-| `updated?` | `string` | Updated method name |
-| `field?` | `string` | Injection field name |
-| `fieldOption?` | `'replace' \| 'update'` | Field update strategy |
-| `scope?` | `'bundle' \| 'prototype' \| 'prototype_required'` | Required service scope |
+| Property        | Type                                              | Description                        |
+| --------------- | ------------------------------------------------- | ---------------------------------- |
+| `name`          | `string`                                          | Reference name                     |
+| `interface`     | `string`                                          | Target service interface           |
+| `cardinality`   | `'1..1' \| '0..1' \| '1..n' \| '0..n'`            | Reference cardinality              |
+| `policy`        | `'static' \| 'dynamic'`                           | Binding policy                     |
+| `policyOption?` | `'reluctant' \| 'greedy'`                         | Rebinding strategy                 |
+| `target?`       | `string`                                          | LDAP filter for the target service |
+| `bind?`         | `string`                                          | Bind method name                   |
+| `unbind?`       | `string`                                          | Unbind method name                 |
+| `updated?`      | `string`                                          | Updated method name                |
+| `field?`        | `string`                                          | Injection field name               |
+| `fieldOption?`  | `'replace' \| 'update'`                           | Field update strategy              |
+| `scope?`        | `'bundle' \| 'prototype' \| 'prototype_required'` | Required service scope             |
 
 ### ServiceDescriptor
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `interfaces?` | `string[]` | Interfaces to register under |
-| `scope?` | `'singleton' \| 'bundle' \| 'prototype'` | Service scope |
+| Property      | Type                                     | Description                  |
+| ------------- | ---------------------------------------- | ---------------------------- |
+| `interfaces?` | `string[]`                               | Interfaces to register under |
+| `scope?`      | `'singleton' \| 'bundle' \| 'prototype'` | Service scope                |

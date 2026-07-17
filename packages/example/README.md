@@ -34,14 +34,14 @@ src/bundles/beta/*   ──┘                                        │
 
 ## Repository layout
 
-| Path                               | What to look at                                                        |
-| ---------------------------------- | ---------------------------------------------------------------------- |
-| [`vite.config.ts`](./vite.config.ts) | Two `pandinoBundle()` calls producing `pandino:bundle:alpha` and `pandino:bundle:beta`. |
-| [`src/main.tsx`](./src/main.tsx)     | Root render wrapped in `<PandinoProvider bundles={[...]} />`.        |
-| [`src/bundles/alpha/activator.ts`](./src/bundles/alpha/activator.ts) | A classic bundle activator using `BundleContext` and `LogService`. |
-| [`src/bundles/alpha/WelcomeService.ts`](./src/bundles/alpha/WelcomeService.ts) | A decorated `@Component` exposing a service interface. |
-| [`src/bundles/beta/CounterService.ts`](./src/bundles/beta/CounterService.ts)   | A second decorated component in a separate bundle.     |
-| [`src/pages/`](./src/pages/)       | React pages consuming the declared services through hooks.             |
+| Path                                                                           | What to look at                                                                         |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| [`vite.config.ts`](./vite.config.ts)                                           | Two `pandinoBundle()` calls producing `pandino:bundle:alpha` and `pandino:bundle:beta`. |
+| [`src/main.tsx`](./src/main.tsx)                                               | Root render wrapped in `<PandinoProvider bundles={[...]} />`.                           |
+| [`src/bundles/alpha/activator.ts`](./src/bundles/alpha/activator.ts)           | A classic bundle activator using `BundleContext` and `LogService`.                      |
+| [`src/bundles/alpha/WelcomeService.ts`](./src/bundles/alpha/WelcomeService.ts) | A decorated `@Component` exposing a service interface.                                  |
+| [`src/bundles/beta/CounterService.ts`](./src/bundles/beta/CounterService.ts)   | A second decorated component in a separate bundle.                                      |
+| [`src/pages/`](./src/pages/)                                                   | React pages consuming the declared services through hooks.                              |
 
 ## Running the example
 

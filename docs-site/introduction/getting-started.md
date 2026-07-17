@@ -73,10 +73,7 @@ class SimpleGreetingService implements GreetingService {
 }
 
 // Register the service
-const registration = context.registerService(
-  'GreetingService',
-  new SimpleGreetingService(),
-);
+const registration = context.registerService('GreetingService', new SimpleGreetingService());
 
 // Look up and use the service
 const ref = context.getServiceReference<GreetingService>('GreetingService')!;

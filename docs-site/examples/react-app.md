@@ -99,11 +99,7 @@ import App from './App';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <PandinoProvider
-      bundles={[
-        import('pandino:bundle:greeting'),
-      ]}
-    >
+    <PandinoProvider bundles={[import('pandino:bundle:greeting')]}>
       <App />
     </PandinoProvider>
   </StrictMode>,
@@ -134,11 +130,7 @@ export default function App() {
   return (
     <div>
       <h1>Pandino + React</h1>
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Enter your name"
-      />
+      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your name" />
       <button onClick={handleGreet}>Greet</button>
       {message && <p>{message}</p>}
 
@@ -204,9 +196,7 @@ import { ServiceConsumer } from '@pandino/react-hooks';
 function GreetingDisplay() {
   return (
     <ServiceConsumer<GreetingService> serviceClass="GreetingService">
-      {({ service, loading }) =>
-        loading ? <p>Loading...</p> : <p>{service?.greet('React')}</p>
-      }
+      {({ service, loading }) => (loading ? <p>Loading...</p> : <p>{service?.greet('React')}</p>)}
     </ServiceConsumer>
   );
 }

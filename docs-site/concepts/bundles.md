@@ -15,14 +15,14 @@ Every bundle passes through a series of states:
 INSTALLED --> RESOLVED --> STARTING --> ACTIVE --> STOPPING --> UNINSTALLED
 ```
 
-| State | Value | Description |
-| --- | --- | --- |
-| `INSTALLED` | 2 | The bundle has been installed but not yet resolved. |
-| `RESOLVED` | 4 | The bundle's dependencies are satisfied and it is ready to start. |
-| `STARTING` | 8 | The bundle's activator `start()` method is being called. |
-| `ACTIVE` | 32 | The bundle is running. Its services are registered and available. |
-| `STOPPING` | 16 | The bundle's activator `stop()` method is being called. |
-| `UNINSTALLED` | 1 | The bundle has been removed from the framework. |
+| State         | Value | Description                                                       |
+| ------------- | ----- | ----------------------------------------------------------------- |
+| `INSTALLED`   | 2     | The bundle has been installed but not yet resolved.               |
+| `RESOLVED`    | 4     | The bundle's dependencies are satisfied and it is ready to start. |
+| `STARTING`    | 8     | The bundle's activator `start()` method is being called.          |
+| `ACTIVE`      | 32    | The bundle is running. Its services are registered and available. |
+| `STOPPING`    | 16    | The bundle's activator `stop()` method is being called.           |
+| `UNINSTALLED` | 1     | The bundle has been removed from the framework.                   |
 
 You can check a bundle's current state:
 
@@ -43,10 +43,7 @@ export default class Activator implements BundleActivator {
 
   async start(context: BundleContext): Promise<void> {
     // Register services, add listeners, initialize resources
-    this.registration = context.registerService(
-      'GreeterService',
-      new GreeterServiceImpl(),
-    );
+    this.registration = context.registerService('GreeterService', new GreeterServiceImpl());
     console.log('Greeter bundle started');
   }
 
@@ -69,21 +66,21 @@ Both methods can be synchronous or return a `Promise`.
 
 Key capabilities:
 
-| Method | Description |
-| --- | --- |
-| `registerService(clazz, service, properties?)` | Publish a service to the registry |
-| `getServiceReference(clazz)` | Look up the best matching service reference |
-| `getServiceReferences(clazz, filter?)` | Look up all matching service references |
-| `getService(reference)` | Obtain the service object from a reference |
-| `ungetService(reference)` | Release a service obtained via `getService()` |
-| `installBundle(moduleOrLocation)` | Install a new bundle into the framework |
-| `getBundle()` | Get this bundle's `Bundle` object |
-| `getBundle(id)` | Get any bundle by ID |
-| `getBundles()` | Get all installed bundles |
-| `addServiceListener(listener, filter?)` | Listen for service registry events |
-| `addBundleListener(listener)` | Listen for bundle lifecycle events |
-| `createFilter(filter)` | Create an LDAP filter object |
-| `getProperty(key)` | Read a framework property |
+| Method                                         | Description                                   |
+| ---------------------------------------------- | --------------------------------------------- |
+| `registerService(clazz, service, properties?)` | Publish a service to the registry             |
+| `getServiceReference(clazz)`                   | Look up the best matching service reference   |
+| `getServiceReferences(clazz, filter?)`         | Look up all matching service references       |
+| `getService(reference)`                        | Obtain the service object from a reference    |
+| `ungetService(reference)`                      | Release a service obtained via `getService()` |
+| `installBundle(moduleOrLocation)`              | Install a new bundle into the framework       |
+| `getBundle()`                                  | Get this bundle's `Bundle` object             |
+| `getBundle(id)`                                | Get any bundle by ID                          |
+| `getBundles()`                                 | Get all installed bundles                     |
+| `addServiceListener(listener, filter?)`        | Listen for service registry events            |
+| `addBundleListener(listener)`                  | Listen for bundle lifecycle events            |
+| `createFilter(filter)`                         | Create an LDAP filter object                  |
+| `getProperty(key)`                             | Read a framework property                     |
 
 See [Services](/concepts/services) for details on service registration and discovery.
 
@@ -91,21 +88,21 @@ See [Services](/concepts/services) for details on service registration and disco
 
 Headers are metadata that describe a bundle. They are declared in the bundle module's `headers` object:
 
-| Header | Required | Description |
-| --- | --- | --- |
-| `bundleSymbolicName` | Yes | Unique identifier for the bundle (e.g., `'com.example.greeter'`) |
-| `bundleVersion` | Yes | Semantic version string (e.g., `'1.0.0'`) |
-| `bundleName` | No | Human-readable display name |
-| `bundleDescription` | No | Description of the bundle's purpose |
-| `bundleManifestVersion` | No | Manifest format version |
-| `fragmentHost` | No | Symbolic name of the host bundle (makes this a fragment bundle) |
+| Header                  | Required | Description                                                      |
+| ----------------------- | -------- | ---------------------------------------------------------------- |
+| `bundleSymbolicName`    | Yes      | Unique identifier for the bundle (e.g., `'com.example.greeter'`) |
+| `bundleVersion`         | Yes      | Semantic version string (e.g., `'1.0.0'`)                        |
+| `bundleName`            | No       | Human-readable display name                                      |
+| `bundleDescription`     | No       | Description of the bundle's purpose                              |
+| `bundleManifestVersion` | No       | Manifest format version                                          |
+| `fragmentHost`          | No       | Symbolic name of the host bundle (makes this a fragment bundle)  |
 
 You can read headers at runtime:
 
 ```typescript
 const headers = bundle.getHeaders();
 console.log(headers['bundleSymbolicName']); // 'com.example.greeter'
-console.log(headers['bundleVersion']);       // '1.0.0'
+console.log(headers['bundleVersion']); // '1.0.0'
 ```
 
 ## BundleModule Format
@@ -132,12 +129,12 @@ export default {
 } satisfies BundleModule['default'];
 ```
 
-| Property | Required | Description |
-| --- | --- | --- |
-| `headers` | Yes | Bundle metadata (symbolic name, version, etc.) |
-| `activator` | No | A `BundleActivator` instance for custom lifecycle logic |
-| `components` | No | Array of decorated component classes for the SCR |
-| `resources` | No | Map of logical paths to string resources |
+| Property     | Required | Description                                             |
+| ------------ | -------- | ------------------------------------------------------- |
+| `headers`    | Yes      | Bundle metadata (symbolic name, version, etc.)          |
+| `activator`  | No       | A `BundleActivator` instance for custom lifecycle logic |
+| `components` | No       | Array of decorated component classes for the SCR        |
+| `resources`  | No       | Map of logical paths to string resources                |
 
 You can have an activator, components, or both. Simple bundles that only use declarative services may not need an activator at all.
 
@@ -153,10 +150,7 @@ When starting Pandino, pass bundles in the configuration:
 import Pandino from '@pandino/pandino';
 
 const pandino = new Pandino({
-  bundles: [
-    import('./bundles/greeter-bundle'),
-    import('./bundles/logger-bundle'),
-  ],
+  bundles: [import('./bundles/greeter-bundle'), import('./bundles/logger-bundle')],
 });
 
 await pandino.init();
@@ -191,7 +185,7 @@ export default {
   headers: {
     bundleSymbolicName: 'com.example.greeter-french',
     bundleVersion: '1.0.0',
-    fragmentHost: 'com.example.greeter',  // attaches to the greeter host
+    fragmentHost: 'com.example.greeter', // attaches to the greeter host
   },
   resources: {
     'i18n/fr.json': '{"greeting": "Bonjour"}',

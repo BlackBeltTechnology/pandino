@@ -42,7 +42,7 @@ class SimpleGreetingService implements GreetingService {
 
 const registration = context.registerService('GreetingService', new SimpleGreetingService(), {
   'service.ranking': 10,
-  'lang': 'en',
+  lang: 'en',
 });
 ```
 
@@ -65,7 +65,7 @@ If multiple implementations are registered, use an LDAP filter:
 // Register a second implementation
 context.registerService('GreetingService', new FrenchGreetingService(), {
   'service.ranking': 5,
-  'lang': 'fr',
+  lang: 'fr',
 });
 
 // Find the French implementation

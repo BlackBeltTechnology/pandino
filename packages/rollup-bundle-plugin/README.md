@@ -98,12 +98,7 @@ Then consume the bundles in your app:
 ```tsx
 import { PandinoProvider } from '@pandino/react-hooks';
 
-<PandinoProvider
-  bundles={[
-    import('pandino:bundle:alpha'),
-    import('pandino:bundle:beta'),
-  ]}
->
+<PandinoProvider bundles={[import('pandino:bundle:alpha'), import('pandino:bundle:beta')]}>
   {/* ... */}
 </PandinoProvider>;
 ```
@@ -117,16 +112,16 @@ await context.installBundle('pandino:bundle:alpha', alphaBundle);
 
 ## Options
 
-| Option                 | Type                   | Default                                            | Purpose                                                                                          |
-| ---------------------- | ---------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `include`              | `string \| string[]`   | `['**/*.{js,jsx,ts,tsx}']`                         | Files to scan for `@Component` classes.                                                          |
-| `exclude`              | `string \| string[]`   | `['**/node_modules/**', '**/dist/**', '**/build/**']` | Files to skip.                                                                                |
-| `rootDir`              | `string`               | `process.cwd()`                                    | Base directory for scanning and for locating `package.json`.                                     |
-| `componentsDecorator`  | `string`               | `'Component'`                                      | Decorator name to look for. Use this if you've re-exported the decorator under a different name. |
-| `activator`            | `string`               | —                                                  | Path to a module whose default export implements `BundleActivator`.                              |
-| `virtualId`            | `string`               | `'pandino:bundle'`                                 | Virtual module id used by `import(...)`. Give each bundle its own id.                            |
-| `outputFile`           | `string`               | `'pandino/bundle.js'`                              | Path (relative to the Rollup output directory) for the emitted chunk.                            |
-| `headers`              | `Partial<BundleHeaders>` | Derived from `package.json`                      | Extends / overrides the auto-derived headers (e.g. `bundleName`, `bundleDescription`, `fragmentHost`). |
+| Option                | Type                     | Default                                               | Purpose                                                                                                |
+| --------------------- | ------------------------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `include`             | `string \| string[]`     | `['**/*.{js,jsx,ts,tsx}']`                            | Files to scan for `@Component` classes.                                                                |
+| `exclude`             | `string \| string[]`     | `['**/node_modules/**', '**/dist/**', '**/build/**']` | Files to skip.                                                                                         |
+| `rootDir`             | `string`                 | `process.cwd()`                                       | Base directory for scanning and for locating `package.json`.                                           |
+| `componentsDecorator` | `string`                 | `'Component'`                                         | Decorator name to look for. Use this if you've re-exported the decorator under a different name.       |
+| `activator`           | `string`                 | —                                                     | Path to a module whose default export implements `BundleActivator`.                                    |
+| `virtualId`           | `string`                 | `'pandino:bundle'`                                    | Virtual module id used by `import(...)`. Give each bundle its own id.                                  |
+| `outputFile`          | `string`                 | `'pandino/bundle.js'`                                 | Path (relative to the Rollup output directory) for the emitted chunk.                                  |
+| `headers`             | `Partial<BundleHeaders>` | Derived from `package.json`                           | Extends / overrides the auto-derived headers (e.g. `bundleName`, `bundleDescription`, `fragmentHost`). |
 
 ## Notes and limitations
 

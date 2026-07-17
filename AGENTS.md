@@ -69,19 +69,20 @@ signal appears. Skills auto-trigger on natural language, but the implement loop
 may never utter the phrase — this table makes the mapping explicit (signals are
 observable in the diff / `tasks.md`, not vague intent):
 
-| Task signal (in diff / tasks.md) | Skill |
-|---|---|
-| touches auth, untrusted input, secrets, webhooks, PII | `security-hardening` |
-| spec has a latency/throughput budget, or a large-data / high-traffic path | `performance-optimization` |
-| new endpoint, job, external call, or "can't tell what happened in prod" | `observability-instrumentation` |
-| non-trivial/irreversible step (migration, public API, cross-boundary) BEFORE it stands | `doubt-driven-review` |
-| a bug surfaces mid-implementation | `systematic-debugging` |
-| runtime state opaque, `console.log` insufficient | `node-inspect-debugger` |
-| feature works + tests pass but the implementation feels heavy | `code-simplification` |
+| Task signal (in diff / tasks.md)                                                       | Skill                           |
+| -------------------------------------------------------------------------------------- | ------------------------------- |
+| touches auth, untrusted input, secrets, webhooks, PII                                  | `security-hardening`            |
+| spec has a latency/throughput budget, or a large-data / high-traffic path              | `performance-optimization`      |
+| new endpoint, job, external call, or "can't tell what happened in prod"                | `observability-instrumentation` |
+| non-trivial/irreversible step (migration, public API, cross-boundary) BEFORE it stands | `doubt-driven-review`           |
+| a bug surfaces mid-implementation                                                      | `systematic-debugging`          |
+| runtime state opaque, `console.log` insufficient                                       | `node-inspect-debugger`         |
+| feature works + tests pass but the implementation feels heavy                          | `code-simplification`           |
 
 The end gates (`code-review`, `code-quality`) remain unchanged and run at completion before commit.
 
 <!-- dox-doctrine -->
+
 ## Documentation Update Protocol (WRITE discipline)
 
 Per-directory `AGENTS.md` files form a tree. Each directory `AGENTS.md` is the
@@ -90,12 +91,12 @@ doctrine + architecture pointers only — never a per-file index.
 
 **Route every doc update by kind:**
 
-| Kind of update | Goes in |
-|---|---|
-| New file in a directory, or its per-file detail / change history | Nearest directory `AGENTS.md`. Add a `` | `<basename>` | <purpose> | `` row, path-alphabetical. |
-| Data flow, protocol, architecture rationale | `docs/architecture.md` or a `docs/<topic>.md` |
-| End-user / developer setup | `README.md` |
-| Cross-cutting rule every agent needs every turn (rare) | ROOT `AGENTS.md` |
+| Kind of update                                                   | Goes in                                       |
+| ---------------------------------------------------------------- | --------------------------------------------- |
+| New file in a directory, or its per-file detail / change history | Nearest directory `AGENTS.md`. Add a ``       | `<basename>` | <purpose> | `` row, path-alphabetical. |
+| Data flow, protocol, architecture rationale                      | `docs/architecture.md` or a `docs/<topic>.md` |
+| End-user / developer setup                                       | `README.md`                                   |
+| Cross-cutting rule every agent needs every turn (rare)           | ROOT `AGENTS.md`                              |
 
 **Read before editing (chain walk).** Before editing a file, read the nearest
 `AGENTS.md` chain root→leaf so you know the file's recorded purpose, contracts,

@@ -99,10 +99,7 @@ export default function App() {
 Resolves a single service by interface name (and optional LDAP filter). Releases the service reference automatically when the component unmounts or the reference changes.
 
 ```tsx
-const { service, loading, error } = useService<PaymentService>(
-  'PaymentService',
-  '(region=EU)',
-);
+const { service, loading, error } = useService<PaymentService>('PaymentService', '(region=EU)');
 ```
 
 Returns `{ service, loading, error }`.
@@ -116,7 +113,9 @@ const { services, loading, error } = useServiceTracker<PluginService>('PluginSer
 
 return (
   <ul>
-    {services.map((plugin, i) => <li key={i}>{plugin.name}</li>)}
+    {services.map((plugin, i) => (
+      <li key={i}>{plugin.name}</li>
+    ))}
   </ul>
 );
 ```
@@ -126,9 +125,13 @@ return (
 Registers a service for the lifetime of the component. Useful when a React component itself wants to contribute a service to the registry.
 
 ```tsx
-const { isRegistered, updateProperties } = useRegisterService('AnalyticsSink', {
-  track: (event) => console.log(event),
-}, { priority: 10 });
+const { isRegistered, updateProperties } = useRegisterService(
+  'AnalyticsSink',
+  {
+    track: (event) => console.log(event),
+  },
+  { priority: 10 },
+);
 ```
 
 The service is unregistered automatically on unmount.
@@ -157,11 +160,11 @@ const refs = context?.getServiceReferences('EventHandler', '(event.topics=user/*
 
 Root provider. Accepts:
 
-| Prop              | Type                                | Purpose                                     |
-| ----------------- | ----------------------------------- | ------------------------------------------- |
-| `bundles`         | `Array<Promise<BundleModule>>`      | Bundle modules to install and start         |
-| `bootstrapConfig` | `BootstrapConfig` (optional)        | Forwarded to the Pandino `OSGiBootstrap`    |
-| `children`        | `ReactNode`                         | Your application                            |
+| Prop              | Type                           | Purpose                                  |
+| ----------------- | ------------------------------ | ---------------------------------------- |
+| `bundles`         | `Array<Promise<BundleModule>>` | Bundle modules to install and start      |
+| `bootstrapConfig` | `BootstrapConfig` (optional)   | Forwarded to the Pandino `OSGiBootstrap` |
+| `children`        | `ReactNode`                    | Your application                         |
 
 ### `<BundleInfo bundleIdOrName>`
 
@@ -177,9 +180,7 @@ Render-prop wrapper around `useService`. Handy when you prefer composition over 
 
 ```tsx
 <ServiceConsumer<GreetingService> serviceClass="GreetingService">
-  {({ service, loading }) =>
-    loading ? <Spinner /> : <h1>{service?.sayHello('world')}</h1>
-  }
+  {({ service, loading }) => (loading ? <Spinner /> : <h1>{service?.sayHello('world')}</h1>)}
 </ServiceConsumer>
 ```
 
@@ -216,7 +217,9 @@ function Toolbar() {
   return (
     <nav>
       {actions.map((a) => (
-        <button key={a.id} onClick={a.invoke}>{a.label}</button>
+        <button key={a.id} onClick={a.invoke}>
+          {a.label}
+        </button>
       ))}
     </nav>
   );

@@ -58,11 +58,7 @@ await config.update({
 A `ManagedService` receives configuration updates through its `updated()` callback. Register it with a `service.pid` property that matches the configuration PID:
 
 ```typescript
-import type {
-  BundleActivator,
-  BundleContext,
-  ServiceRegistration,
-} from '@pandino/pandino';
+import type { BundleActivator, BundleContext, ServiceRegistration } from '@pandino/pandino';
 import type { ManagedService } from '@pandino/pandino';
 
 class DatabaseService implements ManagedService {
@@ -87,11 +83,9 @@ export default class Activator implements BundleActivator {
   private registration?: ServiceRegistration<ManagedService>;
 
   async start(context: BundleContext): Promise<void> {
-    this.registration = context.registerService(
-      'ManagedService',
-      new DatabaseService(),
-      { 'service.pid': 'com.example.database' },
-    );
+    this.registration = context.registerService('ManagedService', new DatabaseService(), {
+      'service.pid': 'com.example.database',
+    });
   }
 
   async stop(context: BundleContext): Promise<void> {
@@ -169,11 +163,7 @@ class DataSourceFactory implements ManagedServiceFactory {
 Register the factory with a `service.pid` matching the factory PID:
 
 ```typescript
-context.registerService(
-  'ManagedServiceFactory',
-  new DataSourceFactory(),
-  { 'service.pid': 'com.example.datasource' },
-);
+context.registerService('ManagedServiceFactory', new DataSourceFactory(), { 'service.pid': 'com.example.datasource' });
 ```
 
 ## Integration with Declarative Services
@@ -218,11 +208,11 @@ class CacheServiceComponent implements CacheService {
 
 Configuration policies control when the component activates:
 
-| Policy | Behavior |
-| --- | --- |
+| Policy       | Behavior                                                                            |
+| ------------ | ----------------------------------------------------------------------------------- |
 | `'optional'` | Activates with or without configuration. Merges properties if configuration exists. |
-| `'require'` | Blocks activation until a matching configuration is available. |
-| `'ignore'` | Ignores configuration entirely, even if one exists for the PID. |
+| `'require'`  | Blocks activation until a matching configuration is available.                      |
+| `'ignore'`   | Ignores configuration entirely, even if one exists for the PID.                     |
 
 To push configuration to a declarative service component, use ConfigurationAdmin as usual:
 
