@@ -22,6 +22,10 @@ SCR components have their own lifecycle driven by dependency satisfaction:
 
 A component can cycle between active and unsatisfied multiple times if its dependencies come and go.
 
+### Registration order is irrelevant
+
+Activation is driven purely by dependency satisfaction, not by registration order. A component whose mandatory `@Reference`s are not yet available when it is registered stays **Unsatisfied** and is activated automatically as soon as the services it depends on come up -- even if those provider components are registered *after* it (for example, later in the same bundle). You never need to order the `components` array to make wiring succeed.
+
 ## @Component
 
 The `@Component` decorator marks a class as an SCR component and configures its behavior:

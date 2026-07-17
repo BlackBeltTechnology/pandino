@@ -137,3 +137,14 @@ consult the doc tree BEFORE grepping source:
 Grepping source before checking the tree wastes tokens and risks hallucinated
 answers. Fall through to `rg` / manual search only when the tree misses — then
 add the missing row per the WRITE discipline.
+
+| `CHANGELOG.agent.md` | Digest of `CHANGELOG.md` (pull-only sidecar). |
+| `CHANGELOG.md` |  |
+| `CLAUDE.md` |  |
+| `CONTRIBUTING.md` |  |
+| `README.md` |  |
+| `docs/AGENTS.md` | → see `docs/AGENTS.md` (pattern & how-to guides). |
+| `docs-site/AGENTS.md` | → see `docs-site/AGENTS.md` (VitePress docs site index). |
+| `packages/AGENTS.md` | → see `packages/AGENTS.md` (workspace package records). |
+
+
