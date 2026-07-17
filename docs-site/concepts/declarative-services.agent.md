@@ -3,6 +3,7 @@
 Conceptual guide to SCR (Service Component Runtime), Pandino's decorator-based DI.
 
 ## Gist
+
 - **Lifecycle**: `UNSATISFIED → ACTIVATING → ACTIVE → DEACTIVATING → UNSATISFIED`, driven by dependency satisfaction. **Activation is registration-order independent** — a component activates as soon as its mandatory `@Reference`s are available, even if providers register later (see change: #297).
 - **`@Component`**: name, `immediate`, factory, etc.
 - **`@Service`**: interfaces (+ scope) the component is registered under.
@@ -12,4 +13,5 @@ Conceptual guide to SCR (Service Component Runtime), Pandino's decorator-based D
 - **Loading**: bundle `components` array, Rollup auto-discovery, or programmatic `scr.registerComponent`.
 
 ## When to open the full file
+
 Exact decorator option semantics or code examples.

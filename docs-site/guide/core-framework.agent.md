@@ -3,6 +3,7 @@
 Getting-started guide for `@pandino/pandino` core. (Near-duplicate of `packages/pandino/README.md`.)
 
 ## Gist
+
 - **Where it fits**: core runtime under decorators/react-hooks/rollup-plugin.
 - **Install & TS config**: package install + `experimentalDecorators`/`emitDecoratorMetadata` setup.
 - **Core concepts**: services & service references, bundles, dynamic dependencies, SCR.
@@ -12,4 +13,5 @@ Getting-started guide for `@pandino/pandino` core. (Near-duplicate of `packages/
 - **Writing a bundle** (incl. fragment bundles), recommended patterns, public API cheatsheet.
 
 ## When to open the full file
+
 Copy-paste bootstrap/bundle examples or the API cheatsheet.

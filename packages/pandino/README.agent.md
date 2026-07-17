@@ -3,6 +3,7 @@
 Package readme for `@pandino/pandino` core. (Content mirrors `docs-site/guide/core-framework.md`.)
 
 ## Gist
+
 - **Where it fits**: core framework; decorators/react-hooks/rollup-plugin build on it.
 - **Install & TypeScript config** (decorator flags).
 - **Core concepts**: services & references, bundles, dynamic dependencies, SCR.
@@ -12,4 +13,5 @@ Package readme for `@pandino/pandino` core. (Content mirrors `docs-site/guide/co
 - **Writing a bundle** (+ fragment bundles), recommended patterns, public API cheatsheet, related packages, license.
 
 ## When to open the full file
+
 Exact install/config snippets, API cheatsheet, or bundle-authoring examples.

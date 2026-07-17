@@ -10,5 +10,3 @@ Workspace packages (pnpm monorepo). Markdown records for each package and its sp
 | `packages/pandino/src/services/declarative-services/spec.md` | Formal lifecycle model for Declarative Services: separates Component Configuration and Component Instance state machines; testable SCR behavior spec. |
 | `packages/react-hooks/README.md` | `@pandino/react-hooks` — React integration: hook-based service discovery in components. |
 | `packages/rollup-bundle-plugin/README.md` | `@pandino/rollup-bundle-plugin` — Rollup plugin that automates bundling of Pandino modules. |
-
-

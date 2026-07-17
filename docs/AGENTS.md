@@ -7,5 +7,3 @@ Pattern and how-to guides for Pandino's OSGi-inspired mechanisms.
 | `docs/fragment-pattern.agent.md` | Digest of `docs/fragment-pattern.md` (pull-only sidecar). |
 | `docs/fragment-pattern.md` | Fragment pattern explained: a fragment bundle attaches to a host bundle and contributes resources directly; no independent lifecycle. |
 | `docs/whiteboard-pattern.md` | Whiteboard pattern explained: loose coupling via the service registry where consumers track registered services instead of registering listeners. |
-
-

@@ -56,13 +56,13 @@ log.addLogListener({
 
 SCR publishes an event through `EventAdmin` at each lifecycle step. Subscribing to them is the most reliable way to see what SCR is doing, because you get a structured payload instead of parsing log lines.
 
-| Topic                        | Published when                                   | Payload keys                                  |
-| ---------------------------- | ------------------------------------------------ | --------------------------------------------- |
-| `scr/component/registered`   | a component is registered with SCR               | `bundle.id`, `component.name`, `decorators`   |
-| `scr/component/activated`    | a component becomes ACTIVE                        | `bundle.id`, `component.name`, `decorators`   |
-| `scr/component/deactivated`  | a component is deactivated                        | `bundle.id`, `component.name`, `decorators`   |
-| `scr/component/config-updated` | a component's configuration changed             | `bundle.id`, `component.name`, `configuration`, `decorators` |
-| `scr/component/removed`      | a component is removed (bundle uninstalled)      | `bundle.id`, `component.name`, `decorators`   |
+| Topic                          | Published when                              | Payload keys                                                 |
+| ------------------------------ | ------------------------------------------- | ------------------------------------------------------------ |
+| `scr/component/registered`     | a component is registered with SCR          | `bundle.id`, `component.name`, `decorators`                  |
+| `scr/component/activated`      | a component becomes ACTIVE                  | `bundle.id`, `component.name`, `decorators`                  |
+| `scr/component/deactivated`    | a component is deactivated                  | `bundle.id`, `component.name`, `decorators`                  |
+| `scr/component/config-updated` | a component's configuration changed         | `bundle.id`, `component.name`, `configuration`, `decorators` |
+| `scr/component/removed`        | a component is removed (bundle uninstalled) | `bundle.id`, `component.name`, `decorators`                  |
 
 Register an `EventHandler` service and subscribe with a wildcard topic:
 
@@ -75,7 +75,8 @@ const handler: EventHandler = {
       'SCR:',
       event.getTopic(),
       event.getProperty('component.name'),
-      'bundle', event.getProperty('bundle.id'),
+      'bundle',
+      event.getProperty('bundle.id'),
     );
   },
 };
@@ -94,22 +95,23 @@ The `ServiceComponentRuntime` service lets you look at any component's live entr
 ```typescript
 import type { ServiceComponentRuntime } from '@pandino/pandino';
 
-const scr = context.getService(
-  context.getServiceReference<ServiceComponentRuntime>('ServiceComponentRuntime')!,
-)!;
+const scr = context.getService(context.getServiceReference<ServiceComponentRuntime>('ServiceComponentRuntime')!)!;
 
 const bundleId = context.getBundle().getBundleId();
 const entry = scr.getComponent(bundleId, 'com.example.my-component');
 
-console.log('active?    ', entry?.instance != null);      // null while UNSATISFIED
+console.log('active?    ', entry?.instance != null); // null while UNSATISFIED
 console.log('registered as service?', entry?.serviceRegistration != null);
 console.log('immediate? ', entry?.metadata.immediate);
-console.log('references ', entry?.metadata.references?.map((r) => ({
-  interface: r.interface,
-  cardinality: r.cardinality,
-  policy: r.policy,
-  target: r.target,
-})));
+console.log(
+  'references ',
+  entry?.metadata.references?.map((r) => ({
+    interface: r.interface,
+    cardinality: r.cardinality,
+    policy: r.policy,
+    target: r.target,
+  })),
+);
 ```
 
 Key fields on the entry:
@@ -156,7 +158,7 @@ To watch resolution happen line by line, run under an inspector (`node --inspect
 - **`activateComponent`** — the activation itself (instance creation, service registration, `@Activate`).
 - **`satisfyReference`** — the actual field/bind injection for a single `@Reference`.
 
-Watching `canActivateComponent` return `false` tells you *which* reference is blocking activation.
+Watching `canActivateComponent` return `false` tells you _which_ reference is blocking activation.
 
 ## Checklist
 

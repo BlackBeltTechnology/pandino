@@ -24,7 +24,7 @@ A component can cycle between active and unsatisfied multiple times if its depen
 
 ### Registration order is irrelevant
 
-Activation is driven purely by dependency satisfaction, not by registration order. A component whose mandatory `@Reference`s are not yet available when it is registered stays **Unsatisfied** and is activated automatically as soon as the services it depends on come up -- even if those provider components are registered *after* it (for example, later in the same bundle). You never need to order the `components` array to make wiring succeed.
+Activation is driven purely by dependency satisfaction, not by registration order. A component whose mandatory `@Reference`s are not yet available when it is registered stays **Unsatisfied** and is activated automatically as soon as the services it depends on come up -- even if those provider components are registered _after_ it (for example, later in the same bundle). You never need to order the `components` array to make wiring succeed.
 
 ## @Component
 
@@ -107,7 +107,7 @@ References and service registrations identify interfaces by **string name**, not
 - **Interfaces do not exist at runtime.** TypeScript `interface` declarations are erased during compilation, so there is no value to pass to `@Reference`. Even with `emitDecoratorMetadata`, an interface-typed field reports its runtime type as `Object` — unusable for lookup.
 - **Class identity is not stable across bundles.** A class reference is only equal to itself within a single module instance. Independently built or dynamically loaded bundles (e.g. micro-frontends) can hold different copies of the "same" class, so registry lookup by class identity would silently fail. A string name is stable no matter how bundles are built, loaded, or duplicated.
 
-The string is therefore load-bearing — it is the one piece both provider and consumer must agree on. You still get **full compile-time type safety** by annotating the injected field with a type. Use a type-only import so the contract stays a shared *type*, not a shared runtime dependency:
+The string is therefore load-bearing — it is the one piece both provider and consumer must agree on. You still get **full compile-time type safety** by annotating the injected field with a type. Use a type-only import so the contract stays a shared _type_, not a shared runtime dependency:
 
 ```typescript
 // Erased at build time — no runtime import, no shared bundle, bundles stay decoupled.

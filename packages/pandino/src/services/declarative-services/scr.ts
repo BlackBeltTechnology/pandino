@@ -325,31 +325,47 @@ export class ServiceComponentRuntime {
     }
     this.resolving = true;
     try {
-      let progressed = true;
-      while (progressed) {
-        progressed = false;
-        for (const [bundleId, bundleComponents] of this.components.entries()) {
-          for (const [componentName, entry] of bundleComponents.entries()) {
-            const { metadata, instance } = entry;
-            // Skip non-immediate components and any component already activated.
-            // Singleton scope sets `instance`; prototype/bundle scope leaves
-            // `instance` null but sets `serviceRegistration` — both mean done.
-            if (!metadata.immediate || instance || entry.serviceRegistration) {
-              continue;
-            }
-            if (this.activationChain.includes(`${bundleId}:${componentName}`)) {
-              continue;
-            }
-            if (await this.canActivateComponent(bundleId, componentName)) {
-              await this.activateComponent(bundleId, componentName);
-              progressed = true;
-            }
-          }
-        }
+      // Loop to a fixpoint: each pass activates at most one component, then
+      // restarts so newly-registered services cascade to further components.
+      while (await this.activateNextSatisfiablePending()) {
+        // keep going until a pass makes no progress
       }
     } finally {
       this.resolving = false;
     }
+  }
+
+  /**
+   * Activates one pending immediate component whose mandatory references are now
+   * satisfied and returns true; returns false when none remain. Returning after
+   * each activation keeps iteration safe against the component map mutating
+   * during activation.
+   */
+  private async activateNextSatisfiablePending(): Promise<boolean> {
+    for (const [bundleId, bundleComponents] of this.components.entries()) {
+      for (const [componentName, entry] of bundleComponents.entries()) {
+        if (!this.isPendingImmediate(bundleId, componentName, entry)) {
+          continue;
+        }
+        if (await this.canActivateComponent(bundleId, componentName)) {
+          await this.activateComponent(bundleId, componentName);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * True when an immediate component is registered but not yet activated and is
+   * not already mid-activation. Singleton scope sets `instance`; prototype/bundle
+   * scope leaves it null but sets `serviceRegistration` — either means done.
+   */
+  private isPendingImmediate(bundleId: number, name: string, entry: ComponentEntry): boolean {
+    if (!entry.metadata.immediate || entry.instance || entry.serviceRegistration) {
+      return false;
+    }
+    return !this.activationChain.includes(`${bundleId}:${name}`);
   }
 
   async deactivateComponent(bundleId: number, name: string): Promise<void> {
