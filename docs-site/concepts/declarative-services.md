@@ -100,6 +100,29 @@ class OrderServiceComponent implements OrderService {
 }
 ```
 
+### Why interfaces are strings (and how to stay type-safe)
+
+References and service registrations identify interfaces by **string name**, not by a TypeScript interface or a class:
+
+- **Interfaces do not exist at runtime.** TypeScript `interface` declarations are erased during compilation, so there is no value to pass to `@Reference`. Even with `emitDecoratorMetadata`, an interface-typed field reports its runtime type as `Object` — unusable for lookup.
+- **Class identity is not stable across bundles.** A class reference is only equal to itself within a single module instance. Independently built or dynamically loaded bundles (e.g. micro-frontends) can hold different copies of the "same" class, so registry lookup by class identity would silently fail. A string name is stable no matter how bundles are built, loaded, or duplicated.
+
+The string is therefore load-bearing — it is the one piece both provider and consumer must agree on. You still get **full compile-time type safety** by annotating the injected field with a type. Use a type-only import so the contract stays a shared *type*, not a shared runtime dependency:
+
+```typescript
+// Erased at build time — no runtime import, no shared bundle, bundles stay decoupled.
+import type { UserService } from '@your-org/contracts';
+import { Component, Reference } from '@pandino/decorators';
+
+@Component({ name: 'com.example.order-service', immediate: true })
+class OrderServiceComponent {
+  @Reference({ interface: 'UserService' })
+  private userService?: UserService; // typed via `import type`, keyed by the string name
+}
+```
+
+This keeps genuinely decoupled projects decoupled: `import type` produces no runtime coupling (it compiles away), while the string key preserves cross-bundle resolution. For a single monorepo you can also share the interface as an ordinary `import type` from a local package. Avoid importing a concrete implementation class just to reference it — that reintroduces the compile-time coupling the service registry exists to remove.
+
 ### Reference Options
 
 | Option         | Type                                   | Default       | Description                                                      |
