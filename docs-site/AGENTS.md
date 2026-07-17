@@ -10,6 +10,7 @@ Files in this area. Purposes left for the agent to author.
 | `docs-site/concepts/bundles.md` |  |
 | `docs-site/concepts/configuration.md` |  |
 | `docs-site/concepts/declarative-services.agent.md` | Digest of `docs-site/concepts/declarative-services.md` (pull-only sidecar). |
+| `docs-site/concepts/debugging-scr.md` | SCR debugging guide (#298): framework logging, `scr/component/*` events, `getComponent` state inspection, common failure signatures, breakpoint targets. |
 | `docs-site/concepts/declarative-services.md` | SCR concept guide: component lifecycle, `@Component`/`@Service`/`@Reference`, activation is registration-order independent (dependency-driven). |
 | `docs-site/concepts/events.md` |  |
 | `docs-site/concepts/services.md` |  |

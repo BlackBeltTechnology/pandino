@@ -5,7 +5,7 @@
   "docs-site/api/rollup-plugin.md": "174a3be5a3fe75bf10dd55f489de83c7586c4f1a11910d0ef71e2c7e4357e8c4",
   "docs-site/concepts/bundles.md": "3a574a141636e0f5f8e032d138736f4023bde9c8cd647449bfd52dc1a44eaf86",
   "docs-site/concepts/configuration.md": "cc580d1d0a08473325768c095616523bc8888de41beedcbb3919b0ee643bf8e1",
-  "docs-site/concepts/declarative-services.md": "75e1ef42f7fe2edad1bcb034192dde5435d4bdf351a62b888bc7709e39263210",
+  "docs-site/concepts/declarative-services.md": "7b200c03f7069f306e7c4a2fe10ff2f9982058d98c9d65e923ac2de1e0d2190f",
   "docs-site/concepts/events.md": "5d9d96f11d3527ec9bb013111fcf2afb77c4a55fe83ab7c132b59e493d1fb366",
   "docs-site/concepts/services.md": "c03cf2edc6608bec169da4cb4ca13e8773ad03f16ccc046f6d6db9c37e6039c1",
   "docs-site/examples/basic-service.md": "55d3fc346d85aaac9d4de0b1a71d3b8951059251308599612b4bc66a684f2e80",
@@ -37,14 +37,15 @@
   "CLAUDE.md": "e997c044ee71d13e297df26f0de2ea9eef6f8c980f3fd5f3b0a38c6c675d21d0",
   "CONTRIBUTING.md": "5baae201f7493ff9e4bf94301639f957fd8e162782d83709a3dac5b75578633d",
   "README.md": "670adabb895a3bfd1e0dd63b95f974fd8eac492d4f28e9d6c3faeb6756b2a425",
-  "docs/AGENTS.md": "213fc838c81b29230c83d21e152a8388baa7ed74d36b1696dd04cdc63817541c",
-  "docs-site/AGENTS.md": "0ef0821f76756bcf8a20ca27ce5440ad129defc246159c753f78a2a00c3c4446",
-  "packages/AGENTS.md": "885fd8a09602e4b9d42b1a8e40ea432060286781042f5315166af5aeba60184c",
+  "docs/AGENTS.md": "701038890cd224ba1c7a0a9ad45afbaad53053c3e5716541559735c411543bf1",
+  "docs-site/AGENTS.md": "ebb486e8ce11725acf79df361656c5b8a310e26038958ae9c80ef79bc4772958",
+  "packages/AGENTS.md": "b1de20934d5ea401449a39d67d29e25f5b1a101d60cc2f58e6a17422c0586823",
   "CHANGELOG.agent.md": "e5367b52ead95f09d94ad2da7667cef3bfec7afc5d4e145cec4f6e15367cc70b",
   "docs/fragment-pattern.agent.md": "37f6e6aa8bc1a5829b58a532f79329abb963b9f1826bcb1460782217970cf2e5",
   "docs-site/api/core.agent.md": "84f2a3251218d21a4d0f8135e013f55e21dbab75cdc168015b7c86c3142f493c",
   "docs-site/concepts/declarative-services.agent.md": "770236cc1a917cbb0a0f6be08c799281f518f18fd7b3020ef631b081cd0bcad5",
   "docs-site/guide/core-framework.agent.md": "217c410ebaa35b525e5b254191c834ffeb9f2fa80533d520e6d5a096105d94b4",
   "packages/pandino/README.agent.md": "377bf904401014f95692acace0ce8f42d2296322dc3784fe9a7df9a4103b67b1",
-  "packages/pandino/src/services/declarative-services/spec.agent.md": "d2783b6d65cbcf08e1d2aea33f3cc171ee57a3de7381dc197573e77b6c867544"
+  "packages/pandino/src/services/declarative-services/spec.agent.md": "d2783b6d65cbcf08e1d2aea33f3cc171ee57a3de7381dc197573e77b6c867544",
+  "docs-site/concepts/debugging-scr.md": "98af4189723524490dcdf29171a595a3a607a7bd59cf3f5b8e88078fd256fa99"
 }

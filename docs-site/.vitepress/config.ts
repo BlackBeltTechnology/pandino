@@ -101,6 +101,7 @@ export default defineConfig({
             { text: 'Services', link: '/concepts/services' },
             { text: 'Bundles', link: '/concepts/bundles' },
             { text: 'Declarative Services', link: '/concepts/declarative-services' },
+            { text: 'Debugging SCR', link: '/concepts/debugging-scr' },
             { text: 'Configuration', link: '/concepts/configuration' },
             { text: 'Events', link: '/concepts/events' },
           ],

@@ -303,6 +303,7 @@ async start(context: BundleContext): Promise<void> {
 
 ## Next Steps
 
+- [Debugging SCR](/concepts/debugging-scr) -- Inspect lifecycle events, component state, and diagnose why a component won't activate
 - [Decorators Guide](/guide/decorators) -- Step-by-step guide to using all decorators
 - [Decorators API](/api/decorators) -- Full API reference for `@Component`, `@Service`, `@Reference`, and more
 - [Configuration](/concepts/configuration) -- Runtime configuration with ConfigurationAdmin
