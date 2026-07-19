@@ -17,6 +17,8 @@ export class ServiceTracker<S, T = S> implements ServiceListener {
   private readonly customizer: ServiceTrackerCustomizer<S, T> | null = null;
   private isOpen = false;
   private trackedServices = new Map<ServiceReference<S>, TrackedService<S, T>>();
+  private trackingCount = -1;
+  private waiters: Array<(value: T | null) => void> = [];
 
   constructor(
     context: BundleContext,
@@ -51,6 +53,7 @@ export class ServiceTracker<S, T = S> implements ServiceListener {
     }
 
     this.isOpen = true;
+    this.trackingCount = 0;
 
     // Add service listener
     this.context.addServiceListener(this);
@@ -59,7 +62,7 @@ export class ServiceTracker<S, T = S> implements ServiceListener {
     const references = this.context.getServiceReferences<S>(this.className || '*', this.filter?.toString() || null);
     if (references) {
       for (const reference of references) {
-        this.trackInitialService(reference);
+        this.trackService(reference);
       }
     }
 
@@ -72,6 +75,13 @@ export class ServiceTracker<S, T = S> implements ServiceListener {
     }
 
     this.isOpen = false;
+    this.trackingCount = -1;
+
+    // Resolve any pending waiters so their promises do not hang forever.
+    const pendingWaiters = this.waiters.splice(0);
+    for (const waiter of pendingWaiters) {
+      waiter(null);
+    }
 
     // Remove service listener
     this.context.removeServiceListener(this);
@@ -137,8 +147,92 @@ export class ServiceTracker<S, T = S> implements ServiceListener {
     return references;
   }
 
+  /** Returns the single best (highest-ranked) tracked reference, or null. */
+  getServiceReference(): ServiceReference<S> | null {
+    const references = this.getServiceReferences();
+    return references && references.length > 0 ? references[0] : null;
+  }
+
   size(): number {
     return this.trackedServices.size;
+  }
+
+  /** Returns true when no services are currently tracked. */
+  isEmpty(): boolean {
+    return this.trackedServices.size === 0;
+  }
+
+  /**
+   * Returns the tracking count: -1 when the tracker is closed, otherwise a
+   * value incremented each time a service is added, modified, or removed.
+   */
+  getTrackingCount(): number {
+    return this.trackingCount;
+  }
+
+  /** Returns a snapshot map of tracked references to their customized objects. */
+  getTracked(): Map<ServiceReference<S>, T> {
+    const result = new Map<ServiceReference<S>, T>();
+    for (const [reference, tracked] of this.trackedServices.entries()) {
+      if (tracked.tracked !== null) {
+        result.set(reference, tracked.tracked);
+      }
+    }
+    return result;
+  }
+
+  /** Manually removes a reference from tracking, invoking removedService. */
+  remove(reference: ServiceReference<S>): void {
+    this.untrackService(reference);
+  }
+
+  /**
+   * Waits for a tracked service to become available. Resolves immediately if one
+   * is already tracked. A `timeout` of 0 waits indefinitely; a positive value
+   * resolves with the current service (possibly null) after that many ms.
+   */
+  waitForService(timeout = 0): Promise<T | null> {
+    if (timeout < 0) {
+      throw new Error('timeout must not be negative');
+    }
+
+    const existing = this.getService();
+    if (existing !== null) {
+      return Promise.resolve(existing);
+    }
+
+    return new Promise<T | null>((resolve) => {
+      let settled = false;
+      const finish = (value: T | null): void => {
+        if (settled) return;
+        settled = true;
+        resolve(value);
+      };
+      this.waiters.push(finish);
+      if (timeout > 0) {
+        setTimeout(() => {
+          const index = this.waiters.indexOf(finish);
+          if (index >= 0) {
+            this.waiters.splice(index, 1);
+          }
+          finish(this.getService());
+        }, timeout);
+      }
+    });
+  }
+
+  private notifyWaiters(): void {
+    if (this.waiters.length === 0) {
+      return;
+    }
+    const service = this.getService();
+    if (service === null) {
+      return;
+    }
+    const pending = this.waiters.splice(0);
+    for (const waiter of pending) {
+      waiter(service);
+    }
   }
 
   addingService(reference: ServiceReference<S>, service: S): T | null {
@@ -155,10 +249,14 @@ export class ServiceTracker<S, T = S> implements ServiceListener {
   }
 
   removedService(reference: ServiceReference<S>, service: S, tracked: T): void {
-    if (this.customizer) {
-      this.customizer.removedService(reference, service, tracked);
+    try {
+      if (this.customizer) {
+        this.customizer.removedService(reference, service, tracked);
+      }
+    } finally {
+      // The reference must always be released, even if the customizer throws.
+      this.context.ungetService(reference);
     }
-    this.context.ungetService(reference);
   }
 
   serviceChanged(event: ServiceEvent): void {
@@ -186,26 +284,6 @@ export class ServiceTracker<S, T = S> implements ServiceListener {
     }
   }
 
-  private trackInitialService(reference: ServiceReference<S>): void {
-    if (this.trackedServices.has(reference)) {
-      return; // Already tracking this service
-    }
-
-    const service = this.context.getService<S>(reference);
-    if (!service) {
-      return; // Service not available
-    }
-
-    const tracked = this.addingService(reference, service);
-    if (tracked === null) {
-      this.context.ungetService(reference);
-      return; // Service should not be tracked
-    }
-
-    // Add to tracked services
-    this.trackedServices.set(reference, { reference, service, tracked });
-  }
-
   private trackService(reference: ServiceReference<S>): void {
     if (this.trackedServices.has(reference)) {
       return; // Already tracking this service
@@ -216,7 +294,14 @@ export class ServiceTracker<S, T = S> implements ServiceListener {
       return; // Service not available
     }
 
-    const tracked = this.addingService(reference, service);
+    let tracked: T | null;
+    try {
+      tracked = this.addingService(reference, service);
+    } catch (error) {
+      // A throwing customizer must not leak the obtained reference.
+      this.context.ungetService(reference);
+      throw error;
+    }
     if (tracked === null) {
       this.context.ungetService(reference);
       return; // Service should not be tracked
@@ -224,6 +309,8 @@ export class ServiceTracker<S, T = S> implements ServiceListener {
 
     // Add to tracked services
     this.trackedServices.set(reference, { reference, service, tracked });
+    this.trackingCount++;
+    this.notifyWaiters();
   }
 
   private modifyService(reference: ServiceReference<S>): void {
@@ -240,6 +327,7 @@ export class ServiceTracker<S, T = S> implements ServiceListener {
 
     // Update the service in the tracked service
     tracked.service = service;
+    this.trackingCount++;
 
     // Notify about the modified service
     if (tracked.tracked !== null) {
@@ -255,6 +343,9 @@ export class ServiceTracker<S, T = S> implements ServiceListener {
 
     // Remove from tracked services
     this.trackedServices.delete(reference);
+    if (this.trackingCount >= 0) {
+      this.trackingCount++;
+    }
 
     // Notify about the removed service
     if (tracked.service !== null && tracked.tracked !== null) {

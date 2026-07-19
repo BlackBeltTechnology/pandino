@@ -82,7 +82,16 @@ export class FrameworkLogger {
     this.log(4, message, exception, context); // LogLevel.DEBUG = 4
   }
 
+  trace(message: string, exception?: Error, context?: Record<string, unknown>): void {
+    this.log(5, message, exception, context); // LogLevel.TRACE = 5
+  }
+
+  audit(message: string, exception?: Error, context?: Record<string, unknown>): void {
+    this.log(0, message, exception, context); // LogLevel.AUDIT = 0
+  }
+
   isLoggable(level: LogLevel): boolean {
+    if (level === 0) return true; // LogLevel.AUDIT is always loggable
     return this.logService ? this.logService.isLoggable(level) : level <= this.defaultLogLevel;
   }
 
@@ -106,8 +115,8 @@ export class FrameworkLogger {
    * Fallback method to log to console when log service is not available.
    */
   private logToConsole(level: LogLevel, message: string, exception?: Error, context?: Record<string, unknown>): void {
-    if (level > this.defaultLogLevel) {
-      return; // Skip if level is higher than default level
+    if (level !== 0 && level > this.defaultLogLevel) {
+      return; // Skip if level is higher than default level (AUDIT=0 always logs)
     }
 
     const timestamp = new Date().toISOString();
@@ -128,11 +137,19 @@ export class FrameworkLogger {
       case 4: // DEBUG
         console.debug(logMessage);
         break;
+      case 5: // TRACE
+        console.debug(logMessage);
+        break;
+      case 0: // AUDIT
+        console.log(logMessage);
+        break;
     }
   }
 
   private getLevelName(level: LogLevel): string {
     switch (level) {
+      case 0:
+        return 'AUDIT';
       case 1:
         return 'ERROR';
       case 2:
@@ -141,6 +158,8 @@ export class FrameworkLogger {
         return 'INFO';
       case 4:
         return 'DEBUG';
+      case 5:
+        return 'TRACE';
       default:
         return 'UNKNOWN';
     }

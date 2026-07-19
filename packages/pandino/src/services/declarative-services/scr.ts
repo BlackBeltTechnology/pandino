@@ -590,7 +590,9 @@ export class ServiceComponentRuntime {
                 }
               }
             } else if (eventType === 'unregistered' && ref.unbind) {
-              instance[ref.unbind]();
+              // OSGi passes the departing service object to the unbind method.
+              const departing = serviceRef ? this.bundleContext.getService(serviceRef) : undefined;
+              instance[ref.unbind](departing);
 
               if (ref.field) {
                 if (ref.cardinality === '1..1' || ref.cardinality === '0..1') {

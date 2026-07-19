@@ -119,6 +119,67 @@ export class ConfigurationAdminImpl extends SimpleEventEmitter implements Config
         }
       }
     }
+
+    // Deliver an existing configuration to a ManagedService/ManagedServiceFactory
+    // that registers AFTER the configuration was created (OSGi CM tracks these).
+    this.framework.getBundleContext().addServiceListener({
+      serviceChanged: (event) => {
+        if (event.getType() !== 1) return; // REGISTERED only
+        const ref = event.getServiceReference();
+        const objectClass = ref.getProperty('objectClass');
+        const classes = Array.isArray(objectClass) ? objectClass : [objectClass];
+        if (classes.includes('ManagedService')) {
+          void this.deliverExistingToManagedService(ref);
+        }
+        if (classes.includes('ManagedServiceFactory')) {
+          void this.deliverExistingToManagedServiceFactory(ref);
+        }
+      },
+    });
+  }
+
+  private locationMatches(config: ConfigurationImpl, ref: { getProperty(k: string): any }): boolean {
+    const configLocation = config.getBundleLocation();
+    return configLocation === null || ref.getProperty('bundle.location') === configLocation;
+  }
+
+  private async deliverExistingToManagedService(ref: any): Promise<void> {
+    const pid = ref.getProperty('service.pid');
+    if (!pid) return;
+    const config = this.configurations.get(pid);
+    if (!config || !this.locationMatches(config, ref)) return;
+    const props = config.getProperties();
+    if (props === null) return;
+    const service = this.framework.getService<ManagedService>(ref);
+    if (!service) return;
+    try {
+      await service.updated({ ...props, 'service.pid': pid });
+    } catch (error) {
+      this.framework.getLogger().error(`Error delivering configuration to late ManagedService ${pid}:`, error as Error);
+    }
+  }
+
+  private async deliverExistingToManagedServiceFactory(ref: any): Promise<void> {
+    const factoryPid = ref.getProperty('service.pid');
+    if (!factoryPid) return;
+    const factory = this.framework.getService<ManagedServiceFactory>(ref);
+    if (!factory) return;
+    for (const config of this.factoryConfigurations.values()) {
+      if (config.getFactoryPid() !== factoryPid || !this.locationMatches(config, ref)) continue;
+      const props = config.getProperties();
+      if (props === null) continue;
+      try {
+        await factory.updated(config.getPid(), {
+          ...props,
+          'service.pid': config.getPid(),
+          'service.factoryPid': factoryPid,
+        });
+      } catch (error) {
+        this.framework
+          .getLogger()
+          .error(`Error delivering factory configuration to late ManagedServiceFactory ${factoryPid}:`, error as Error);
+      }
+    }
   }
 
   setConfiguration(pid: string, config: ConfigurationImpl): void {
@@ -158,12 +219,12 @@ export class ConfigurationAdminImpl extends SimpleEventEmitter implements Config
     return allConfigs.filter((config) => this.ldapFilterService!.match(filter, config.getProperties() ?? {}));
   }
 
-  deleteConfiguration(pid: string): void {
+  async deleteConfiguration(pid: string): Promise<void> {
     const config = this.configurations.get(pid) || this.factoryConfigurations.get(pid);
     if (config) {
       this.configurations.delete(pid);
       this.factoryConfigurations.delete(pid);
-      this.deliverConfiguration(config, null);
+      await this.deliverConfiguration(config, null);
 
       this.notifyConfigurationListeners(config.getPid(), config.getFactoryPid(), ConfigurationEventType.DELETED);
     }
@@ -224,7 +285,7 @@ export class ConfigurationAdminImpl extends SimpleEventEmitter implements Config
             if (properties === null) {
               await factory.deleted(pid);
             } else {
-              await factory.updated(pid, properties);
+              await factory.updated(pid, { ...properties, 'service.pid': pid, 'service.factoryPid': factoryPid });
             }
           } catch (error) {
             this.framework
@@ -245,7 +306,9 @@ export class ConfigurationAdminImpl extends SimpleEventEmitter implements Config
         const service = this.framework.getService<ManagedService>(serviceRef);
         if (service) {
           try {
-            await service.updated(properties);
+            await service.updated(
+              properties === null ? null : { ...properties, 'service.pid': pid, 'service.factoryPid': factoryPid },
+            );
           } catch (error) {
             this.framework
               .getLogger()
@@ -267,7 +330,7 @@ export class ConfigurationAdminImpl extends SimpleEventEmitter implements Config
         const service = this.framework.getService<ManagedService>(serviceRef);
         if (service) {
           try {
-            await service.updated(properties);
+            await service.updated(properties === null ? null : { ...properties, 'service.pid': pid });
           } catch (error) {
             this.framework.getLogger().error(`Error delivering configuration to ${pid}:`, error as Error);
           }
@@ -316,9 +379,8 @@ class ConfigurationImpl implements Configuration {
 
   async delete(): Promise<void> {
     this.properties = null;
-    this.configAdmin.deleteConfiguration(this.pid);
-
-    await this.configAdmin.deliverConfiguration(this, null);
+    // deleteConfiguration performs the single null delivery + DELETED notification.
+    await this.configAdmin.deleteConfiguration(this.pid);
   }
 
   getBundleLocation(): string | null {

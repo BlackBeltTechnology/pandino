@@ -48,8 +48,12 @@ export interface Bundle {
   start(options?: number): Promise<void>;
   /** Stops the bundle, transitioning it through STOPPING to RESOLVED. */
   stop(options?: number): Promise<void>;
-  /** Updates the bundle with new content. */
-  update(source?: ReadableStream): Promise<void>;
+  /**
+   * Updates the bundle. If a new module is supplied, the bundle's content
+   * (headers, activator, module) is swapped for it. An active bundle is stopped
+   * before the swap and restarted afterwards. Fires an `UPDATED` bundle event.
+   */
+  update(module?: Promise<BundleModule> | BundleModule): Promise<void>;
   /** Uninstalls the bundle from the framework. */
   uninstall(): Promise<void>;
   /** Returns all service references registered by this bundle. */

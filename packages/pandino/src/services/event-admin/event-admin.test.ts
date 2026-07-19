@@ -5,6 +5,20 @@ import { EventAdminImpl } from './event-admin';
 import { Event, type EventHandler } from './interfaces';
 import type { BundleModule } from '../../types/bundle-metadata';
 
+describe('Event immutability', () => {
+  it('should not reflect external mutation of the source properties object', () => {
+    const props: Record<string, any> = { a: 1 };
+    const event = new Event('some/topic', props);
+
+    props.a = 999;
+    props.b = 2;
+
+    expect(event.getProperty('a')).toBe(1);
+    expect(event.containsProperty('b')).toBe(false);
+    expect(event.getPropertyNames()).toEqual(['a']);
+  });
+});
+
 function createBundleModule(
   symbolicName: string = 'test.bundle',
   version: string = '1.0.0',

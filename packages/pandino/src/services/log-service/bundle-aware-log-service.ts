@@ -46,6 +46,14 @@ export class BundleAwareLogService implements LogService {
     this.log(LogLevel.DEBUG, message, exception, context);
   }
 
+  trace(message: string, exception?: Error, context?: Record<string, unknown>): void {
+    this.log(LogLevel.TRACE, message, exception, context);
+  }
+
+  audit(message: string, exception?: Error, context?: Record<string, unknown>): void {
+    this.log(LogLevel.AUDIT, message, exception, context);
+  }
+
   isLoggable(level: LogLevel): boolean {
     return this.wrappedLogService.isLoggable(level);
   }

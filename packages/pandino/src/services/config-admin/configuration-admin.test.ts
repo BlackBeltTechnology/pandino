@@ -151,7 +151,50 @@ describe('ConfigurationAdmin', () => {
 
       await new Promise((resolve) => setTimeout(resolve, 10));
 
-      expect(managedService.updated).toHaveBeenCalledWith({ key: 'value' });
+      expect(managedService.updated).toHaveBeenCalledWith(expect.objectContaining({ key: 'value' }));
+    });
+
+    it('should inject service.pid into delivered ManagedService properties', async () => {
+      const managedService: ManagedService = {
+        updated: vi.fn(),
+      };
+
+      const systemBundle = framework.getBundle(0);
+      const context = systemBundle!.getContext()!;
+
+      context.registerService('ManagedService', managedService, { 'service.pid': 'pid.auto' });
+
+      const config = await configAdmin.getConfiguration('pid.auto');
+      await config.update({ key: 'value' });
+
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(managedService.updated).toHaveBeenCalledWith(
+        expect.objectContaining({ 'service.pid': 'pid.auto', key: 'value' }),
+      );
+    });
+
+    it('should inject service.pid and service.factoryPid into delivered factory properties', async () => {
+      const factory = {
+        getName: () => 'factory',
+        updated: vi.fn(),
+        deleted: vi.fn(),
+      };
+
+      const systemBundle = framework.getBundle(0);
+      const context = systemBundle!.getContext()!;
+
+      context.registerService('ManagedServiceFactory', factory, { 'service.pid': 'the.factory' });
+
+      const config = await configAdmin.createFactoryConfiguration('the.factory');
+      await config.update({ key: 'value' });
+
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(factory.updated).toHaveBeenCalledWith(
+        config.getPid(),
+        expect.objectContaining({ 'service.pid': config.getPid(), 'service.factoryPid': 'the.factory', key: 'value' }),
+      );
     });
 
     it('should not deliver to service with different PID', async () => {
@@ -201,7 +244,7 @@ describe('ConfigurationAdmin', () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       // Only the service from the correct location should receive the config
-      expect(correctLocationService.updated).toHaveBeenCalledWith({ restricted: 'data' });
+      expect(correctLocationService.updated).toHaveBeenCalledWith(expect.objectContaining({ restricted: 'data' }));
       expect(wrongLocationService.updated).not.toHaveBeenCalled();
     });
 
@@ -234,7 +277,7 @@ describe('ConfigurationAdmin', () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       // Only the service from the correct location should receive the config
-      expect(correctLocationService.updated).toHaveBeenCalledWith({ factoryData: 'secure' });
+      expect(correctLocationService.updated).toHaveBeenCalledWith(expect.objectContaining({ factoryData: 'secure' }));
       expect(wrongLocationService.updated).not.toHaveBeenCalled();
     });
   });

@@ -32,7 +32,9 @@ export function parseFragmentHost(fragmentHost: string): [string, string | null]
  */
 export function versionMatches(bundleVersion: string, versionRange: string): boolean {
   if (!versionRange.startsWith('[') && !versionRange.startsWith('(')) {
-    return bundleVersion === versionRange;
+    // Value-based exact match so equivalent versions across granularities
+    // (e.g. '1.0' and '1.0.0') are treated as equal.
+    return compareVersions(bundleVersion, versionRange) === 0;
   }
 
   const isStartInclusive = versionRange.startsWith('[');
