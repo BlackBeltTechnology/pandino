@@ -19,10 +19,15 @@ export interface EventAdmin {
  * ```
  */
 export class Event {
+  private readonly properties: Record<string, any>;
+
   constructor(
     private topic: string,
-    private properties: Record<string, any> = {},
-  ) {}
+    properties: Record<string, any> = {},
+  ) {
+    // Copy defensively so later mutation of the caller's object does not leak in.
+    this.properties = { ...properties };
+  }
 
   /** Returns the topic path (e.g. `'user/login'`). */
   getTopic(): string {

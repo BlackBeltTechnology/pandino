@@ -8,12 +8,19 @@ export interface LogEntry {
   context?: Record<string, unknown>;
 }
 
-/** Log severity levels. Lower numeric value = higher severity. */
+/**
+ * Log severity levels. Lower numeric value = higher severity.
+ *
+ * `AUDIT` (0) is always recorded regardless of the configured threshold.
+ * `TRACE` (5) is the least severe level.
+ */
 export enum LogLevel {
+  AUDIT = 0,
   ERROR = 1,
   WARN = 2,
   INFO = 3,
   DEBUG = 4,
+  TRACE = 5,
 }
 
 /** Listener that receives log entries as they are recorded. */
@@ -38,6 +45,10 @@ export interface LogService {
   info(message: string, exception?: Error, context?: Record<string, unknown>): void;
   /** Logs a debug-level message. */
   debug(message: string, exception?: Error, context?: Record<string, unknown>): void;
+  /** Logs a trace-level message (least severe). */
+  trace(message: string, exception?: Error, context?: Record<string, unknown>): void;
+  /** Logs an audit-level message. Always recorded regardless of the configured level. */
+  audit(message: string, exception?: Error, context?: Record<string, unknown>): void;
   /** Returns true if messages at the given level would be recorded. */
   isLoggable(level: LogLevel): boolean;
   /** Sets the minimum log level. Messages below this level are discarded. */

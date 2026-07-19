@@ -16,6 +16,15 @@ export const SERVICE_EVENT_TYPES = {
   MODIFIED_ENDMATCH: 8,
 } as const;
 
+/**
+ * Numeric constants for bundle event types. Most event types reuse the
+ * {@link BUNDLE_STATES} value that the bundle transitions into; `UPDATED` has
+ * no corresponding state, so it gets its own distinct value.
+ */
+export const BUNDLE_EVENT_TYPES = {
+  UPDATED: 64,
+} as const;
+
 export const FRAMEWORK_EVENT_TYPES = {
   STARTED: 1,
   ERROR: 2,

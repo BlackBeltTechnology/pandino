@@ -2,7 +2,7 @@ import { EventEmitter } from './event-emitter';
 import { FrameworkLogger } from './framework-logger';
 import { LogLevel, type LogService } from '../services/log-service';
 import type { BundleMetadata, BundleModule } from '../types/bundle-metadata';
-import { BUNDLE_STATES, type BundleState, SERVICE_EVENT_TYPES } from '../types/constants';
+import { BUNDLE_EVENT_TYPES, BUNDLE_STATES, type BundleState, SERVICE_EVENT_TYPES } from '../types/constants';
 import {
   type Bundle,
   type BundleActivator,
@@ -695,8 +695,43 @@ class BundleImpl implements Bundle {
     }
   }
 
-  async update(_source?: ReadableStream): Promise<void> {
-    throw new Error('Bundle update not implemented');
+  async update(module?: Promise<BundleModule> | BundleModule): Promise<void> {
+    if (this.state === BUNDLE_STATES.UNINSTALLED) {
+      throw new Error(`Cannot update bundle ${this.bundleId}: uninstalled`);
+    }
+
+    // Resolve the new content BEFORE stopping, so a rejected/invalid module
+    // does not tear down a currently-running bundle.
+    let resolved: BundleModule | undefined;
+    if (module) {
+      resolved = await module;
+    }
+
+    const wasActive = this.state === BUNDLE_STATES.ACTIVE;
+    if (wasActive) {
+      await this.stop();
+    }
+
+    if (resolved) {
+      const { headers, activator } = resolved.default;
+      this.metadata = {
+        ...headers,
+        bundleSymbolicName: headers.bundleSymbolicName,
+        bundleVersion: headers.bundleVersion,
+      } as BundleMetadata;
+      this.bundleModule = resolved;
+      this.activator = activator ?? null;
+    }
+
+    if (this.state === BUNDLE_STATES.INSTALLED) {
+      await this.resolve();
+    }
+
+    this.framework.emit('bundle-event', new BundleEvent(BUNDLE_EVENT_TYPES.UPDATED, this));
+
+    if (wasActive) {
+      await this.start();
+    }
   }
 
   async uninstall(): Promise<void> {
@@ -878,7 +913,11 @@ class BundleContextImpl implements BundleContextInternal {
     return this.framework.installBundle(modulePromiseOrLocation, config);
   }
 
-  registerService<S>(clazz: string | Function, service: S, properties?: Record<string, any>): ServiceRegistration<S> {
+  registerService<S>(
+    clazz: string | string[] | Function,
+    service: S,
+    properties?: Record<string, any>,
+  ): ServiceRegistration<S> {
     this.checkValid();
     return this.framework.registerService(this.bundle, clazz, service, properties || {});
   }
@@ -1001,7 +1040,15 @@ class ServiceRegistrationImpl<S> implements ServiceRegistration<S> {
 
   setProperties(properties: Record<string, any>): void {
     this.checkValid();
-    this.properties = { ...properties, 'service.id': this.serviceId };
+    // objectClass and service.id are framework-managed and read-only; preserve
+    // them across a property replacement. service.ranking defaults to 0 when the
+    // caller omits it (the new property set replaces the old one).
+    this.properties = {
+      ...properties,
+      objectClass: this.properties.objectClass,
+      'service.id': this.serviceId,
+      'service.ranking': properties['service.ranking'] ?? 0,
+    };
     this.reference.updateProperties(this.properties);
 
     const event = new ServiceEvent(SERVICE_EVENT_TYPES.MODIFIED, this.reference);

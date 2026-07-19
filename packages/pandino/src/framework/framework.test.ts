@@ -55,6 +55,8 @@ describe('OSGiFramework', () => {
       warn: vi.fn(),
       info: vi.fn(),
       debug: vi.fn(),
+      trace: vi.fn(),
+      audit: vi.fn(),
       isLoggable: vi.fn().mockReturnValue(true),
       setLogLevel: vi.fn(),
       getLogLevel: vi.fn().mockReturnValue(LogLevel.INFO),

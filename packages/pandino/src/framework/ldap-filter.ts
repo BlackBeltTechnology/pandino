@@ -50,6 +50,10 @@ export class LDAPFilter implements Filter {
       const [key, value] = filter.split('<=', 2);
       return { type: 'lte', key: key.trim(), value: value.trim() };
     }
+    if (filter.includes('~=')) {
+      const [key, value] = filter.split('~=', 2);
+      return { type: 'approx', key: key.trim(), value: value.trim() };
+    }
     if (filter.includes('=')) {
       const [key, value] = filter.split('=', 2);
       return { type: 'equals', key: key.trim(), value: value.trim() };
@@ -81,11 +85,13 @@ export class LDAPFilter implements Filter {
   protected evaluateAST(ast: FilterAST, properties: Record<string, any>): boolean {
     switch (ast.type) {
       case 'equals':
-        return this.matchEquals(properties[ast.key!], ast.value!);
+        return this.leafMatch(properties[ast.key!], (v) => this.matchEquals(v, ast.value!));
       case 'gte':
-        return this.compareValues(properties[ast.key!], ast.value!) >= 0;
+        return this.leafMatch(properties[ast.key!], (v) => this.compareValues(v, ast.value!) >= 0);
       case 'lte':
-        return this.compareValues(properties[ast.key!], ast.value!) <= 0;
+        return this.leafMatch(properties[ast.key!], (v) => this.compareValues(v, ast.value!) <= 0);
+      case 'approx':
+        return this.leafMatch(properties[ast.key!], (v) => this.matchApprox(v, ast.value!));
       case 'and':
         return ast.children!.every((child) => this.evaluateAST(child, properties));
       case 'or':
@@ -99,21 +105,76 @@ export class LDAPFilter implements Filter {
     }
   }
 
+  /**
+   * A multi-valued (array) property matches if ANY member satisfies the test,
+   * per OSGi filter semantics for collections/arrays.
+   */
+  private leafMatch(actual: any, test: (value: any) => boolean): boolean {
+    if (Array.isArray(actual)) {
+      return actual.some((element) => test(element));
+    }
+    return test(actual);
+  }
+
   protected matchEquals(actual: any, expected: string): boolean {
     if (expected === '*') {
       return actual !== undefined && actual !== null;
     }
 
-    const unescapedExpected = expected.replace(/\\(.)/g, '$1');
-
-    if (unescapedExpected.includes('*')) {
-      return this.matchWildcard(String(actual || ''), unescapedExpected);
+    if (this.hasUnescapedWildcard(expected)) {
+      return this.matchWildcard(String(actual ?? ''), expected);
     }
-    return String(actual) === unescapedExpected;
+    // No wildcard: unescape and compare literally (an escaped `\*` stays literal).
+    return String(actual) === expected.replace(/\\(.)/g, '$1');
+  }
+
+  private hasUnescapedWildcard(pattern: string): boolean {
+    for (let i = 0; i < pattern.length; i++) {
+      if (pattern[i] === '\\') {
+        i++; // skip the escaped char
+        continue;
+      }
+      if (pattern[i] === '*') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Approximate match (`~=`). OSGi leaves the exact algorithm implementation
+   * defined; this port compares values case-insensitively after stripping all
+   * whitespace.
+   */
+  protected matchApprox(actual: any, expected: string): boolean {
+    if (actual === undefined || actual === null) {
+      return false;
+    }
+    const normalize = (value: string): string => value.replace(/\s+/g, '').toLowerCase();
+    return normalize(String(actual)) === normalize(expected);
   }
 
   protected matchWildcard(actual: string, pattern: string): boolean {
-    const regex = pattern.replace(/\*/g, '.*');
+    // Split on UNescaped `*` (wildcards); `\x` is a literal x within a segment,
+    // so an escaped `\*` matches a literal asterisk rather than acting as a glob.
+    const segments: string[] = [];
+    let current = '';
+    for (let i = 0; i < pattern.length; i++) {
+      const ch = pattern[i];
+      if (ch === '\\' && i + 1 < pattern.length) {
+        current += pattern[i + 1];
+        i++;
+      } else if (ch === '*') {
+        segments.push(current);
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+    segments.push(current);
+
+    const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = segments.map(escapeRegExp).join('.*');
     return new RegExp(`^${regex}$`).test(actual);
   }
 
@@ -138,7 +199,7 @@ export class LDAPFilter implements Filter {
 }
 
 export interface FilterAST {
-  type: 'equals' | 'gte' | 'lte' | 'and' | 'or' | 'not' | 'true';
+  type: 'equals' | 'gte' | 'lte' | 'approx' | 'and' | 'or' | 'not' | 'true';
   key?: string;
   value?: string;
   children?: FilterAST[];

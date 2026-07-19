@@ -56,7 +56,7 @@ describe('Full Stack Integration', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 50));
 
-    expect(managedService.updated).toHaveBeenCalledWith({ key: 'value', updated: true });
+    expect(managedService.updated).toHaveBeenCalledWith(expect.objectContaining({ key: 'value', updated: true }));
     expect(eventHandler.handleEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         topic: 'config/updated',

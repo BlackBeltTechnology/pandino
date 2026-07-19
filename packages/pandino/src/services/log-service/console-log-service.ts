@@ -47,8 +47,17 @@ export class ConsoleLogService implements LogService {
     this.log(LogLevel.DEBUG, message, exception, context);
   }
 
+  trace(message: string, exception?: Error, context?: Record<string, unknown>): void {
+    this.log(LogLevel.TRACE, message, exception, context);
+  }
+
+  audit(message: string, exception?: Error, context?: Record<string, unknown>): void {
+    this.log(LogLevel.AUDIT, message, exception, context);
+  }
+
   isLoggable(level: LogLevel): boolean {
-    return level <= this.currentLevel;
+    // AUDIT is always recorded regardless of the configured threshold.
+    return level === LogLevel.AUDIT || level <= this.currentLevel;
   }
 
   setLogLevel(level: LogLevel): void {
@@ -90,6 +99,12 @@ export class ConsoleLogService implements LogService {
         break;
       case LogLevel.DEBUG:
         console.debug(logMessage);
+        break;
+      case LogLevel.TRACE:
+        console.debug(logMessage);
+        break;
+      case LogLevel.AUDIT:
+        console.log(logMessage);
         break;
     }
   }
