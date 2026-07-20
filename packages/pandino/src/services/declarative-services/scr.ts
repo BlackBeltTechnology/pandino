@@ -1,4 +1,5 @@
-import type { BundleContext, ServiceReference } from '../../framework/interfaces';
+import type { BundleContext, ServiceEvent, ServiceReference } from '../../framework/interfaces';
+import { SERVICE_EVENT_TYPES } from '../../types/constants';
 import { ComponentContextImpl } from './component-context';
 import { getComponentMetadata, getDecoratorInfo } from './reflection';
 import type { ConfigurationAdmin } from '../config-admin';
@@ -18,6 +19,21 @@ export class ServiceComponentRuntime {
   private readonly eventAdmin!: EventAdmin | null;
   private activationChain: string[] = [];
   private resolving = false;
+  // Serialized service-event delivery (re-entrancy-safe single consumer).
+  private eventQueue: Array<{
+    interfaceName: string;
+    eventType: string;
+    serviceRef?: ServiceReference<any>;
+    service?: any;
+  }> = [];
+  private draining = false;
+  private stopped = false;
+
+  /** Stops service-event processing and abandons any queued events (called on bundle stop). */
+  dispose(): void {
+    this.stopped = true;
+    this.eventQueue = [];
+  }
 
   private removeFromActivationChain(componentId: string): void {
     const index = this.activationChain.indexOf(componentId);
@@ -192,8 +208,20 @@ export class ServiceComponentRuntime {
       return;
     }
 
+    // Already active (singleton instance) or already registered (delayed/factory
+    // scope) — avoid re-instantiation/re-registration when overlapping triggers
+    // (bundle event + service event) both try to activate the same component.
+    if (entry.instance || entry.serviceRegistration) {
+      return;
+    }
+
     this.activationChain.push(componentId);
 
+    // Always remove from the activation chain, even on early return or throw, so
+    // a transient failure (missing config, mandatory ref not yet satisfied,
+    // @Activate error) does not permanently poison the component with a false
+    // "circular reference detected" on later retries.
+    try {
     const { metadata } = entry;
 
     if (metadata.configurationPolicy === 'require' && !(await this.hasConfiguration(metadata.configurationPid))) {
@@ -305,7 +333,9 @@ export class ServiceComponentRuntime {
       decorators: getDecoratorInfo(metadata.class || ComponentClass),
     });
 
-    this.removeFromActivationChain(componentId);
+    } finally {
+      this.removeFromActivationChain(componentId);
+    }
 
     // Activating this component may have registered a service that satisfies
     // the mandatory references of previously-registered immediate components
@@ -600,7 +630,88 @@ export class ServiceComponentRuntime {
     }
   }
 
-  async processServiceEvent(interfaceName: string, eventType: string, serviceRef?: ServiceReference<any>) {
+  /**
+   * Entry point for framework service events. Translates the event and enqueues
+   * it for serialized processing. Safe to call re-entrantly: an event emitted
+   * while the queue is draining (e.g. by an SCR-driven (de)activation that
+   * registers its own service) is enqueued, never processed nested.
+   */
+  handleServiceEvent(event: ServiceEvent): void {
+    if (this.stopped) return;
+    const eventType = this.mapServiceEventType(event.getType());
+    if (!eventType) return;
+    const ref = event.getServiceReference();
+    // Resolve the service NOW, while it is still available. For UNREGISTERING the
+    // framework deletes the registration synchronously after emitting, so a
+    // deferred (queued) event could no longer resolve it at drain time.
+    const service = this.bundleContext.getService(ref);
+    const objectClass = ref.getProperty('objectClass');
+    const interfaces = Array.isArray(objectClass) ? objectClass : [objectClass];
+    for (const iface of interfaces) {
+      if (typeof iface === 'string') {
+        this.eventQueue.push({ interfaceName: iface, eventType, serviceRef: ref, service });
+      }
+    }
+    void this.drainEventQueue();
+  }
+
+  private mapServiceEventType(type: number): string | null {
+    switch (type) {
+      case SERVICE_EVENT_TYPES.REGISTERED:
+        return 'registered';
+      case SERVICE_EVENT_TYPES.MODIFIED:
+        return 'modified';
+      case SERVICE_EVENT_TYPES.UNREGISTERING:
+        return 'unregistered';
+      default:
+        return null;
+    }
+  }
+
+  private async drainEventQueue(): Promise<void> {
+    if (this.draining || this.stopped) return; // a drain loop is already running, or the SCR is torn down
+    this.draining = true;
+    try {
+      while (this.eventQueue.length > 0) {
+        if (this.stopped) break; // abandon the backlog once torn down
+        const item = this.eventQueue.shift()!;
+        try {
+          await this.processServiceEvent(item.interfaceName, item.eventType, item.serviceRef, item.service);
+          // Observability: makes "did this service event reach the SCR" answerable.
+          this.publishScrEvent('scr/service-event/delivered', {
+            interface: item.interfaceName,
+            'event.type': item.eventType,
+          });
+        } catch (error) {
+          try {
+            this.framework.getLogger().error('Error handling SCR service event', error as Error, {
+              interface: item.interfaceName,
+              eventType: item.eventType,
+            });
+          } catch {
+            // never let a logging failure escape the floating drain promise
+          }
+        }
+      }
+    } finally {
+      this.draining = false;
+    }
+  }
+
+  async processServiceEvent(
+    interfaceName: string,
+    eventType: string,
+    serviceRef?: ServiceReference<any>,
+    resolvedService?: any,
+  ) {
+    // The current event's service, resolved at emit time when available (for
+    // deferred UNREGISTERING events the registry entry may already be gone).
+    const currentService =
+      resolvedService !== undefined
+        ? resolvedService
+        : serviceRef
+          ? this.bundleContext.getService(serviceRef)
+          : undefined;
     // First handle existing active components
     for (const [ownerBundleId, bundleComponents] of this.components.entries()) {
       for (const [ownerComponentName, entry] of bundleComponents.entries()) {
@@ -641,7 +752,7 @@ export class ServiceComponentRuntime {
                 }
                 continue;
               }
-              const service = this.bundleContext.getService(serviceRef);
+              const service = currentService;
               if (service) {
                 instance[ref.bind](service);
 
@@ -656,8 +767,7 @@ export class ServiceComponentRuntime {
             } else if (eventType === 'unregistered') {
               if (ref.unbind && typeof instance[ref.unbind] === 'function') {
                 // OSGi passes the departing service object to the unbind method.
-                const departing = serviceRef ? this.bundleContext.getService(serviceRef) : undefined;
-                instance[ref.unbind](departing);
+                instance[ref.unbind](currentService);
               }
 
               if (ref.field) {
@@ -675,9 +785,8 @@ export class ServiceComponentRuntime {
               if (boundRefs && boundRefs.get(unregKey) === serviceRef) {
                 boundRefs.delete(unregKey);
               }
-              const departedService = serviceRef ? this.bundleContext.getService(serviceRef) : undefined;
-              if (departedService !== undefined) {
-                entry.boundMultiServices?.get(unregKey)?.delete(departedService);
+              if (currentService !== undefined && currentService !== null) {
+                entry.boundMultiServices?.get(unregKey)?.delete(currentService);
               }
 
               // SP-REL-01 / SP-GRD-02: a mandatory reference that loses its
@@ -692,14 +801,31 @@ export class ServiceComponentRuntime {
                   await this.deactivateComponent(ownerBundleId, ownerComponentName);
                   break;
                 }
-                // NOTE (follow-up #4): when a survivor exists, a static mandatory
-                // reference should reactivate onto it and a dynamic 1..1 should
-                // rebind. Not implemented here — requires the departing ref to be
-                // reliably identified (callers may omit serviceRef), which is
-                // part of the dormant event-pipeline wiring (#6).
+                // #4: a survivor exists — switch to it. Gated on a concrete
+                // departing serviceRef so direct callers that omit it (which
+                // cannot distinguish the departing service from survivors) keep
+                // their existing unbind-only behavior.
+                if (serviceRef) {
+                  const departPolicy = ref.policy || 'static';
+                  if (departPolicy === 'static') {
+                    await this.deactivateComponent(ownerBundleId, ownerComponentName);
+                    await this.activateComponent(ownerBundleId, ownerComponentName);
+                    break;
+                  } else if (ref.cardinality === '1..1' && ref.bind && typeof instance[ref.bind] === 'function') {
+                    const survivor = this.bundleContext.getService(remaining[0]);
+                    if (survivor) {
+                      instance[ref.bind](survivor);
+                      entry.boundServiceRefs = entry.boundServiceRefs || new Map();
+                      entry.boundServiceRefs.set(unregKey, remaining[0]);
+                      if (ref.field) {
+                        instance[ref.field] = survivor;
+                      }
+                    }
+                  }
+                }
               }
             } else if (eventType === 'modified' && ref.updated && serviceRef) {
-              const service = this.bundleContext.getService(serviceRef);
+              const service = currentService;
               if (service) {
                 instance[ref.updated](service);
               }

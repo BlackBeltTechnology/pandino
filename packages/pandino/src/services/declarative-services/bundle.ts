@@ -2,6 +2,8 @@ import type {
   BundleActivator,
   BundleContext,
   BundleListener,
+  ServiceEvent,
+  ServiceListener,
   ServiceReference,
   ServiceRegistration,
 } from '../../framework/interfaces';
@@ -12,7 +14,7 @@ import { ServiceComponentRuntime } from './scr';
 import { SCRBundleConfiguration } from './interfaces';
 import { ComponentResourceProcessor } from './component-resource-processor';
 
-export class ServiceComponentRuntimeBundleActivator implements BundleActivator, BundleListener {
+export class ServiceComponentRuntimeBundleActivator implements BundleActivator, BundleListener, ServiceListener {
   private serviceRegistration: ServiceRegistration<any> | null = null;
   private frameworkReference: ServiceReference<OSGiFramework> | null = null;
   private scr: ServiceComponentRuntime | null = null;
@@ -44,13 +46,23 @@ export class ServiceComponentRuntimeBundleActivator implements BundleActivator, 
         // ignore individual bundle processing errors during startup
       }
     }
+
+    // Subscribe to service events AFTER the initial bundle scan so runtime
+    // service registrations/modifications/unregistrations drive dynamic
+    // reference (re)binding via the SCR's serialized event queue.
+    context.addServiceListener(this);
   }
 
   async stop(context: BundleContext): Promise<void> {
     if (this.context) {
+      this.context.removeServiceListener(this);
       this.context.removeBundleListener(this);
       this.context = null;
     }
+
+    // Halt any in-flight service-event drain and abandon the queue before the
+    // framework reference is released, so the drain never acts on a torn-down SCR.
+    this.scr?.dispose();
 
     if (this.serviceRegistration) {
       this.serviceRegistration.unregister();
@@ -62,6 +74,10 @@ export class ServiceComponentRuntimeBundleActivator implements BundleActivator, 
     }
 
     this.scr = null;
+  }
+
+  serviceChanged(event: ServiceEvent): void {
+    this.scr?.handleServiceEvent(event);
   }
 
   bundleChanged(event: BundleEvent): void {
