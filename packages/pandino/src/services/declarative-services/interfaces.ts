@@ -85,4 +85,6 @@ export interface ComponentEntry {
   factoryInstances?: Map<string, any>;
   context?: ComponentContext;
   bundleInstances?: Map<number, any>; // For bundle-scoped services
+  boundServiceRefs?: Map<string, any>; // Currently bound service reference per reference key (for greedy rebind)
+  boundMultiServices?: Map<string, Set<any>>; // Services already bound per multi-cardinality reference (idempotent bind)
 }

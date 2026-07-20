@@ -424,6 +424,8 @@ export class ServiceComponentRuntime {
 
     entry.instance = null;
     entry.context = undefined;
+    entry.boundServiceRefs?.clear();
+    entry.boundMultiServices?.clear();
 
     this.publishScrEvent('scr/component/deactivated', {
       'bundle.id': bundleId,
@@ -529,6 +531,16 @@ export class ServiceComponentRuntime {
             (instance as any)[ref.bind](service);
           }
 
+          // Track the bound service reference so a greedy static reference can
+          // compare rankings when a new service later arrives (SP-GRD-01).
+          if (bundleId !== undefined && componentName) {
+            const trackEntry = this.components.get(bundleId)?.get(componentName);
+            if (trackEntry) {
+              trackEntry.boundServiceRefs = trackEntry.boundServiceRefs || new Map();
+              trackEntry.boundServiceRefs.set(ref.name || ref.bind || ref.field || ref.interface, serviceRefs[0]);
+            }
+          }
+
           if (ref.field && !isMethodField) {
             (instance as any)[ref.field] = service;
           }
@@ -551,9 +563,30 @@ export class ServiceComponentRuntime {
         throw new Error(`Mandatory reference ${ref.interface} not satisfied`);
       }
 
+      // DP-ADD-01: bind/append each service at most once. The two-pass
+      // activation (pre/post @Activate) would otherwise process present services
+      // twice — for both the bind method AND a fieldOption:'update' field.
+      const trackEntry =
+        bundleId !== undefined && componentName ? this.components.get(bundleId)?.get(componentName) : undefined;
+      const refKey = ref.name || ref.bind || ref.field || ref.interface;
+      let boundSet: Set<any> | undefined;
+      if (trackEntry) {
+        trackEntry.boundMultiServices = trackEntry.boundMultiServices || new Map();
+        boundSet = trackEntry.boundMultiServices.get(refKey);
+        if (!boundSet) {
+          boundSet = new Set();
+          trackEntry.boundMultiServices.set(refKey, boundSet);
+        }
+      }
+      const newlyBound = services.filter((s) => !(boundSet && boundSet.has(s)));
       if (ref.bind) {
-        for (const service of services) {
+        for (const service of newlyBound) {
           instance[ref.bind](service);
+        }
+      }
+      if (boundSet) {
+        for (const service of newlyBound) {
+          boundSet.add(service);
         }
       }
 
@@ -561,7 +594,7 @@ export class ServiceComponentRuntime {
         if (ref.fieldOption === 'replace' || !ref.fieldOption) {
           instance[ref.field] = services;
         } else if (ref.fieldOption === 'update' && Array.isArray(instance[ref.field])) {
-          instance[ref.field] = [...instance[ref.field], ...services];
+          instance[ref.field] = [...instance[ref.field], ...newlyBound];
         }
       }
     }
@@ -569,14 +602,45 @@ export class ServiceComponentRuntime {
 
   async processServiceEvent(interfaceName: string, eventType: string, serviceRef?: ServiceReference<any>) {
     // First handle existing active components
-    for (const [_bundleId, bundleComponents] of this.components.entries()) {
-      for (const [_componentName, entry] of bundleComponents.entries()) {
+    for (const [ownerBundleId, bundleComponents] of this.components.entries()) {
+      for (const [ownerComponentName, entry] of bundleComponents.entries()) {
         const { instance, metadata } = entry;
         if (!instance) continue;
 
         for (const ref of metadata.references || []) {
           if (ref.interface === interfaceName) {
             if (eventType === 'registered' && ref.bind && serviceRef) {
+              const policy = ref.policy || 'static';
+              const policyOption = ref.policyOption || 'reluctant';
+              // SP-REL-02: a static reluctant reference does not rebind in place
+              // when a new (even higher-ranked) service arrives.
+              if (policy === 'static' && policyOption === 'reluctant') {
+                continue;
+              }
+              // SP-GRD-01 ("Greedy Static Trap"): a static greedy reference bound
+              // to a lower-ranked service is fully reactivated onto a
+              // higher-ranked arrival (unbind -> @Deactivate -> new instance ->
+              // bind -> @Activate).
+              if (policy === 'static' && policyOption === 'greedy') {
+                const refKey = ref.name || ref.bind || ref.field || ref.interface;
+                const boundRef = entry.boundServiceRefs?.get(refKey);
+                if (boundRef) {
+                  const newRank = Number(serviceRef.getProperty('service.ranking') ?? 0);
+                  const boundRank = Number(boundRef.getProperty('service.ranking') ?? 0);
+                  if (newRank > boundRank) {
+                    if (ref.unbind && typeof instance[ref.unbind] === 'function') {
+                      instance[ref.unbind](this.bundleContext.getService(boundRef));
+                    }
+                    await this.deactivateComponent(ownerBundleId, ownerComponentName);
+                    await this.activateComponent(ownerBundleId, ownerComponentName);
+                    // The component was fully reactivated with a NEW instance; the
+                    // captured `instance` is now stale, so stop processing further
+                    // references for this component on this event.
+                    break;
+                  }
+                }
+                continue;
+              }
               const service = this.bundleContext.getService(serviceRef);
               if (service) {
                 instance[ref.bind](service);
@@ -589,10 +653,12 @@ export class ServiceComponentRuntime {
                   }
                 }
               }
-            } else if (eventType === 'unregistered' && ref.unbind) {
-              // OSGi passes the departing service object to the unbind method.
-              const departing = serviceRef ? this.bundleContext.getService(serviceRef) : undefined;
-              instance[ref.unbind](departing);
+            } else if (eventType === 'unregistered') {
+              if (ref.unbind && typeof instance[ref.unbind] === 'function') {
+                // OSGi passes the departing service object to the unbind method.
+                const departing = serviceRef ? this.bundleContext.getService(serviceRef) : undefined;
+                instance[ref.unbind](departing);
+              }
 
               if (ref.field) {
                 if (ref.cardinality === '1..1' || ref.cardinality === '0..1') {
@@ -600,6 +666,37 @@ export class ServiceComponentRuntime {
                 } else if (Array.isArray(instance[ref.field])) {
                   instance[ref.field] = [];
                 }
+              }
+
+              // Forget the departed service so a later re-registration can bind
+              // again and greedy ranking comparisons do not read a dead ref.
+              const unregKey = ref.name || ref.bind || ref.field || ref.interface;
+              const boundRefs = entry.boundServiceRefs;
+              if (boundRefs && boundRefs.get(unregKey) === serviceRef) {
+                boundRefs.delete(unregKey);
+              }
+              const departedService = serviceRef ? this.bundleContext.getService(serviceRef) : undefined;
+              if (departedService !== undefined) {
+                entry.boundMultiServices?.get(unregKey)?.delete(departedService);
+              }
+
+              // SP-REL-01 / SP-GRD-02: a mandatory reference that loses its
+              // service with no replacement makes the component UNSATISFIED, so
+              // it is deactivated.
+              const isMandatory = ref.cardinality === '1..1' || ref.cardinality === '1..n';
+              if (isMandatory) {
+                const remaining = (this.bundleContext.getServiceReferences(ref.interface, ref.target || null) ?? []).filter(
+                  (r) => r !== serviceRef,
+                );
+                if (remaining.length === 0) {
+                  await this.deactivateComponent(ownerBundleId, ownerComponentName);
+                  break;
+                }
+                // NOTE (follow-up #4): when a survivor exists, a static mandatory
+                // reference should reactivate onto it and a dynamic 1..1 should
+                // rebind. Not implemented here — requires the departing ref to be
+                // reliably identified (callers may omit serviceRef), which is
+                // part of the dormant event-pipeline wiring (#6).
               }
             } else if (eventType === 'modified' && ref.updated && serviceRef) {
               const service = this.bundleContext.getService(serviceRef);
@@ -825,6 +922,11 @@ export class ServiceComponentRuntime {
     const { metadata, instance } = entry;
     if (metadata.modified && typeof instance[metadata.modified] === 'function') {
       await instance[metadata.modified](configuration);
+    } else {
+      // CU-NOM-01 ("Missing Modified Deactivation"): with no @Modified method a
+      // configuration change forces a full deactivate/reactivate cycle.
+      await this.deactivateComponent(bundleId, componentName);
+      await this.activateComponent(bundleId, componentName);
     }
 
     this.publishScrEvent('scr/component/config-updated', {

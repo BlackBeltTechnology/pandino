@@ -216,13 +216,66 @@ describe('Reference Matrix (group 6)', () => {
       await scr.registerComponent(C, bundleId);
       await scr.activateComponent(bundleId, 'card.0ton.dynamic');
 
-      // Both services are bound. Every distinct service is present.
+      // Both services are bound exactly once each (DP-ADD-01).
       expect(new Set(bound)).toEqual(new Set([s1, s2]));
-      // DIVERGENCE: dynamic refs are bound twice during activation — the
-      // singleton path runs satisfyReferences() a second time for dynamic refs
-      // (pre-@Activate pass + post-@Activate pass), so bind fires 2x per
-      // service (4 total) instead of once. Spec DP-ADD-01 expects a single bind.
-      expect(bound.length).toBe(4);
+      expect(bound.length).toBe(2);
+    });
+
+    it('two references to the same interface (unnamed) each bind independently', async () => {
+      const a: any[] = [];
+      const b: any[] = [];
+
+      @Component({ name: 'two.refs.same.iface' })
+      class C {
+        @Reference({ interface: 'S', cardinality: '0..n', policy: 'dynamic', bind: 'bindA' })
+        private la: any[] = [];
+        @Reference({ interface: 'S', cardinality: '0..n', policy: 'dynamic', bind: 'bindB' })
+        private lb: any[] = [];
+        bindA(s: any) {
+          a.push(s);
+        }
+        bindB(s: any) {
+          b.push(s);
+        }
+        @Activate
+        activate() {}
+      }
+
+      const r1 = makeRef();
+      const s1 = { id: 's1' };
+      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r1]);
+      bundleContext.getService = vi.fn().mockReturnValue(s1);
+
+      await scr.registerComponent(C, bundleId);
+      await scr.activateComponent(bundleId, 'two.refs.same.iface');
+
+      // Distinct refKeys (bind method) => neither ref suppresses the other's bind.
+      expect(a).toEqual([s1]);
+      expect(b).toEqual([s1]);
+    });
+
+    it('fieldOption:update does not double-append across the two-pass activation', async () => {
+      @Component({ name: 'update.field' })
+      class C {
+        @Reference({ interface: 'S', cardinality: '0..n', policy: 'dynamic', fieldOption: 'update', field: 'list' })
+        private list: any[] = [];
+        @Activate
+        activate() {}
+      }
+
+      const r1 = makeRef();
+      const r2 = makeRef();
+      const s1 = { id: 's1' };
+      const s2 = { id: 's2' };
+      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r1, r2]);
+      bundleContext.getService = vi.fn().mockImplementation((r: any) => (r === r1 ? s1 : s2));
+
+      await scr.registerComponent(C, bundleId);
+      await scr.activateComponent(bundleId, 'update.field');
+
+      const inst = scr.getComponent(bundleId, 'update.field')?.instance as any;
+      // Not [s1, s2, s1, s2] — the second pass must not re-append.
+      expect(inst.list).toEqual([s1, s2]);
     });
 
     it('1..n: satisfaction gated on at least one matching service', async () => {
@@ -266,7 +319,7 @@ describe('Reference Matrix (group 6)', () => {
       expect(new Set(bound)).toEqual(new Set([s1, s2]));
     });
 
-    it('DIVERGENCE: policyOption (greedy vs reluctant) has no behavioral effect', async () => {
+    it('SP-REL-02: a reluctant static reference ignores a newly-arrived service', async () => {
       const events: string[] = [];
 
       // Two identical components differing only by policyOption on a static ref.
@@ -306,11 +359,10 @@ describe('Reference Matrix (group 6)', () => {
       bundleContext.getService = vi.fn().mockReturnValue(s2);
       await scr.processServiceEvent('S', 'registered', r2);
 
-      // DIVERGENCE: policyOption is parsed into metadata but never read by
-      // scr.ts. Both reluctant and greedy react identically to the new service
-      // (both rebind in place). Spec SP-REL-02 requires reluctant to IGNORE the
-      // new service; SP-GRD-01 requires greedy to deactivate+reactivate.
-      expect(events).toEqual(['reluctant:bind', 'greedy:bind', 'reluctant:bind', 'greedy:bind']);
+      // SP-REL-02: reluctant IGNORES the new service. Greedy also does nothing
+      // here because the arrival is NOT higher-ranked (equal rank) — the greedy
+      // static trap only fires for a strictly higher-ranked service (SP-GRD-01).
+      expect(events).toEqual(['reluctant:bind', 'greedy:bind']);
     });
   });
 
@@ -318,7 +370,19 @@ describe('Reference Matrix (group 6)', () => {
   // Static greedy rebind — "Greedy Static Trap" (SP-GRD-01)
   // ---------------------------------------------------------------------------
   describe('Static greedy rebind ("greedy static trap")', () => {
-    it('DIVERGENCE: higher-ranked service rebinds in place, no deactivate/reactivate', async () => {
+    const rankedRef = (id: string, ranking: number): ServiceReference<any> =>
+      ({
+        getProperty: vi.fn((key: string) => {
+          if (key === 'service.ranking') return ranking;
+          if (key === 'service.id') return id;
+          return undefined;
+        }),
+        getPropertyKeys: vi.fn().mockReturnValue(['service.ranking', 'service.id']),
+        getBundle: vi.fn(),
+        isAssignableTo: vi.fn().mockReturnValue(true),
+      }) as unknown as ServiceReference<any>;
+
+    it('SP-GRD-01: higher-ranked service triggers unbind + deactivate + reactivate onto the better service', async () => {
       const events: string[] = [];
 
       @Component({ name: 'greedy.trap' })
@@ -335,8 +399,8 @@ describe('Reference Matrix (group 6)', () => {
         bindS(s: any) {
           events.push(`bind:${s.id}`);
         }
-        unbindS() {
-          events.push('unbind');
+        unbindS(s: any) {
+          events.push(`unbind:${s?.id}`);
         }
         @Activate
         activate() {
@@ -348,31 +412,79 @@ describe('Reference Matrix (group 6)', () => {
         }
       }
 
-      const r1 = makeRef();
+      const r1 = rankedRef('s1', 5);
       const s1 = { id: 's1' };
+      const r2 = rankedRef('s2', 10);
+      const s2 = { id: 's2' };
+      const registry = new Map<any, any>([
+        [r1, s1],
+        [r2, s2],
+      ]);
+      bundleContext.getService = vi.fn().mockImplementation((r: any) => registry.get(r) ?? null);
+      // Only S1 present at activation.
       bundleContext.getServiceReferences = vi.fn().mockReturnValue([r1]);
-      bundleContext.getService = vi.fn().mockReturnValue(s1);
 
       await scr.registerComponent(C, bundleId);
       await scr.activateComponent(bundleId, 'greedy.trap');
 
       const before = scr.getComponent(bundleId, 'greedy.trap')?.instance;
 
-      // A higher-ranked S2 arrives.
-      const r2 = makeRef();
-      const s2 = { id: 's2' };
-      bundleContext.getService = vi.fn().mockReturnValue(s2);
+      // A higher-ranked S2 arrives; the registry now returns S2 first (highest).
+      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r2, r1]);
       await scr.processServiceEvent('S', 'registered', r2);
 
       const after = scr.getComponent(bundleId, 'greedy.trap')?.instance;
 
-      // DIVERGENCE: spec SP-GRD-01 mandates unbind(s1) + @Deactivate + create a
-      // NEW instance + bind(s2) + @Activate. This runtime never checks
-      // policy/policyOption in processServiceEvent — it just calls bind(s2) on
-      // the SAME still-active instance. No unbind, no deactivate, no new
-      // instance.
-      expect(events).toEqual(['bind:s1', 'activate', 'bind:s2']);
-      expect(after).toBe(before);
+      // SP-GRD-01: full reactivation onto the higher-ranked service.
+      expect(events).toEqual(['bind:s1', 'activate', 'unbind:s1', 'deactivate', 'bind:s2', 'activate']);
+      expect(after).not.toBe(before);
+    });
+
+    it('SP-GRD-02: unregistering the bound service of a mandatory static ref deactivates the component', async () => {
+      const events: string[] = [];
+
+      @Component({ name: 'greedy.loss' })
+      class C {
+        @Reference({
+          interface: 'S',
+          cardinality: '1..1',
+          policy: 'static',
+          policyOption: 'greedy',
+          bind: 'bindS',
+          unbind: 'unbindS',
+        })
+        private s?: any;
+        bindS(s: any) {
+          events.push(`bind:${s.id}`);
+        }
+        unbindS(s: any) {
+          events.push(`unbind:${s?.id}`);
+        }
+        @Activate
+        activate() {
+          events.push('activate');
+        }
+        @Deactivate
+        deactivate() {
+          events.push('deactivate');
+        }
+      }
+
+      const r1 = rankedRef('s1', 5);
+      const s1 = { id: 's1' };
+      const registry = new Map<any, any>([[r1, s1]]);
+      bundleContext.getService = vi.fn().mockImplementation((r: any) => registry.get(r) ?? null);
+      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r1]);
+
+      await scr.registerComponent(C, bundleId);
+      await scr.activateComponent(bundleId, 'greedy.loss');
+
+      // The bound service departs with no replacement available.
+      bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
+      await scr.processServiceEvent('S', 'unregistered', r1);
+
+      expect(events).toEqual(['bind:s1', 'activate', 'unbind:s1', 'deactivate']);
+      expect(scr.getComponent(bundleId, 'greedy.loss')?.instance).toBeFalsy();
     });
   });
 
@@ -523,7 +635,7 @@ describe('Reference Matrix (group 6)', () => {
       expect(after).toBe(before);
     });
 
-    it('DIVERGENCE: without @Modified, config update does NOT deactivate/reactivate', async () => {
+    it('CU-NOM-01: without @Modified, config update forces deactivate + reactivate', async () => {
       const events: string[] = [];
 
       @Component({ name: 'cfg.nomod', immediate: true })
@@ -548,12 +660,10 @@ describe('Reference Matrix (group 6)', () => {
 
       const after = scr.getComponent(bundleId, 'cfg.nomod')?.instance;
 
-      // DIVERGENCE: spec CU-NOM-01 ("Missing Modified Deactivation") mandates a
-      // full @Deactivate + @Activate cycle producing a NEW instance. This
-      // runtime is a no-op when @Modified is absent: it only publishes an SCR
-      // event. The original instance survives untouched.
-      expect(events).toEqual(['activate']);
-      expect(after).toBe(before);
+      // CU-NOM-01 ("Missing Modified Deactivation"): a full @Deactivate +
+      // @Activate cycle producing a NEW instance.
+      expect(events).toEqual(['activate', 'deactivate', 'activate']);
+      expect(after).not.toBe(before);
     });
   });
 
