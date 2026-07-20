@@ -486,6 +486,94 @@ describe('Reference Matrix (group 6)', () => {
       expect(events).toEqual(['bind:s1', 'activate', 'unbind:s1', 'deactivate']);
       expect(scr.getComponent(bundleId, 'greedy.loss')?.instance).toBeFalsy();
     });
+
+    it('#4 static: mandatory ref reactivates onto a survivor when its bound service departs', async () => {
+      const events: string[] = [];
+
+      @Component({ name: 'mand.survivor.static' })
+      class C {
+        @Reference({ interface: 'S', cardinality: '1..1', policy: 'static', bind: 'bindS', unbind: 'unbindS' })
+        private s?: any;
+        bindS(s: any) {
+          events.push(`bind:${s.id}`);
+        }
+        unbindS(s: any) {
+          events.push(`unbind:${s?.id}`);
+        }
+        @Activate
+        activate() {
+          events.push('activate');
+        }
+        @Deactivate
+        deactivate() {
+          events.push('deactivate');
+        }
+      }
+
+      const r1 = rankedRef('s1', 10);
+      const s1 = { id: 's1' };
+      const r2 = rankedRef('s2', 5);
+      const s2 = { id: 's2' };
+      const registry = new Map<any, any>([
+        [r1, s1],
+        [r2, s2],
+      ]);
+      bundleContext.getService = vi.fn().mockImplementation((r: any) => registry.get(r) ?? null);
+      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r1, r2]);
+
+      await scr.registerComponent(C, bundleId);
+      await scr.activateComponent(bundleId, 'mand.survivor.static');
+
+      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r2]);
+      await scr.processServiceEvent('S', 'unregistered', r1);
+
+      expect(events).toEqual(['bind:s1', 'activate', 'unbind:s1', 'deactivate', 'bind:s2', 'activate']);
+    });
+
+    it('#4 dynamic: mandatory 1..1 ref rebinds in place onto a survivor', async () => {
+      const events: string[] = [];
+
+      @Component({ name: 'mand.survivor.dynamic' })
+      class C {
+        @Reference({ interface: 'S', cardinality: '1..1', policy: 'dynamic', bind: 'bindS', unbind: 'unbindS' })
+        private s?: any;
+        bindS(s: any) {
+          events.push(`bind:${s.id}`);
+        }
+        unbindS(s: any) {
+          events.push(`unbind:${s?.id}`);
+        }
+        @Activate
+        activate() {
+          events.push('activate');
+        }
+        @Deactivate
+        deactivate() {
+          events.push('deactivate');
+        }
+      }
+
+      const r1 = rankedRef('s1', 10);
+      const s1 = { id: 's1' };
+      const r2 = rankedRef('s2', 5);
+      const s2 = { id: 's2' };
+      const registry = new Map<any, any>([
+        [r1, s1],
+        [r2, s2],
+      ]);
+      bundleContext.getService = vi.fn().mockImplementation((r: any) => registry.get(r) ?? null);
+      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r1, r2]);
+
+      await scr.registerComponent(C, bundleId);
+      await scr.activateComponent(bundleId, 'mand.survivor.dynamic');
+
+      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r2]);
+      await scr.processServiceEvent('S', 'unregistered', r1);
+
+      // Dynamic 1..1: unbind departed, bind survivor in place, no deactivate.
+      expect(events).toEqual(['bind:s1', 'activate', 'unbind:s1', 'bind:s2']);
+      expect(scr.getComponent(bundleId, 'mand.survivor.dynamic')?.instance).toBeTruthy();
+    });
   });
 
   // ---------------------------------------------------------------------------

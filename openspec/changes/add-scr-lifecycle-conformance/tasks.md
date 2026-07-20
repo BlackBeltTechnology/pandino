@@ -57,8 +57,8 @@ skipped — offer declined). 7 findings, 4 actionable; fixed:
 
 ### Follow-ups (not implemented — out of scope)
 
-- **#6 (important): `processServiceEvent` has NO production caller** — the SCR is not subscribed to framework service events, so SP-REL-02 / SP-GRD-01 / SP-GRD-02 (and the unregister deactivation) are spec-correct at the SCR API level but DORMANT at runtime. Wiring the event pipeline is its own change.
-- **#4**: a mandatory reference losing its service while a survivor exists should rebind/reactivate onto the survivor (static) or rebind to the next (dynamic). ATTEMPTED and REVERTED: the survivor logic needs the departing service reference to be reliably identified, but callers may invoke `processServiceEvent` without a `serviceRef` (an existing lifecycle test does), so a still-registered service was wrongly treated as a survivor and reactivated. Belongs with the #6 event-pipeline wiring, which guarantees a concrete departing `serviceRef`.
+- **#6 (RESOLVED by `wire-scr-service-events`): `processServiceEvent` had NO production caller** — the SCR is not subscribed to framework service events, so SP-REL-02 / SP-GRD-01 / SP-GRD-02 (and the unregister deactivation) are spec-correct at the SCR API level but DORMANT at runtime. Wiring the event pipeline is its own change.
+- **#4 (RESOLVED by `wire-scr-service-events`)**: a mandatory reference losing its service while a survivor exists should rebind/reactivate onto the survivor (static) or rebind to the next (dynamic). Re-implemented there, gated on a concrete departing `serviceRef`. Originally ATTEMPTED and REVERTED here because: the survivor logic needs the departing service reference to be reliably identified, but callers may invoke `processServiceEvent` without a `serviceRef` (an existing lifecycle test does), so a still-registered service was wrongly treated as a survivor and reactivated. Belongs with the #6 event-pipeline wiring, which guarantees a concrete departing `serviceRef`.
 
 ## Status
 
