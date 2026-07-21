@@ -218,7 +218,7 @@ describe('Reference Matrix (group 6)', () => {
 
       // Both services are bound exactly once each (DP-ADD-01).
       expect(new Set(bound)).toEqual(new Set([s1, s2]));
-      expect(bound.length).toBe(2);
+      expect(bound).toHaveLength(2);
     });
 
     it('two references to the same interface (unnamed) each bind independently', async () => {
@@ -835,7 +835,7 @@ describe('Reference Matrix (group 6)', () => {
       // Component remains ACTIVE; unbind fires, field reset to []. No deactivate.
       expect(events).toContain('unbind');
       expect(events).not.toContain('deactivate');
-      expect(events.filter((e) => e === 'unbind').length).toBe(1);
+      expect(events.filter((e) => e === 'unbind')).toHaveLength(1);
       expect(scr.getComponent(bundleId, 'opt.0ton.depart')?.instance).toBeTruthy();
       // Guard: bind ran during activation (documents dynamic double-pass count).
       expect(bindCount).toBeGreaterThanOrEqual(1);

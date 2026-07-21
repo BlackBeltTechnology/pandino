@@ -173,7 +173,7 @@ export class LDAPFilter implements Filter {
     }
     segments.push(current);
 
-    const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
     const regex = segments.map(escapeRegExp).join('.*');
     return new RegExp(`^${regex}$`).test(actual);
   }
