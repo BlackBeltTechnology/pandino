@@ -89,6 +89,21 @@ SATISFIED, the runtime's actions are minimal:
 
 This "just-in-time" activation ensures that the memory and CPU costs associated with creating and initializing a component are only incurred if its functionality is actually needed by the running system.
 
+> **Implementation note (known limitation):** Pandino does **not** yet implement
+> this just-in-time deferral. A delayed (`immediate: false`) component that
+> becomes SATISFIED is activated **eagerly** rather than on first `getService`
+> — there is no service-factory interception that defers instantiation and
+> `@Activate` to the first request (spec scenarios SA-DLY-01 / SA-DLY-02). The
+> obstacle is architectural: the framework's `getService` /
+> `ServiceFactory.getService` contract is **synchronous**, whereas component
+> activation (reference resolution and `@Activate`) is **asynchronous**, so a
+> factory cannot return a fully-activated instance from a synchronous call
+> without reworking `getService` to be async. Every other lifecycle behavior in
+> this document — static/dynamic references, reluctant/greedy policy, the greedy
+> static trap, mandatory-loss deactivation, survivor rebind, and
+> config-without-`@Modified` reactivation — is implemented and driven by runtime
+> service events. Closing this gap is tracked as a future change.
+
 ### **Factory Components**
 
 A component that specifies the factory attribute in its metadata is a specialized form of delayed component. It is designed to allow other components to create multiple, distinct instances of it programmatically. The component itself is not activated when its dependencies are satisfied. Instead, the runtime registers a ComponentFactory service. Another module can obtain this ComponentFactory and call its newInstance() method. Each call to newInstance() triggers the runtime to create and activate a new, fully managed instance of the factory component. Each of these instances has its own lifecycle, independent of the others.
