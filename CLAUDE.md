@@ -65,9 +65,8 @@ Pandino is an OSGi-style framework for TypeScript that provides modular architec
 
 ### Core Framework Structure (`packages/pandino/src/`)
 
-- `framework/` - Core framework implementation and bootstrap
+- `framework/` - Core framework implementation, bootstrap, and bundle management/lifecycle
 - `services/` - Built-in services (service registry, event admin, etc.)
-- `bundle/` - Bundle management and lifecycle
 - `types/` - TypeScript interfaces and type definitions
 - `test/` - Test utilities and setup
 

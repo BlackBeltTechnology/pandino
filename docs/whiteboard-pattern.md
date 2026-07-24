@@ -97,7 +97,7 @@ A classic example of the Whiteboard Pattern in OSGi is event handling, which Pan
 // Event handler implementation
 @Component({ name: 'user.event.handler' })
 @Service({ interfaces: ['EventHandler'] })
-@Property({ name: 'event.topics', value: 'user/*' })
+@Property('event.topics', 'user/*')
 class UserEventHandler implements EventHandler {
   handleEvent(event: Event): void {
     console.log(`Received event on topic ${event.getTopic()}`);

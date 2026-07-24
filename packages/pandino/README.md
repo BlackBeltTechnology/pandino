@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/@pandino%2Fpandino.svg)](https://badge.fury.io/js/@pandino%2Fpandino)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE.txt)
+[![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE)
 
 The core Pandino runtime: an OSGi-style service registry, bundle system, and built-in services for building modular TypeScript applications. Services discover each other dynamically at runtime instead of being statically wired at compile time.
 
@@ -192,7 +192,8 @@ logger.info('Server starting', undefined, { port: 8080 });
 Topic-based publish–subscribe messaging.
 
 ```typescript
-import { EventAdmin, Event } from '@pandino/pandino';
+import { Event } from '@pandino/pandino';
+import type { EventAdmin } from '@pandino/pandino';
 
 const eventAdmin = context.getService(context.getServiceReference<EventAdmin>('EventAdmin')!)!;
 
@@ -243,7 +244,12 @@ import { ServiceTracker } from '@pandino/pandino';
 
 const tracker = new ServiceTracker<DatabaseService>(context, 'DatabaseService', {
   addingService: (ref) => context.getService(ref),
-  removedService: (ref) => context.ungetService(ref),
+  modifiedService: (ref, svc, tracked) => {
+    // react to updated service properties
+  },
+  removedService: (ref, svc, tracked) => {
+    // cleanup; the tracker releases the reference automatically
+  },
 });
 
 tracker.open();

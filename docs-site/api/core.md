@@ -75,7 +75,7 @@ The core framework class. Implements `BundleActivator`.
 | `getLocation`           | `getLocation(): string`                                      | Returns the bundle's install location           |
 | `start`                 | `start(options?: number): Promise<void>`                     | Starts the bundle                               |
 | `stop`                  | `stop(options?: number): Promise<void>`                      | Stops the bundle                                |
-| `update`                | `update(source?: ReadableStream): Promise<void>`             | Updates the bundle                              |
+| `update`                | `update(module?: Promise<BundleModule> \| BundleModule): Promise<void>` | Updates the bundle                  |
 | `uninstall`             | `uninstall(): Promise<void>`                                 | Uninstalls the bundle                           |
 | `getRegisteredServices` | `getRegisteredServices(): ServiceReference<any>[]`           | Returns services registered by this bundle      |
 | `getServicesInUse`      | `getServicesInUse(): ServiceReference<any>[]`                | Returns services currently used by this bundle  |
@@ -400,6 +400,8 @@ const event = new Event('com/example/topic', { key: 'value' });
 | `warn`              | `warn(message: string, exception?: Error, context?: Record<string, unknown>): void`                 | Logs a warning                          |
 | `info`              | `info(message: string, exception?: Error, context?: Record<string, unknown>): void`                 | Logs an informational message           |
 | `debug`             | `debug(message: string, exception?: Error, context?: Record<string, unknown>): void`                | Logs a debug message                    |
+| `trace`             | `trace(message: string, exception?: Error, context?: Record<string, unknown>): void`                | Logs a trace-level message              |
+| `audit`             | `audit(message: string, exception?: Error, context?: Record<string, unknown>): void`                | Logs an audit message (always recorded) |
 | `isLoggable`        | `isLoggable(level: LogLevel): boolean`                                                              | Checks if a level is currently loggable |
 | `setLogLevel`       | `setLogLevel(level: LogLevel): void`                                                                | Sets the minimum log level              |
 | `getLogLevel`       | `getLogLevel(): LogLevel`                                                                           | Returns the current log level           |
@@ -410,6 +412,7 @@ const event = new Event('com/example/topic', { key: 'value' });
 
 | Value   | Number | Description            |
 | ------- | ------ | ---------------------- |
+| `AUDIT` | `0`    | Audit messages         |
 | `ERROR` | `1`    | Error conditions       |
 | `WARN`  | `2`    | Warning conditions     |
 | `INFO`  | `3`    | Informational messages |

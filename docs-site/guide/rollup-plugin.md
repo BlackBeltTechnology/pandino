@@ -108,7 +108,7 @@ Or, without React:
 
 ```typescript
 const { default: alphaBundle } = await import('pandino:bundle:alpha');
-await context.installBundle('pandino:bundle:alpha', alphaBundle);
+await context.installBundle(import('pandino:bundle:alpha'));
 ```
 
 ## Options

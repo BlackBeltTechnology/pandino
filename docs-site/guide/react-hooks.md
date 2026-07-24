@@ -185,7 +185,7 @@ Render-prop wrapper around `useService`. Handy when you prefer composition over 
 </ServiceConsumer>
 ```
 
-### `<ComponentProxy serviceClass filter? ...props>`
+### `<ComponentProxy serviceClass filter ...props>`
 
 Resolves a service that is itself a React component (or React element) and renders it with the remaining props. Useful for plugin-style UIs where the rendered component is provided by a bundle.
 

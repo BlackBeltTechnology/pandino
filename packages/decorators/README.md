@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/@pandino%2Fdecorators.svg)](https://badge.fury.io/js/@pandino%2Fdecorators)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE.txt)
+[![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE)
 
 TypeScript decorators for declarative service components in the Pandino framework. Annotate plain classes to describe services, dependencies, and lifecycle callbacks — the Pandino runtime takes care of wiring and activation.
 

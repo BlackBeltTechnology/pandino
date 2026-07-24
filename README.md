@@ -1,7 +1,7 @@
 # Pandino: OSGi-Style Framework for TypeScript
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE.txt)
+[![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE)
 
 > A lightweight TypeScript framework that brings **modular architecture** to your applications. Build loosely-coupled, maintainable applications where different parts can communicate without knowing about each other directly.
 
@@ -33,7 +33,7 @@
 ## 🚀 Quick Concept Demo
 
 ```typescript
-import { Component, Service, Reference, Activate } from '@pandino/pandino';
+import { Component, Service, Reference, Activate } from '@pandino/decorators';
 import type { ComponentContext } from '@pandino/pandino';
 
 // 1. Define service interfaces
@@ -122,7 +122,9 @@ await scr.registerComponent(OrderService, bundleId);
 | Package                                          | Purpose                                                              | Documentation                                           |
 | ------------------------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------- |
 | [`@pandino/pandino`](./packages/pandino)         | Core framework with service registry, bundles, and built-in services | [Core Documentation](./packages/pandino/README.md)      |
+| [`@pandino/decorators`](./packages/decorators)   | SCR decorators (`@Component`, `@Service`, `@Reference`, ...)          | [Decorators Documentation](./packages/decorators/README.md) |
 | [`@pandino/react-hooks`](./packages/react-hooks) | React integration with hooks and components                          | [React Documentation](./packages/react-hooks/README.md) |
+| [`@pandino/rollup-bundle-plugin`](./packages/rollup-bundle-plugin) | Rollup/Vite plugin that packages `@Component` classes into bundles | [Rollup Plugin Documentation](./packages/rollup-bundle-plugin/README.md) |
 
 ## Architecture Concepts
 

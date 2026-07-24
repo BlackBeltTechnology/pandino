@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/@pandino%2Freact-hooks.svg)](https://badge.fury.io/js/@pandino%2Freact-hooks)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE.txt)
+[![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE)
 
 React bindings for the Pandino framework. Start the runtime, install bundles, and consume services from React components using a small set of hooks and helpers.
 
@@ -145,6 +145,15 @@ const { bundle, loading, error } = useBundle('com.example.database');
 if (bundle) console.log(bundle.getState());
 ```
 
+### `useAllBundles()`
+
+Returns every installed bundle and re-renders as the set changes.
+
+```tsx
+const { bundles, loading, error } = useAllBundles();
+return <p>{bundles.length} bundles installed</p>;
+```
+
 ### `useBundleContext()` / `usePandinoContext()`
 
 Low-level escape hatches that return the raw `BundleContext` or the full context value (`{ framework, bundleContext, isInitialized, error }`). Use them when you need APIs that don't have a dedicated hook.
@@ -168,11 +177,13 @@ Root provider. Accepts:
 
 ### `<BundleInfo bundleIdOrName>`
 
-Renders a bundle's id, symbolic name, version, and state. Pass a `children` render prop to customise the output; otherwise a default table is rendered.
+Renders a bundle's id, symbolic name, version, state, and location. Pass a `children` render prop to customise the output; otherwise a default table is rendered.
 
 ```tsx
 <BundleInfo bundleIdOrName="com.example.database" />
 ```
+
+The named export `bundleStateToString(state: number): string` converts a numeric bundle state (`BUNDLE_STATES`) into a human-readable label and is reused by the render prop (`children({ bundle, loading, error, stateToString })`).
 
 ### `<ServiceConsumer serviceClass filter?>`
 
@@ -184,7 +195,7 @@ Render-prop wrapper around `useService`. Handy when you prefer composition over 
 </ServiceConsumer>
 ```
 
-### `<ComponentProxy serviceClass filter? ...props>`
+### `<ComponentProxy serviceClass filter ...props>`
 
 Resolves a service that is itself a React component (or React element) and renders it with the remaining props. Useful for plugin-style UIs where the rendered component is provided by a bundle.
 

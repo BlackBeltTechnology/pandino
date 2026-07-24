@@ -144,17 +144,19 @@ There are several ways to install bundles into the framework:
 
 ### At Bootstrap
 
-When starting Pandino, pass bundles in the configuration:
+Start the framework with `OSGiBootstrap`, then install your bundles through the framework's `BundleContext`:
 
 ```typescript
-import Pandino from '@pandino/pandino';
+import { OSGiBootstrap, LogLevel } from '@pandino/pandino';
 
-const pandino = new Pandino({
-  bundles: [import('./bundles/greeter-bundle'), import('./bundles/logger-bundle')],
-});
+const bootstrap = new OSGiBootstrap({ frameworkLogLevel: LogLevel.INFO });
+const framework = await bootstrap.start();
+const context = framework.getBundleContext();
 
-await pandino.init();
-await pandino.start();
+const greeter = await context.installBundle(import('./bundles/greeter-bundle'));
+const logger = await context.installBundle(import('./bundles/logger-bundle'));
+await greeter.start();
+await logger.start();
 ```
 
 ### At Runtime via BundleContext

@@ -1,7 +1,7 @@
 # @pandino/example
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE.txt)
+[![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE)
 
 A small React + Vite application that demonstrates how all Pandino packages fit together in a real build. **This package is not published to npm** — it exists as living documentation and a reference setup for consumer developers.
 

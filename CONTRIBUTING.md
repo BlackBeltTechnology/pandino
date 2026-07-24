@@ -41,7 +41,7 @@ pnpm test
 - **Tests required** - New features need unit tests
 - **Conventional commits** - Use `feat:`, `fix:`, `docs:`, etc.
 - **Code linter** - We use OXC (runs automatically)
-- **Code formatting** - We use Biome (runs automatically)
+- **Code formatting** - We use oxfmt (runs automatically)
 
 ## 🧪 Testing
 
@@ -63,9 +63,11 @@ pnpm --filter @pandino/pandino test
 
 ```
 packages/
-├── pandino/          # Core framework
-├── react-hooks/      # React integration
-└── example/          # Demo application
+├── pandino/              # Core framework
+├── decorators/           # SCR decorators (@Component, @Service, ...)
+├── react-hooks/          # React integration
+├── rollup-bundle-plugin/ # Build-time bundle packaging
+└── example/              # Demo application (private)
 ```
 
 ## 🐛 Bug Reports

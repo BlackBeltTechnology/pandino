@@ -9,7 +9,7 @@ This guide walks you through installing Pandino and writing your first service. 
 
 ## Prerequisites
 
-- **Node.js** >= 18
+- **Node.js** >= 24
 - **npm** or **pnpm** package manager
 - **TypeScript** configured with decorator support:
 

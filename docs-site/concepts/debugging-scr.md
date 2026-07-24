@@ -11,7 +11,7 @@ If you are new to SCR, read [Declarative Services](/concepts/declarative-service
 
 ## Turn on framework logging
 
-SCR logs its decisions (activation attempts, unsatisfied references, circular dependencies) through the framework logger. The default log level is `INFO`; raise it to `DEBUG` to see everything.
+SCR logs its decisions (activation attempts, unsatisfied references, circular dependencies) through the framework logger. The default log level is `INFO`; raise it to `DEBUG` (or `TRACE` for the most detail) to see SCR's decisions.
 
 ```typescript
 import { OSGiBootstrap, LogLevel } from '@pandino/pandino';
@@ -35,7 +35,7 @@ const log = context.getService(logRef)!;
 log.setLogLevel(LogLevel.DEBUG);
 ```
 
-Log levels are ordered `ERROR (1) < WARN (2) < INFO (3) < DEBUG (4)` — a lower minimum level shows more messages.
+Log levels are `AUDIT (0)`, `ERROR (1)`, `WARN (2)`, `INFO (3)`, `DEBUG (4)`, `TRACE (5)`. A message is shown when its numeric value is `<=` the configured level, so a *higher* configured level shows more messages. `AUDIT` is always recorded regardless of the threshold.
 
 ## Capture logs programmatically
 

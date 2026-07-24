@@ -193,7 +193,8 @@ logger.info('Server starting', undefined, { port: 8080 });
 Topic-based publish-subscribe messaging.
 
 ```typescript
-import { EventAdmin, Event } from '@pandino/pandino';
+import { Event } from '@pandino/pandino';
+import type { EventAdmin } from '@pandino/pandino';
 
 const eventAdmin = context.getService(context.getServiceReference<EventAdmin>('EventAdmin')!)!;
 
@@ -244,7 +245,12 @@ import { ServiceTracker } from '@pandino/pandino';
 
 const tracker = new ServiceTracker<DatabaseService>(context, 'DatabaseService', {
   addingService: (ref) => context.getService(ref),
-  removedService: (ref) => context.ungetService(ref),
+  modifiedService: (ref, svc, tracked) => {
+    // react to updated service properties
+  },
+  removedService: (ref, svc, tracked) => {
+    // cleanup; the tracker releases the reference automatically
+  },
 });
 
 tracker.open();
