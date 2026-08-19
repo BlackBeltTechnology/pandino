@@ -1,6 +1,6 @@
 # Pandino: OSGi-Style Framework for TypeScript
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-EPL2.0-blue.svg)](LICENSE)
 
 > A lightweight TypeScript framework that brings **modular architecture** to your applications. Build loosely-coupled, maintainable applications where different parts can communicate without knowing about each other directly.
