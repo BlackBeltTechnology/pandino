@@ -52,9 +52,7 @@ describe('ServiceFactory', () => {
         factory.created += 1;
         return { id: ++counter, owner: bundle.getSymbolicName() };
       }),
-      ungetService: vi.fn(
-        (_bundle: Bundle, _registration: ServiceRegistration<Widget>, _service: Widget): void => {},
-      ),
+      ungetService: vi.fn((_bundle: Bundle, _registration: ServiceRegistration<Widget>, _service: Widget): void => {}),
     };
     return factory;
   }

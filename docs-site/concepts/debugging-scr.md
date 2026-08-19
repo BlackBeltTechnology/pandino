@@ -35,7 +35,7 @@ const log = context.getService(logRef)!;
 log.setLogLevel(LogLevel.DEBUG);
 ```
 
-Log levels are `AUDIT (0)`, `ERROR (1)`, `WARN (2)`, `INFO (3)`, `DEBUG (4)`, `TRACE (5)`. A message is shown when its numeric value is `<=` the configured level, so a *higher* configured level shows more messages. `AUDIT` is always recorded regardless of the threshold.
+Log levels are `AUDIT (0)`, `ERROR (1)`, `WARN (2)`, `INFO (3)`, `DEBUG (4)`, `TRACE (5)`. A message is shown when its numeric value is `<=` the configured level, so a _higher_ configured level shows more messages. `AUDIT` is always recorded regardless of the threshold.
 
 ## Capture logs programmatically
 

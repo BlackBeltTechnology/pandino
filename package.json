@@ -25,12 +25,12 @@
     "docs:preview": "vitepress preview docs-site"
   },
   "devDependencies": {
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.2.0",
     "@vitest/coverage-v8": "^4.1.10",
-    "oxfmt": "^0.61.0",
-    "oxlint": "^1.74.0",
+    "oxfmt": "^0.64.0",
+    "oxlint": "^1.78.0",
     "typescript": "^7.0.2",
-    "vitepress": "^1.6.3",
+    "vitepress": "2.0.0-alpha.19",
     "vitest": "^4.1.10"
   },
   "engines": {

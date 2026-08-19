@@ -19,21 +19,21 @@ Documentation-only edits. No application code, no public API changes.
 ### BROKEN (code that fails as written)
 
 1. **`README.md:36`** — Quick Concept Demo imports `Component, Service,
-   Reference, Activate` from `@pandino/pandino`. Those are exported by
+Reference, Activate` from `@pandino/pandino`. Those are exported by
    `@pandino/decorators`; `pandino/src/index.ts` exports none of them. Fix the
    import package. (`import type { ComponentContext }` on line 37 is correct.)
 2. **`docs-site/concepts/bundles.md:150–156`** — "Installing Bundles → At
    Bootstrap" uses `import Pandino from '@pandino/pandino'`, `new Pandino({
-   bundles })`, and `.init()`. None exist (no default export, no `Pandino`
+bundles })`, and `.init()`. None exist (no default export, no `Pandino`
    class, no `bundles` option, no `.init()`). Replace with the real
    `OSGiBootstrap` flow used elsewhere in the docs.
 3. **`docs/whiteboard-pattern.md:100`** — `@Property({ name: 'event.topics',
-   value: 'user/*' })` uses the object form; `@Property(key, value)` is
+value: 'user/*' })` uses the object form; `@Property(key, value)` is
    positional, so the property is never set and the handler never subscribes.
    Align with the positional form (the `docs-site` twin is already correct).
 4. **`docs-site/api/core.md`** — `Bundle.update(source?: ReadableStream)` is
    wrong; actual signature is `update(module?: Promise<BundleModule> |
-   BundleModule)`.
+BundleModule)`.
 
 ### STALE (outdated / incomplete)
 

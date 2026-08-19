@@ -119,12 +119,12 @@ await scr.registerComponent(OrderService, bundleId);
 
 ## Packages
 
-| Package                                          | Purpose                                                              | Documentation                                           |
-| ------------------------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------- |
-| [`@pandino/pandino`](./packages/pandino)         | Core framework with service registry, bundles, and built-in services | [Core Documentation](./packages/pandino/README.md)      |
-| [`@pandino/decorators`](./packages/decorators)   | SCR decorators (`@Component`, `@Service`, `@Reference`, ...)          | [Decorators Documentation](./packages/decorators/README.md) |
-| [`@pandino/react-hooks`](./packages/react-hooks) | React integration with hooks and components                          | [React Documentation](./packages/react-hooks/README.md) |
-| [`@pandino/rollup-bundle-plugin`](./packages/rollup-bundle-plugin) | Rollup/Vite plugin that packages `@Component` classes into bundles | [Rollup Plugin Documentation](./packages/rollup-bundle-plugin/README.md) |
+| Package                                                            | Purpose                                                              | Documentation                                                            |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`@pandino/pandino`](./packages/pandino)                           | Core framework with service registry, bundles, and built-in services | [Core Documentation](./packages/pandino/README.md)                       |
+| [`@pandino/decorators`](./packages/decorators)                     | SCR decorators (`@Component`, `@Service`, `@Reference`, ...)         | [Decorators Documentation](./packages/decorators/README.md)              |
+| [`@pandino/react-hooks`](./packages/react-hooks)                   | React integration with hooks and components                          | [React Documentation](./packages/react-hooks/README.md)                  |
+| [`@pandino/rollup-bundle-plugin`](./packages/rollup-bundle-plugin) | Rollup/Vite plugin that packages `@Component` classes into bundles   | [Rollup Plugin Documentation](./packages/rollup-bundle-plugin/README.md) |
 
 ## Architecture Concepts
 

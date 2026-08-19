@@ -34,21 +34,21 @@ import { Component, Service, Reference, Activate, Deactivate, Modified } from '@
 class MyServiceImpl {}
 ```
 
-| Option                 | Type                                     | Default        | Description                                             |
-| ---------------------- | ---------------------------------------- | -------------- | ------------------------------------------------------- |
-| `name?`                | `string`                                 | Class name     | Unique component name                                   |
-| `immediate?`           | `boolean`                                | `false`        | Activate immediately, even without service consumers    |
-| `enabled?`             | `boolean`                                | `true`         | Whether the component is enabled at bundle start        |
-| `configurationPid?`    | `string`                                 | —              | Configuration Admin PID (unset means no configuration)  |
-| `configurationPolicy?` | `'optional' \| 'require' \| 'ignore'`    | `'optional'`   | How configuration affects activation                    |
-| `factory?`             | `string`                                 | -              | Factory identifier; makes this a factory component      |
-| `scope?`               | `'singleton' \| 'bundle' \| 'prototype'` | `'singleton'`  | Component instance scope                                |
-| `service?`             | `ServiceDescriptor`                      | -              | Inline service registration (alternative to `@Service`) |
-| `properties?`          | `Record<string, any>`                    | `{}`           | Component/service properties                            |
-| `references?`          | `ReferenceDescriptor[]`                  | `[]`           | Inline reference declarations                           |
-| `activate?`            | `string`                                 | -              | Name of the activate method                             |
-| `deactivate?`          | `string`                                 | -              | Name of the deactivate method                           |
-| `modified?`            | `string`                                 | -              | Name of the modified method                             |
+| Option                 | Type                                     | Default       | Description                                             |
+| ---------------------- | ---------------------------------------- | ------------- | ------------------------------------------------------- |
+| `name?`                | `string`                                 | Class name    | Unique component name                                   |
+| `immediate?`           | `boolean`                                | `false`       | Activate immediately, even without service consumers    |
+| `enabled?`             | `boolean`                                | `true`        | Whether the component is enabled at bundle start        |
+| `configurationPid?`    | `string`                                 | —             | Configuration Admin PID (unset means no configuration)  |
+| `configurationPolicy?` | `'optional' \| 'require' \| 'ignore'`    | `'optional'`  | How configuration affects activation                    |
+| `factory?`             | `string`                                 | -             | Factory identifier; makes this a factory component      |
+| `scope?`               | `'singleton' \| 'bundle' \| 'prototype'` | `'singleton'` | Component instance scope                                |
+| `service?`             | `ServiceDescriptor`                      | -             | Inline service registration (alternative to `@Service`) |
+| `properties?`          | `Record<string, any>`                    | `{}`          | Component/service properties                            |
+| `references?`          | `ReferenceDescriptor[]`                  | `[]`          | Inline reference declarations                           |
+| `activate?`            | `string`                                 | -             | Name of the activate method                             |
+| `deactivate?`          | `string`                                 | -             | Name of the deactivate method                           |
+| `modified?`            | `string`                                 | -             | Name of the modified method                             |
 
 ### @Service
 

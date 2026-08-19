@@ -22,9 +22,11 @@ Verify that an implementation matches the change artifacts (specs, tasks, design
    **IMPORTANT**: Do NOT guess or auto-select a change. Always let the user choose.
 
 2. **Check status to understand the schema**
+
    ```bash
    openspec status --change "<name>" --json
    ```
+
    Parse the JSON to understand:
    - `schemaName`: The workflow being used (e.g., "spec-driven")
    - `planningHome`, `changeRoot`, `artifactPaths`, and `actionContext`: path and scope context
@@ -107,6 +109,7 @@ Verify that an implementation matches the change artifacts (specs, tasks, design
 8. **Generate Verification Report**
 
    **Summary Scorecard**:
+
    ```
    ## Verification Report: <change-name>
 
@@ -158,6 +161,7 @@ Verify that an implementation matches the change artifacts (specs, tasks, design
 **Output Format**
 
 Use clear markdown with:
+
 - Table for summary scorecard
 - Grouped lists for issues (CRITICAL/WARNING/SUGGESTION)
 - Code references in format: `file.ts:123`

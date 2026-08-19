@@ -75,7 +75,13 @@ describe('SCR runtime service-event integration', () => {
 
     @Component({ name: 'rt.unbind', immediate: true })
     class Consumer {
-      @Reference({ interface: 'RuntimeService', cardinality: '0..n', policy: 'dynamic', bind: 'bindRt', unbind: 'unbindRt' })
+      @Reference({
+        interface: 'RuntimeService',
+        cardinality: '0..n',
+        policy: 'dynamic',
+        bind: 'bindRt',
+        unbind: 'unbindRt',
+      })
       private list: any[] = [];
       bindRt(s: any) {
         events.push(`bind:${s.id}`);

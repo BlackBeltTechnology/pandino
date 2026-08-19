@@ -46,6 +46,7 @@ changes are entangled, order matters — do the least-coupled first.
 ## Key risk: the double-bind / deadlock coupling
 
 `systematic-debugging` first. Evidence to gather before touching it:
+
 - Exactly how the circular A↔B (1..1 dynamic each) test binds today — via the
   second pass, via `processServiceEvent`, or both.
 - Whether an idempotent bound-set makes the second pass a no-op for present

@@ -65,24 +65,24 @@ The core framework class. Implements `BundleActivator`.
 
 ### Bundle
 
-| Method                  | Signature                                                    | Description                                     |
-| ----------------------- | ------------------------------------------------------------ | ----------------------------------------------- |
-| `getBundleId`           | `getBundleId(): number`                                      | Returns the bundle's unique identifier          |
-| `getSymbolicName`       | `getSymbolicName(): string`                                  | Returns the bundle's symbolic name              |
-| `getVersion`            | `getVersion(): string`                                       | Returns the bundle's version                    |
-| `getState`              | `getState(): BundleState`                                    | Returns the current state (see `BUNDLE_STATES`) |
-| `getHeaders`            | `getHeaders(locale?: string): Record<string, string>`        | Returns the bundle's headers                    |
-| `getLocation`           | `getLocation(): string`                                      | Returns the bundle's install location           |
-| `start`                 | `start(options?: number): Promise<void>`                     | Starts the bundle                               |
-| `stop`                  | `stop(options?: number): Promise<void>`                      | Stops the bundle                                |
-| `update`                | `update(module?: Promise<BundleModule> \| BundleModule): Promise<void>` | Updates the bundle                  |
-| `uninstall`             | `uninstall(): Promise<void>`                                 | Uninstalls the bundle                           |
-| `getRegisteredServices` | `getRegisteredServices(): ServiceReference<any>[]`           | Returns services registered by this bundle      |
-| `getServicesInUse`      | `getServicesInUse(): ServiceReference<any>[]`                | Returns services currently used by this bundle  |
-| `getContext`            | `getContext(): BundleContext`                                | Returns the bundle's context                    |
-| `getBundleModule`       | `getBundleModule(): BundleModule \| null`                    | Returns the original bundle module              |
-| `getResource`           | `getResource(path: string): string \| null`                  | Returns a resource by logical path              |
-| `findResources`         | `findResources(basePath: string, pattern: string): string[]` | Finds resources matching a glob pattern         |
+| Method                  | Signature                                                               | Description                                     |
+| ----------------------- | ----------------------------------------------------------------------- | ----------------------------------------------- |
+| `getBundleId`           | `getBundleId(): number`                                                 | Returns the bundle's unique identifier          |
+| `getSymbolicName`       | `getSymbolicName(): string`                                             | Returns the bundle's symbolic name              |
+| `getVersion`            | `getVersion(): string`                                                  | Returns the bundle's version                    |
+| `getState`              | `getState(): BundleState`                                               | Returns the current state (see `BUNDLE_STATES`) |
+| `getHeaders`            | `getHeaders(locale?: string): Record<string, string>`                   | Returns the bundle's headers                    |
+| `getLocation`           | `getLocation(): string`                                                 | Returns the bundle's install location           |
+| `start`                 | `start(options?: number): Promise<void>`                                | Starts the bundle                               |
+| `stop`                  | `stop(options?: number): Promise<void>`                                 | Stops the bundle                                |
+| `update`                | `update(module?: Promise<BundleModule> \| BundleModule): Promise<void>` | Updates the bundle                              |
+| `uninstall`             | `uninstall(): Promise<void>`                                            | Uninstalls the bundle                           |
+| `getRegisteredServices` | `getRegisteredServices(): ServiceReference<any>[]`                      | Returns services registered by this bundle      |
+| `getServicesInUse`      | `getServicesInUse(): ServiceReference<any>[]`                           | Returns services currently used by this bundle  |
+| `getContext`            | `getContext(): BundleContext`                                           | Returns the bundle's context                    |
+| `getBundleModule`       | `getBundleModule(): BundleModule \| null`                               | Returns the original bundle module              |
+| `getResource`           | `getResource(path: string): string \| null`                             | Returns a resource by logical path              |
+| `findResources`         | `findResources(basePath: string, pattern: string): string[]`            | Finds resources matching a glob pattern         |
 
 ### BundleContext
 

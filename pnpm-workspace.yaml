@@ -4,5 +4,33 @@ packages:
 allowBuilds:
   esbuild: true
 
+overrides:
+  'brace-expansion@>=4.0.0 <5.0.9': '5.0.9'
+  'fast-uri@>=3.0.0 <3.1.5': '3.1.5'
+  'qs@>=6.11.1 <=6.15.1': '6.15.2'
+  'postcss@<8.5.23': '8.5.23'
+
+minimumReleaseAgeExclude:
+  - '@oxfmt/binding-android-arm-eabi@0.64.0'
+  - '@oxfmt/binding-android-arm64@0.64.0'
+  - '@oxfmt/binding-darwin-arm64@0.64.0'
+  - '@oxfmt/binding-darwin-x64@0.64.0'
+  - '@oxfmt/binding-freebsd-x64@0.64.0'
+  - '@oxfmt/binding-linux-arm-gnueabihf@0.64.0'
+  - '@oxfmt/binding-linux-arm-musleabihf@0.64.0'
+  - '@oxfmt/binding-linux-arm64-gnu@0.64.0'
+  - '@oxfmt/binding-linux-arm64-musl@0.64.0'
+  - '@oxfmt/binding-linux-ppc64-gnu@0.64.0'
+  - '@oxfmt/binding-linux-riscv64-gnu@0.64.0'
+  - '@oxfmt/binding-linux-riscv64-musl@0.64.0'
+  - '@oxfmt/binding-linux-s390x-gnu@0.64.0'
+  - '@oxfmt/binding-linux-x64-gnu@0.64.0'
+  - '@oxfmt/binding-linux-x64-musl@0.64.0'
+  - '@oxfmt/binding-openharmony-arm64@0.64.0'
+  - '@oxfmt/binding-win32-arm64-msvc@0.64.0'
+  - '@oxfmt/binding-win32-ia32-msvc@0.64.0'
+  - '@oxfmt/binding-win32-x64-msvc@0.64.0'
+  - oxfmt@0.64.0
+
 onlyBuiltDependencies:
   - esbuild

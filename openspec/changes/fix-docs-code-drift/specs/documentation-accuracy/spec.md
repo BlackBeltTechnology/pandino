@@ -57,7 +57,7 @@ and method sets of their source modules.
 - WHEN `docs-site/api/core.md` documents `Bundle.update`, `LogLevel`, or
   `LogService`
 - THEN `Bundle.update` SHALL read `update(module?: Promise<BundleModule> |
-  BundleModule): Promise<void>`
+BundleModule): Promise<void>`
 - AND `LogLevel` SHALL include `AUDIT = 0` and `TRACE = 5`
 - AND `LogService` SHALL document `trace()` and `audit()`
 

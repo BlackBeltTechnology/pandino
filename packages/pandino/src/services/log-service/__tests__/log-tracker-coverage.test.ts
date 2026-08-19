@@ -46,14 +46,7 @@ describe('Log Service — threshold matrix across all ported levels', () => {
     },
   ];
 
-  const allLevels = [
-    LogLevel.AUDIT,
-    LogLevel.ERROR,
-    LogLevel.WARN,
-    LogLevel.INFO,
-    LogLevel.DEBUG,
-    LogLevel.TRACE,
-  ];
+  const allLevels = [LogLevel.AUDIT, LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG, LogLevel.TRACE];
 
   for (const { threshold, recorded } of matrix) {
     it(`records exactly ${recorded.map((l) => LogLevel[l]).join('/')} at threshold ${LogLevel[threshold]}`, () => {

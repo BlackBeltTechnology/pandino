@@ -172,9 +172,7 @@ describe('LDAPFilter grammar', () => {
     });
 
     it('handles deep nesting of &, |, and !', () => {
-      const filter = new LDAPFilter(
-        '(&(|(cn=Service)(cn=Component))(!(status=inactive))(&(v>=1.0)(v<=9.0)))',
-      );
+      const filter = new LDAPFilter('(&(|(cn=Service)(cn=Component))(!(status=inactive))(&(v>=1.0)(v<=9.0)))');
       expect(filter.match({ cn: 'Service', status: 'active', v: '2.0' })).toBe(true);
       expect(filter.match({ cn: 'Component', status: 'active', v: '9.0' })).toBe(true);
       expect(filter.match({ cn: 'Service', status: 'inactive', v: '2.0' })).toBe(false);

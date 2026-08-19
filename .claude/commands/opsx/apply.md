@@ -1,5 +1,5 @@
 ---
-name: "OPSX: Apply"
+name: 'OPSX: Apply'
 description: Implement tasks from an OpenSpec change (Experimental)
 allowed-tools: Bash(openspec:*)
 category: Workflow
@@ -24,9 +24,11 @@ Implement tasks from an OpenSpec change.
    Always announce: "Using change: <name>" and how to override (e.g., `/opsx:apply <other>`).
 
 2. **Check status to understand the schema**
+
    ```bash
    openspec status --change "<name>" --json
    ```
+
    Parse the JSON to understand:
    - `schemaName`: The workflow being used (e.g., "spec-driven")
    - `planningHome`, `changeRoot`, and `actionContext`: planning scope and edit constraints
@@ -139,6 +141,7 @@ What would you like to do?
 ```
 
 **Guardrails**
+
 - Keep going through tasks until done or blocked
 - Always read context files before starting (from the apply instructions output)
 - If task is ambiguous, pause and ask before implementing

@@ -122,6 +122,7 @@ Out of scope (explicit decision): R8 Logger `{}` placeholder formatting and per-
 ## Divergences — still documented (NOT fixed, with rationale)
 
 **Genuinely architectural (own follow-up change warranted)**
+
 - SCR `policyOption` (greedy/reluctant) inert — parsed, never read.
 - SCR no "greedy static trap" (higher-ranked static service rebinds in place).
 - SCR no delayed-component lifecycle (`immediate:false` registers no service factory).
@@ -130,9 +131,11 @@ Out of scope (explicit decision): R8 Logger `{}` placeholder formatting and per-
 - These change the SCR state machine substantially and risk the 167 passing DS tests; they belong in a dedicated SCR-lifecycle change.
 
 **Attempted but reverted (blast radius)**
+
 - SCR dynamic double-bind (bind fires 2× during singleton activation). Removing the redundant second `satisfyReferences` pass broke the circular-dependency deadlock test (the second pass is load-bearing for late binding in that harness). Left as-is.
 
 **Non-standard syntax / design decisions (not bugs)**
+
 - Version `[1.0]` / `(1.0)` single-bracket → open-range: `[1.0]` isn't valid OSGi range syntax.
 - STARTING/STOPPING states set internally but not emitted as `BundleEvent`s.
 - `BundleAwareLogService` shares one global level (no R8 LoggerContext / per-bundle levels).

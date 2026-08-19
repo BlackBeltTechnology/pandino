@@ -39,6 +39,7 @@ framework.emit('service-event')           SCR activator
 ## Translation
 
 `handleServiceEvent(event)`:
+
 - type: `SERVICE_EVENT_TYPES.REGISTERED(1)` → `registered`,
   `MODIFIED(2)` → `modified`, `UNREGISTERING(4)` → `unregistered`.
 - interfaces: read `objectClass` (string or string[]); call
@@ -50,6 +51,7 @@ framework.emit('service-event')           SCR activator
 Today `processBundle` (bundle ACTIVE) discovers components and activates
 immediate ones; `processServiceEvent('registered')` also calls
 `checkPendingImmediateComponents`. Both can activate the same component. Guards:
+
 - `activationChain` already prevents re-entrant activation of the same component.
 - The idempotent `boundServiceRefs` / `boundMultiServices` sets (shipped in the
   prior change) prevent double-binding a service already bound at activation.
@@ -63,13 +65,14 @@ With the queue, `processServiceEvent('unregistered', ref)` always carries the
 concrete departing `serviceRef`. In the mandatory-loss branch, when
 `remaining = getServiceReferences(iface).filter(r => r !== serviceRef)` is
 non-empty:
+
 - static → `deactivate` + `activate` (reactivate onto best survivor);
 - dynamic 1..1 → `bind(getService(remaining[0]))` in place + update
   `boundServiceRefs`.
-The earlier attempt broke an existing test only because a caller passed no
-`serviceRef`; the real event pipeline always provides one, and that test drives
-`processServiceEvent` directly (it can keep doing so — the survivor branch is
-gated on `serviceRef` being defined).
+  The earlier attempt broke an existing test only because a caller passed no
+  `serviceRef`; the real event pipeline always provides one, and that test drives
+  `processServiceEvent` directly (it can keep doing so — the survivor branch is
+  gated on `serviceRef` being defined).
 
 ## Risks & mitigations
 

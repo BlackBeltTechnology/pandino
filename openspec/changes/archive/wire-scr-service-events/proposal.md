@@ -6,8 +6,8 @@ The `add-scr-lifecycle-conformance` change made the SCR reference state machine
 (`ServiceComponentRuntime.processServiceEvent`) spec-correct for reluctant/greedy
 static policy, mandatory-loss deactivation, config reactivation, and idempotent
 dynamic binding. But an adversarial review found that **`processServiceEvent` has
-no production caller** — the SCR bundle activator subscribes to *bundle* events
-(`addBundleListener`) but never to *service* events (`addServiceListener`). So
+no production caller** — the SCR bundle activator subscribes to _bundle_ events
+(`addBundleListener`) but never to _service_ events (`addServiceListener`). So
 all of that conformance is **dormant at runtime**: a service registering,
 modifying, or unregistering after a component is active never reaches the SCR.
 

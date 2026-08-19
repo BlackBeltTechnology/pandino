@@ -4,7 +4,7 @@
 
 Pandino ports a subset of the OSGi Core R8 + Compendium R8 APIs and already
 carries 518 test cases across six subsystems. An audit against the official
-specs — scoped strictly to *what is actually ported* — found meaningful,
+specs — scoped strictly to _what is actually ported_ — found meaningful,
 behavior-supported gaps plus two latent spec-conformance bugs. Closing these
 raises confidence that the port behaves like a real OSGi container on the
 surface it claims to implement.

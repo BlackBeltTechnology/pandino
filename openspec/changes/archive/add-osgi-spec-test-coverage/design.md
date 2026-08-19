@@ -16,10 +16,10 @@ Test-first, subsystem by subsystem. For each gap:
 
 The audit distinguishes three buckets. Only the first two are actionable:
 
-| Bucket | Action |
-| --- | --- |
-| Ported + tested | leave as-is |
-| Ported + untested | **add tests** (the bulk of this change) |
+| Bucket                                        | Action                                  |
+| --------------------------------------------- | --------------------------------------- |
+| Ported + tested                               | leave as-is                             |
+| Ported + untested                             | **add tests** (the bulk of this change) |
 | In interface but not implemented / not ported | **document as divergence**, do not test |
 
 Not-ported (divergence doc, no tests): R8 Logger `{}` placeholders,

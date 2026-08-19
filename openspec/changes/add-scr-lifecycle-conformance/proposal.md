@@ -25,7 +25,7 @@ behavior to make them pass.
      higher-ranked service; stays bound to the original.
    - `greedy` (SP-GRD-01, "Greedy Static Trap"): arrival of a higher-ranked
      service for a static reference forces `unbind → @Deactivate → new instance
-     → bind → @Activate`.
+→ bind → @Activate`.
 2. **Delayed-component lifecycle** (SA-DLY-01/02) — an `immediate:false` provider
    that is SATISFIED registers a service factory and stays INACTIVE; the instance
    is created and `@Activate` invoked on the first `getService(P)`.
