@@ -32,7 +32,7 @@
     "picomatch": "^4.0.5"
   },
   "devDependencies": {
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.2.0",
     "@types/picomatch": "^4.0.3",
     "@typescript/typescript6": "^6.0.2",
     "@vitest/coverage-v8": "^4.1.10",

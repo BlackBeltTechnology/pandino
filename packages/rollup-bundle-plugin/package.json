@@ -28,7 +28,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.2.0",
     "@types/picomatch": "^4.0.3",
     "rollup": "^4.62.3",
     "vite-plugin-dts": "^5.0.3",
