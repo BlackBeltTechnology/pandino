@@ -40,7 +40,7 @@ Pandino is an OSGi-style framework for TypeScript that provides modular architec
 ### Package Management
 
 - Uses pnpm workspaces with packages in `packages/` directory
-- Node.js >=24 and pnpm >=11 required
+- Node.js >=24 and pnpm >=12 required
 - Workspace dependencies use `workspace:*` protocol
 
 ## Project Architecture
