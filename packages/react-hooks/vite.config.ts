@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
         entry: resolve('src/index.ts'),
         name: 'PandinoReactHooks',
         formats: ['es', 'cjs'],
+        fileName: (format) => `react-hooks.${format === 'cjs' ? 'cjs' : 'esm'}.js`,
       },
       minify: isModeNotDev,
       sourcemap: isModeNotDev,
@@ -24,7 +25,6 @@ export default defineConfig(({ mode }) => {
         output: {
           // Disable chunking completely for a single artifact
           manualChunks: undefined,
-          entryFileNames: 'react-hooks.[format].js',
         },
       },
     },

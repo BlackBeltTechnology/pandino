@@ -18,6 +18,7 @@ export default defineConfig(() => {
         entry: resolve('src/index.ts'),
         name: 'RollupPluginPandinoBundle',
         formats: ['es', 'cjs'],
+        fileName: (format) => `index.${format === 'cjs' ? 'cjs' : 'esm'}.js`,
       },
       rollupOptions: {
         // Ensure Node built-ins and our deps are not bundled (and not browser-externals)
@@ -25,7 +26,6 @@ export default defineConfig(() => {
         output: {
           // Disable chunking completely for a single artifact
           manualChunks: undefined,
-          entryFileNames: 'index.[format].js',
         },
       },
     },

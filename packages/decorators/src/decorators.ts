@@ -144,7 +144,7 @@ export function Property(key: string, value: any) {
  *
  * Applied to: method
  */
-export function Activate(target: any, propertyKey: string, _?: PropertyDescriptor) {
+export function Activate(target: any, propertyKey: string, _descriptor?: PropertyDescriptor) {
   const cstr = target.constructor;
   const metadata = getOrCreateMetadata(cstr);
 
@@ -159,7 +159,7 @@ export function Activate(target: any, propertyKey: string, _?: PropertyDescripto
  *
  * Applied to: method
  */
-export function Deactivate(target: any, propertyKey: string, _?: PropertyDescriptor) {
+export function Deactivate(target: any, propertyKey: string, _descriptor?: PropertyDescriptor) {
   const cstr = target.constructor;
   const metadata = getOrCreateMetadata(cstr);
 
@@ -174,7 +174,7 @@ export function Deactivate(target: any, propertyKey: string, _?: PropertyDescrip
  *
  * Applied to: method
  */
-export function Modified(target: any, propertyKey: string, _?: PropertyDescriptor) {
+export function Modified(target: any, propertyKey: string, _descriptor?: PropertyDescriptor) {
   const cstr = target.constructor;
   const metadata = getOrCreateMetadata(cstr);
 

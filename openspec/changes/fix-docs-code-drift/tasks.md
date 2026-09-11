@@ -23,7 +23,7 @@ severity so a partial merge still ships the highest-value fixes.
 ## 2. STALE — outdated reference material
 
 - [x] `docs-site/api/core.md` — add `LogLevel.AUDIT = 0` and `LogLevel.TRACE =
-  5`; add `LogService.trace()` and `LogService.audit()` with signatures from
+5`; add `LogService.trace()` and `LogService.audit()` with signatures from
       `log-service/interfaces.ts`.
 - [x] `README.md` Packages table — add `@pandino/decorators` and
       `@pandino/rollup-bundle-plugin` rows.
@@ -42,7 +42,7 @@ severity so a partial merge still ships the highest-value fixes.
 - [x] `guide/rollup-plugin.md` — fix `installBundle` usage to
       `installBundle(import('pandino:bundle:...'))`. (N/A for
       `introduction/getting-started.md`: it installs via `<PandinoProvider
-  bundles={...}>`, not `installBundle`.)
+bundles={...}>`, not `installBundle`.)
 - [x] `packages/pandino/README.md` — add `modifiedService` to the ServiceTracker
       customizer; drop the redundant `ungetService` in `removedService`. (Same
       fix applied to `guide/core-framework.md`.)

@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
         entry: resolve('src/index.ts'),
         name: 'Pandino',
         formats: ['es', 'cjs'],
+        fileName: (format) => `pandino.${format === 'cjs' ? 'cjs' : 'esm'}.js`,
       },
       minify: isModeNotDev,
       sourcemap: isModeNotDev,
@@ -25,7 +26,6 @@ export default defineConfig(({ mode }) => {
         output: {
           // Disable chunking completely for a single artifact
           manualChunks: undefined,
-          entryFileNames: 'pandino.[format].js',
         },
       },
     },

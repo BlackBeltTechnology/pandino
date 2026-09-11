@@ -17,12 +17,12 @@ function makePlugin(options: Parameters<typeof pandinoBundle>[0]) {
   const plugin = pandinoBundle(options);
   // minimal rollup plugin context mock
   const ctx: any = {
-    emitFile: (_: any) => {},
+    emitFile: (_file: any) => {},
     parse: undefined,
     error: (e: any) => {
       throw e;
     },
-    warn: (_: any) => {},
+    warn: (_message: any) => {},
   };
   return { plugin, ctx };
 }
