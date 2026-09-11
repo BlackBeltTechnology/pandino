@@ -11,6 +11,15 @@ import type { EventAdmin } from '../event-admin';
 import { PrototypeServiceFactory } from './service-factories/PrototypeServiceFactory';
 import { BundleScopeServiceFactory } from './service-factories/BundleScopeServiceFactory';
 
+/** One queued service event, as delivered to every matching component reference. */
+interface ServiceEventContext {
+  interfaceName: string;
+  eventType: string;
+  serviceRef?: ServiceReference<any>;
+  /** The service object captured at emit time, or resolved from `serviceRef`. */
+  currentService: any;
+}
+
 export class ServiceComponentRuntime {
   // Map of bundle ID -> component name -> component entry
   private components = new Map<number, Map<string, ComponentEntry>>();
@@ -703,27 +712,16 @@ export class ServiceComponentRuntime {
     serviceRef?: ServiceReference<any>,
     resolvedService?: any,
   ) {
-    const currentService = this.resolveCurrentService(resolvedService, serviceRef);
+    const event: ServiceEventContext = {
+      interfaceName,
+      eventType,
+      serviceRef,
+      currentService: this.resolveCurrentService(resolvedService, serviceRef),
+    };
 
     for (const [ownerBundleId, bundleComponents] of this.components.entries()) {
       for (const [ownerComponentName, entry] of bundleComponents.entries()) {
-        const { instance, metadata } = entry;
-        if (!instance) continue;
-
-        for (const ref of metadata.references || []) {
-          if (ref.interface !== interfaceName) continue;
-          const stop = await this.applyServiceEventToReference(
-            eventType,
-            ref,
-            entry,
-            instance,
-            serviceRef,
-            currentService,
-            ownerBundleId,
-            ownerComponentName,
-          );
-          if (stop) break;
-        }
+        await this.applyServiceEventToComponent(event, entry, ownerBundleId, ownerComponentName);
       }
     }
 
@@ -746,21 +744,45 @@ export class ServiceComponentRuntime {
     return ref.name || ref.bind || ref.field || ref.interface;
   }
 
+  /** Applies one service event to every matching reference of a single component. */
+  private async applyServiceEventToComponent(
+    event: ServiceEventContext,
+    entry: ComponentEntry,
+    ownerBundleId: number,
+    ownerComponentName: string,
+  ): Promise<void> {
+    const { instance, metadata } = entry;
+    if (!instance) return;
+
+    for (const ref of metadata.references || []) {
+      if (ref.interface !== event.interfaceName) continue;
+      const stop = await this.applyServiceEventToReference(
+        event,
+        ref,
+        entry,
+        instance,
+        ownerBundleId,
+        ownerComponentName,
+      );
+      if (stop) break; // the instance was reactivated and is now stale
+    }
+  }
+
   /**
    * Applies one service event to one matching reference of an active component.
    * Returns true when the caller should stop processing further references for
    * this component (its instance was reactivated and is now stale).
    */
   private async applyServiceEventToReference(
-    eventType: string,
+    event: ServiceEventContext,
     ref: ReferenceDescriptor,
     entry: ComponentEntry,
     instance: any,
-    serviceRef: ServiceReference<any> | undefined,
-    currentService: any,
     ownerBundleId: number,
     ownerComponentName: string,
   ): Promise<boolean> {
+    const { eventType, serviceRef, currentService } = event;
+
     if (eventType === 'registered' && ref.bind && serviceRef) {
       return this.onReferenceRegistered(
         ref,
