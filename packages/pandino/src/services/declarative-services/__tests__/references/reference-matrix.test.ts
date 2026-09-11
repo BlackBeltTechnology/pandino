@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '../../../../framework/framework';
 import type { BundleContext, ServiceReference } from '../../../../framework/interfaces';
 import { ServiceComponentRuntime } from '../../scr';
+import { createScrHarness, makeServiceRef, stubServiceRegistry } from '../support/scr-harness';
 import { Activate, Component, Deactivate, Modified, Reference, Service } from '@pandino/decorators';
 
 /**
@@ -21,25 +21,12 @@ import { Activate, Component, Deactivate, Modified, Reference, Service } from '@
  * updateComponentConfiguration).
  */
 describe('Reference Matrix (group 6)', () => {
-  let framework: OSGiFramework;
   let scr: ServiceComponentRuntime;
   let bundleContext: BundleContext;
   let bundleId: number;
 
-  const makeRef = (): ServiceReference<any> =>
-    ({
-      getProperty: vi.fn(),
-      getPropertyKeys: vi.fn().mockReturnValue([]),
-      getBundle: vi.fn(),
-      isAssignableTo: vi.fn().mockReturnValue(true),
-    }) as unknown as ServiceReference<any>;
-
   beforeEach(async () => {
-    framework = new OSGiFramework();
-    await framework.start();
-    bundleContext = framework.getBundleContext();
-    scr = new ServiceComponentRuntime(framework, bundleContext);
-    bundleId = bundleContext.getBundle().getBundleId();
+    ({ scr, bundleContext, bundleId } = await createScrHarness());
   });
 
   // ---------------------------------------------------------------------------
@@ -61,8 +48,7 @@ describe('Reference Matrix (group 6)', () => {
       }
 
       // No matching service yet.
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-      bundleContext.getService = vi.fn().mockReturnValue(null);
+      stubServiceRegistry(bundleContext, [], null);
 
       await scr.registerComponent(C, bundleId);
 
@@ -71,10 +57,9 @@ describe('Reference Matrix (group 6)', () => {
       expect(activateTracker).toEqual([]);
 
       // Service arrives -> SATISFIED -> immediate activation (SA-IMM-01).
-      const ref = makeRef();
+      const ref = makeServiceRef();
       const svc = { id: 'svc' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([ref]);
-      bundleContext.getService = vi.fn().mockReturnValue(svc);
+      stubServiceRegistry(bundleContext, [ref], svc);
 
       await scr.processServiceEvent('S', 'registered', ref);
 
@@ -98,10 +83,9 @@ describe('Reference Matrix (group 6)', () => {
         }
       }
 
-      const ref = makeRef();
+      const ref = makeServiceRef();
       const svc = { id: 'svc' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([ref]);
-      bundleContext.getService = vi.fn().mockReturnValue(svc);
+      stubServiceRegistry(bundleContext, [ref], svc);
 
       await scr.registerComponent(C, bundleId);
       await scr.activateComponent(bundleId, 'card.1to1.bind');
@@ -120,8 +104,7 @@ describe('Reference Matrix (group 6)', () => {
         activate() {}
       }
 
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-      bundleContext.getService = vi.fn().mockReturnValue(null);
+      stubServiceRegistry(bundleContext, [], null);
 
       await scr.registerComponent(C, bundleId);
 
@@ -148,8 +131,7 @@ describe('Reference Matrix (group 6)', () => {
       }
 
       // No optional service present.
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-      bundleContext.getService = vi.fn().mockReturnValue(null);
+      stubServiceRegistry(bundleContext, [], null);
 
       await scr.registerComponent(C, bundleId);
 
@@ -173,10 +155,9 @@ describe('Reference Matrix (group 6)', () => {
         activate() {}
       }
 
-      const ref = makeRef();
+      const ref = makeServiceRef();
       const svc = { id: 'svc' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([ref]);
-      bundleContext.getService = vi.fn().mockReturnValue(svc);
+      stubServiceRegistry(bundleContext, [ref], svc);
 
       await scr.registerComponent(C, bundleId);
       await scr.activateComponent(bundleId, 'card.0to1.present');
@@ -206,12 +187,11 @@ describe('Reference Matrix (group 6)', () => {
         activate() {}
       }
 
-      const r1 = makeRef();
-      const r2 = makeRef();
+      const r1 = makeServiceRef();
+      const r2 = makeServiceRef();
       const s1 = { id: 's1' };
       const s2 = { id: 's2' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r1, r2]);
-      bundleContext.getService = vi.fn().mockImplementation((r: any) => (r === r1 ? s1 : s2));
+      stubServiceRegistry(bundleContext, [r1, r2], (r: any) => (r === r1 ? s1 : s2));
 
       await scr.registerComponent(C, bundleId);
       await scr.activateComponent(bundleId, 'card.0ton.dynamic');
@@ -241,10 +221,9 @@ describe('Reference Matrix (group 6)', () => {
         activate() {}
       }
 
-      const r1 = makeRef();
+      const r1 = makeServiceRef();
       const s1 = { id: 's1' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r1]);
-      bundleContext.getService = vi.fn().mockReturnValue(s1);
+      stubServiceRegistry(bundleContext, [r1], s1);
 
       await scr.registerComponent(C, bundleId);
       await scr.activateComponent(bundleId, 'two.refs.same.iface');
@@ -263,12 +242,11 @@ describe('Reference Matrix (group 6)', () => {
         activate() {}
       }
 
-      const r1 = makeRef();
-      const r2 = makeRef();
+      const r1 = makeServiceRef();
+      const r2 = makeServiceRef();
       const s1 = { id: 's1' };
       const s2 = { id: 's2' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r1, r2]);
-      bundleContext.getService = vi.fn().mockImplementation((r: any) => (r === r1 ? s1 : s2));
+      stubServiceRegistry(bundleContext, [r1, r2], (r: any) => (r === r1 ? s1 : s2));
 
       await scr.registerComponent(C, bundleId);
       await scr.activateComponent(bundleId, 'update.field');
@@ -295,8 +273,7 @@ describe('Reference Matrix (group 6)', () => {
         }
       }
 
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-      bundleContext.getService = vi.fn().mockReturnValue(null);
+      stubServiceRegistry(bundleContext, [], null);
 
       await scr.registerComponent(C, bundleId);
 
@@ -305,12 +282,11 @@ describe('Reference Matrix (group 6)', () => {
       expect(activateTracker).toEqual([]);
 
       // Two services arrive -> SATISFIED -> activation binds all.
-      const r1 = makeRef();
-      const r2 = makeRef();
+      const r1 = makeServiceRef();
+      const r2 = makeServiceRef();
       const s1 = { id: 's1' };
       const s2 = { id: 's2' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r1, r2]);
-      bundleContext.getService = vi.fn().mockImplementation((r: any) => (r === r1 ? s1 : s2));
+      stubServiceRegistry(bundleContext, [r1, r2], (r: any) => (r === r1 ? s1 : s2));
 
       await scr.processServiceEvent('S', 'registered', r1);
 
@@ -345,16 +321,15 @@ describe('Reference Matrix (group 6)', () => {
         activate() {}
       }
 
-      const r1 = makeRef();
+      const r1 = makeServiceRef();
       const s1 = { id: 's1' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([r1]);
-      bundleContext.getService = vi.fn().mockReturnValue(s1);
+      stubServiceRegistry(bundleContext, [r1], s1);
 
       await scr.registerComponent(Reluctant, bundleId);
       await scr.registerComponent(Greedy, bundleId);
 
       // A higher-ranked S2 arrives.
-      const r2 = makeRef();
+      const r2 = makeServiceRef();
       const s2 = { id: 's2', rank: 10 };
       bundleContext.getService = vi.fn().mockReturnValue(s2);
       await scr.processServiceEvent('S', 'registered', r2);
@@ -371,16 +346,7 @@ describe('Reference Matrix (group 6)', () => {
   // ---------------------------------------------------------------------------
   describe('Static greedy rebind ("greedy static trap")', () => {
     const rankedRef = (id: string, ranking: number): ServiceReference<any> =>
-      ({
-        getProperty: vi.fn((key: string) => {
-          if (key === 'service.ranking') return ranking;
-          if (key === 'service.id') return id;
-          return undefined;
-        }),
-        getPropertyKeys: vi.fn().mockReturnValue(['service.ranking', 'service.id']),
-        getBundle: vi.fn(),
-        isAssignableTo: vi.fn().mockReturnValue(true),
-      }) as unknown as ServiceReference<any>;
+      makeServiceRef({ 'service.ranking': ranking, 'service.id': id });
 
     it('SP-GRD-01: higher-ranked service triggers unbind + deactivate + reactivate onto the better service', async () => {
       const events: string[] = [];
@@ -592,8 +558,7 @@ describe('Reference Matrix (group 6)', () => {
         }
       }
 
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-      bundleContext.getService = vi.fn().mockReturnValue(null);
+      stubServiceRegistry(bundleContext, [], null);
 
       await scr.registerComponent(C, bundleId);
 
@@ -621,8 +586,7 @@ describe('Reference Matrix (group 6)', () => {
         }
       }
 
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-      bundleContext.getService = vi.fn().mockReturnValue(null);
+      stubServiceRegistry(bundleContext, [], null);
 
       await scr.registerComponent(C, bundleId);
       await scr.activateComponent(bundleId, 'delayed.eager');
@@ -666,10 +630,9 @@ describe('Reference Matrix (group 6)', () => {
         activate() {}
       }
 
-      const ref = makeRef();
+      const ref = makeServiceRef();
       const svc = { id: 's', rev: 1 };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([ref]);
-      bundleContext.getService = vi.fn().mockReturnValue(svc);
+      stubServiceRegistry(bundleContext, [ref], svc);
 
       await scr.registerComponent(C, bundleId);
       await scr.activateComponent(bundleId, 'dyn.updated');
@@ -708,8 +671,7 @@ describe('Reference Matrix (group 6)', () => {
         }
       }
 
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-      bundleContext.getService = vi.fn().mockReturnValue(null);
+      stubServiceRegistry(bundleContext, [], null);
 
       await scr.registerComponent(C, bundleId);
       const before = scr.getComponent(bundleId, 'cfg.modified')?.instance;
@@ -738,8 +700,7 @@ describe('Reference Matrix (group 6)', () => {
         }
       }
 
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-      bundleContext.getService = vi.fn().mockReturnValue(null);
+      stubServiceRegistry(bundleContext, [], null);
 
       await scr.registerComponent(C, bundleId);
       const before = scr.getComponent(bundleId, 'cfg.nomod')?.instance;
@@ -782,10 +743,9 @@ describe('Reference Matrix (group 6)', () => {
       }
 
       let unbindArg: any;
-      const ref = makeRef();
+      const ref = makeServiceRef();
       const svc = { id: 's' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([ref]);
-      bundleContext.getService = vi.fn().mockReturnValue(svc);
+      stubServiceRegistry(bundleContext, [ref], svc);
 
       await scr.registerComponent(C, bundleId);
       await scr.activateComponent(bundleId, 'opt.0to1.depart');
@@ -820,10 +780,9 @@ describe('Reference Matrix (group 6)', () => {
         }
       }
 
-      const ref = makeRef();
+      const ref = makeServiceRef();
       const svc = { id: 's' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([ref]);
-      bundleContext.getService = vi.fn().mockReturnValue(svc);
+      stubServiceRegistry(bundleContext, [ref], svc);
 
       await scr.registerComponent(C, bundleId);
       await scr.activateComponent(bundleId, 'opt.0ton.depart');

@@ -3,7 +3,7 @@ import { OSGiFramework } from '../../../../framework/framework';
 import type { BundleContext } from '../../../../framework/interfaces';
 import { Activate, Component, Deactivate, Reference } from '@pandino/decorators';
 import { ServiceComponentRuntimeBundleActivator } from '../../bundle';
-import type { ServiceComponentRuntime } from '../../scr';
+import { flushEventQueue, getScrService } from '../support/scr-harness';
 
 /**
  * Group 4 — the SCR reference state machine driven by REAL framework service
@@ -15,13 +15,6 @@ describe('SCR runtime service-event integration', () => {
   let bundleContext: BundleContext;
   let activator: ServiceComponentRuntimeBundleActivator;
   let bundleId: number;
-
-  const getSCR = (): ServiceComponentRuntime => {
-    const ref = bundleContext.getServiceReference('ServiceComponentRuntime')!;
-    return bundleContext.getService(ref) as any;
-  };
-
-  const flush = () => new Promise((resolve) => setTimeout(resolve, 20));
 
   beforeEach(async () => {
     framework = new OSGiFramework();
@@ -44,7 +37,7 @@ describe('SCR runtime service-event integration', () => {
   });
 
   it('binds a service registered AFTER the component is active', async () => {
-    const scr = getSCR();
+    const scr = getScrService(bundleContext);
     const bound: any[] = [];
 
     @Component({ name: 'rt.consumer', immediate: true })
@@ -64,13 +57,13 @@ describe('SCR runtime service-event integration', () => {
 
     const svc = { id: 'rt1' };
     bundleContext.registerService('RuntimeService', svc);
-    await flush();
+    await flushEventQueue(20);
 
     expect(bound).toEqual([svc]);
   });
 
   it('unbinds a dynamic service when it is unregistered at runtime', async () => {
-    const scr = getSCR();
+    const scr = getScrService(bundleContext);
     const events: string[] = [];
 
     @Component({ name: 'rt.unbind', immediate: true })
@@ -97,16 +90,16 @@ describe('SCR runtime service-event integration', () => {
     await scr.activateComponent(bundleId, 'rt.unbind');
 
     const reg = bundleContext.registerService('RuntimeService', { id: 'rt1' });
-    await flush();
+    await flushEventQueue(20);
     expect(events).toEqual(['bind:rt1']);
 
     reg.unregister();
-    await flush();
+    await flushEventQueue(20);
     expect(events).toEqual(['bind:rt1', 'unbind:rt1']);
   });
 
   it('reactivates a greedy static component onto a higher-ranked service (SP-GRD-01 live)', async () => {
-    const scr = getSCR();
+    const scr = getScrService(bundleContext);
     const events: string[] = [];
 
     @Component({ name: 'rt.greedy', immediate: true })
@@ -139,17 +132,17 @@ describe('SCR runtime service-event integration', () => {
     bundleContext.registerService('RankedService', { id: 's1' }, { 'service.ranking': 5 });
     await scr.registerComponent(C, bundleId);
     await scr.activateComponent(bundleId, 'rt.greedy');
-    await flush();
+    await flushEventQueue(20);
     expect(events).toEqual(['bind:s1', 'activate']);
 
     bundleContext.registerService('RankedService', { id: 's2' }, { 'service.ranking': 10 });
-    await flush();
+    await flushEventQueue(20);
 
     expect(events).toEqual(['bind:s1', 'activate', 'unbind:s1', 'deactivate', 'bind:s2', 'activate']);
   });
 
   it('deactivates when a mandatory service unregisters with no replacement (SP-GRD-02 live)', async () => {
-    const scr = getSCR();
+    const scr = getScrService(bundleContext);
     const events: string[] = [];
 
     @Component({ name: 'rt.mandatory', immediate: true })
@@ -175,11 +168,11 @@ describe('SCR runtime service-event integration', () => {
     const reg = bundleContext.registerService('MandService', { id: 'm1' });
     await scr.registerComponent(C, bundleId);
     await scr.activateComponent(bundleId, 'rt.mandatory');
-    await flush();
+    await flushEventQueue(20);
     expect(events).toEqual(['bind', 'activate']);
 
     reg.unregister();
-    await flush();
+    await flushEventQueue(20);
 
     expect(events).toContain('unbind');
     expect(events).toContain('deactivate');

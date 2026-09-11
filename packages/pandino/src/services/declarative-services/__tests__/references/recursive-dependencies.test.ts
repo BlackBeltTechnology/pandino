@@ -1,19 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '../../../../framework/framework';
-import type { BundleContext, ServiceReference } from '../../../../framework/interfaces';
+import type { BundleContext } from '../../../../framework/interfaces';
 import { ServiceComponentRuntime } from '../../scr';
+import { createScrHarness, makeServiceRef } from '../support/scr-harness';
 import { Activate, Reference, Component, Service } from '@pandino/decorators';
 
 describe('Recursive Reference Dependencies', () => {
-  let framework: OSGiFramework;
   let scr: ServiceComponentRuntime;
   let bundleContext: BundleContext;
 
   beforeEach(async () => {
-    framework = new OSGiFramework();
-    await framework.start();
-    bundleContext = framework.getBundleContext();
-    scr = new ServiceComponentRuntime(framework, bundleContext);
+    ({ scr, bundleContext } = await createScrHarness());
   });
 
   describe('Simple Circular Dependencies', () => {
@@ -107,19 +103,9 @@ describe('Recursive Reference Dependencies', () => {
     it('should handle circular dependencies with mandatory references by using dynamic policy', async () => {
       const bindingOrder: string[] = [];
 
-      const mockServiceRefA = {
-        getProperty: vi.fn(),
-        getPropertyKeys: vi.fn().mockReturnValue([]),
-        getBundle: vi.fn(),
-        isAssignableTo: vi.fn().mockReturnValue(true),
-      } as unknown as ServiceReference<any>;
+      const mockServiceRefA = makeServiceRef();
 
-      const mockServiceRefB = {
-        getProperty: vi.fn(),
-        getPropertyKeys: vi.fn().mockReturnValue([]),
-        getBundle: vi.fn(),
-        isAssignableTo: vi.fn().mockReturnValue(true),
-      } as unknown as ServiceReference<any>;
+      const mockServiceRefB = makeServiceRef();
 
       @Component({ name: 'mandatory.a' })
       @Service({ interfaces: ['MandatoryA'] })
@@ -207,26 +193,11 @@ describe('Recursive Reference Dependencies', () => {
     it('should handle circular dependencies between three components', async () => {
       const bindingOrder: string[] = [];
 
-      const mockServiceRefX = {
-        getProperty: vi.fn(),
-        getPropertyKeys: vi.fn().mockReturnValue([]),
-        getBundle: vi.fn(),
-        isAssignableTo: vi.fn().mockReturnValue(true),
-      } as unknown as ServiceReference<any>;
+      const mockServiceRefX = makeServiceRef();
 
-      const mockServiceRefY = {
-        getProperty: vi.fn(),
-        getPropertyKeys: vi.fn().mockReturnValue([]),
-        getBundle: vi.fn(),
-        isAssignableTo: vi.fn().mockReturnValue(true),
-      } as unknown as ServiceReference<any>;
+      const mockServiceRefY = makeServiceRef();
 
-      const mockServiceRefZ = {
-        getProperty: vi.fn(),
-        getPropertyKeys: vi.fn().mockReturnValue([]),
-        getBundle: vi.fn(),
-        isAssignableTo: vi.fn().mockReturnValue(true),
-      } as unknown as ServiceReference<any>;
+      const mockServiceRefZ = makeServiceRef();
 
       @Component({ name: 'component.x' })
       @Service({ interfaces: ['ServiceX'] })

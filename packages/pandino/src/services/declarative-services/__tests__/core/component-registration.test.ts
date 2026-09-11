@@ -1,20 +1,16 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { OSGiFramework } from '../../../../framework/framework';
 import type { BundleContext } from '../../../../framework/interfaces';
 import { Activate, Component, Deactivate, Modified, Reference } from '@pandino/decorators';
 import { getComponentMetadata } from '../../reflection';
 import { ServiceComponentRuntime } from '../../scr';
+import { createScrHarness } from '../support/scr-harness';
 
 describe('Component Lifecycle', () => {
-  let framework: OSGiFramework;
   let scr: ServiceComponentRuntime;
   let bundleContext: BundleContext;
 
   beforeEach(async () => {
-    framework = new OSGiFramework();
-    await framework.start();
-    bundleContext = framework.getBundleContext();
-    scr = new ServiceComponentRuntime(framework, bundleContext);
+    ({ scr, bundleContext } = await createScrHarness());
   });
 
   describe('Component Registration', () => {

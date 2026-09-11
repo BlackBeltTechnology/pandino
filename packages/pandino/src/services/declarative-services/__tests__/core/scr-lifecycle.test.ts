@@ -1,21 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '../../../../framework/framework';
 import type { BundleContext, ServiceReference } from '../../../../framework/interfaces';
 import { getComponentMetadata } from '../../reflection';
 import { ServiceComponentRuntime } from '../../scr';
+import { createScrHarness } from '../support/scr-harness';
 import { Component, Service } from '@pandino/decorators';
 import { Activate, Deactivate, Reference } from '@pandino/decorators';
 
 describe('SCR Advanced Functionality', () => {
-  let framework: OSGiFramework;
   let scr: ServiceComponentRuntime;
   let bundleContext: BundleContext;
 
   beforeEach(async () => {
-    framework = new OSGiFramework();
-    await framework.start();
-    bundleContext = framework.getBundleContext();
-    scr = new ServiceComponentRuntime(framework, bundleContext);
+    ({ scr, bundleContext } = await createScrHarness());
   });
 
   describe('Bundle Lifecycle Management', () => {

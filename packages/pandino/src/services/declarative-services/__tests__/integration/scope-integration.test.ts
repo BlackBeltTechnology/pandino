@@ -1,20 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '../../../../framework/framework';
 import type { BundleContext } from '../../../../framework/interfaces';
 import { ServiceComponentRuntime } from '../../scr';
+import { createScrHarness } from '../support/scr-harness';
 import { Activate, Scope, Service } from '@pandino/decorators';
 import { Component } from '@pandino/decorators';
 
 describe('Scope Decorator Integration Tests', () => {
-  let framework: OSGiFramework;
   let scr: ServiceComponentRuntime;
   let bundleContext: BundleContext;
 
   beforeEach(async () => {
-    framework = new OSGiFramework();
-    await framework.start();
-    bundleContext = framework.getBundleContext();
-    scr = new ServiceComponentRuntime(framework, bundleContext);
+    ({ scr, bundleContext } = await createScrHarness());
   });
 
   describe('Singleton Scope Behavior', () => {

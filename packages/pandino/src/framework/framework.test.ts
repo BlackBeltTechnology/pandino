@@ -1,41 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { BundleActivator, BundleListener, ServiceListener } from './interfaces';
+import type { BundleListener, ServiceListener } from './interfaces';
 import { ConsoleLogService, type LogService } from '../services/log-service';
 import { LogLevel } from '../services/log-service';
-import type { BundleModule } from '../types/bundle-metadata';
 import { BUNDLE_STATES, SERVICE_EVENT_TYPES } from '../types/constants';
 import { OSGiFramework } from './framework';
-
-function createBundleModule(
-  symbolicName: string = 'test.bundle',
-  version: string = '1.0.0',
-  options: {
-    bundleName?: string;
-    bundleDescription?: string;
-    bundleManifestVersion?: string;
-    [key: string]: any;
-  } = {},
-  activator: BundleActivator = {
-    start: vi.fn(),
-    stop: vi.fn(),
-  },
-): Promise<BundleModule> {
-  return Promise.resolve({
-    default: {
-      headers: {
-        bundleSymbolicName: symbolicName,
-        bundleVersion: version,
-        bundleName: options.bundleName,
-        bundleDescription: options.bundleDescription,
-        bundleManifestVersion: options.bundleManifestVersion,
-        ...Object.entries(options)
-          .filter(([key]) => !['bundleName', 'bundleDescription', 'bundleManifestVersion'].includes(key))
-          .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {}),
-      },
-      activator,
-    },
-  });
-}
+import { createBundleModule } from '../test/bundle-module';
+import { silenceConsole } from '../test/console';
 
 describe('OSGiFramework', () => {
   let framework: OSGiFramework;
@@ -44,10 +14,7 @@ describe('OSGiFramework', () => {
   beforeEach(() => {
     framework = new OSGiFramework();
 
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
-    vi.spyOn(console, 'info').mockImplementation(() => {});
-    vi.spyOn(console, 'debug').mockImplementation(() => {});
+    silenceConsole(['error', 'warn', 'info', 'debug']);
 
     mockLogService = {
       log: vi.fn(),

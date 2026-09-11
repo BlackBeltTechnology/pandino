@@ -3,6 +3,7 @@ import { OSGiFramework } from '../../../../framework/framework';
 import type { BundleContext } from '../../../../framework/interfaces';
 import { getComponentMetadata } from '../../reflection';
 import { ServiceComponentRuntime } from '../../scr';
+import { createScrHarness } from '../support/scr-harness';
 import { Component, Factory } from '@pandino/decorators';
 import { Activate } from '@pandino/decorators';
 
@@ -12,10 +13,7 @@ describe('Factory Components', () => {
   let bundleContext: BundleContext;
 
   beforeEach(async () => {
-    framework = new OSGiFramework();
-    await framework.start();
-    bundleContext = framework.getBundleContext();
-    scr = new ServiceComponentRuntime(framework, bundleContext);
+    ({ framework, scr, bundleContext } = await createScrHarness());
   });
 
   describe('Factory Component Definition', () => {

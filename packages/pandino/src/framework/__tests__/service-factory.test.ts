@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from '../framework';
 import type { Bundle, BundleContext, ServiceFactory, ServiceReference, ServiceRegistration } from '../interfaces';
+import { silenceConsole } from '../../test/console';
 
 /**
  * ServiceFactory behavior tests.
@@ -25,10 +26,7 @@ describe('ServiceFactory', () => {
     framework = new OSGiFramework();
     await framework.start();
 
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
-    vi.spyOn(console, 'info').mockImplementation(() => {});
-    vi.spyOn(console, 'debug').mockImplementation(() => {});
+    silenceConsole(['error', 'warn', 'info', 'debug']);
 
     // Bundle that registers the factory.
     const provider = await framework.installBundle('test://provider');

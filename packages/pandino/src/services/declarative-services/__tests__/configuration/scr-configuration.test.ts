@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from '../../../../framework/framework';
 import type { BundleContext } from '../../../../framework/interfaces';
 import { ServiceComponentRuntime } from '../../scr';
+import { createScrHarness } from '../support/scr-harness';
 import type { ConfigurationAdmin } from '../../../config-admin';
 import { Activate, Component } from '@pandino/decorators';
 
@@ -12,19 +13,15 @@ describe('SCR Configuration Integration', () => {
   let mockConfigAdmin: ConfigurationAdmin;
 
   beforeEach(async () => {
-    framework = new OSGiFramework();
-    await framework.start();
-    bundleContext = framework.getBundleContext();
-
     mockConfigAdmin = {
       getConfiguration: vi.fn(),
       createFactoryConfiguration: vi.fn(),
       listConfigurations: vi.fn(),
     };
 
-    bundleContext.registerService('ConfigurationAdmin', mockConfigAdmin);
-
-    scr = new ServiceComponentRuntime(framework, bundleContext);
+    ({ framework, scr, bundleContext } = await createScrHarness({
+      setup: (ctx) => ctx.registerService('ConfigurationAdmin', mockConfigAdmin),
+    }));
   });
 
   describe('hasConfiguration method', () => {

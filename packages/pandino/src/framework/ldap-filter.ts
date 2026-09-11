@@ -1,6 +1,17 @@
 import type { Filter } from './interfaces';
 
 export class LDAPFilter implements Filter {
+  /**
+   * Comparison operators in probe order: the two-character operators must be
+   * tested before `=`, which would otherwise also match `>=`, `<=` and `~=`.
+   */
+  private static readonly COMPARISON_OPERATORS: ReadonlyArray<readonly [string, FilterAST['type']]> = [
+    ['>=', 'gte'],
+    ['<=', 'lte'],
+    ['~=', 'approx'],
+    ['=', 'equals'],
+  ];
+
   private readonly filterString: string;
   private readonly ast: FilterAST;
 
@@ -42,21 +53,12 @@ export class LDAPFilter implements Filter {
       return { type: 'not', children: [this.buildAST(remaining)] };
     }
 
-    if (filter.includes('>=')) {
-      const [key, value] = filter.split('>=', 2);
-      return { type: 'gte', key: key.trim(), value: value.trim() };
-    }
-    if (filter.includes('<=')) {
-      const [key, value] = filter.split('<=', 2);
-      return { type: 'lte', key: key.trim(), value: value.trim() };
-    }
-    if (filter.includes('~=')) {
-      const [key, value] = filter.split('~=', 2);
-      return { type: 'approx', key: key.trim(), value: value.trim() };
-    }
-    if (filter.includes('=')) {
-      const [key, value] = filter.split('=', 2);
-      return { type: 'equals', key: key.trim(), value: value.trim() };
+    for (const [operator, type] of LDAPFilter.COMPARISON_OPERATORS) {
+      if (!filter.includes(operator)) {
+        continue;
+      }
+      const [key, value] = filter.split(operator, 2);
+      return { type, key: key.trim(), value: value.trim() };
     }
 
     throw new Error('Invalid filter syntax');

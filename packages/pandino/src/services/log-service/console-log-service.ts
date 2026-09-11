@@ -1,7 +1,8 @@
-import { type LogEntry, LogLevel, type LogListener, type LogService } from './interfaces';
+import { AbstractLogService } from './abstract-log-service';
+import { type LogEntry, LogLevel, type LogListener } from './interfaces';
 import type { BundleHeader } from '../../framework/interfaces';
 
-export class ConsoleLogService implements LogService {
+export class ConsoleLogService extends AbstractLogService {
   private currentLevel: LogLevel = LogLevel.INFO;
   private listeners: LogListener[] = [];
   private __bundle?: BundleHeader;
@@ -29,30 +30,6 @@ export class ConsoleLogService implements LogService {
 
     this.writeToConsole(entry);
     this.notifyListeners(entry);
-  }
-
-  error(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.ERROR, message, exception, context);
-  }
-
-  warn(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.WARN, message, exception, context);
-  }
-
-  info(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.INFO, message, exception, context);
-  }
-
-  debug(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.DEBUG, message, exception, context);
-  }
-
-  trace(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.TRACE, message, exception, context);
-  }
-
-  audit(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.AUDIT, message, exception, context);
   }
 
   isLoggable(level: LogLevel): boolean {

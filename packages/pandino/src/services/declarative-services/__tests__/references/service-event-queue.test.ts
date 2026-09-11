@@ -1,8 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '../../../../framework/framework';
-import type { BundleContext, ServiceEvent, ServiceReference } from '../../../../framework/interfaces';
+import type { BundleContext, ServiceReference } from '../../../../framework/interfaces';
 import { SERVICE_EVENT_TYPES } from '../../../../types/constants';
 import { ServiceComponentRuntime } from '../../scr';
+import {
+  createScrHarness,
+  flushEventQueue,
+  makeServiceEvent,
+  makeServiceRef,
+  stubServiceRegistry,
+} from '../support/scr-harness';
 import { Activate, Component, Reference } from '@pandino/decorators';
 
 /**
@@ -11,34 +17,14 @@ import { Activate, Component, Reference } from '@pandino/decorators';
  * re-emits must enqueue (FIFO) rather than process nested.
  */
 describe('SCR service-event queue', () => {
-  let framework: OSGiFramework;
   let scr: ServiceComponentRuntime;
   let bundleContext: BundleContext;
   let bundleId: number;
 
-  const refFor = (id: string): ServiceReference<any> =>
-    ({
-      getProperty: vi.fn((key: string) => {
-        if (key === 'objectClass') return 'S';
-        if (key === 'service.id') return id;
-        return undefined;
-      }),
-      getPropertyKeys: vi.fn().mockReturnValue(['objectClass', 'service.id']),
-      getBundle: vi.fn(),
-      isAssignableTo: vi.fn().mockReturnValue(true),
-    }) as unknown as ServiceReference<any>;
-
-  const eventFor = (type: number, ref: ServiceReference<any>): ServiceEvent =>
-    ({ getType: () => type, getServiceReference: () => ref }) as unknown as ServiceEvent;
-
-  const flush = () => new Promise((resolve) => setTimeout(resolve, 10));
+  const refFor = (id: string): ServiceReference<any> => makeServiceRef({ objectClass: 'S', 'service.id': id });
 
   beforeEach(async () => {
-    framework = new OSGiFramework();
-    await framework.start();
-    bundleContext = framework.getBundleContext();
-    scr = new ServiceComponentRuntime(framework, bundleContext);
-    bundleId = bundleContext.getBundle().getBundleId();
+    ({ scr, bundleContext, bundleId } = await createScrHarness());
     vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
@@ -65,7 +51,7 @@ describe('SCR service-event queue', () => {
           reentered = true;
           // Re-emit synchronously from within the reaction (simulates the
           // framework emitting during an SCR-driven registration).
-          scr.handleServiceEvent(eventFor(SERVICE_EVENT_TYPES.REGISTERED, r2));
+          scr.handleServiceEvent(makeServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, r2));
         }
         order.push(`end:${s.id}`);
       }
@@ -73,14 +59,13 @@ describe('SCR service-event queue', () => {
       activate() {}
     }
 
-    bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-    bundleContext.getService = vi.fn().mockImplementation((r: any) => registry.get(r) ?? null);
+    stubServiceRegistry(bundleContext, [], (r: any) => registry.get(r) ?? null);
 
     await scr.registerComponent(C, bundleId);
     await scr.activateComponent(bundleId, 'reentrant');
 
-    scr.handleServiceEvent(eventFor(SERVICE_EVENT_TYPES.REGISTERED, r1));
-    await flush();
+    scr.handleServiceEvent(makeServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, r1));
+    await flushEventQueue();
 
     // Serialized: s1 fully completes before s2 begins.
     expect(order).toEqual(['start:s1', 'end:s1', 'start:s2', 'end:s2']);
@@ -110,15 +95,14 @@ describe('SCR service-event queue', () => {
       activate() {}
     }
 
-    bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-    bundleContext.getService = vi.fn().mockImplementation((r: any) => registry.get(r) ?? null);
+    stubServiceRegistry(bundleContext, [], (r: any) => registry.get(r) ?? null);
 
     await scr.registerComponent(C, bundleId);
     await scr.activateComponent(bundleId, 'thrower');
 
-    scr.handleServiceEvent(eventFor(SERVICE_EVENT_TYPES.REGISTERED, r1));
-    scr.handleServiceEvent(eventFor(SERVICE_EVENT_TYPES.REGISTERED, r2));
-    await flush();
+    scr.handleServiceEvent(makeServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, r1));
+    scr.handleServiceEvent(makeServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, r2));
+    await flushEventQueue();
 
     expect(bound).toEqual(['s2']);
   });
@@ -137,8 +121,7 @@ describe('SCR service-event queue', () => {
       }
     }
 
-    bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-    bundleContext.getService = vi.fn().mockReturnValue(null);
+    stubServiceRegistry(bundleContext, [], null);
 
     await scr.registerComponent(C, bundleId);
 
@@ -153,11 +136,10 @@ describe('SCR service-event queue', () => {
 
   it('ignores unknown service event types', async () => {
     const r1 = refFor('s1');
-    bundleContext.getServiceReferences = vi.fn().mockReturnValue([]);
-    bundleContext.getService = vi.fn().mockReturnValue(null);
+    stubServiceRegistry(bundleContext, [], null);
 
     // 0 is not a known SERVICE_EVENT_TYPES value.
-    expect(() => scr.handleServiceEvent(eventFor(0, r1))).not.toThrow();
-    await flush();
+    expect(() => scr.handleServiceEvent(makeServiceEvent(0, r1))).not.toThrow();
+    await flushEventQueue();
   });
 });

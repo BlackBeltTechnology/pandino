@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ConsoleLogService } from '../console-log-service';
 import { LogLevel, type LogListener } from '../interfaces';
+import { silenceConsole } from '../../../test/console';
 
 describe('ConsoleLogService', () => {
   let logService: ConsoleLogService;
@@ -12,10 +13,7 @@ describe('ConsoleLogService', () => {
       logged: vi.fn(),
     };
 
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
-    vi.spyOn(console, 'info').mockImplementation(() => {});
-    vi.spyOn(console, 'debug').mockImplementation(() => {});
+    silenceConsole(['error', 'warn', 'info', 'debug']);
   });
 
   afterEach(() => {

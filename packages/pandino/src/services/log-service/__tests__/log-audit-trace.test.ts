@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ConsoleLogService } from '../console-log-service';
 import { LogLevel } from '../interfaces';
+import { silenceConsole } from '../../../test/console';
 
 /**
  * OSGi R8 Log Service levels AUDIT (always recorded) and TRACE (least severe),
@@ -11,10 +12,7 @@ describe('LogService AUDIT and TRACE levels', () => {
 
   beforeEach(() => {
     service = new ConsoleLogService();
-    vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(console, 'debug').mockImplementation(() => {});
-    vi.spyOn(console, 'info').mockImplementation(() => {});
+    silenceConsole(['log', 'error', 'debug', 'info']);
   });
 
   it('should order AUDIT above ERROR and TRACE below DEBUG', () => {

@@ -2,9 +2,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Bundle } from '../../../framework/interfaces';
 import { SERVICE_EVENT_TYPES } from '../../../types/constants';
 import { ServiceTracker } from '../../service-tracker';
+import {
+  type MockService,
+  createTrackerContext,
+  makeServiceEvent,
+  makeServiceRef,
+} from '../../service-tracker/__tests__/support/tracker-mocks';
 import { BundleAwareLogService } from '../bundle-aware-log-service';
 import { ConsoleLogService } from '../console-log-service';
 import { LogLevel, type LogEntry, type LogListener } from '../interfaces';
+import { silenceConsole } from '../../../test/console';
 
 /**
  * Group 9 coverage: OSGi Log Service threshold matrix + listener isolation, and
@@ -18,11 +25,7 @@ describe('Log Service — threshold matrix across all ported levels', () => {
 
   beforeEach(() => {
     service = new ConsoleLogService();
-    vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
-    vi.spyOn(console, 'info').mockImplementation(() => {});
-    vi.spyOn(console, 'debug').mockImplementation(() => {});
+    silenceConsole(['log', 'error', 'warn', 'info', 'debug']);
   });
 
   afterEach(() => {
@@ -188,51 +191,19 @@ describe('Log Service — per-bundle logger state isolation', () => {
   });
 });
 
-interface MockService {
-  getValue(): string;
-}
-
 describe('ServiceTracker — ranking, lifecycle, and customizer edges', () => {
-  const makeRef = (id: number, ranking = 0) => ({
-    getProperty: vi.fn((key: string) => {
-      if (key === 'service.id') return id;
-      if (key === 'service.ranking') return ranking;
-      if (key === 'objectClass') return 'MockService';
-      return null;
-    }),
-    getPropertyKeys: vi.fn(() => ['service.id', 'service.ranking', 'objectClass']),
-    getBundle: vi.fn(),
-    isAssignableTo: vi.fn(),
-    getProperties: vi.fn(() => ({ 'service.id': id, 'service.ranking': ranking, objectClass: 'MockService' })),
-  });
-
-  const event = (type: number, reference: any) => ({
-    getType: () => type,
-    getServiceReference: () => reference,
-  });
-
   let ctx: any;
   let services: Map<any, MockService>;
 
   beforeEach(() => {
     services = new Map();
-    ctx = {
-      addServiceListener: vi.fn(),
-      removeServiceListener: vi.fn(),
-      getServiceReferences: vi.fn(() => []),
-      getService: vi.fn((ref: any) => services.get(ref) ?? null),
-      ungetService: vi.fn(),
-      createFilter: vi.fn((filter: string) => ({
-        match: (props: any) => props.objectClass === 'MockService',
-        toString: () => filter,
-      })),
-    };
+    ctx = createTrackerContext(services);
   });
 
   it('getService() returns the highest-ranked tracked service object', () => {
-    const low = makeRef(1, 5);
-    const mid = makeRef(2, 10);
-    const high = makeRef(3, 100);
+    const low = makeServiceRef(1, 5);
+    const mid = makeServiceRef(2, 10);
+    const high = makeServiceRef(3, 100);
     services.set(low, { getValue: () => 'low' });
     services.set(mid, { getValue: () => 'mid' });
     services.set(high, { getValue: () => 'high' });
@@ -245,8 +216,8 @@ describe('ServiceTracker — ranking, lifecycle, and customizer edges', () => {
   });
 
   it('tracks services present before open and services arriving after open', () => {
-    const preRef = makeRef(1);
-    const postRef = makeRef(2);
+    const preRef = makeServiceRef(1);
+    const postRef = makeServiceRef(2);
     services.set(preRef, { getValue: () => 'pre' });
     ctx.getServiceReferences = vi.fn(() => [preRef]);
 
@@ -259,14 +230,14 @@ describe('ServiceTracker — ranking, lifecycle, and customizer edges', () => {
 
     // Post-open service arrives via a REGISTERED serviceChanged event.
     services.set(postRef, { getValue: () => 'post' });
-    tracker.serviceChanged(event(SERVICE_EVENT_TYPES.REGISTERED, postRef) as any);
+    tracker.serviceChanged(makeServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, postRef) as any);
 
     expect(tracker.size()).toBe(2);
     expect(tracker.getServiceReferences()).toContain(postRef);
   });
 
   it('does not track when customizer.addingService returns null but still ungets', () => {
-    const ref = makeRef(1);
+    const ref = makeServiceRef(1);
     services.set(ref, { getValue: () => 'a' });
     ctx.getServiceReferences = vi.fn(() => [ref]);
     const customizer = {
@@ -285,7 +256,7 @@ describe('ServiceTracker — ranking, lifecycle, and customizer edges', () => {
   });
 
   it('fires customizer.modifiedService on a MODIFIED event for a tracked ref', () => {
-    const ref = makeRef(1);
+    const ref = makeServiceRef(1);
     const original = { getValue: () => 'v1' };
     services.set(ref, original);
     ctx.getServiceReferences = vi.fn(() => [ref]);
@@ -302,7 +273,7 @@ describe('ServiceTracker — ranking, lifecycle, and customizer edges', () => {
     // Simulate the service object being swapped, then a MODIFIED event.
     const updated = { getValue: () => 'v2' };
     services.set(ref, updated);
-    tracker.serviceChanged(event(SERVICE_EVENT_TYPES.MODIFIED, ref) as any);
+    tracker.serviceChanged(makeServiceEvent(SERVICE_EVENT_TYPES.MODIFIED, ref) as any);
 
     expect(customizer.modifiedService).toHaveBeenCalledTimes(1);
     expect(customizer.modifiedService).toHaveBeenCalledWith(ref, updated, original);

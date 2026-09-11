@@ -2,10 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ServiceTrackerCustomizer } from '../interfaces';
 import { SERVICE_EVENT_TYPES } from '../../../types/constants';
 import { ServiceTracker } from '../index';
-
-interface MockService {
-  getValue(): string;
-}
+import { type MockService, makeServiceEvent, makeServiceRef } from './support/tracker-mocks';
 
 class MockServiceImpl implements MockService {
   constructor(private value: string) {}
@@ -32,28 +29,6 @@ describe('ServiceTracker', () => {
     })),
   };
 
-  const createMockServiceReference = (id: number, ranking: number = 0) => ({
-    getProperty: vi.fn((key) => {
-      if (key === 'service.id') return id;
-      if (key === 'service.ranking') return ranking;
-      if (key === 'objectClass') return 'MockService';
-      return null;
-    }),
-    getPropertyKeys: vi.fn(() => ['service.id', 'service.ranking', 'objectClass']),
-    getBundle: vi.fn(),
-    isAssignableTo: vi.fn(),
-    getProperties: vi.fn(() => ({
-      'service.id': id,
-      'service.ranking': ranking,
-      objectClass: 'MockService',
-    })),
-  });
-
-  const createServiceEvent = (type: number, reference: any) => ({
-    getType: vi.fn(() => type),
-    getServiceReference: vi.fn(() => reference),
-  });
-
   let serviceTracker: ServiceTracker<MockService>;
   let mockServiceReference1: any;
   let mockServiceReference2: any;
@@ -63,8 +38,8 @@ describe('ServiceTracker', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockServiceReference1 = createMockServiceReference(1, 10);
-    mockServiceReference2 = createMockServiceReference(2, 20);
+    mockServiceReference1 = makeServiceRef(1, 10);
+    mockServiceReference2 = makeServiceRef(2, 20);
     mockService1 = new MockServiceImpl('service1');
     mockService2 = new MockServiceImpl('service2');
 
@@ -245,7 +220,7 @@ describe('ServiceTracker', () => {
     it('should return null for an untracked reference', () => {
       serviceTracker.open();
 
-      const untracked = createMockServiceReference(3);
+      const untracked = makeServiceRef(3);
       const service = serviceTracker.getService(untracked as any);
 
       expect(service).toBeNull();
@@ -292,8 +267,8 @@ describe('ServiceTracker', () => {
 
     it('should sort by service ID when rankings are equal', () => {
       // Create references with the same ranking but different IDs
-      const ref1 = createMockServiceReference(1, 10);
-      const ref2 = createMockServiceReference(2, 10);
+      const ref1 = makeServiceRef(1, 10);
+      const ref2 = makeServiceRef(2, 10);
 
       mockBundleContext.getServiceReferences.mockReturnValue([ref2, ref1]);
       // Mock getService to return a service for each reference
@@ -324,7 +299,7 @@ describe('ServiceTracker', () => {
       expect(serviceTracker.size()).toBe(0);
 
       // Simulate a service registration event
-      const event = createServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, mockServiceReference1);
+      const event = makeServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, mockServiceReference1);
 
       serviceTracker.serviceChanged(event as any);
 
@@ -336,7 +311,7 @@ describe('ServiceTracker', () => {
       serviceTracker.open();
 
       // Simulate a service modification event
-      const event = createServiceEvent(SERVICE_EVENT_TYPES.MODIFIED, mockServiceReference1);
+      const event = makeServiceEvent(SERVICE_EVENT_TYPES.MODIFIED, mockServiceReference1);
 
       // Create a spy to check if modifiedService is called
       const modifiedSpy = vi.spyOn(serviceTracker, 'modifiedService');
@@ -350,7 +325,7 @@ describe('ServiceTracker', () => {
       serviceTracker.open();
 
       // Simulate a service unregistration event
-      const event = createServiceEvent(SERVICE_EVENT_TYPES.UNREGISTERING, mockServiceReference1);
+      const event = makeServiceEvent(SERVICE_EVENT_TYPES.UNREGISTERING, mockServiceReference1);
 
       serviceTracker.serviceChanged(event as any);
 
@@ -378,7 +353,7 @@ describe('ServiceTracker', () => {
       };
       (tracker as any).filter = mockFilter;
 
-      const event = createServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, mockServiceReference1);
+      const event = makeServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, mockServiceReference1);
 
       tracker.serviceChanged(event as any);
 
@@ -390,7 +365,7 @@ describe('ServiceTracker', () => {
       serviceTracker.open();
       serviceTracker.close();
 
-      const event = createServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, mockServiceReference1);
+      const event = makeServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, mockServiceReference1);
 
       serviceTracker.serviceChanged(event as any);
 
@@ -406,7 +381,7 @@ describe('ServiceTracker', () => {
       serviceTracker.open();
       expect(serviceTracker.size()).toBe(2);
 
-      const event = createServiceEvent(SERVICE_EVENT_TYPES.UNREGISTERING, mockServiceReference1);
+      const event = makeServiceEvent(SERVICE_EVENT_TYPES.UNREGISTERING, mockServiceReference1);
       serviceTracker.serviceChanged(event as any);
 
       expect(serviceTracker.size()).toBe(1);

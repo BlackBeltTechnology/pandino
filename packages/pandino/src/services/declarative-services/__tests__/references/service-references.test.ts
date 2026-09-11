@@ -1,28 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OSGiFramework } from '../../../../framework/framework';
 import type { BundleContext, ServiceReference } from '../../../../framework/interfaces';
 import { getComponentMetadata } from '../../reflection';
 import { ServiceComponentRuntime } from '../../scr';
+import { createScrHarness, makeServiceRef, stubServiceRegistry } from '../support/scr-harness';
 import { Activate, Component, Reference } from '@pandino/decorators';
 
 describe('Service References', () => {
-  let framework: OSGiFramework;
   let scr: ServiceComponentRuntime;
   let bundleContext: BundleContext;
   let mockServiceRef: ServiceReference<any>;
 
   beforeEach(async () => {
-    framework = new OSGiFramework();
-    await framework.start();
-    bundleContext = framework.getBundleContext();
-    scr = new ServiceComponentRuntime(framework, bundleContext);
-
-    mockServiceRef = {
-      getProperty: vi.fn(),
-      getPropertyKeys: vi.fn().mockReturnValue([]),
-      getBundle: vi.fn(),
-      isAssignableTo: vi.fn().mockReturnValue(true),
-    } as unknown as ServiceReference<any>;
+    ({ scr, bundleContext } = await createScrHarness());
+    mockServiceRef = makeServiceRef();
   });
 
   describe('Reference Satisfaction', () => {
@@ -44,8 +34,7 @@ describe('Service References', () => {
       }
 
       const mockService = { test: true, value: 'service-data' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([mockServiceRef]);
-      bundleContext.getService = vi.fn().mockReturnValue(mockService);
+      stubServiceRegistry(bundleContext, [mockServiceRef], mockService);
 
       const bundleId = 0;
       scr.registerComponent(ReferenceComponent, bundleId);
@@ -126,8 +115,7 @@ describe('Service References', () => {
         }
       }
 
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([mockServiceRef]);
-      bundleContext.getService = vi.fn().mockReturnValue(null);
+      stubServiceRegistry(bundleContext, [mockServiceRef], null);
 
       const bundleId = 0;
       scr.registerComponent(NullServiceComponent, bundleId);
@@ -158,8 +146,7 @@ describe('Service References', () => {
       }
 
       const testService = { test: true };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([mockServiceRef]);
-      bundleContext.getService = vi.fn().mockReturnValue(testService);
+      stubServiceRegistry(bundleContext, [mockServiceRef], testService);
 
       const bundleId = bundleContext.getBundle().getBundleId();
       scr.registerComponent(MandatoryReferenceComponent, bundleId);
@@ -255,8 +242,7 @@ describe('Service References', () => {
       }
 
       const mockService = { value: 'test' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([mockServiceRef]);
-      bundleContext.getService = vi.fn().mockReturnValue(mockService);
+      stubServiceRegistry(bundleContext, [mockServiceRef], mockService);
 
       const bundleId = bundleContext.getBundle().getBundleId();
       scr.registerComponent(EventComponent, bundleId);
@@ -297,8 +283,7 @@ describe('Service References', () => {
       }
 
       const mockService = { value: 'test' };
-      bundleContext.getServiceReferences = vi.fn().mockReturnValue([mockServiceRef]);
-      bundleContext.getService = vi.fn().mockReturnValue(mockService);
+      stubServiceRegistry(bundleContext, [mockServiceRef], mockService);
 
       const bundleId = bundleContext.getBundle().getBundleId();
       scr.registerComponent(EventComponent1, bundleId);

@@ -1,11 +1,13 @@
 import type { Bundle } from '../../framework/interfaces';
-import { LogLevel, type LogListener, type LogService } from './interfaces';
+import { AbstractLogService } from './abstract-log-service';
+import type { LogLevel, LogListener, LogService } from './interfaces';
 
-export class BundleAwareLogService implements LogService {
+export class BundleAwareLogService extends AbstractLogService {
   private wrappedLogService: LogService;
   private readonly bundle: Bundle;
 
   constructor(logService: LogService, bundle: Bundle) {
+    super();
     this.wrappedLogService = logService;
     this.bundle = bundle;
   }
@@ -28,30 +30,6 @@ export class BundleAwareLogService implements LogService {
 
     // Call the wrapped service with enhanced context
     this.wrappedLogService.log(level, message, exception, enhancedContext);
-  }
-
-  error(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.ERROR, message, exception, context);
-  }
-
-  warn(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.WARN, message, exception, context);
-  }
-
-  info(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.INFO, message, exception, context);
-  }
-
-  debug(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.DEBUG, message, exception, context);
-  }
-
-  trace(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.TRACE, message, exception, context);
-  }
-
-  audit(message: string, exception?: Error, context?: Record<string, unknown>): void {
-    this.log(LogLevel.AUDIT, message, exception, context);
   }
 
   isLoggable(level: LogLevel): boolean {

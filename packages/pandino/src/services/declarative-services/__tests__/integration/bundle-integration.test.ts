@@ -4,18 +4,13 @@ import type { Bundle, BundleContext, BundleEvent } from '../../../../framework/i
 import { BUNDLE_STATES } from '../../../../types/constants';
 import { Component, Service, Activate } from '@pandino/decorators';
 import { ServiceComponentRuntimeBundleActivator } from '../../bundle';
-import type { ServiceComponentRuntime } from '../../scr';
+import { getScrService } from '../support/scr-harness';
 import type { SCRBundleConfiguration } from '../../interfaces';
 
 describe('ServiceComponentRuntimeBundleActivator', () => {
   let framework: OSGiFramework;
   let bundleContext: BundleContext;
   let activator: ServiceComponentRuntimeBundleActivator;
-
-  function getSCRService(bundleContext: BundleContext): ServiceComponentRuntime {
-    const scrServiceRef = bundleContext.getServiceReference('ServiceComponentRuntime')!;
-    return bundleContext.getService(scrServiceRef) as any;
-  }
 
   beforeEach(async () => {
     framework = new OSGiFramework();
@@ -54,7 +49,7 @@ describe('ServiceComponentRuntimeBundleActivator', () => {
       const scrServiceRef = bundleContext.getServiceReference('ServiceComponentRuntime');
       expect(scrServiceRef).toBeDefined();
 
-      const scrService = getSCRService(bundleContext);
+      const scrService = getScrService(bundleContext);
       expect(scrService).toBeDefined();
       expect(typeof scrService.registerComponent).toBe('function');
     });
@@ -181,7 +176,7 @@ describe('ServiceComponentRuntimeBundleActivator', () => {
 
       await activator.start(bundleContext);
 
-      const scrService = getSCRService(bundleContext);
+      const scrService = getScrService(bundleContext);
       const registerComponentSpy = vi.spyOn(scrService, 'registerComponent');
 
       (activator as any).processBundle(mockBundle);
@@ -206,7 +201,7 @@ describe('ServiceComponentRuntimeBundleActivator', () => {
 
       await activator.start(bundleContext);
 
-      const scrService = getSCRService(bundleContext);
+      const scrService = getScrService(bundleContext);
       const registerComponentSpy = vi.spyOn(scrService, 'registerComponent');
 
       (activator as any).processBundle(mockBundle);
@@ -232,7 +227,7 @@ describe('ServiceComponentRuntimeBundleActivator', () => {
 
       await activator.start(bundleContext);
 
-      const scrService = getSCRService(bundleContext);
+      const scrService = getScrService(bundleContext);
       const registerComponentSpy = vi.spyOn(scrService, 'registerComponent');
 
       (activator as any).processBundle(mockBundle);
@@ -249,7 +244,7 @@ describe('ServiceComponentRuntimeBundleActivator', () => {
 
       await activator.start(bundleContext);
 
-      const scrService = getSCRService(bundleContext);
+      const scrService = getScrService(bundleContext);
       const registerComponentSpy = vi
         .spyOn(scrService, 'registerComponent')
         .mockImplementationOnce(() => {
@@ -333,7 +328,7 @@ describe('ServiceComponentRuntimeBundleActivator', () => {
 
       await activator.start(bundleContext);
 
-      const scrService = getSCRService(bundleContext);
+      const scrService = getScrService(bundleContext);
       const registerComponentSpy = vi.spyOn(scrService, 'registerComponent');
 
       (activator as any).processBundle(mockBundle);

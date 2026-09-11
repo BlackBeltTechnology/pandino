@@ -1,10 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SERVICE_EVENT_TYPES } from '../../../types/constants';
 import { ServiceTracker } from '../index';
-
-interface MockService {
-  getValue(): string;
-}
+import { type MockService, createTrackerContext, makeServiceEvent, makeServiceRef } from './support/tracker-mocks';
 
 /**
  * Coverage for the OSGi util.tracker methods added to complete the port:
@@ -12,40 +9,12 @@ interface MockService {
  * remove, and waitForService.
  */
 describe('ServiceTracker extended API', () => {
-  const makeRef = (id: number, ranking = 0) => ({
-    getProperty: vi.fn((key: string) => {
-      if (key === 'service.id') return id;
-      if (key === 'service.ranking') return ranking;
-      if (key === 'objectClass') return 'MockService';
-      return null;
-    }),
-    getPropertyKeys: vi.fn(() => ['service.id', 'service.ranking', 'objectClass']),
-    getBundle: vi.fn(),
-    isAssignableTo: vi.fn(),
-    getProperties: vi.fn(() => ({ 'service.id': id, 'service.ranking': ranking, objectClass: 'MockService' })),
-  });
-
-  const event = (type: number, reference: any) => ({
-    getType: () => type,
-    getServiceReference: () => reference,
-  });
-
   let ctx: any;
   let services: Map<any, MockService>;
 
   beforeEach(() => {
     services = new Map();
-    ctx = {
-      addServiceListener: vi.fn(),
-      removeServiceListener: vi.fn(),
-      getServiceReferences: vi.fn(() => []),
-      getService: vi.fn((ref: any) => services.get(ref) ?? null),
-      ungetService: vi.fn(),
-      createFilter: vi.fn((filter: string) => ({
-        match: (props: any) => props.objectClass === 'MockService',
-        toString: () => filter,
-      })),
-    };
+    ctx = createTrackerContext(services);
   });
 
   it('should report tracking count -1 before open and 0 after opening empty', () => {
@@ -57,23 +26,23 @@ describe('ServiceTracker extended API', () => {
   });
 
   it('should increment tracking count on add and remove', () => {
-    const ref = makeRef(1);
+    const ref = makeServiceRef(1);
     services.set(ref, { getValue: () => 'a' });
     const tracker = new ServiceTracker<MockService>(ctx, 'MockService');
     tracker.open();
 
-    tracker.serviceChanged(event(SERVICE_EVENT_TYPES.REGISTERED, ref) as any);
+    tracker.serviceChanged(makeServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, ref) as any);
     expect(tracker.getTrackingCount()).toBe(1);
     expect(tracker.isEmpty()).toBe(false);
 
-    tracker.serviceChanged(event(SERVICE_EVENT_TYPES.UNREGISTERING, ref) as any);
+    tracker.serviceChanged(makeServiceEvent(SERVICE_EVENT_TYPES.UNREGISTERING, ref) as any);
     expect(tracker.getTrackingCount()).toBe(2);
     expect(ctx.ungetService).toHaveBeenCalledWith(ref);
   });
 
   it('should return the highest-ranked reference from getServiceReference', () => {
-    const low = makeRef(1, 10);
-    const high = makeRef(2, 20);
+    const low = makeServiceRef(1, 10);
+    const high = makeServiceRef(2, 20);
     services.set(low, { getValue: () => 'low' });
     services.set(high, { getValue: () => 'high' });
     ctx.getServiceReferences = vi.fn(() => [low, high]);
@@ -91,7 +60,7 @@ describe('ServiceTracker extended API', () => {
   });
 
   it('should expose a snapshot map via getTracked', () => {
-    const ref = makeRef(1);
+    const ref = makeServiceRef(1);
     const svc = { getValue: () => 'a' };
     services.set(ref, svc);
     ctx.getServiceReferences = vi.fn(() => [ref]);
@@ -105,7 +74,7 @@ describe('ServiceTracker extended API', () => {
   });
 
   it('should manually untrack a reference via remove()', () => {
-    const ref = makeRef(1);
+    const ref = makeServiceRef(1);
     services.set(ref, { getValue: () => 'a' });
     ctx.getServiceReferences = vi.fn(() => [ref]);
 
@@ -119,7 +88,7 @@ describe('ServiceTracker extended API', () => {
   });
 
   it('should resolve waitForService immediately when a service is present', async () => {
-    const ref = makeRef(1);
+    const ref = makeServiceRef(1);
     const svc = { getValue: () => 'a' };
     services.set(ref, svc);
     ctx.getServiceReferences = vi.fn(() => [ref]);
@@ -131,14 +100,14 @@ describe('ServiceTracker extended API', () => {
   });
 
   it('should resolve waitForService when a service arrives later', async () => {
-    const ref = makeRef(1);
+    const ref = makeServiceRef(1);
     const svc = { getValue: () => 'a' };
     const tracker = new ServiceTracker<MockService>(ctx, 'MockService');
     tracker.open();
 
     const pending = tracker.waitForService(0);
     services.set(ref, svc);
-    tracker.serviceChanged(event(SERVICE_EVENT_TYPES.REGISTERED, ref) as any);
+    tracker.serviceChanged(makeServiceEvent(SERVICE_EVENT_TYPES.REGISTERED, ref) as any);
 
     await expect(pending).resolves.toBe(svc);
   });
@@ -156,7 +125,7 @@ describe('ServiceTracker extended API', () => {
   });
 
   it('should still unget the reference when a customizer addingService throws', () => {
-    const ref = makeRef(1);
+    const ref = makeServiceRef(1);
     services.set(ref, { getValue: () => 'a' });
     ctx.getServiceReferences = vi.fn(() => [ref]);
     const customizer = {
@@ -174,7 +143,7 @@ describe('ServiceTracker extended API', () => {
   });
 
   it('should still unget the reference when a customizer removedService throws', () => {
-    const ref = makeRef(1);
+    const ref = makeServiceRef(1);
     const svc = { getValue: () => 'a' };
     services.set(ref, svc);
     ctx.getServiceReferences = vi.fn(() => [ref]);

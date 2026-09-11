@@ -1,39 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OSGiFramework } from './framework';
 import type { BundleActivator } from './interfaces';
-import type { BundleModule } from '../types/bundle-metadata';
 import { BUNDLE_STATES } from '../types/constants';
-
-function createBundleModule(
-  symbolicName: string,
-  version: string = '1.0.0',
-  options: {
-    bundleName?: string;
-    bundleDescription?: string;
-    bundleManifestVersion?: string;
-    [key: string]: any;
-  } = {},
-  activator: BundleActivator = {
-    start: vi.fn(),
-    stop: vi.fn(),
-  },
-): Promise<BundleModule> {
-  return Promise.resolve({
-    default: {
-      headers: {
-        bundleSymbolicName: symbolicName,
-        bundleVersion: version,
-        bundleName: options.bundleName,
-        bundleDescription: options.bundleDescription,
-        bundleManifestVersion: options.bundleManifestVersion,
-        ...Object.entries(options)
-          .filter(([key]) => !['bundleName', 'bundleDescription', 'bundleManifestVersion'].includes(key))
-          .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {}),
-      },
-      activator,
-    },
-  });
-}
+import { createBundleModule } from '../test/bundle-module';
 
 describe('BundleModule support', () => {
   let framework: OSGiFramework;

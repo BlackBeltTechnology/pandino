@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { OSGiFramework } from '../../../../framework/framework';
-import type { BundleContext } from '../../../../framework/interfaces';
 import { ServiceComponentRuntime } from '../../scr';
+import { createScrHarness } from '../support/scr-harness';
 import { Activate, Component, Reference, Scope, Service } from '@pandino/decorators';
 
 /**
@@ -12,17 +11,11 @@ import { Activate, Component, Reference, Scope, Service } from '@pandino/decorat
  * not just the first one.
  */
 describe('Multiple @Reference to already-active SCR components (#297)', () => {
-  let framework: OSGiFramework;
   let scr: ServiceComponentRuntime;
-  let bundleContext: BundleContext;
   let bundleId: number;
 
   beforeEach(async () => {
-    framework = new OSGiFramework();
-    await framework.start();
-    bundleContext = framework.getBundleContext();
-    scr = new ServiceComponentRuntime(framework, bundleContext);
-    bundleId = bundleContext.getBundle().getBundleId();
+    ({ scr, bundleId } = await createScrHarness());
   });
 
   it('injects all referenced services when they are already active', async () => {

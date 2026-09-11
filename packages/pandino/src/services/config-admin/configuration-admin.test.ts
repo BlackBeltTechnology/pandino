@@ -13,6 +13,19 @@ describe('ConfigurationAdmin', () => {
     configAdmin = new ConfigurationAdminImpl(framework);
   });
 
+  /** Registers a ManagedService (or factory) on the system bundle and returns it. */
+  const register = <T extends object>(service: T, properties: Record<string, unknown>, iface = 'ManagedService'): T => {
+    framework.getBundle(0)!.getContext()!.registerService(iface, service, properties);
+    return service;
+  };
+
+  /** Registers a plain ManagedService whose `updated` is a spy. */
+  const registerManagedService = (properties: Record<string, unknown>): ManagedService =>
+    register<ManagedService>({ updated: vi.fn() }, properties);
+
+  /** Configuration delivery is asynchronous; let it land before asserting. */
+  const flushDelivery = () => new Promise((resolve) => setTimeout(resolve, 10));
+
   describe('getConfiguration', () => {
     it('should create new configuration', async () => {
       const config = await configAdmin.getConfiguration('test.pid');
@@ -137,37 +150,23 @@ describe('ConfigurationAdmin', () => {
 
   describe('configuration delivery', () => {
     it('should deliver configuration to ManagedService', async () => {
-      const managedService: ManagedService = {
-        updated: vi.fn(),
-      };
-
-      const systemBundle = framework.getBundle(0);
-      const context = systemBundle!.getContext()!;
-
-      context.registerService('ManagedService', managedService, { 'service.pid': 'test.pid' });
+      const managedService = registerManagedService({ 'service.pid': 'test.pid' });
 
       const config = await configAdmin.getConfiguration('test.pid');
       await config.update({ key: 'value' });
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await flushDelivery();
 
       expect(managedService.updated).toHaveBeenCalledWith(expect.objectContaining({ key: 'value' }));
     });
 
     it('should inject service.pid into delivered ManagedService properties', async () => {
-      const managedService: ManagedService = {
-        updated: vi.fn(),
-      };
-
-      const systemBundle = framework.getBundle(0);
-      const context = systemBundle!.getContext()!;
-
-      context.registerService('ManagedService', managedService, { 'service.pid': 'pid.auto' });
+      const managedService = registerManagedService({ 'service.pid': 'pid.auto' });
 
       const config = await configAdmin.getConfiguration('pid.auto');
       await config.update({ key: 'value' });
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await flushDelivery();
 
       expect(managedService.updated).toHaveBeenCalledWith(
         expect.objectContaining({ 'service.pid': 'pid.auto', key: 'value' }),
@@ -175,21 +174,16 @@ describe('ConfigurationAdmin', () => {
     });
 
     it('should inject service.pid and service.factoryPid into delivered factory properties', async () => {
-      const factory = {
-        getName: () => 'factory',
-        updated: vi.fn(),
-        deleted: vi.fn(),
-      };
-
-      const systemBundle = framework.getBundle(0);
-      const context = systemBundle!.getContext()!;
-
-      context.registerService('ManagedServiceFactory', factory, { 'service.pid': 'the.factory' });
+      const factory = register(
+        { getName: () => 'factory', updated: vi.fn(), deleted: vi.fn() },
+        { 'service.pid': 'the.factory' },
+        'ManagedServiceFactory',
+      );
 
       const config = await configAdmin.createFactoryConfiguration('the.factory');
       await config.update({ key: 'value' });
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await flushDelivery();
 
       expect(factory.updated).toHaveBeenCalledWith(
         config.getPid(),
@@ -198,41 +192,23 @@ describe('ConfigurationAdmin', () => {
     });
 
     it('should not deliver to service with different PID', async () => {
-      const managedService: ManagedService = {
-        updated: vi.fn(),
-      };
-
-      const systemBundle = framework.getBundle(0);
-      const context = systemBundle!.getContext()!;
-
-      context.registerService('ManagedService', managedService, { 'service.pid': 'different.pid' });
+      const managedService = registerManagedService({ 'service.pid': 'different.pid' });
 
       const config = await configAdmin.getConfiguration('test.pid');
       await config.update({ key: 'value' });
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await flushDelivery();
 
       expect(managedService.updated).not.toHaveBeenCalled();
     });
 
     it('should only deliver configuration to service with matching bundle location', async () => {
-      const correctLocationService: ManagedService = {
-        updated: vi.fn(),
-      };
-      const wrongLocationService: ManagedService = {
-        updated: vi.fn(),
-      };
-
-      const systemBundle = framework.getBundle(0);
-      const context = systemBundle!.getContext()!;
-
       // Register services from different "bundle locations"
-      context.registerService('ManagedService', correctLocationService, {
+      const correctLocationService = registerManagedService({
         'service.pid': 'location.test',
         'bundle.location': 'bundle://correct-location',
       });
-
-      context.registerService('ManagedService', wrongLocationService, {
+      const wrongLocationService = registerManagedService({
         'service.pid': 'location.test',
         'bundle.location': 'bundle://wrong-location',
       });
@@ -241,7 +217,7 @@ describe('ConfigurationAdmin', () => {
       const config = await configAdmin.getConfiguration('location.test', 'bundle://correct-location');
       await config.update({ restricted: 'data' });
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await flushDelivery();
 
       // Only the service from the correct location should receive the config
       expect(correctLocationService.updated).toHaveBeenCalledWith(expect.objectContaining({ restricted: 'data' }));
@@ -249,23 +225,12 @@ describe('ConfigurationAdmin', () => {
     });
 
     it('should only deliver factory configuration to service with matching bundle location', async () => {
-      const correctLocationService: ManagedService = {
-        updated: vi.fn(),
-      };
-      const wrongLocationService: ManagedService = {
-        updated: vi.fn(),
-      };
-
-      const systemBundle = framework.getBundle(0);
-      const context = systemBundle!.getContext()!;
-
       // Register factory services from different "bundle locations"
-      context.registerService('ManagedService', correctLocationService, {
+      const correctLocationService = registerManagedService({
         'service.factoryPid': 'factory.location.test',
         'bundle.location': 'bundle://factory-location',
       });
-
-      context.registerService('ManagedService', wrongLocationService, {
+      const wrongLocationService = registerManagedService({
         'service.factoryPid': 'factory.location.test',
         'bundle.location': 'bundle://different-factory-location',
       });
@@ -274,7 +239,7 @@ describe('ConfigurationAdmin', () => {
       const config = await configAdmin.createFactoryConfiguration('factory.location.test', 'bundle://factory-location');
       await config.update({ factoryData: 'secure' });
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await flushDelivery();
 
       // Only the service from the correct location should receive the config
       expect(correctLocationService.updated).toHaveBeenCalledWith(expect.objectContaining({ factoryData: 'secure' }));

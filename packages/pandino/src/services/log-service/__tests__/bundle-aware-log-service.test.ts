@@ -3,6 +3,7 @@ import type { Bundle } from '../../../framework/interfaces';
 import { BundleAwareLogService } from '../bundle-aware-log-service';
 import { ConsoleLogService } from '../console-log-service';
 import { LogLevel, type LogListener } from '../interfaces';
+import { silenceConsole } from '../../../test/console';
 
 describe('BundleAwareLogService', () => {
   let mockBundle: Bundle;
@@ -34,10 +35,7 @@ describe('BundleAwareLogService', () => {
       logged: vi.fn(),
     };
 
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
-    vi.spyOn(console, 'info').mockImplementation(() => {});
-    vi.spyOn(console, 'debug').mockImplementation(() => {});
+    silenceConsole(['error', 'warn', 'info', 'debug']);
   });
 
   afterEach(() => {

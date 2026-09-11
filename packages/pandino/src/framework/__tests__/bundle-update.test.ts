@@ -3,6 +3,7 @@ import type { BundleActivator, BundleEvent, BundleListener } from '../interfaces
 import type { BundleModule } from '../../types/bundle-metadata';
 import { BUNDLE_EVENT_TYPES, BUNDLE_STATES } from '../../types/constants';
 import { OSGiFramework } from '../framework';
+import { silenceConsole } from '../../test/console';
 
 function moduleOf(symbolicName: string, version: string, activator: BundleActivator): Promise<BundleModule> {
   return Promise.resolve({
@@ -18,9 +19,7 @@ describe('Bundle.update()', () => {
 
   beforeEach(async () => {
     framework = new OSGiFramework();
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(console, 'info').mockImplementation(() => {});
-    vi.spyOn(console, 'debug').mockImplementation(() => {});
+    silenceConsole(['error', 'info', 'debug']);
     await framework.start();
   });
 
