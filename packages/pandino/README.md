@@ -50,11 +50,13 @@ Enable decorators and metadata emission in `tsconfig.json`:
 ```json
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false
   }
 }
 ```
+
+> Note: For TypeScript 5.0+, standard decorators are enabled by default, so `experimentalDecorators` should be set to `false` to use standard decorators instead of legacy ones.
 
 ## Core concepts
 

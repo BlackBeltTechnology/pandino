@@ -32,18 +32,18 @@ import 'reflect-metadata';
 
 ## TypeScript configuration
 
-Enable experimental decorators and metadata emission in your `tsconfig.json`:
+Enable decorators and metadata emission in your `tsconfig.json`:
 
 ```json
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false
   }
 }
 ```
 
-> Without these settings decorator metadata will not be emitted and Pandino will not be able to activate your components.
+> Note: For TypeScript 5.0+, standard decorators are enabled by default, so `experimentalDecorators` should be set to `false` to use standard decorators instead of legacy ones.
 
 ## Available decorators
 

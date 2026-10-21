@@ -16,8 +16,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "strictFunctionTypes": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
     "jsx": "react-jsx"
   },
   "include": ["src"],
